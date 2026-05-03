@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ExternalLink } from "lucide-react";
+import { Lock } from "lucide-react";
 import { Project } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
@@ -22,39 +22,35 @@ const GithubIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
-const categoryColors = {
-  Security: "bg-red-500/10 text-red-500 border-red-500/20",
-  "Full-Stack": "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  "AI/Vision": "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  Experiments: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+const categoryColors: Record<string, string> = {
+  Security: "bg-accent-cyan/10 text-accent-cyan border-accent-cyan/20",
+  "Full-Stack": "bg-accent-indigo/10 text-accent-indigo border-accent-indigo/20",
+  "AI/Vision": "bg-accent-purple/10 text-accent-purple border-accent-purple/20",
+  Experiments: "bg-amber-500/10 text-amber-400 border-amber-500/20",
 };
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  const mx = useSpring(x, { stiffness: 300, damping: 30 });
+  const my = useSpring(y, { stiffness: 300, damping: 30 });
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+  const rotateX = useTransform(my, [-0.5, 0.5], ["6deg", "-6deg"]);
+  const rotateY = useTransform(mx, [-0.5, 0.5], ["-6deg", "6deg"]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
   const handleMouseLeave = () => {
     x.set(0);
     y.set(0);
   };
+
+  const isPrivate = project.status === "private";
 
   return (
     <motion.div
@@ -67,60 +63,74 @@ const ProjectCard = ({ project }: { project: Project }) => {
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ y: -5 }}
-      className="relative p-6 rounded-2xl bg-bg-secondary/50 border border-white/10 backdrop-blur-md group transition-colors duration-300 hover:border-accent-cyan/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)]"
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="relative p-6 rounded-2xl bg-bg-secondary/50 border border-white/10 backdrop-blur-sm group transition-colors duration-300 hover:border-accent-cyan/40"
     >
-      {/* Category Badge */}
-      <div className="flex justify-between items-start mb-6" style={{ transform: "translateZ(20px)" }}>
-        <span className={cn(
-          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-          categoryColors[project.category]
-        )}>
+      {/* Private overlay */}
+      {isPrivate && (
+        <div className="absolute inset-0 rounded-2xl bg-bg/60 backdrop-blur-[2px] z-20 flex items-center justify-center">
+          <div className="flex items-center gap-2 text-text-muted">
+            <Lock size={16} />
+            <span className="text-xs font-mono uppercase tracking-wider">Private</span>
+          </div>
+        </div>
+      )}
+
+      {/* Header Row */}
+      <div className="flex justify-between items-start mb-5">
+        <span
+          className={cn(
+            "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+            categoryColors[project.category] || categoryColors.Experiments
+          )}
+        >
           {project.category}
         </span>
         <span className="text-xs font-mono text-text-muted">{project.year}</span>
       </div>
 
       {/* Content */}
-      <div style={{ transform: "translateZ(30px)" }}>
-        <h3 className="text-xl font-bold mb-2 group-hover:text-accent-cyan transition-colors">
+      <div className="mb-5">
+        <h3 className="text-lg font-bold mb-2 group-hover:text-accent-cyan transition-colors duration-300">
           {project.title}
         </h3>
-        <p className="text-sm text-text-secondary leading-relaxed mb-6 line-clamp-3">
+        <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
           {project.description}
         </p>
       </div>
 
+      {/* Stats row */}
+      {(project.stars > 0 || project.forks > 0) && (
+        <div className="flex items-center gap-4 mb-4 text-xs font-mono text-text-muted">
+          {project.stars > 0 && <span>★ {project.stars}</span>}
+          {project.forks > 0 && <span>⑂ {project.forks}</span>}
+        </div>
+      )}
+
       {/* Tech Tags */}
-      <div className="flex flex-wrap gap-2 mb-4" style={{ transform: "translateZ(20px)" }}>
-        {project.tags.map((tag) => (
+      <div className="flex flex-wrap gap-1.5 mb-2">
+        {project.tags.slice(0, 4).map((tag) => (
           <span
             key={tag}
-            className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-text-muted"
+            className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[10px] text-text-muted font-mono"
           >
             {tag}
           </span>
         ))}
       </div>
 
-      {/* GitHub Link Reveal */}
-      <motion.a
-        href={project.githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        initial={{ opacity: 0, x: 10 }}
-        whileHover={{ scale: 1.1 }}
-        animate={{ 
-          opacity: 1, 
-          x: 0,
-          transition: { delay: 0.1 }
-        }}
-        className="absolute bottom-6 right-6 p-2 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan opacity-0 group-hover:opacity-100 transition-all duration-300 translate-z-[40px]"
-        style={{ transform: "translateZ(40px)" }}
-      >
-        <GithubIcon size={18} />
-      </motion.a>
+      {/* GitHub Link */}
+      {project.githubUrl && !isPrivate && (
+        <a
+          href={project.githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-5 right-5 p-2 rounded-full bg-white/5 border border-white/10 text-text-muted opacity-0 group-hover:opacity-100 hover:text-accent-cyan hover:border-accent-cyan/30 transition-all duration-300"
+          aria-label={`View ${project.title} on GitHub`}
+        >
+          <GithubIcon size={16} />
+        </a>
+      )}
     </motion.div>
   );
 };

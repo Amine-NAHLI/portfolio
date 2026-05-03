@@ -1,3 +1,7 @@
+/**
+ * Tech stack data — grouped by domain with proficiency levels.
+ */
+
 export interface Tech {
   name: string;
   level: number; // 0 to 100

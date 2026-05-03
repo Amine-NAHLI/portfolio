@@ -47,58 +47,79 @@ const navLinks = [
   { name: "Contact", href: "#contact" },
 ];
 
-const Footer = () => {
+/**
+ * Easter egg — types out a terminal message character by character, loops.
+ */
+const TerminalEasterEgg = () => {
   const [displayText, setDisplayText] = useState("");
   const fullText = "session paused · ready when you are";
-  
+
   useEffect(() => {
-    let index = 0;
-    let isDeleting = false;
-    
-    const interval = setInterval(() => {
-      if (!isDeleting) {
-        setDisplayText(fullText.slice(0, index + 1));
-        index++;
-        if (index === fullText.length) {
-          setTimeout(() => { isDeleting = true; }, 3000);
+    let charIndex = 0;
+    let direction: "forward" | "backward" = "forward";
+    let pauseTimeout: NodeJS.Timeout | null = null;
+
+    const tick = () => {
+      if (direction === "forward") {
+        charIndex++;
+        setDisplayText(fullText.slice(0, charIndex));
+        if (charIndex >= fullText.length) {
+          pauseTimeout = setTimeout(() => {
+            direction = "backward";
+            tick();
+          }, 3000);
+          return;
         }
       } else {
-        setDisplayText(fullText.slice(0, index - 1));
-        index--;
-        if (index === 0) {
-          isDeleting = false;
+        charIndex--;
+        setDisplayText(fullText.slice(0, charIndex));
+        if (charIndex <= 0) {
+          direction = "forward";
         }
       }
-    }, 100);
-    
-    return () => clearInterval(interval);
+      pauseTimeout = setTimeout(tick, direction === "forward" ? 80 : 40);
+    };
+
+    tick();
+    return () => {
+      if (pauseTimeout) clearTimeout(pauseTimeout);
+    };
   }, []);
 
   return (
-    <footer className="relative pt-24 pb-12 bg-bg overflow-hidden">
-      {/* Top Gradient Border */}
+    <div className="font-mono text-[10px] text-text-muted/30 uppercase tracking-[0.3em] flex items-center gap-1">
+      <span>{displayText}</span>
+      <span className="w-1 h-3 bg-accent-cyan/30 animate-pulse" />
+    </div>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="relative pt-20 pb-10 bg-bg overflow-hidden">
+      {/* Top border */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      
-      <div className="container mx-auto px-6">
-        {/* Top Tagline */}
-        <div className="mb-20 text-center">
-          <motion.h2 
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Massive tagline */}
+        <div className="mb-16 text-center">
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter opacity-20 hover:opacity-100 transition-opacity duration-700 select-none cursor-default bg-gradient-to-b from-white to-transparent bg-clip-text text-transparent"
+            className="text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter select-none cursor-default gradient-text opacity-30 hover:opacity-80 transition-opacity duration-700"
           >
             BUILT WITH INTENTION.
           </motion.h2>
         </div>
 
-        {/* Middle Navigation */}
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-16">
+        {/* Navigation */}
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mb-14">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-mono text-text-muted hover:text-accent-cyan transition-colors"
+              className="text-sm font-mono text-text-muted hover:text-accent-cyan transition-colors duration-300"
             >
               {link.name}
             </Link>
@@ -106,30 +127,46 @@ const Footer = () => {
         </div>
 
         {/* Bottom Row */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-xs font-mono text-text-muted">
-            © {new Date().getFullYear()} Amine Nahli. <span className="text-green-500/50 italic ml-1">All systems operational.</span>
+            © {new Date().getFullYear()} Amine Nahli.{" "}
+            <span className="text-emerald-500/50 italic ml-1">
+              All systems operational.
+            </span>
           </div>
-          
-          <div className="flex items-center gap-6">
-            <a href="https://linkedin.com/in/amine-nahli-48b2a734b" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-accent-cyan transition-colors">
+
+          <div className="flex items-center gap-5">
+            <a
+              href="https://linkedin.com/in/amine-nahli-48b2a734b"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-muted hover:text-accent-cyan transition-colors duration-300"
+              aria-label="LinkedIn"
+            >
               <LinkedinIcon size={18} />
             </a>
-            <a href="https://github.com/Amine-NAHLI" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-accent-cyan transition-colors">
+            <a
+              href="https://github.com/Amine-NAHLI"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-muted hover:text-accent-cyan transition-colors duration-300"
+              aria-label="GitHub"
+            >
               <GithubIcon size={18} />
             </a>
-            <a href="mailto:nahli-ami@upf.ac.ma" className="text-text-muted hover:text-accent-cyan transition-colors">
+            <a
+              href="mailto:nahli-ami@upf.ac.ma"
+              className="text-text-muted hover:text-accent-cyan transition-colors duration-300"
+              aria-label="Email"
+            >
               <Mail size={18} />
             </a>
           </div>
         </div>
 
-        {/* Easter Egg Terminal */}
-        <div className="mt-12 flex justify-center">
-          <div className="font-mono text-[10px] text-text-muted/30 uppercase tracking-[0.3em] flex items-center gap-2">
-            <span>{displayText}</span>
-            <span className="w-1 h-3 bg-accent-cyan/30 animate-pulse" />
-          </div>
+        {/* Easter Egg */}
+        <div className="mt-10 flex justify-center">
+          <TerminalEasterEgg />
         </div>
       </div>
     </footer>

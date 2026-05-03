@@ -7,7 +7,6 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { GitHubProfile } from "@/lib/github";
 
-// Lazy-load 3D scene for performance
 const HeroScene = dynamic(
   () => import("@/components/three/HeroScene"),
   { ssr: false, loading: () => null }
@@ -31,18 +30,18 @@ interface HeroProps {
   profile: GitHubProfile | null;
   stats: {
     totalRepos: number;
-    totalStars: number;
-    languages: string[];
     categories: string[];
+  };
+  personal: {
+    status: string;
   };
 }
 
-const Hero = ({ profile, stats }: HeroProps) => {
+const Hero = ({ profile, stats, personal }: HeroProps) => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Dynamic name from GitHub profile
   const displayName = profile?.name || "Amine Nahli";
   const bio = profile?.bio || "I break things to understand them — then I build better ones.";
   const githubUrl = profile?.html_url || "https://github.com/Amine-NAHLI";
@@ -102,7 +101,7 @@ const Hero = ({ profile, stats }: HeroProps) => {
         animate="visible"
         className="relative z-10 max-w-4xl mx-auto px-6 text-center"
       >
-        {/* Status Badge */}
+        {/* Status Badge — Dynamic from Profile README */}
         <motion.div
           variants={itemVariants}
           className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 mb-8"
@@ -111,26 +110,23 @@ const Hero = ({ profile, stats }: HeroProps) => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-cyan opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-cyan" />
           </span>
-          <span className="text-xs font-mono font-bold tracking-wider text-accent-cyan">
-            AVAILABLE FOR OPPORTUNITIES · 2026
+          <span className="text-xs font-mono font-bold tracking-wider text-accent-cyan uppercase">
+             {personal.status}
           </span>
         </motion.div>
 
-        {/* Main Heading — name from GitHub */}
         <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-4">
           <span className="text-text-primary">Hi, I&apos;m</span>
           <br />
           <span className="gradient-text">{displayName}.</span>
         </motion.h1>
 
-        {/* Typing Effect */}
         <motion.div variants={itemVariants} className="text-xl md:text-2xl lg:text-3xl font-mono text-text-secondary mb-6 h-10">
           <span>I&apos;m </span>
           <span className="text-accent-cyan">{displayText}</span>
           <span className="inline-block w-[2px] h-[0.8em] bg-accent-cyan ml-0.5 animate-pulse align-middle" />
         </motion.div>
 
-        {/* Subtitle — bio from GitHub + dynamic repo count */}
         <motion.p variants={itemVariants} className="text-base md:text-lg text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
           {bio}
           <br className="hidden md:block" />
@@ -139,7 +135,6 @@ const Hero = ({ profile, stats }: HeroProps) => {
           </span>
         </motion.p>
 
-        {/* CTAs */}
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="#projects"
@@ -165,7 +160,6 @@ const Hero = ({ profile, stats }: HeroProps) => {
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -1,8 +1,7 @@
 /**
  * Main page — Server component.
- * ALL data is fetched dynamically from GitHub API.
- * When you create a new repo on GitHub, it appears here automatically
- * (within 1 hour thanks to ISR revalidation).
+ * ALL data is fetched dynamically from GitHub API and profile README.
+ * When you create a new repo or update your profile README, it appears here automatically.
  */
 
 import Navbar from "@/components/ui/Navbar";
@@ -15,8 +14,7 @@ import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
 import { fetchPortfolioData } from "@/lib/github";
 
-// Revalidate every hour — new repos appear within 1h
-export const revalidate = 3600;
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function Home() {
   const data = await fetchPortfolioData();
@@ -27,14 +25,16 @@ export default async function Home() {
       <Hero
         profile={data.profile}
         stats={data.stats}
+        personal={data.personal}
       />
       <About
         profile={data.profile}
         stats={data.stats}
+        personal={data.personal}
       />
       <Projects projects={data.projects} stats={data.stats} />
-      <Stack />
-      <Timeline />
+      <Stack skills={data.skills} />
+      <Timeline events={data.timeline} />
       <Contact profile={data.profile} />
       <Footer />
     </main>

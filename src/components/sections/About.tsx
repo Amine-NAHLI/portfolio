@@ -34,7 +34,7 @@ const StatCard = ({ label, value, index }: { label: string; value: string | numb
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       className="relative p-6 rounded-2xl bg-bg-secondary/50 border border-white/10 backdrop-blur-sm group overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.1),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="relative z-10">
         <h3 className="text-4xl md:text-5xl font-bold text-accent-cyan mb-2 tabular-nums">
           {isNumber ? <Counter value={value as number} /> : value}
@@ -47,6 +47,10 @@ const StatCard = ({ label, value, index }: { label: string; value: string | numb
 
 interface AboutProps {
   profile: GitHubProfile | null;
+  personal: {
+    location: string;
+    education: string;
+  };
   stats: {
     totalRepos: number;
     totalStars: number;
@@ -56,8 +60,7 @@ interface AboutProps {
   };
 }
 
-const About = ({ profile, stats }: AboutProps) => {
-  // ALL stats are dynamic from GitHub
+const About = ({ profile, personal, stats }: AboutProps) => {
   const dynamicStats = [
     { label: "Projects Shipped", value: stats.totalRepos },
     { label: "Domains", value: stats.categories.length },
@@ -65,7 +68,6 @@ const About = ({ profile, stats }: AboutProps) => {
     { label: "Member Since", value: stats.memberSince },
   ];
 
-  const location = profile?.location || "Morocco";
   const followers = profile?.followers || 0;
 
   return (
@@ -82,7 +84,6 @@ const About = ({ profile, stats }: AboutProps) => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Terminal-style mission brief */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -104,8 +105,8 @@ const About = ({ profile, stats }: AboutProps) => {
               <div className="p-6 md:p-8 font-mono text-sm leading-relaxed text-text-secondary border-l-2 border-accent-cyan/30">
                 <p className="mb-6">
                   <span className="text-accent-cyan font-bold"># </span>
-                  I&apos;m a third-year engineering student at UPF Fès, based in{" "}
-                  <span className="text-accent-indigo font-semibold">{location}</span>.
+                  I&apos;m a <span className="text-white font-bold">{personal.education}</span> student, 
+                  based in <span className="text-accent-indigo font-semibold">{personal.location}</span>.
                   I&apos;ve shipped{" "}
                   <span className="text-accent-purple font-semibold">{stats.totalRepos} projects</span>{" "}
                   across {stats.categories.length} domains using{" "}
@@ -132,7 +133,6 @@ const About = ({ profile, stats }: AboutProps) => {
             <div className="absolute -z-10 -bottom-4 -right-4 w-full h-full border border-accent-cyan/10 rounded-xl" />
           </motion.div>
 
-          {/* Dynamic Stat Cards */}
           <div className="grid grid-cols-2 gap-4 md:gap-6">
             {dynamicStats.map((stat, i) => (
               <StatCard key={stat.label} {...stat} index={i} />

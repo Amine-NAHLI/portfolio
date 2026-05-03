@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import type { GitHubProfile } from "@/lib/github";
 
 // Lazy-load 3D scene for performance
 const HeroScene = dynamic(
@@ -13,16 +14,7 @@ const HeroScene = dynamic(
 );
 
 const GithubIcon = ({ size = 20 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
     <path d="M9 18c-4.51 2-5-2-7-2" />
   </svg>
@@ -35,14 +27,28 @@ const roles = [
   "a curious mind.",
 ];
 
-const Hero = ({ repoCount = 16 }: { repoCount?: number }) => {
+interface HeroProps {
+  profile: GitHubProfile | null;
+  stats: {
+    totalRepos: number;
+    totalStars: number;
+    languages: string[];
+    categories: string[];
+  };
+}
+
+const Hero = ({ profile, stats }: HeroProps) => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Dynamic name from GitHub profile
+  const displayName = profile?.name || "Amine Nahli";
+  const bio = profile?.bio || "I break things to understand them — then I build better ones.";
+  const githubUrl = profile?.html_url || "https://github.com/Amine-NAHLI";
+
   const handleTyping = useCallback(() => {
     const currentRole = roles[roleIndex];
-
     if (isDeleting) {
       setDisplayText((prev) => currentRole.substring(0, prev.length - 1));
     } else {
@@ -84,23 +90,12 @@ const Hero = ({ repoCount = 16 }: { repoCount?: number }) => {
   };
 
   return (
-    <section
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-bg"
-    >
-      {/* 3D Scene Background (lazy-loaded) */}
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-bg">
       <HeroScene />
-
-      {/* Grid Overlay */}
       <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
-
-      {/* Radial gradient focus */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(3,7,18,0.7)_70%)] pointer-events-none" />
-
-      {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-bg to-transparent pointer-events-none" />
 
-      {/* Content */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -121,44 +116,31 @@ const Hero = ({ repoCount = 16 }: { repoCount?: number }) => {
           </span>
         </motion.div>
 
-        {/* Main Heading */}
-        <motion.h1
-          variants={itemVariants}
-          className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-4"
-        >
+        {/* Main Heading — name from GitHub */}
+        <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-4">
           <span className="text-text-primary">Hi, I&apos;m</span>
           <br />
-          <span className="gradient-text">Amine Nahli.</span>
+          <span className="gradient-text">{displayName}.</span>
         </motion.h1>
 
         {/* Typing Effect */}
-        <motion.div
-          variants={itemVariants}
-          className="text-xl md:text-2xl lg:text-3xl font-mono text-text-secondary mb-6 h-10"
-        >
+        <motion.div variants={itemVariants} className="text-xl md:text-2xl lg:text-3xl font-mono text-text-secondary mb-6 h-10">
           <span>I&apos;m </span>
           <span className="text-accent-cyan">{displayText}</span>
           <span className="inline-block w-[2px] h-[0.8em] bg-accent-cyan ml-0.5 animate-pulse align-middle" />
         </motion.div>
 
-        {/* Subtitle */}
-        <motion.p
-          variants={itemVariants}
-          className="text-base md:text-lg text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          I break things to understand them — then I build better ones.
+        {/* Subtitle — bio from GitHub + dynamic repo count */}
+        <motion.p variants={itemVariants} className="text-base md:text-lg text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
+          {bio}
           <br className="hidden md:block" />
           <span className="text-text-muted">
-            {repoCount} shipped projects across security, full-stack, and
-            computer vision.
+            {stats.totalRepos} shipped projects across {stats.categories.length} domains.
           </span>
         </motion.p>
 
         {/* CTAs */}
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="#projects"
             className="px-8 py-3.5 rounded-xl bg-accent-cyan text-bg font-bold text-sm transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:shadow-[0_0_35px_rgba(6,182,212,0.5)]"
@@ -172,7 +154,7 @@ const Hero = ({ repoCount = 16 }: { repoCount?: number }) => {
             Get in Touch
           </Link>
           <a
-            href="https://github.com/Amine-NAHLI"
+            href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="p-3.5 rounded-xl border border-white/15 bg-white/5 text-text-secondary hover:text-accent-cyan hover:border-accent-cyan/30 transition-all duration-300 hover:scale-105"
@@ -190,13 +172,8 @@ const Hero = ({ repoCount = 16 }: { repoCount?: number }) => {
         transition={{ delay: 2, duration: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-[10px] font-mono tracking-[0.2em] text-text-muted uppercase">
-          Scroll
-        </span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
+        <span className="text-[10px] font-mono tracking-[0.2em] text-text-muted uppercase">Scroll</span>
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
           <ChevronDown className="text-accent-cyan" size={18} />
         </motion.div>
       </motion.div>

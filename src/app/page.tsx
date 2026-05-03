@@ -1,6 +1,8 @@
 /**
- * Main page — Server component that fetches GitHub data dynamically
- * and passes it to client components via props.
+ * Main page — Server component.
+ * ALL data is fetched dynamically from GitHub API.
+ * When you create a new repo on GitHub, it appears here automatically
+ * (within 1 hour thanks to ISR revalidation).
  */
 
 import Navbar from "@/components/ui/Navbar";
@@ -11,30 +13,29 @@ import Stack from "@/components/sections/Stack";
 import Timeline from "@/components/sections/Timeline";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
-import { getProjects } from "@/data/projects";
-import { fetchGitHubProfile } from "@/lib/github";
+import { fetchPortfolioData } from "@/lib/github";
 
-// Revalidate every hour for ISR
+// Revalidate every hour — new repos appear within 1h
 export const revalidate = 3600;
 
 export default async function Home() {
-  // Fetch GitHub data server-side
-  const [projects, profile] = await Promise.all([
-    getProjects(),
-    fetchGitHubProfile(),
-  ]);
-
-  const repoCount = projects.length;
+  const data = await fetchPortfolioData();
 
   return (
     <main className="min-h-screen bg-bg">
       <Navbar />
-      <Hero repoCount={repoCount} />
-      <About repoCount={repoCount} />
-      <Projects projects={projects} />
+      <Hero
+        profile={data.profile}
+        stats={data.stats}
+      />
+      <About
+        profile={data.profile}
+        stats={data.stats}
+      />
+      <Projects projects={data.projects} stats={data.stats} />
       <Stack />
       <Timeline />
-      <Contact />
+      <Contact profile={data.profile} />
       <Footer />
     </main>
   );

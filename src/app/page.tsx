@@ -1,14 +1,23 @@
+import Navbar from "@/components/ui/Navbar";
+import Hero from "@/components/sections/Hero";
+import About from "@/components/sections/About";
+import Projects from "@/components/sections/Projects";
+import Stack from "@/components/sections/Stack";
+import Timeline from "@/components/sections/Timeline";
+import Contact from "@/components/sections/Contact";
+import Footer from "@/components/ui/Footer";
+
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <div className="container mx-auto px-6 py-20">
-        <h1 className="text-6xl font-bold gradient-text">
-          Hello, I'm Amine
-        </h1>
-        <p className="mt-4 text-text-secondary">
-          Portfolio en construction...
-        </p>
-      </div>
+    <main className="min-h-screen bg-bg">
+      <Navbar />
+      <Hero />
+      <About />
+      <Projects />
+      <Stack />
+      <Timeline />
+      <Contact />
+      <Footer />
     </main>
   );
 }

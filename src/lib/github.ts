@@ -1,11 +1,12 @@
 /**
  * GitHub API — 100% dynamic data fetching.
  * All portfolio data comes from the GitHub API in real-time.
- * No static data — when you create a new repo, it appears automatically.
+ * Parses the profile README for skills, status, and personal info.
  */
 
 const GITHUB_USERNAME = "Amine-NAHLI";
 const GITHUB_API = "https://api.github.com";
+const RAW_GITHUB = "https://raw.githubusercontent.com";
 
 // ─── Types ────────────────────────────────────────────────────────
 
@@ -45,7 +46,14 @@ export interface GitHubProfile {
   updated_at: string;
 }
 
-/** Processed project for the UI */
+export interface Skill {
+  name: string;
+  level: number;
+  category: string;
+  description: string;
+  techs: string[];
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -63,10 +71,25 @@ export interface Project {
   updatedAt: string;
 }
 
-/** All data the portfolio needs, fetched in one call */
+export interface TimelineEvent {
+  year: string;
+  title: string;
+  description: string;
+  type: "education" | "project" | "skill" | "milestone";
+  highlight?: boolean;
+}
+
 export interface PortfolioData {
   profile: GitHubProfile | null;
   projects: Project[];
+  skills: Skill[];
+  timeline: TimelineEvent[];
+  personal: {
+    status: string;
+    location: string;
+    education: string;
+    languages: string;
+  };
   stats: {
     totalRepos: number;
     totalStars: number;
@@ -79,14 +102,11 @@ export interface PortfolioData {
 
 // ─── API Fetchers ─────────────────────────────────────────────────
 
-/**
- * Fetch GitHub profile.
- */
 async function fetchProfile(): Promise<GitHubProfile | null> {
   try {
     const res = await fetch(`${GITHUB_API}/users/${GITHUB_USERNAME}`, {
       headers: { Accept: "application/vnd.github.v3+json" },
-      next: { revalidate: 3600 }, // ISR: revalidate every hour
+      next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
     return res.json();
@@ -95,14 +115,10 @@ async function fetchProfile(): Promise<GitHubProfile | null> {
   }
 }
 
-/**
- * Fetch all public repos (handles pagination).
- */
 async function fetchRepos(): Promise<GitHubRepo[]> {
   try {
     const allRepos: GitHubRepo[] = [];
     let page = 1;
-
     while (true) {
       const res = await fetch(
         `${GITHUB_API}/users/${GITHUB_USERNAME}/repos?per_page=100&page=${page}&sort=pushed&type=owner`,
@@ -112,136 +128,135 @@ async function fetchRepos(): Promise<GitHubRepo[]> {
         }
       );
       if (!res.ok) break;
-
       const data: GitHubRepo[] = await res.json();
       allRepos.push(...data);
-
       if (data.length < 100) break;
       page++;
     }
-
     return allRepos;
   } catch {
     return [];
   }
 }
 
-// ─── Processing Logic ─────────────────────────────────────────────
+async function fetchReadme(): Promise<string> {
+  try {
+    const res = await fetch(`${RAW_GITHUB}/${GITHUB_USERNAME}/${GITHUB_USERNAME}/main/README.md`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return "";
+    return res.text();
+  } catch {
+    return "";
+  }
+}
 
-/** Repos to exclude (profile README, this portfolio itself) */
-const EXCLUDED_REPOS = new Set(["Amine-NAHLI"]);
+// ─── Parsers & Logic ──────────────────────────────────────────────
 
-/**
- * Infer category from repo metadata.
- */
+function parsePersonal(readme: string): PortfolioData["personal"] {
+  const status = readme.match(/<kbd>🟢\s*([^<]+)<\/kbd>/)?.[1] || "Available 2026";
+  const location = readme.match(/<kbd>📍\s*([^<]+)<\/kbd>/)?.[1] || "Fès, Morocco";
+  const education = readme.match(/<kbd>🎓\s*([^<]+)<\/kbd>/)?.[1] || "UPF · 3rd Year Eng.";
+  const languages = readme.match(/<kbd>🌐\s*([^<]+)<\/kbd>/)?.[1] || "AR · FR · EN";
+
+  return { status, location, education, languages };
+}
+
+function parseSkills(readme: string): Skill[] {
+  const skills: Skill[] = [];
+  const sections = [
+    { id: "00", name: "Offensive Security", category: "Security" },
+    { id: "01", name: "Full-Stack Eng.", category: "Full-Stack" },
+    { id: "02", name: "AI · Vision", category: "AI" },
+  ];
+
+  for (const s of sections) {
+    const levelMatch = readme.match(new RegExp(`#### \`${s.id}\`(.+?)skill_level-(\\d+)%`, "s"));
+    const descMatch = readme.match(new RegExp(`#### \`${s.id}\`(.+?)<sub>(.+?)</sub>`, "s"));
+    
+    const sectionStart = readme.indexOf(`#### \`${s.id}\``);
+    const sectionEnd = readme.indexOf(`#### \`0${parseInt(s.id) + 1}\``);
+    const sectionText = readme.substring(sectionStart, sectionEnd > 0 ? sectionEnd : undefined);
+    const techs = [...sectionText.matchAll(/`([^`]+)`/g)].map(m => m[1]).filter(t => !t.match(/^\d+$/));
+
+    skills.push({
+      name: s.name,
+      level: levelMatch ? parseInt(levelMatch[2]) : 80,
+      category: s.category,
+      description: descMatch ? descMatch[2].replace(/<br\s*\/?>/g, " ") : "",
+      techs: techs.slice(0, 10),
+    });
+  }
+  return skills;
+}
+
+function buildTimeline(repos: GitHubRepo[]): TimelineEvent[] {
+  const events: TimelineEvent[] = [
+    {
+      year: "2024",
+      title: "Started Engineering at UPF Fès",
+      description: "Began my engineering degree with a focus on computer systems.",
+      type: "education",
+      highlight: true,
+    }
+  ];
+
+  const sortedRepos = [...repos].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  const years = new Set<string>();
+  for (const repo of sortedRepos) {
+    const year = new Date(repo.created_at).getFullYear().toString();
+    if (!years.has(year)) {
+      events.push({
+        year,
+        title: `Dynamic Growth: ${year}`,
+        description: `Started working on major projects like ${formatTitle(repo.name)}.`,
+        type: "project",
+        highlight: repo.stargazers_count > 0,
+      });
+      years.add(year);
+    }
+  }
+
+  events.push({
+    year: "2026",
+    title: "Mission Objective",
+    description: "Open to internship/junior roles in Security & Full-Stack engineering.",
+    type: "milestone",
+    highlight: true,
+  });
+
+  return events.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+}
+
+const EXCLUDED_REPOS = new Set(["Amine-NAHLI", "portfolio"]);
+
 function inferCategory(repo: GitHubRepo): Project["category"] {
   const name = repo.name.toLowerCase();
   const desc = (repo.description || "").toLowerCase();
   const topics = repo.topics.map((t) => t.toLowerCase());
   const lang = (repo.language || "").toLowerCase();
 
-  // Security
-  const securityKeywords = [
-    "security", "pentest", "exploit", "vulnerability", "scanner",
-    "nmap", "network-mapper", "hack", "cyber", "firewall", "malware",
-    "forensic", "intrusion", "brute", "port-scanner", "cve", "shadow",
-  ];
-  if (securityKeywords.some((k) => name.includes(k) || desc.includes(k) || topics.includes(k))) {
-    return "Security";
-  }
-
-  // AI / Vision / Robotics
-  const aiKeywords = [
-    "ai", "ml", "machine-learning", "deep-learning", "vision",
-    "opencv", "yolo", "detection", "recognition", "neural", "pytorch",
-    "tensorflow", "mediapipe", "robot", "transport-yolo",
-  ];
-  if (aiKeywords.some((k) => name.includes(k) || desc.includes(k) || topics.includes(k))) {
-    return "AI/Vision";
-  }
-
-  // Full-Stack
-  const fullstackKeywords = [
-    "laravel", "django", "flask", "express", "next", "react", "vue",
-    "angular", "spring", "api", "crud", "web", "app", "platform",
-    "dashboard", "cms", "ecommerce", "hopital", "hospital", "gestion",
-    "management", "recette", "look-me", "geoalert",
-  ];
-  const fullstackLangs = ["php", "blade", "typescript", "javascript", "java", "ejs"];
-  if (
-    fullstackKeywords.some((k) => name.includes(k) || desc.includes(k) || topics.includes(k)) ||
-    fullstackLangs.includes(lang)
-  ) {
-    return "Full-Stack";
-  }
-
+  if (["security", "pentest", "vulnerability", "nmap", "port-scanner", "cve"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "Security";
+  if (["ai", "ml", "vision", "opencv", "yolo", "detection", "robot"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "AI/Vision";
+  if (["laravel", "spring", "node", "react", "next", "angular", "php", "web", "app", "gestion"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k)) || ["php", "javascript", "typescript", "java"].includes(lang)) return "Full-Stack";
   return "Experiments";
 }
 
-/**
- * Format repo name into a readable title.
- * "smart-network-mapper" → "Smart Network Mapper"
- */
 function formatTitle(name: string): string {
-  return name
-    .split(/[-_]/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  return name.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
-/**
- * Build tech tags from language + topics.
- */
 function buildTags(repo: GitHubRepo): string[] {
   const tags: string[] = [];
-
-  // Primary language
-  if (repo.language && repo.language !== "Blade") {
-    tags.push(repo.language);
-  } else if (repo.language === "Blade") {
-    tags.push("Laravel");
-  }
-
-  // Topics
-  const skip = new Set(["hacktoberfest", "good-first-issue", "help-wanted"]);
+  if (repo.language) tags.push(repo.language === "Blade" ? "Laravel" : repo.language);
   for (const topic of repo.topics) {
-    if (skip.has(topic)) continue;
-    const formatted = topic
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-    if (!tags.includes(formatted)) tags.push(formatted);
     if (tags.length >= 5) break;
+    const formatted = topic.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    if (!tags.includes(formatted)) tags.push(formatted);
   }
-
-  // Infer extra tags from repo name/description
-  const name = repo.name.toLowerCase();
-  const desc = (repo.description || "").toLowerCase();
-
-  const techInference: [string, string][] = [
-    ["spring", "Spring Boot"], ["angular", "Angular"],
-    ["expo", "Expo"], ["mobile", "Mobile"],
-    ["laravel", "Laravel"], ["node", "Node.js"],
-    ["express", "Express"], ["mongodb", "MongoDB"],
-    ["leaflet", "Leaflet"], ["yolo", "YOLOv8"],
-    ["opencv", "OpenCV"], ["mediapipe", "MediaPipe"],
-    ["nmap", "Nmap"], ["mysql", "MySQL"],
-    ["react", "React"], ["next", "Next.js"],
-  ];
-
-  for (const [keyword, tag] of techInference) {
-    if ((name.includes(keyword) || desc.includes(keyword)) && !tags.includes(tag)) {
-      tags.push(tag);
-      if (tags.length >= 5) break;
-    }
-  }
-
   return tags.slice(0, 5);
 }
 
-/**
- * Convert raw GitHub repo to our Project interface.
- */
 function repoToProject(repo: GitHubRepo): Project {
   return {
     id: repo.id.toString(),
@@ -263,25 +278,16 @@ function repoToProject(repo: GitHubRepo): Project {
 
 // ─── Main Export ───────────────────────────────────────────────────
 
-/**
- * Fetch ALL portfolio data from GitHub in one call.
- * This is the single source of truth for the entire site.
- * Called server-side by page.tsx with ISR (revalidates every hour).
- */
 export async function fetchPortfolioData(): Promise<PortfolioData> {
-  const [profile, rawRepos] = await Promise.all([fetchProfile(), fetchRepos()]);
+  const [profile, rawRepos, readme] = await Promise.all([fetchProfile(), fetchRepos(), fetchReadme()]);
 
-  // Filter: no forks, no archived, no excluded repos
-  const filteredRepos = rawRepos.filter(
-    (r) => !r.fork && !r.archived && !EXCLUDED_REPOS.has(r.name)
-  );
+  const filteredRepos = rawRepos.filter((r) => !r.fork && !r.archived && !EXCLUDED_REPOS.has(r.name));
+  const projects = filteredRepos.map(repoToProject).sort((a, b) => parseInt(b.year) - parseInt(a.year));
+  
+  const personal = parsePersonal(readme);
+  const skills = parseSkills(readme);
+  const timeline = buildTimeline(filteredRepos);
 
-  // Convert to projects
-  const projects = filteredRepos
-    .map(repoToProject)
-    .sort((a, b) => parseInt(b.year) - parseInt(a.year));
-
-  // Compute stats dynamically
   const languages = [...new Set(filteredRepos.map((r) => r.language).filter(Boolean))] as string[];
   const categories = [...new Set(projects.map((p) => p.category))];
   const totalStars = filteredRepos.reduce((sum, r) => sum + r.stargazers_count, 0);
@@ -290,15 +296,16 @@ export async function fetchPortfolioData(): Promise<PortfolioData> {
   return {
     profile,
     projects,
+    skills,
+    timeline,
+    personal,
     stats: {
       totalRepos: projects.length,
       totalStars,
       totalForks,
       languages,
       categories,
-      memberSince: profile?.created_at
-        ? new Date(profile.created_at).getFullYear().toString()
-        : "2024",
+      memberSince: profile?.created_at ? new Date(profile.created_at).getFullYear().toString() : "2024",
     },
   };
 }

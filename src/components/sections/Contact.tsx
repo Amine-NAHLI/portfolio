@@ -2,30 +2,19 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, ArrowRight, Send, CheckCircle } from "lucide-react";
+import { Mail, ArrowRight, Send, CheckCircle, Loader2 } from "lucide-react";
+import SectionHeader from "@/components/ui/SectionHeader";
+import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import type { GitHubProfile } from "@/lib/github";
 
-const GithubIcon = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-    <path d="M9 18c-4.51 2-5-2-7-2" />
-  </svg>
-);
-
-const LinkedinIcon = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-    <rect width="4" height="12" x="2" y="9" />
-    <circle cx="4" cy="4" r="2" />
-  </svg>
-);
-
-const ContactCard = ({ icon: Icon, label, href, index }: {
-  icon: React.ComponentType<{ size?: number }>;
+interface ContactLink {
   label: string;
   href: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
   index: number;
-}) => (
+}
+
+const ContactCard = ({ label, href, icon: Icon, index }: ContactLink) => (
   <motion.a
     href={href}
     target={href.startsWith("mailto:") ? undefined : "_blank"}
@@ -33,16 +22,18 @@ const ContactCard = ({ icon: Icon, label, href, index }: {
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    transition={{ delay: 0.1 * index }}
-    className="flex items-center justify-between p-4 rounded-xl bg-bg-secondary/50 border border-white/10 hover:border-accent-cyan/40 hover:bg-accent-cyan/5 group transition-all duration-300"
+    transition={{ delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+    className="flex items-center justify-between p-4 rounded-xl bg-bg-secondary/50 border border-white/8 hover:border-accent-cyan/35 hover:bg-accent-cyan/4 group transition-all duration-[250ms]"
   >
-    <div className="flex items-center gap-4">
-      <div className="p-2 rounded-lg bg-white/5 text-text-muted group-hover:text-accent-cyan transition-colors">
-        <Icon size={20} />
+    <div className="flex items-center gap-3.5">
+      <div className="p-2 rounded-lg bg-white/5 text-text-faint group-hover:text-accent-cyan transition-colors duration-[250ms]">
+        <Icon size={18} />
       </div>
-      <span className="text-sm font-medium text-text-secondary group-hover:text-white transition-colors">{label}</span>
+      <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors duration-[250ms]">
+        {label}
+      </span>
     </div>
-    <ArrowRight size={18} className="text-text-muted group-hover:text-accent-cyan transition-all duration-300 group-hover:translate-x-1" />
+    <ArrowRight size={16} className="text-text-faint group-hover:text-accent-cyan group-hover:translate-x-1 transition-all duration-[250ms]" aria-hidden="true" />
   </motion.a>
 );
 
@@ -50,129 +41,142 @@ interface ContactProps {
   profile: GitHubProfile | null;
 }
 
-const Contact = ({ profile }: ContactProps) => {
-  const [formState, setFormState] = useState({ name: "", email: "", subject: "", message: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+type FormState = { name: string; email: string; subject: string; message: string };
+type Status = "idle" | "submitting" | "success" | "error";
 
-  const handleSubmit = (e: React.FormEvent) => {
+const Contact = ({ profile }: ContactProps) => {
+  const [form, setForm] = useState<FormState>({ name: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState<Status>("idle");
+
+  const update = (field: keyof FormState) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setShowSuccess(true);
-      setFormState({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setShowSuccess(false), 4000);
-    }, 1500);
+    setStatus("submitting");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setStatus("success");
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setTimeout(() => setStatus("idle"), 5000);
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
+    }
   };
 
-  // Dynamic links — GitHub URL from profile
-  const contactLinks = [
-    { label: "LinkedIn", icon: LinkedinIcon, href: "https://linkedin.com/in/amine-nahli-48b2a734b" },
-    { label: "Email", icon: Mail, href: "mailto:nahli-ami@upf.ac.ma" },
-    { label: "GitHub", icon: GithubIcon, href: profile?.html_url || "https://github.com/Amine-NAHLI" },
+  const contactLinks: ContactLink[] = [
+    { label: "LinkedIn",     icon: LinkedinIcon, href: "https://linkedin.com/in/amine-nahli-48b2a734b", index: 0 },
+    { label: "Email",        icon: Mail,         href: "mailto:nahli-ami@upf.ac.ma",                   index: 1 },
+    { label: "GitHub",       icon: GithubIcon,   href: profile?.html_url || "https://github.com/Amine-NAHLI", index: 2 },
   ];
+
+  const inputClass = "w-full bg-transparent border-b border-white/10 py-3 text-text-primary placeholder:text-text-faint focus:outline-none transition-all duration-[250ms] text-sm";
 
   return (
     <section id="contact" className="py-24 md:py-32 bg-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center gap-4 mb-4"
-          >
-            <span className="section-label">// 06 ─ OPEN TRANSMISSION</span>
-            <div className="h-[1px] flex-1 max-w-20 bg-accent-cyan/20" />
-          </motion.div>
-        </div>
+        <SectionHeader
+          number="05"
+          label="Contact"
+          heading={<>Let&apos;s <span className="gradient-text">connect.</span></>}
+          subheading="If you're hiring, collaborating, or just want to talk shop — my inbox is open."
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-16">
+          {/* Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="relative p-7 rounded-2xl bg-bg-secondary/50 border border-white/8 backdrop-blur-sm"
+          >
+            <AnimatePresence mode="wait">
+              {status === "success" ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-2xl bg-bg-secondary/95"
+                >
+                  <CheckCircle size={40} className="text-success" aria-hidden="true" />
+                  <p className="text-text-primary font-semibold text-lg">Message received!</p>
+                  <p className="text-text-secondary text-sm">I&apos;ll get back to you soon.</p>
+                  <button onClick={() => setStatus("idle")} className="mt-2 text-xs font-mono text-accent-cyan/70 hover:text-accent-cyan underline underline-offset-4 transition-colors">
+                    Send another
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                  initial={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  aria-label="Contact form"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="relative input-underline">
+                      <label htmlFor="contact-name" className="sr-only">Your name</label>
+                      <input id="contact-name" type="text" required placeholder="Name" value={form.name} onChange={update("name")} className={inputClass} />
+                    </div>
+                    <div className="relative input-underline">
+                      <label htmlFor="contact-email" className="sr-only">Your email</label>
+                      <input id="contact-email" type="email" required placeholder="Email" value={form.email} onChange={update("email")} className={inputClass} />
+                    </div>
+                  </div>
+                  <div className="relative input-underline">
+                    <label htmlFor="contact-subject" className="sr-only">Subject</label>
+                    <input id="contact-subject" type="text" required placeholder="Subject" value={form.subject} onChange={update("subject")} className={inputClass} />
+                  </div>
+                  <div className="relative input-underline">
+                    <label htmlFor="contact-message" className="sr-only">Your message</label>
+                    <textarea id="contact-message" required rows={4} placeholder="Message" value={form.message} onChange={update("message")} className={`${inputClass} resize-none`} />
+                  </div>
+
+                  {status === "error" && (
+                    <p role="alert" className="text-danger text-xs font-mono">Failed to send — please try emailing directly.</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-indigo text-bg font-semibold text-sm flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all duration-[250ms] disabled:opacity-60 disabled:scale-100 shadow-[0_0_24px_rgba(6,182,212,0.18)]"
+                  >
+                    {status === "submitting"
+                      ? <><Loader2 size={16} className="animate-spin" aria-hidden="true" /><span>Sending…</span></>
+                      : <><Send size={16} aria-hidden="true" /><span>Send Message</span></>
+                    }
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Contact links */}
           <div className="flex flex-col justify-center">
             <motion.blockquote
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-2xl md:text-3xl font-bold mb-6 leading-tight text-white/90 border-l-2 border-accent-cyan/30 pl-6"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="text-2xl md:text-3xl font-semibold leading-snug text-text-primary border-l-2 border-accent-cyan/30 pl-6 mb-8"
             >
               &ldquo;Security is not a product — it&apos;s a property of how you build.&rdquo;
             </motion.blockquote>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-text-secondary mb-12 max-w-md"
-            >
-              If you&apos;re hiring, collaborating, or just want to talk shop — my inbox is open.
-            </motion.p>
 
-            <div className="space-y-3 max-w-sm">
-              {contactLinks.map((link, i) => (
-                <ContactCard key={link.label} {...link} index={i} />
-              ))}
+            <div className="space-y-3">
+              {contactLinks.map((link) => <ContactCard key={link.label} {...link} />)}
             </div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="relative p-8 rounded-2xl bg-bg-secondary/50 border border-white/10 backdrop-blur-sm"
-          >
-            <AnimatePresence>
-              {showSuccess && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="absolute -top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-medium z-20"
-                >
-                  <CheckCircle size={16} />
-                  <span>Transmission received!</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="relative group input-underline">
-                  <input type="text" required placeholder="Name" value={formState.name}
-                    onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                    className="w-full bg-transparent border-b border-white/10 py-3 text-white placeholder:text-text-muted focus:outline-none transition-all duration-300"
-                  />
-                </div>
-                <div className="relative group input-underline">
-                  <input type="email" required placeholder="Email" value={formState.email}
-                    onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                    className="w-full bg-transparent border-b border-white/10 py-3 text-white placeholder:text-text-muted focus:outline-none transition-all duration-300"
-                  />
-                </div>
-              </div>
-              <div className="relative group input-underline">
-                <input type="text" required placeholder="Subject" value={formState.subject}
-                  onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
-                  className="w-full bg-transparent border-b border-white/10 py-3 text-white placeholder:text-text-muted focus:outline-none transition-all duration-300"
-                />
-              </div>
-              <div className="relative group input-underline">
-                <textarea required rows={4} placeholder="Message" value={formState.message}
-                  onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                  className="w-full bg-transparent border-b border-white/10 py-3 text-white placeholder:text-text-muted focus:outline-none transition-all duration-300 resize-none"
-                />
-              </div>
-              <button type="submit" disabled={isSubmitting}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-indigo text-bg font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:scale-100 shadow-[0_0_25px_rgba(6,182,212,0.2)]"
-              >
-                {isSubmitting ? (
-                  <div className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <><Send size={18} /><span>Send Message</span></>
-                )}
-              </button>
-            </form>
-          </motion.div>
         </div>
       </div>
     </section>

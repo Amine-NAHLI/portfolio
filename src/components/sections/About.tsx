@@ -2,55 +2,57 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "framer-motion";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type { GitHubProfile } from "@/lib/github";
 
-const Counter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
+const Counter = ({ value, suffix = "" }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
 
   useEffect(() => {
-    if (isInView) {
-      const controls = animate(0, value, {
-        duration,
-        onUpdate: (latest) => setCount(Math.floor(latest)),
-      });
-      return () => controls.stop();
-    }
-  }, [isInView, value, duration]);
+    if (!inView) return;
+    const controls = animate(0, value, {
+      duration: 1.6,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setCount(Math.floor(v)),
+    });
+    return () => controls.stop();
+  }, [inView, value]);
 
-  return <span ref={ref}>{count}</span>;
+  return <span ref={ref} className="tabular-nums">{count}{suffix}</span>;
 };
 
-const StatCard = ({ label, value, index }: { label: string; value: string | number; index: number }) => {
-  const isNumber = typeof value === "number";
+interface StatCardProps {
+  label: string;
+  value: number | string;
+  index: number;
+  accent: string;
+}
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: 0.1 * index, duration: 0.5 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="relative p-6 rounded-2xl bg-bg-secondary/50 border border-white/10 backdrop-blur-sm group overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.1),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="relative z-10">
-        <h3 className="text-4xl md:text-5xl font-bold text-accent-cyan mb-2 tabular-nums">
-          {isNumber ? <Counter value={value as number} /> : value}
-        </h3>
-        <p className="text-sm font-mono text-text-secondary uppercase tracking-wider">{label}</p>
-      </div>
-    </motion.div>
-  );
-};
+const StatCard = ({ label, value, index, accent }: StatCardProps) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-40px" }}
+    transition={{ delay: index * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    whileHover={{ y: -4 }}
+    className="relative p-6 rounded-2xl bg-bg-secondary/60 border border-white/8 backdrop-blur-sm overflow-hidden group"
+  >
+    <div
+      className="absolute bottom-0 left-0 right-0 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms]"
+      style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+    />
+    <p className="text-[42px] md:text-[52px] font-bold leading-none mb-2" style={{ color: accent }}>
+      {typeof value === "number" ? <Counter value={value} /> : value}
+    </p>
+    <p className="text-xs font-mono text-text-muted uppercase tracking-[0.15em]">{label}</p>
+  </motion.div>
+);
 
 interface AboutProps {
   profile: GitHubProfile | null;
-  personal: {
-    location: string;
-    education: string;
-  };
+  personal: { location: string; education: string };
   stats: {
     totalRepos: number;
     totalStars: number;
@@ -61,81 +63,84 @@ interface AboutProps {
 }
 
 const About = ({ profile, personal, stats }: AboutProps) => {
-  const dynamicStats = [
-    { label: "Projects Shipped", value: stats.totalRepos },
-    { label: "Domains", value: stats.categories.length },
-    { label: "Languages Used", value: stats.languages.length },
-    { label: "Member Since", value: stats.memberSince },
+  const dynamicStats: StatCardProps[] = [
+    { label: "Projects Shipped",  value: stats.totalRepos,        index: 0, accent: "#06b6d4" },
+    { label: "Stars Earned",      value: stats.totalStars,        index: 1, accent: "#6366f1" },
+    { label: "Languages Used",    value: stats.languages.length,  index: 2, accent: "#a855f7" },
+    { label: "Member Since",      value: stats.memberSince,       index: 3, accent: "#f59e0b" },
   ];
-
-  const followers = profile?.followers || 0;
 
   return (
     <section id="about" className="relative py-24 md:py-32 bg-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="flex items-center gap-4 mb-16"
-        >
-          <span className="section-label">// 02 ─ ABOUT</span>
-          <div className="h-[1px] flex-1 max-w-20 bg-accent-cyan/20" />
-        </motion.div>
+        <SectionHeader
+          number="01"
+          label="About"
+          heading={<>Who I <span className="gradient-text">am.</span></>}
+          subheading="Security engineer by training, full-stack builder by obsession."
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-16 items-start">
+          {/* Terminal card */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="relative"
           >
-            <div className="rounded-xl overflow-hidden border border-white/10 bg-bg-secondary/80 backdrop-blur-sm">
-              <div className="bg-white/5 px-4 py-3 flex items-center justify-between border-b border-white/10">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-                  <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+            <div className="rounded-2xl overflow-hidden border border-white/8 bg-bg-secondary/70 backdrop-blur-sm">
+              {/* Title bar */}
+              <div className="bg-white/4 px-4 py-3 flex items-center justify-between border-b border-white/6">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f56]" aria-hidden="true" />
+                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" aria-hidden="true" />
+                  <div className="w-3 h-3 rounded-full bg-[#27c93f]" aria-hidden="true" />
                 </div>
-                <div className="text-xs font-mono text-text-muted">MISSION_BRIEF.md</div>
-                <div className="w-12" />
+                <span className="text-[11px] font-mono text-text-faint">mission_brief.md</span>
+                <div className="w-14" />
               </div>
 
-              <div className="p-6 md:p-8 font-mono text-sm leading-relaxed text-text-secondary border-l-2 border-accent-cyan/30">
-                <p className="mb-6">
-                  <span className="text-accent-cyan font-bold"># </span>
-                  I&apos;m a <span className="text-white font-bold">{personal.education}</span> student, 
-                  based in <span className="text-accent-indigo font-semibold">{personal.location}</span>.
-                  I&apos;ve shipped{" "}
-                  <span className="text-accent-purple font-semibold">{stats.totalRepos} projects</span>{" "}
-                  across {stats.categories.length} domains using{" "}
-                  <span className="text-accent-cyan font-semibold">{stats.languages.length} languages</span>.
+              {/* Content */}
+              <div className="p-6 md:p-8 font-mono text-sm leading-relaxed text-text-secondary border-l-2 border-accent-cyan/25">
+                <p className="mb-5">
+                  <span className="text-accent-cyan">## </span>
+                  <span className="text-white font-medium">{personal.education}</span> student based in{" "}
+                  <span className="text-accent-indigo font-medium">{personal.location}</span>.
                 </p>
-                <p className="mb-6">
-                  <span className="text-accent-cyan font-bold"># </span>
+                <p className="mb-5">
+                  <span className="text-accent-cyan">## </span>
+                  Shipped{" "}
+                  <span className="text-accent-purple font-medium">{stats.totalRepos} projects</span>{" "}
+                  across <span className="text-accent-cyan font-medium">{stats.categories.length} domains</span>{" "}
+                  using <span className="text-accent-indigo font-medium">{stats.languages.length} languages</span>.
+                </p>
+                <p className="mb-5">
+                  <span className="text-accent-cyan">## </span>
                   Half my brain runs{" "}
-                  <span className="text-accent-indigo font-semibold">nmap</span>, the other half writes{" "}
-                  <span className="text-accent-purple font-semibold">Laravel</span> migrations.
-                  I don&apos;t believe security and product are different jobs — they&apos;re two sides of the same craft.
+                  <span className="text-accent-indigo font-medium">nmap</span>, the other half writes{" "}
+                  <span className="text-accent-purple font-medium">Laravel</span> migrations.
+                  Security and product aren&apos;t different jobs — they&apos;re two sides of the same craft.
                 </p>
-                {followers > 0 && (
-                  <p className="text-text-muted text-xs">
-                    <span className="text-accent-cyan">→</span> {followers} followers on GitHub
+                {(profile?.followers ?? 0) > 0 && (
+                  <p className="text-text-muted text-xs mt-6">
+                    <span className="text-accent-cyan">→ </span>
+                    {profile!.followers} followers on GitHub
                   </p>
                 )}
                 <div className="mt-6 flex items-center gap-1">
-                  <span className="text-accent-cyan">❯</span>
-                  <span className="animate-pulse text-accent-cyan">▋</span>
+                  <span className="text-accent-cyan" aria-hidden="true">❯</span>
+                  <span className="cursor-blink inline-block w-2 h-[1em] bg-accent-cyan/60 ml-1" aria-hidden="true" />
                 </div>
               </div>
             </div>
-            <div className="absolute -z-10 -bottom-4 -right-4 w-full h-full border border-accent-cyan/10 rounded-xl" />
+            <div className="absolute -z-10 -bottom-3 -right-3 w-full h-full border border-accent-cyan/8 rounded-2xl" aria-hidden="true" />
           </motion.div>
 
-          <div className="grid grid-cols-2 gap-4 md:gap-6">
-            {dynamicStats.map((stat, i) => (
-              <StatCard key={stat.label} {...stat} index={i} />
+          {/* Stat grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {dynamicStats.map((s) => (
+              <StatCard key={s.label} {...s} />
             ))}
           </div>
         </div>

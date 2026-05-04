@@ -1,113 +1,89 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
+import { Canvas } from "@react-three/fiber";
+import dynamic from "next/dynamic";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { navLinks } from "@/data/navigation";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
+import type { Project } from "@/lib/github";
 
-const Footer = () => (
-  <footer className="relative pt-24 pb-10 bg-bg overflow-hidden" aria-label="Site footer">
-    {/* Top border */}
-    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" aria-hidden="true" />
+const GlobeVisual = dynamic(() => import("@/components/three/GlobeVisual"), { ssr: false });
 
-    <div className="max-w-7xl mx-auto px-6">
-      {/* Big tagline */}
-      <div className="mb-16 text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          aria-hidden="true"
-          className="text-5xl sm:text-7xl md:text-8xl lg:text-[clamp(4rem,10vw,7rem)] font-black tracking-tighter select-none cursor-default gradient-text opacity-20 hover:opacity-70 transition-opacity duration-[700ms]"
-        >
-          BUILT WITH INTENTION.
-        </motion.p>
+export default function Footer({ latestProject }: { latestProject: Project | null }) {
+  return (
+    <footer className="relative pt-40 pb-12 bg-bg-0 overflow-hidden border-t border-white/5">
+      {/* Background Globe (Subtle) */}
+      <div className="absolute left-[-10%] bottom-[-10%] w-[800px] h-[800px] pointer-events-none opacity-10">
+        <Canvas camera={{ position: [0, 0, 5] }}>
+          <Suspense fallback={null}>
+            <GlobeVisual />
+          </Suspense>
+        </Canvas>
       </div>
 
-      {/* Nav links */}
-      <nav aria-label="Footer navigation">
-        <ul className="flex flex-wrap justify-center gap-x-8 gap-y-3 mb-12" role="list">
-          {navLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                href={link.href}
-                className="text-sm font-mono text-text-faint hover:text-accent-cyan transition-colors duration-[250ms]"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-24 mb-40">
+          
+          <div className="space-y-12">
+            <h2 className="text-7xl md:text-[8vw] font-black tracking-tighter leading-none uppercase">
+              Keep <br /> <span className="text-text-4">Exploring.</span>
+            </h2>
+            <div className="flex flex-wrap gap-8">
+               {navLinks.map(link => (
+                 <Link 
+                   key={link.name} 
+                   href={link.href} 
+                   className="font-mono text-xs uppercase tracking-[0.4em] text-text-4 hover:text-text-1 transition-colors"
+                 >
+                   {link.name}
+                 </Link>
+               ))}
+            </div>
+          </div>
 
-      {/* Bottom row */}
-      <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="text-xs font-mono text-text-faint">
-          &copy; {new Date().getFullYear()} Amine Nahli.{" "}
-          <span className="text-success/70 ml-1">&#x25cf; All systems operational.</span>
-        </p>
+          <div className="flex flex-col justify-between items-start gap-12">
+             <div className="space-y-6">
+                <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-cyan">Latest Status</span>
+                <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 rounded-full bg-success ping-slow" />
+                   <span className="font-mono text-xs uppercase tracking-widest text-text-2">Systems Operational</span>
+                </div>
+                {latestProject && (
+                  <div className="p-6 rounded-3xl bg-white/5 border border-white/5 space-y-2">
+                     <p className="font-mono text-[9px] uppercase tracking-widest text-text-4">Recent Shipment</p>
+                     <p className="font-bold text-text-1">{latestProject.title}</p>
+                     <p className="font-mono text-[10px] text-text-4">{new Date(latestProject.updatedAt).toLocaleDateString()}</p>
+                  </div>
+                )}
+             </div>
 
-        {/* Social links */}
-        <div className="flex items-center gap-4" aria-label="Social links">
-          <a href="https://linkedin.com/in/amine-nahli-48b2a734b" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-text-faint hover:text-accent-cyan transition-colors duration-[250ms]">
-            <LinkedinIcon size={17} />
-          </a>
-          <a href="https://github.com/Amine-NAHLI" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-text-faint hover:text-accent-cyan transition-colors duration-[250ms]">
-            <GithubIcon size={17} />
-          </a>
-          <a href="mailto:nahli-ami@upf.ac.ma" aria-label="Email" className="text-text-faint hover:text-accent-cyan transition-colors duration-[250ms]">
-            <Mail size={17} aria-hidden="true" />
-          </a>
+             <div className="space-y-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4">Local Time</span>
+                <p className="text-4xl font-black text-text-1 tabular-nums">
+                   {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                </p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-text-4">Fès, Morocco (GMT+1)</p>
+             </div>
+          </div>
+
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-6">
+             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">© {new Date().getFullYear()} Amine Nahli</span>
+             <div className="h-px w-8 bg-white/10" />
+             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">Secure by Design</span>
+          </div>
+
+          <div className="flex items-center gap-12">
+             <Link href="#" className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4 hover:text-text-1 transition-colors">Privacy</Link>
+             <Link href="#" className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4 hover:text-text-1 transition-colors">Legal</Link>
+          </div>
         </div>
       </div>
-
-      {/* Terminal easter egg */}
-      <div className="mt-10 flex justify-center">
-        <TerminalEgg />
-      </div>
-    </div>
-  </footer>
-);
-
-const PHRASE = "session paused · ready when you are";
-
-const TerminalEgg = () => {
-  const [text, setText] = React.useState("");
-
-  React.useEffect(() => {
-    let i = 0;
-    let forward = true;
-    let t: NodeJS.Timeout;
-
-    const tick = () => {
-      if (forward) {
-        i++;
-        setText(PHRASE.slice(0, i));
-        if (i >= PHRASE.length) {
-          t = setTimeout(() => { forward = false; tick(); }, 3000);
-          return;
-        }
-      } else {
-        i--;
-        setText(PHRASE.slice(0, i));
-        if (i <= 0) forward = true;
-      }
-      t = setTimeout(tick, forward ? 75 : 35);
-    };
-
-    tick();
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <div className="font-mono text-[10px] text-text-faint/25 uppercase tracking-[0.3em] flex items-center gap-1" aria-hidden="true">
-      <span>{text}</span>
-      <span className="cursor-blink w-1 h-3 bg-accent-cyan/25 inline-block" />
-    </div>
+    </footer>
   );
-};
-
-export default Footer;
+}

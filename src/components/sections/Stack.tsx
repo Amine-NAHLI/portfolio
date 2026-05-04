@@ -1,14 +1,10 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
-import { motion } from "framer-motion";
-import { Canvas } from "@react-three/fiber";
-import dynamic from "next/dynamic";
+import React, { useState } from "react";
+import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
+import { Shield, Cpu, Database, Terminal, Layers } from "lucide-react";
 import { stackFilter } from "@/lib/stackFilter";
 import type { Skill } from "@/lib/github";
-import { Terminal, Cpu, Database, Shield } from "lucide-react";
-
-const StackVisual = dynamic(() => import("@/components/three/StackVisual"), { ssr: false });
 
 const CAT_ICONS = {
   Security: Shield,
@@ -16,6 +12,8 @@ const CAT_ICONS = {
   AI: Database,
   Experiments: Terminal,
 };
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function Stack({ skills }: { skills: Skill[] }) {
   const [activeTech, setActiveTech] = useState<string | null>(null);
@@ -33,78 +31,93 @@ export default function Stack({ skills }: { skills: Skill[] }) {
     <section id="stack" className="relative py-40 bg-bg-0">
       <div className="max-w-7xl mx-auto px-6">
         
-        {/* Modern Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-32"
+        >
           <div className="space-y-4">
             <span className="font-mono text-cyan text-xs uppercase tracking-[0.5em]">Inventory.load()</span>
             <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
               Technical <span className="text-text-4">Arsenal.</span>
             </h2>
           </div>
-          <p className="max-w-xs text-text-3 text-sm font-mono uppercase tracking-widest leading-loose">
-            Interactive constellation of core technologies and frameworks used in production.
+          <p className="max-w-xs text-text-3 text-sm font-mono uppercase tracking-[0.2em] leading-loose">
+            A curated selection of core technologies and frameworks used in production environments.
           </p>
+        </motion.div>
+
+        {/* Logo Grid (Grouped by Category) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {skills.map((skill, i) => {
+            const Icon = CAT_ICONS[skill.category as keyof typeof CAT_ICONS] || Terminal;
+            return (
+              <motion.div
+                key={skill.category}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: i * 0.1, ease: EASE }}
+                className="space-y-8"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-cyan border border-white/5">
+                    <Icon size={18} />
+                  </div>
+                  <h4 className="font-mono text-[11px] uppercase tracking-[0.4em] text-text-1">
+                    {skill.category}
+                  </h4>
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                  {skill.techs.map((tech, j) => (
+                    <motion.button
+                      key={tech}
+                      onClick={() => handleSelect(tech)}
+                      whileHover={{ x: 8 }}
+                      transition={{ duration: 0.3, ease: EASE }}
+                      className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${
+                        activeTech === tech 
+                          ? "bg-cyan/10 border-cyan/30 text-cyan" 
+                          : "bg-bg-1 border-white/5 text-text-3 hover:border-white/20 hover:text-text-1"
+                      }`}
+                    >
+                      <span className="font-mono text-xs uppercase tracking-widest">{tech}</span>
+                      <div className={`w-1 h-1 rounded-full transition-all ${activeTech === tech ? "bg-cyan scale-150" : "bg-white/10 group-hover:bg-cyan/40"}`} />
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
-          
-          {/* 3D Interaction Zone */}
-          <div className="relative h-[600px] rounded-[3rem] bg-bg-1 border border-white/5 overflow-hidden group">
-            <div className="absolute inset-0 grid-bg opacity-10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-transparent to-transparent pointer-events-none" />
-            
-            <Canvas camera={{ position: [0, 0, 10], fov: 50 }}>
-              <Suspense fallback={null}>
-                <StackVisual skills={skills} onSelect={handleSelect} />
-              </Suspense>
-            </Canvas>
-
-            {/* Instruction Overlay */}
-            <div className="absolute top-10 left-10 flex items-center gap-4">
-               <div className="px-4 py-2 rounded-full glass border border-white/10 font-mono text-[9px] uppercase tracking-widest text-text-4 group-hover:text-cyan transition-colors">
-                 Interact to explore
-               </div>
-            </div>
+        {/* Secondary Info */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 opacity-40 hover:opacity-100 transition-opacity duration-700"
+        >
+          <div className="flex items-center gap-4">
+            <Layers size={16} className="text-text-4" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4">Cross-Platform Proficiency</span>
           </div>
-
-          {/* List/Legend Zone */}
-          <div className="space-y-12">
-            {skills.map((skill, i) => {
-              const Icon = CAT_ICONS[skill.category as keyof typeof CAT_ICONS] || Terminal;
-              return (
-                <motion.div
-                  key={skill.category}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.8 }}
-                  className="space-y-6"
-                >
-                  <div className="flex items-center gap-4">
-                    <Icon className="text-cyan" size={18} />
-                    <h4 className="font-mono text-xs uppercase tracking-[0.4em] text-text-1">
-                      {skill.category}
-                    </h4>
-                    <div className="flex-1 h-px bg-white/5" />
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-3">
-                    {skill.techs.map(tech => (
-                      <button
-                        key={tech}
-                        onClick={() => handleSelect(tech)}
-                        className={`px-6 py-3 rounded-full border font-mono text-[10px] uppercase tracking-widest transition-all ${activeTech === tech ? "bg-cyan border-cyan text-bg-0 shadow-xl shadow-cyan/20" : "bg-bg-1 border-white/5 text-text-4 hover:border-white/20 hover:text-text-2"}`}
-                      >
-                        {tech}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              );
-            })}
+          <div className="flex gap-12">
+             <div className="flex flex-col gap-2">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-text-4">Current Focus</span>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-text-2">Zero Trust Architecture</span>
+             </div>
+             <div className="flex flex-col gap-2">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-text-4">Preferred Env</span>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-text-2">Linux / Docker</span>
+             </div>
           </div>
-
-        </div>
+        </motion.div>
       </div>
     </section>
   );

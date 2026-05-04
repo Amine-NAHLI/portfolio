@@ -2,85 +2,145 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, ArrowRight } from "lucide-react";
+import { Star, ArrowRight, Github, ExternalLink, Code2, Shield, Layout, Sparkles, FolderCode } from "lucide-react";
 import { GithubIcon } from "@/components/ui/Icons";
-import { useTilt } from "@/hooks/useTilt";
 import type { Project } from "@/lib/github";
 import dynamic from "next/dynamic";
+import { useTilt } from "@/hooks/useTilt";
 
 const ProjectPanel = dynamic(() => import("@/components/ui/ProjectPanel"), { ssr: false });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-export default function ProjectCard({ project }: { project: Project }) {
+export default function ProjectCard({ project, index }: { project: Project; index: number }) {
   const [panelOpen, setPanelOpen] = useState(false);
-  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt(4); // Reduced tilt intensity
+  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt();
+
+  // Smart Bento Logic
+  const isLarge = index % 7 === 0; 
+  const isTall = index % 7 === 3;
+  const isWide = index % 7 === 5;
+
+  const Icon = project.category === "Security" ? Shield : 
+               project.category === "Full-Stack" ? Layout : 
+               project.category === "AI/Vision" ? Sparkles : FolderCode;
+
+  const accentColor = project.category === "Security" ? "var(--accent-cyan)" : 
+                      project.category === "Full-Stack" ? "var(--accent-indigo)" : 
+                      project.category === "AI/Vision" ? "var(--accent-purple)" : "var(--accent-green)";
 
   return (
     <>
       <motion.div
         layout
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        onClick={() => setPanelOpen(true)}
-        style={{ rotateX, rotateY, perspective: 1000 }}
-        className="group relative h-[520px] rounded-[2.5rem] overflow-hidden bg-bg-1 border border-white/5 hover:border-white/10 transition-all duration-500 cursor-pointer shadow-2xl"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: index * 0.05, ease: EASE }}
+        className={`relative ${isLarge ? 'md:col-span-2 md:row-span-2' : ''} ${isWide ? 'md:col-span-2' : ''} ${isTall ? 'md:row-span-2' : ''}`}
       >
-        {/* Card Header (Category & Year) */}
-        <div className="absolute top-10 left-10 z-20 flex items-center gap-4">
-          <span className="px-4 py-1.5 rounded-full glass border border-white/10 font-mono text-[9px] text-cyan uppercase tracking-[0.2em]">
-            {project.category}
-          </span>
-          <span className="font-mono text-[9px] text-text-4 uppercase tracking-[0.2em]">{project.year}</span>
-        </div>
-
-        {/* Visual Background (Gradient + Monogram) */}
-        <div className="absolute inset-0 z-0 h-1/2 overflow-hidden border-b border-white/5">
-          <div className="absolute inset-0 grid-bg opacity-[0.1]" />
-          <div className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-700 opacity-40 group-hover:opacity-70 ${
-            project.category === "Security" ? "from-cyan/20 to-transparent" :
-            project.category === "Full-Stack" ? "from-indigo/20 to-transparent" :
-            "from-purple/20 to-transparent"
-          }`} />
+        <motion.div
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
+          onClick={() => setPanelOpen(true)}
+          style={{ 
+            rotateX, rotateY,
+            transformStyle: "preserve-3d" 
+          }}
+          animate={{ 
+            y: [0, -6, 0],
+          }}
+          transition={{
+            duration: 5 + (index % 4),
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="group relative h-full w-full rounded-[2.5rem] bg-bg-1 border border-text-1/[0.05] overflow-hidden flex flex-col p-10 transition-all duration-700 cursor-pointer shadow-xl hover:shadow-2xl hover:border-text-1/[0.1]"
+        >
+          {/* BACKGROUND ELEMENTS */}
+          <div 
+            className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none"
+            style={{ backgroundColor: accentColor }}
+          />
           
-          {/* Large Monogram */}
-          <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none">
-             <span className="text-[120px] font-black text-white/[0.03] uppercase tracking-tighter">
-               {project.title.slice(0, 2)}
+          <div className="absolute top-10 right-10 flex flex-col items-end opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700 select-none pointer-events-none">
+             <span className="text-[12rem] font-black leading-none uppercase tracking-tighter">
+               {project.title.charAt(0)}
              </span>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="absolute inset-0 z-10 p-12 flex flex-col justify-end">
-          <div className="space-y-4">
-            <h3 className="text-4xl font-black tracking-tighter text-text-1 group-hover:text-cyan transition-colors leading-tight">
-              {project.title}
-            </h3>
-            
-            <p className="text-text-3 text-lg line-clamp-2 max-w-sm group-hover:text-text-2 transition-colors duration-500">
-              {project.description}
-            </p>
-
-            {/* Meta & Action */}
-            <div className="flex items-center justify-between pt-8 border-t border-white/5 mt-8">
-               <div className="flex items-center gap-6">
-                 <div className="flex items-center gap-2 text-text-4">
-                   <Star size={14} className="group-hover:text-amber-500/50 transition-colors" />
-                   <span className="font-mono text-xs">{project.stars}</span>
-                 </div>
-                 <div className="flex items-center gap-2 text-text-4">
-                   <GithubIcon size={14} className="group-hover:text-cyan/50 transition-colors" />
-                   <span className="font-mono text-[10px] uppercase tracking-widest">{project.language}</span>
-                 </div>
-               </div>
-               
-               <div className="flex items-center gap-2 text-text-1 font-mono text-[9px] uppercase tracking-[0.3em] translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
-                 Details <ArrowRight size={14} />
+          {/* HEADER */}
+          <div className="relative z-10 flex items-start justify-between mb-auto">
+            <div 
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-text-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700"
+              style={{ backgroundColor: 'var(--bg-2)' }}
+            >
+              <Icon size={24} />
+            </div>
+            <div className="flex flex-col items-end gap-1">
+               <span className="font-mono text-[10px] text-text-4 uppercase tracking-[0.3em]">{project.year}</span>
+               <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-text-1/[0.03] border border-text-1/[0.05]">
+                 <Star size={10} className="text-amber-500" />
+                 <span className="font-mono text-[10px] text-text-2">{project.stars}</span>
                </div>
             </div>
           </div>
-        </div>
+
+          {/* MAIN CONTENT */}
+          <div className="relative z-10 mt-12">
+            <h3 className={`font-black tracking-tighter text-text-1 leading-[0.9] mb-6 group-hover:text-accent-cyan transition-colors ${isLarge ? 'text-6xl' : 'text-3xl'}`}>
+              {project.title}
+            </h3>
+            
+            <p className={`text-text-3 font-medium opacity-70 group-hover:opacity-100 transition-all duration-500 mb-8 ${isLarge ? 'text-lg line-clamp-4' : 'text-sm line-clamp-2'}`}>
+              {project.description || "Experimental engineering project focused on modular architecture and performance optimization."}
+            </p>
+
+            {/* TECHNOLOGY TAGS */}
+            <div className="flex flex-wrap gap-2 mb-10">
+               {project.tags.slice(0, isLarge ? 6 : 3).map(tag => (
+                 <span key={tag} className="px-3 py-1 rounded-lg bg-text-1/[0.03] border border-text-1/[0.05] font-mono text-[9px] text-text-4 uppercase tracking-widest group-hover:border-text-1/[0.1] transition-colors">
+                   {tag}
+                 </span>
+               ))}
+               {project.tags.length > (isLarge ? 6 : 3) && (
+                 <span className="px-2 py-1 font-mono text-[9px] text-text-4 opacity-50">
+                   +{project.tags.length - (isLarge ? 6 : 3)}
+                 </span>
+               )}
+            </div>
+
+            {/* ACTION BAR */}
+            <div className="pt-8 border-t border-text-1/[0.05] flex items-center justify-between">
+              <div className="flex flex-col">
+                 <span className="font-mono text-[8px] uppercase tracking-[0.4em] text-text-4 mb-1">Language</span>
+                 <span className="text-text-2 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
+                   {project.language}
+                 </span>
+              </div>
+              
+              <motion.div 
+                whileHover={{ x: 5 }}
+                className="flex items-center gap-3"
+              >
+                <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-1 opacity-0 group-hover:opacity-100 transition-opacity">Explore</span>
+                <div className="w-10 h-10 rounded-full bg-text-1 text-bg-0 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-500">
+                   <ArrowRight size={16} />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* DECORATIVE ORBIT */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+             <div 
+               className="absolute top-0 right-0 w-[500px] h-[500px] border border-text-1/[0.02] rounded-full -translate-y-1/3 translate-x-1/3 animate-spin-slow"
+               style={{ borderColor: `${accentColor}10` }}
+             />
+             <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-bg-0/50 to-transparent" />
+          </div>
+        </motion.div>
       </motion.div>
 
       <AnimatePresence>

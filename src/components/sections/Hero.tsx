@@ -18,7 +18,7 @@ const ROLES = [
 /* ─── Animated Mesh Gradient ─────────────────────────────────────── */
 
 const MeshGradient = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20 dark:opacity-40">
+  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20 dark:opacity-40 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
     <div className="absolute inset-0 noise-bg mix-blend-soft-light opacity-20 dark:opacity-10" />
     <motion.div
       animate={{
@@ -79,9 +79,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
   if (!mounted) return <section id="home" className="min-h-svh bg-bg-0" />;
 
   return (
-    <section id="home" className="relative min-h-svh w-full flex items-center justify-center overflow-hidden py-12">
-      <MeshGradient />
-
+    <section id="home" className="relative min-h-svh w-full flex items-center justify-center overflow-hidden py-12 bg-transparent">
       <motion.div 
         style={{ opacity, y }}
         variants={container}

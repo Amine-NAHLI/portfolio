@@ -49,20 +49,21 @@
   }
 
   .light, [data-theme='light'] {
-    --bg-0: #F1F5F9;
-    --bg-1: #F8FAFC;
-    --bg-2: #E2E8F0;
-    --bg-3: #CBD5E1;
+    /* DEEP INDUSTRIAL LIGHT MODE (DIM) */
+    --bg-0: #94A3B8; /* Muted Slate Base */
+    --bg-1: #CBD5E1; /* Deep Slate Card */
+    --bg-2: #64748B; /* Darker Divider */
+    --bg-3: #475569;
     
-    --text-1: #111827;
-    --text-2: #6B7280;
-    --text-3: #94A3B8;
-    --text-4: #CBD5E1;
+    --text-1: #0F172A; /* Midnight Slate */
+    --text-2: #1E293B; /* Deep Slate - Body */
+    --text-3: #1E293B; /* High Contrast Subtext */
+    --text-4: #334155; /* Labels */
     
-    --accent-indigo: #3B82F6;
-    --accent-purple: #8B5CF6;
-    --accent-cyan: #06B6D4;
-    --accent-green: #22C55E;
+    --accent-indigo: #312E81;
+    --accent-purple: #4C1D95;
+    --accent-cyan: #164E63;
+    --accent-green: #064E3B;
   }
 
   .dark, [data-theme='dark'] {
@@ -112,11 +113,11 @@
   }
 
   .glass {
-    @apply bg-bg-1/70 backdrop-blur-xl border border-text-1/[0.05] shadow-sm;
+    @apply bg-bg-1/80 backdrop-blur-xl border border-text-1/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/5 dark:shadow-none;
   }
 
   .glass-card {
-    @apply bg-bg-1/80 backdrop-blur-md border border-text-1/[0.05] hover:border-accent-cyan/20 transition-all duration-500 shadow-xl dark:bg-bg-1/60;
+    @apply bg-bg-1/90 backdrop-blur-md border border-text-1/20 hover:border-accent-cyan/40 transition-all duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:border-white/5 dark:bg-bg-1/60 dark:shadow-none;
   }
 
   .grid-bg {
@@ -132,6 +133,26 @@
 
   .skip-link {
     @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:px-4 focus:py-2 focus:bg-accent-indigo focus:text-bg-0 focus:rounded-md;
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-4) transparent;
+    overscroll-behavior: contain;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--text-4);
+    border-radius: 20px;
+    border: 2px solid transparent;
   }
 }
 
@@ -152,4 +173,12 @@
 ::selection {
   background: var(--accent-indigo);
   color: #fff;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

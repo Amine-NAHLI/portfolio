@@ -7,6 +7,8 @@ import { Menu, X } from "lucide-react";
 import { navLinks } from "@/data/navigation";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -99,30 +101,31 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-bg-0 flex flex-col items-center justify-center p-12"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
+            className="fixed inset-0 z-[200] bg-bg-0/95 backdrop-blur-2xl flex flex-col items-center justify-center p-8"
           >
             <button 
               onClick={() => setMobileOpen(false)}
-              className="absolute top-12 right-12 text-text-4 hover:text-text-1 transition-colors"
+              className="absolute top-10 right-10 p-3 rounded-full bg-white/5 text-text-4 hover:text-text-1 transition-all"
             >
-              <X size={32} />
+              <X size={24} />
             </button>
 
-            <div className="flex flex-col items-center gap-12">
+            <div className="flex flex-col items-center gap-10">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.name}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
+                  transition={{ delay: i * 0.1, duration: 0.8, ease: EASE_OUT_EXPO }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="text-5xl font-black tracking-tighter text-text-1 hover:text-accent-cyan transition-colors"
+                    className="text-4xl md:text-6xl font-black tracking-tighter text-text-1 hover:text-accent-cyan transition-all uppercase"
                   >
                     {link.name}
                   </Link>
@@ -130,11 +133,11 @@ export default function Navbar() {
               ))}
             </div>
 
-            <div className="absolute bottom-12 flex flex-col items-center gap-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4">Fès, Morocco</span>
-              <div className="flex gap-8">
-                 <a href="#" className="text-text-4 hover:text-text-1 transition-colors font-mono text-xs uppercase tracking-widest">LinkedIn</a>
-                 <a href="#" className="text-text-4 hover:text-text-1 transition-colors font-mono text-xs uppercase tracking-widest">GitHub</a>
+            <div className="absolute bottom-16 flex flex-col items-center gap-6">
+              <div className="h-px w-12 bg-accent-cyan/30" />
+              <div className="flex gap-10">
+                 <a href="https://linkedin.com/in/amine-nahli" className="text-text-4 hover:text-text-1 transition-colors font-mono text-[10px] uppercase tracking-[0.3em]">LinkedIn</a>
+                 <a href="https://github.com/Amine-NAHLI" className="text-text-4 hover:text-text-1 transition-colors font-mono text-[10px] uppercase tracking-[0.3em]">GitHub</a>
               </div>
             </div>
           </motion.div>

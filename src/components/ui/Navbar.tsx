@@ -9,11 +9,31 @@ import { navLinks } from "@/data/navigation";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    document.querySelectorAll("section[id]").forEach((section) => {
+      observer.observe(section);
+    });
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
+    };
   }, []);
 
   return (
@@ -40,10 +60,14 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4 hover:text-text-1 transition-colors relative group"
+                  className={`font-mono text-[10px] uppercase tracking-[0.4em] transition-colors relative group ${
+                    activeSection === link.href.replace("#", "") ? "text-cyan" : "text-text-4 hover:text-text-1"
+                  }`}
                 >
                   {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-cyan transition-all group-hover:w-full" />
+                  <span className={`absolute -bottom-1 left-0 h-px bg-cyan transition-all ${
+                    activeSection === link.href.replace("#", "") ? "w-full" : "w-0 group-hover:w-full"
+                  }`} />
                 </Link>
               ))}
               <div className="h-4 w-px bg-white/10" />

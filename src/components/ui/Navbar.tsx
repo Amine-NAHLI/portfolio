@@ -1,101 +1,122 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { Menu, X, Download } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useSpring, useTransform } from "framer-motion";
+import { Menu, X } from "lucide-react";
 import { navLinks } from "@/data/navigation";
 
-const useActiveSection = () => {
-  const [active, setActive] = useState<string>("");
+const Navbar = () => {
+  const [active, setActive] = useState<string>("home");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { scrollY, scrollYProgress } = useScroll();
 
+  // Progress bar logic
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // Navbar scroll behavior (scale and opacity)
+  const scale = useTransform(scrollY, [0, 80], [1, 0.97]);
+  const glassOpacity = useTransform(scrollY, [0, 80], [0.6, 0.85]);
+
+  // Spring transition for the navbar container
+  const springScale = useSpring(scale, { stiffness: 100, damping: 30 });
+
+  // Intersection Observer for active section
   useEffect(() => {
-    const ids = navLinks.map((l) => l.href.slice(1));
-    const observers: IntersectionObserver[] = [];
+    const observers = navLinks.map((link) => {
+      const id = link.href.replace("#", "");
+      const element = document.getElementById(id);
+      if (!element) return null;
 
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActive(id); },
-        { threshold: 0.4 }
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActive(id);
+            }
+          });
+        },
+        { threshold: 0.5, rootMargin: "-20% 0px -60% 0px" }
       );
-      obs.observe(el);
-      observers.push(obs);
+
+      observer.observe(element);
+      return observer;
     });
 
-    return () => observers.forEach((o) => o.disconnect());
+    return () => {
+      observers.forEach((observer) => observer?.disconnect());
+    };
   }, []);
 
-  return active;
-};
-
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const active = useActiveSection();
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 80);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   return (
     <>
-      {/* Progress bar */}
+      {/* ─── TOP PROGRESS BAR ────────────────────────────────────── */}
       <motion.div
-        aria-hidden="true"
-        className="fixed top-0 left-0 right-0 h-[1.5px] origin-left z-[60]"
+        className="fixed top-0 left-0 right-0 h-[2px] z-[100] origin-left"
         style={{
           scaleX,
-          background: "linear-gradient(90deg, #06b6d4, #6366f1, #a855f7)",
+          background: "linear-gradient(90deg, var(--color-cyan), var(--color-indigo), var(--color-purple))"
         }}
       />
 
-      {/* Floating pill */}
-      <motion.nav
-        initial={{ y: -80, opacity: 0 }}
+      {/* ─── NAVBAR CONTAINER ────────────────────────────────────── */}
+    <motion.nav
+        initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        aria-label="Main navigation"
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-32px)] max-w-2xl"
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} // ease-out-expo
+        className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none"
       >
         <motion.div
-          animate={{ scale: scrolled ? 0.97 : 1 }}
-          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="glass-pill rounded-[999px] px-4 py-2.5 flex items-center justify-between"
+          style={{ 
+            scale: springScale,
+            backgroundColor: useTransform(glassOpacity, (o) => `rgba(10, 10, 20, ${o})`)
+          }}
+          className="pointer-events-auto flex items-center justify-between w-full max-w-[720px] h-12 px-6 rounded-full glass border-[0.5px] border-[var(--border-default)]"
         >
-          {/* Monogram */}
-          <Link href="#home" className="text-[15px] font-mono font-bold tracking-tight" aria-label="Back to top">
-            <span className="gradient-text">AN</span>
+          {/* Left: Monogram */}
+          <Link 
+            href="#home" 
+            className="font-mono text-sm font-bold text-text-1 hover:gradient-text transition-all duration-300 group"
+          >
+            AN
           </Link>
 
-          {/* Desktop nav links */}
-          <ul className="hidden md:flex items-center gap-1" role="list">
+          {/* Center: Desktop Links */}
+          <ul className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive = active === link.href.slice(1);
+              const id = link.href.replace("#", "");
+              const isActive = active === id;
+
               return (
-                <li key={link.name}>
+                <li key={link.name} className="relative">
                   <Link
                     href={link.href}
-                    className="relative px-3 py-1.5 text-[13px] font-medium rounded-full transition-colors duration-[250ms]"
-                    style={{ color: isActive ? "#06b6d4" : "#64748b" }}
-                    aria-current={isActive ? "location" : undefined}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`px-3 py-1 text-[13px] font-medium transition-colors duration-300 ${
+                      isActive ? "text-text-1" : "text-text-2 hover:text-text-1"
+                    }`}
                   >
                     {link.name}
                     {isActive && (
-                      <motion.span
-                        layoutId="nav-dot"
-                        className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent-cyan"
+                      <motion.div
+                        layoutId="navIndicator"
+                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-cyan"
                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
                     )}
@@ -105,21 +126,21 @@ const Navbar = () => {
             })}
           </ul>
 
-          {/* Resume + mobile toggle */}
-          <div className="flex items-center gap-2">
+          {/* Right: Resume Button (Desktop) & Mobile Toggle */}
+          <div className="flex items-center gap-4">
             <a
               href="/cv.pdf"
-              download
-              className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent-cyan/10 border border-accent-cyan/25 text-accent-cyan text-[13px] font-semibold hover:bg-accent-cyan hover:text-bg transition-all duration-[250ms]"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:block px-4 py-1.5 text-[13px] font-mono border border-cyan text-cyan rounded-full hover:bg-cyan hover:text-bg-0 transition-all duration-300"
             >
-              <Download size={13} aria-hidden="true" />
               Resume
             </a>
 
             <button
               onClick={() => setMobileOpen(true)}
-              className="md:hidden p-2 rounded-full text-text-muted hover:text-text-primary transition-colors"
               aria-label="Open navigation menu"
+              className="md:hidden text-text-2 hover:text-text-1 transition-colors"
             >
               <Menu size={20} />
             </button>
@@ -127,53 +148,47 @@ const Navbar = () => {
         </motion.div>
       </motion.nav>
 
-      {/* Mobile sheet */}
+      {/* ─── MOBILE MENU OVERLAY ─────────────────────────────────── */}
       <AnimatePresence>
         {mobileOpen && (
-          <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-bg-0/80 backdrop-blur-md md:hidden"
+          >
             <motion.div
-              key="backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] md:hidden"
-              aria-hidden="true"
-            />
-            <motion.div
-              key="sheet"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 380, damping: 40 }}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Navigation menu"
-              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-xs bg-bg-secondary/95 backdrop-blur-xl border-l border-white/8 z-[80] p-8 flex flex-col md:hidden"
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} // ease-out-expo
+              className="absolute top-0 right-0 bottom-0 w-full max-w-[300px] bg-bg-1 border-l border-[var(--border-default)] p-8 flex flex-col"
             >
               <div className="flex items-center justify-between mb-12">
-                <span className="text-lg font-mono font-bold gradient-text">AN</span>
+                <span className="font-mono text-lg font-bold gradient-text">AN</span>
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="p-2 rounded-full text-text-muted hover:text-text-primary transition-colors"
                   aria-label="Close navigation menu"
+                  className="text-text-2 hover:text-text-1 transition-colors"
                 >
-                  <X size={20} />
+                  <X size={24} />
                 </button>
               </div>
 
-              <ul className="flex flex-col gap-2 flex-1" role="list">
+              <ul className="flex flex-col gap-6">
                 {navLinks.map((link, i) => (
                   <motion.li
                     key={link.name}
-                    initial={{ opacity: 0, x: 24 }}
+                    initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 * i, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
                   >
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className="block py-3 text-lg font-medium text-text-secondary hover:text-accent-cyan transition-colors border-b border-white/5"
+                      className={`text-xl font-medium ${
+                        active === link.href.replace("#", "") ? "text-cyan" : "text-text-2"
+                      }`}
                     >
                       {link.name}
                     </Link>
@@ -181,19 +196,18 @@ const Navbar = () => {
                 ))}
               </ul>
 
-              <motion.a
-                href="/cv.pdf"
-                download
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mt-8 py-3.5 rounded-xl border border-accent-cyan text-accent-cyan font-semibold hover:bg-accent-cyan hover:text-bg transition-all flex items-center justify-center gap-2 text-sm"
-              >
-                <Download size={15} aria-hidden="true" />
-                Download Resume
-              </motion.a>
+              <div className="mt-auto">
+                <a
+                  href="/cv.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center px-6 py-3 text-sm font-mono border border-cyan text-cyan rounded-xl hover:bg-cyan hover:text-bg-0 transition-all duration-300"
+                >
+                  Resume
+                </a>
+              </div>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

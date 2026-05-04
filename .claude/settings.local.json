@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(echo \"Dev server starting with PID $!\")"
+    ]
+  }
+}

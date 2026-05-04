@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(echo \"Dev server starting with PID $!\")"
+      "Bash(echo \"Dev server starting with PID $!\")",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git rm *)"
     ]
   }
 }

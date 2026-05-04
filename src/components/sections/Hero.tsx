@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { ArrowDown, Mail } from "lucide-react";
 import { GithubIcon } from "@/components/ui/Icons";
+import { useTypingCycle } from "@/hooks/useTypingCycle";
 import type { GitHubProfile } from "@/lib/github";
 
 const ROLES = [
@@ -13,16 +15,21 @@ const ROLES = [
   "a problem solver.",
 ];
 
-const EASE_EXPO = [0.16, 1, 0.3, 1] as const;
-
-const container = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.2 },
+  },
 };
 
-const item = {
-  hidden:   { opacity: 0, y: 14 },
-  visible:  { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_EXPO } },
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+  },
 };
 
 interface HeroProps {
@@ -36,181 +43,179 @@ interface HeroProps {
   personal: { status: string };
 }
 
-const STATS_DIVIDER = (
-  <span className="w-px h-3 bg-white/15 mx-3 inline-block align-middle" aria-hidden="true" />
-);
-
 export default function Hero({ profile, stats, personal }: HeroProps) {
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-
+  const [mounted, setMounted] = React.useState(false);
+  const shouldReduceMotion = useReducedMotion();
+  const { displayText, currentRole } = useTypingCycle(ROLES);
   const { scrollY } = useScroll();
-  const indicatorOpacity = useTransform(scrollY, [0, 120], [1, 0]);
+  
+  // Gate transform behind mounted to avoid hydration mismatch
+  const scrollIndicatorOpacity = useTransform(scrollY, [0, 100], [1, 0]);
 
-  const tick = useCallback(() => {
-    const current = ROLES[roleIndex];
-    setDisplayText((prev) =>
-      isDeleting
-        ? current.slice(0, prev.length - 1)
-        : current.slice(0, prev.length + 1)
-    );
-  }, [isDeleting, roleIndex]);
-
-  useEffect(() => {
-    const current = ROLES[roleIndex];
-    let t: NodeJS.Timeout;
-    if (!isDeleting && displayText === current) {
-      t = setTimeout(() => setIsDeleting(true), 2200);
-    } else if (isDeleting && displayText === "") {
-      setIsDeleting(false);
-      setRoleIndex((p) => (p + 1) % ROLES.length);
-    } else {
-      t = setTimeout(tick, isDeleting ? 35 : 75);
-    }
-    return () => clearTimeout(t);
-  }, [displayText, isDeleting, roleIndex, tick]);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const displayName = profile?.name ?? "Amine Nahli";
-  const githubUrl   = profile?.html_url ?? "https://github.com/Amine-NAHLI";
+  const githubUrl = profile?.html_url ?? "https://github.com/Amine-NAHLI";
+
+  if (!mounted) {
+    return (
+      <section id="home" className="relative min-h-[100svh] w-full flex flex-col items-center justify-center bg-bg-0">
+        <div className="w-full max-w-[1280px] px-6 md:px-12 flex flex-col items-center text-center -translate-y-[5%] opacity-0">
+          {/* Skeleton or empty space to preserve layout */}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
       id="home"
-      aria-label="Introduction"
-      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-bg"
+      className="relative min-h-[100svh] w-full flex flex-col items-center justify-center overflow-hidden bg-bg-0"
     >
-      {/* ── Mesh gradient ───────────────────────────────────────── */}
-      <div className="mesh-bg" aria-hidden="true">
-        <div className="mesh-blob mesh-blob-1" />
-        <div className="mesh-blob mesh-blob-2" />
-        <div className="mesh-blob mesh-blob-3" />
+      {/* ─── BACKGROUND ─── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        {/* Animated Mesh Orbs */}
+        <div 
+          className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-cyan/15 blur-[80px]"
+          style={{ animation: shouldReduceMotion ? "none" : "mesh-1 60s ease-in-out infinite alternate" }}
+        />
+        <div 
+          className="absolute top-[20%] right-[-10%] w-[700px] h-[700px] rounded-full bg-indigo/12 blur-[100px]"
+          style={{ animation: shouldReduceMotion ? "none" : "mesh-2 80s ease-in-out infinite alternate" }}
+        />
+        <div 
+          className="absolute bottom-[-10%] left-[10%] w-[500px] h-[500px] rounded-full bg-purple/10 blur-[90px]"
+          style={{ animation: shouldReduceMotion ? "none" : "mesh-3 100s ease-in-out infinite alternate" }}
+        />
+
+        {/* Grid Overlay */}
+        <div className="absolute inset-0 grid-bg opacity-40" />
+
+        {/* Bottom Fade */}
+        <div className="absolute inset-0 bg-gradient-to-t from-bg-0 via-transparent to-transparent opacity-100" style={{ background: "linear-gradient(to top, var(--bg-0) 0%, transparent 30%)" }} />
       </div>
 
-      {/* ── Overlays ────────────────────────────────────────────── */}
-      <div className="grain-overlay"   aria-hidden="true" />
-      <div className="absolute inset-0 grid-bg pointer-events-none" aria-hidden="true" />
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% 55%, transparent 30%, rgba(3,7,18,0.92) 100%)" }}
-        aria-hidden="true"
-      />
-      <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-bg to-transparent pointer-events-none" aria-hidden="true" />
-
-      {/* ── Content ─────────────────────────────────────────────── */}
+      {/* ─── CONTENT ─── */}
       <motion.div
-        variants={container}
+        variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 text-center pt-28"
+        className="relative z-10 w-full max-w-[1280px] px-6 md:px-12 flex flex-col items-center text-center -translate-y-[5%]"
       >
-        {/* Status pill */}
-        <motion.div variants={item} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-pill mb-10">
+        {/* Status Pill */}
+        <motion.div 
+          variants={itemVariants}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan/10 border-[0.5px] border-cyan/30"
+        >
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inset-0 rounded-full bg-accent-cyan ping-slow opacity-70" />
-            <span className="relative h-1.5 w-1.5 rounded-full bg-accent-cyan" />
+            <span className="absolute inset-0 rounded-full bg-cyan ping-slow opacity-50" />
+            <span className="relative h-1.5 w-1.5 rounded-full bg-cyan" />
           </span>
-          <span className="section-label" style={{ letterSpacing: "0.18em" }}>
-            {personal.status}
+          <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-cyan/80">
+            Available for opportunities · 2026
           </span>
         </motion.div>
 
-        {/* Main heading */}
-        <motion.h1
-          variants={item}
-          className="mb-5 font-semibold tracking-[-0.03em] leading-[1.05]"
-          style={{ fontSize: "clamp(2.75rem, 8vw, 6rem)" }}
+        {/* Heading */}
+        <motion.h1 
+          variants={itemVariants}
+          className="mt-6 flex flex-col items-center gap-2 font-semibold tracking-[-0.03em] leading-[1.05]"
         >
-          <span className="text-text-secondary">Hi, I&apos;m</span>
-          <br />
-          <span className="gradient-text">{displayName}.</span>
+          <span className="text-text-2 text-[48px] md:text-[64px]">Hi, I&apos;m</span>
+          <span className="gradient-text text-[64px] md:text-[96px]">{displayName}.</span>
         </motion.h1>
 
-        {/* Typing line */}
-        <motion.div
-          variants={item}
-          aria-label={`I'm ${ROLES[roleIndex]}`}
-          className="h-8 md:h-9 flex items-center justify-center mb-5"
+        {/* Typing Effect */}
+        <motion.div 
+          variants={itemVariants}
+          className="mt-4 flex items-center font-mono text-[16px] md:text-[20px]"
         >
-          <span className="font-mono text-base md:text-lg text-text-muted select-none">{">"}&nbsp;</span>
-          <span className="font-mono text-base md:text-lg text-accent-cyan" aria-live="off">{displayText}</span>
-          <span className="cursor-blink inline-block w-[2px] h-[1em] bg-accent-cyan ml-0.5" aria-hidden="true" />
+          <span className="text-cyan">{">"}&nbsp;</span>
+          <span className="text-text-3">I&apos;m&nbsp;</span>
+          <span className="text-cyan">
+            {shouldReduceMotion ? currentRole : displayText}
+          </span>
+          <span className="ml-1 inline-block w-2 h-[1.1em] bg-cyan cursor-blink" />
         </motion.div>
 
         {/* Tagline */}
-        <motion.p
-          variants={item}
-          className="text-base md:text-lg text-text-secondary max-w-lg mx-auto mb-8 leading-relaxed"
-        >
-          I break things to understand them — then I build better ones.
-        </motion.p>
-
-        {/* GitHub stats row */}
-        <motion.div
-          variants={item}
-          className="inline-flex items-center text-[12px] font-mono text-text-muted mb-10"
-        >
-          <span><span className="text-text-secondary font-medium">{stats.totalRepos}</span> repos</span>
-          {STATS_DIVIDER}
-          <span><span className="text-text-secondary font-medium">{stats.totalStars}</span> stars</span>
-          {STATS_DIVIDER}
-          <span><span className="text-text-secondary font-medium">{stats.languages.length}</span> languages</span>
-          {STATS_DIVIDER}
-          <span><span className="text-text-secondary font-medium">{stats.categories.length}</span> domains</span>
+        <motion.div variants={itemVariants} className="mt-8 max-w-[600px] space-y-2">
+          <p className="text-text-2 text-base md:text-lg leading-relaxed">
+            I break things to understand them — then I build better ones.
+          </p>
+          <p className="text-text-3 text-base md:text-lg leading-relaxed">
+            {stats.totalRepos} shipped projects across security, full-stack, and computer vision.
+          </p>
         </motion.div>
 
-        {/* CTAs */}
-        <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        {/* Stats Row */}
+        <motion.div 
+          variants={itemVariants}
+          className="mt-8 flex items-center gap-6 font-mono text-[13px]"
+        >
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-text-1">{stats.totalRepos}</span>
+            <span className="text-text-3">repos</span>
+          </div>
+          <div className="h-4 w-[1px] bg-[var(--border-default)]" />
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-text-1">{stats.totalStars}</span>
+            <span className="text-text-3">stars</span>
+          </div>
+          <div className="h-4 w-[1px] bg-[var(--border-default)]" />
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-text-1">120</span>
+            <span className="text-text-3">this year</span>
+          </div>
+          <div className="h-4 w-[1px] bg-[var(--border-default)]" />
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-text-1">{stats.languages.length}</span>
+            <span className="text-text-3">languages</span>
+          </div>
+        </motion.div>
+
+        {/* CTA Row */}
+        <motion.div variants={itemVariants} className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="#projects"
-            className="px-7 py-3 rounded-[10px] bg-accent-cyan text-bg font-semibold text-sm
-              shadow-[0_0_0_0_rgba(6,182,212,0.4)]
-              hover:shadow-[0_0_28px_8px_rgba(6,182,212,0.25)]
-              hover:-translate-y-[2px] active:translate-y-0
-              transition-all duration-[250ms]"
+            className="flex items-center gap-2 px-6 py-3 rounded-[10px] bg-cyan text-bg-0 font-semibold text-sm hover:-translate-y-[2px] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all duration-[250ms] ease-[var(--ease-out-expo)]"
           >
-            View Work
+            View Work <ArrowDown size={16} />
           </Link>
           <Link
             href="#contact"
-            className="px-7 py-3 rounded-[10px] border border-accent-indigo/35 bg-accent-indigo/6
-              text-text-primary font-semibold text-sm
-              hover:bg-accent-indigo/12 hover:border-accent-indigo/55 hover:-translate-y-[2px]
-              active:translate-y-0 transition-all duration-[250ms]"
+            className="flex items-center gap-2 px-6 py-3 rounded-[10px] border border-indigo/50 text-text-1 font-mono text-sm hover:bg-indigo/10 hover:border-indigo transition-all duration-300"
           >
-            Get in Touch
+            <Mail size={16} /> Get in Touch
           </Link>
           <a
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="GitHub profile"
-            className="flex items-center gap-1.5 px-4 py-3 rounded-[10px] text-text-muted
-              hover:text-text-primary font-medium text-sm
-              transition-colors duration-[250ms]"
+            className="flex items-center gap-2 text-text-2 hover:text-text-1 hover:underline underline-offset-4 decoration-1 transition-all duration-300"
           >
-            <GithubIcon size={15} />
-            GitHub
+            <GithubIcon size={16} /> GitHub
           </a>
         </motion.div>
       </motion.div>
 
-      {/* ── Scroll indicator (Stripe style) ─────────────────────── */}
+      {/* ─── SCROLL INDICATOR ─── */}
       <motion.div
-        style={{ opacity: indicatorOpacity }}
-        aria-hidden="true"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+        style={{ opacity: scrollIndicatorOpacity }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none"
       >
-        <span className="section-label" style={{ opacity: 0.4 }}>scroll</span>
-        {/* Vertical line with travelling dot */}
-        <div className="relative w-px h-14 bg-white/8 overflow-hidden">
+        <div className="relative w-[1px] h-8 bg-white/10 overflow-hidden">
           <motion.div
-            className="absolute inset-x-0 h-5 rounded-full"
-            style={{ background: "linear-gradient(to bottom, transparent, #06b6d4, transparent)" }}
-            animate={{ y: ["-100%", "280%"] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 bg-gradient-to-b from-transparent to-cyan origin-top"
+            animate={{ scaleY: [0, 1], opacity: [0, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
+        <span className="font-mono text-[10px] text-text-3 uppercase tracking-[0.2em]">
+          scroll
+        </span>
       </motion.div>
     </section>
   );

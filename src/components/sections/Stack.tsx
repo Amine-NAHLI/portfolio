@@ -159,7 +159,7 @@ export default function Stack({ skills }: { skills: Skill[] }) {
           <div className="constellation-group flex flex-wrap gap-3 md:gap-4 items-center justify-start pb-8">
             {nodes.map((node, i) => (
               <motion.div
-                key={node.name}
+                key={`${node.category}-${node.name}`}
                 initial={{ opacity: 0, scale: 0.7 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={VP}

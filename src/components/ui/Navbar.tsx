@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/data/navigation";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -39,53 +40,57 @@ export default function Navbar() {
   return (
     <>
       <nav 
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolled ? "py-4" : "py-8"}`}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolled ? "py-3" : "py-6"}`}
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className={`flex items-center justify-between px-8 py-4 rounded-full transition-all duration-500 ${scrolled ? "glass shadow-2xl" : "bg-transparent"}`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className={`flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500 ${scrolled ? "glass shadow-2xl" : "bg-transparent"}`}>
             
             {/* Logo */}
-            <Link href="#home" className="group flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-text-1 flex items-center justify-center text-bg-0 font-black text-lg transition-transform group-hover:rotate-12">
+            <Link href="#home" className="group flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-text-1 flex items-center justify-center text-bg-0 font-black text-base transition-transform group-hover:rotate-12">
                 A
               </div>
-              <span className="font-mono text-xs uppercase tracking-[0.5em] text-text-1 hidden md:block">
+              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-1 hidden md:block">
                 Amine.Nahli
               </span>
             </Link>
 
             {/* Desktop Links */}
-            <div className="hidden md:flex items-center gap-12">
+            <div className="hidden md:flex items-center gap-10">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`font-mono text-[10px] uppercase tracking-[0.4em] transition-colors relative group ${
-                    activeSection === link.href.replace("#", "") ? "text-cyan" : "text-text-4 hover:text-text-1"
+                  className={`font-mono text-[9px] uppercase tracking-[0.4em] transition-colors relative group ${
+                    activeSection === link.href.replace("#", "") ? "text-accent-cyan" : "text-text-4 hover:text-text-1"
                   }`}
                 >
                   {link.name}
-                  <span className={`absolute -bottom-1 left-0 h-px bg-cyan transition-all ${
+                  <span className={`absolute -bottom-1 left-0 h-px bg-accent-cyan transition-all ${
                     activeSection === link.href.replace("#", "") ? "w-full" : "w-0 group-hover:w-full"
                   }`} />
                 </Link>
               ))}
-              <div className="h-4 w-px bg-white/10" />
+              <div className="h-3 w-px bg-text-1/[0.1]" />
+              <ThemeToggle />
               <Link
                 href="#contact"
-                className="px-6 py-2 rounded-full border border-white/10 text-[10px] font-mono uppercase tracking-[0.4em] text-text-1 hover:bg-white/5 transition-colors"
+                className="px-5 py-1.5 rounded-full border border-text-1/[0.1] text-[9px] font-mono uppercase tracking-[0.4em] text-text-1 hover:bg-text-1/[0.05] transition-colors"
               >
                 Hire
               </Link>
             </div>
 
-            {/* Mobile Trigger */}
-            <button 
-              onClick={() => setMobileOpen(true)}
-              className="md:hidden text-text-1"
-            >
-              <Menu size={24} />
-            </button>
+            {/* Mobile Actions */}
+            <div className="md:hidden flex items-center gap-4">
+              <ThemeToggle />
+              <button 
+                onClick={() => setMobileOpen(true)}
+                className="text-text-1"
+              >
+                <Menu size={24} />
+              </button>
+            </div>
           </div>
         </div>
       </nav>
@@ -117,7 +122,7 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="text-5xl font-black tracking-tighter text-text-1 hover:text-cyan transition-colors"
+                    className="text-5xl font-black tracking-tighter text-text-1 hover:text-accent-cyan transition-colors"
                   >
                     {link.name}
                   </Link>

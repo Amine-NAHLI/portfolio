@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="antialiased selection:bg-cyan selection:text-bg-0">
+    <html lang="en" className="antialiased" suppressHydrationWarning>
       <body className="bg-bg-0 text-text-1">
         <a href="#main-content" className="skip-link">
           Skip to content

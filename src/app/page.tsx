@@ -3,7 +3,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Projects from "@/components/sections/Projects";
 import Stack from "@/components/sections/Stack";
-import Timeline from "@/components/sections/Timeline";
+
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
 import { fetchPortfolioData } from "@/lib/github";
@@ -25,8 +25,8 @@ export default async function Home() {
         latestProject={latestProject}
       />
       <Projects projects={data.projects} stats={data.stats} />
-      <Stack skills={data.skills} />
-      <Timeline events={data.timeline} />
+      <Stack orbit={data.techOrbit} />
+
       <Contact profile={data.profile} />
       <Footer latestProject={latestProject} />
     </main>

@@ -30,27 +30,27 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
   }, [projects, cat, sort]);
 
   return (
-    <section id="projects" className="relative py-40 bg-bg-0">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="projects" className="relative py-24 bg-bg-0">
+      <div className="max-w-6xl mx-auto px-6">
         
         {/* Elegant Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
-          <div className="space-y-4">
-            <span className="font-mono text-cyan text-xs uppercase tracking-[0.5em]">Work.index()</span>
-            <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+          <div className="space-y-3">
+            <span className="font-mono text-accent-cyan text-[10px] uppercase tracking-[0.4em]">Work.index()</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
               Selected <span className="text-text-4">Works.</span>
             </h2>
           </div>
           
           {/* Advanced Filter UI */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex p-1.5 rounded-full glass border border-white/5">
+          <div className="flex flex-col md:flex-row gap-3">
+            <div className="flex p-1 rounded-full glass border border-white/5">
               <LayoutGroup id="project-filter">
                 {CATEGORIES.map((c) => (
                   <button
                     key={c}
                     onClick={() => setCat(c)}
-                    className={`relative px-6 py-2 rounded-full text-[10px] font-mono tracking-widest uppercase transition-colors ${cat === c ? "text-bg-0" : "text-text-4 hover:text-text-2"}`}
+                    className={`relative px-5 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase transition-colors ${cat === c ? "text-bg-0" : "text-text-4 hover:text-text-2"}`}
                   >
                     {cat === c && (
                       <motion.div
@@ -68,10 +68,10 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
             <div className="relative">
               <button
                 onClick={() => setSortOpen(!sortOpen)}
-                className="h-full flex items-center gap-3 px-8 py-3 rounded-full glass border border-white/5 text-[10px] font-mono text-text-2 hover:border-cyan/30 transition-all uppercase tracking-widest"
+                className="h-full flex items-center gap-2.5 px-6 py-2 rounded-full glass border border-white/5 text-[9px] font-mono text-text-2 hover:border-cyan/30 transition-all uppercase tracking-widest"
               >
                 <span>{SORT_LABELS[sort]}</span>
-                <ChevronDown size={12} className={`transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`} />
+                <ChevronDown size={10} className={`transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`} />
               </button>
               <AnimatePresence>
                 {sortOpen && (
@@ -97,20 +97,11 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
           </div>
         </div>
 
-        {/* Studio Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Projects Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[280px] grid-flow-dense">
           <AnimatePresence mode="popLayout">
             {filtered.map((project, i) => (
-              <motion.div
-                key={project.id}
-                layout
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <ProjectCard project={project} />
-              </motion.div>
+              <ProjectCard key={project.id} project={project} index={i} />
             ))}
           </AnimatePresence>
         </div>
@@ -123,7 +114,7 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
              className="flex flex-col items-center gap-4 group"
            >
              <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4 group-hover:text-text-2 transition-colors">Explore Archive</span>
-             <div className="w-px h-16 bg-white/10 group-hover:h-24 transition-all duration-700" />
+             <div className="w-px h-16 bg-text-1/[0.1] group-hover:h-24 transition-all duration-700" />
            </a>
         </div>
       </div>

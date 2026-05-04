@@ -1,4 +1,5 @@
 import Navbar from "@/components/ui/Navbar";
+import GeometricBackground from "@/components/ui/GeometricBackground";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Projects from "@/components/sections/Projects";
@@ -17,6 +18,7 @@ export default async function Home() {
   return (
     <main>
       <Navbar />
+      <GeometricBackground />
       <Hero profile={data.profile} stats={data.stats} personal={data.personal} />
       <About
         profile={data.profile}
@@ -28,7 +30,6 @@ export default async function Home() {
       <Stack orbit={data.techOrbit} />
 
       <Contact profile={data.profile} />
-      <Footer latestProject={latestProject} />
     </main>
   );
 }

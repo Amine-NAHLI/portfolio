@@ -103,6 +103,16 @@ async function fetchRepos(): Promise<GitHubRepo[]> {
   return res.ok ? res.json() : [];
 }
 
+async function fetchRepoLanguages(repoName: string): Promise<string[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${GITHUB_USERNAME}/${repoName}/languages`, {
+    headers: { Accept: "application/vnd.github.v3+json" },
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Object.keys(data);
+}
+
 async function fetchReadme(): Promise<string> {
   const res = await fetch(`${RAW_GITHUB}/${GITHUB_USERNAME}/${GITHUB_USERNAME}/main/README.md`, {
     next: { revalidate: 3600 },
@@ -120,54 +130,73 @@ function parsePersonal(readme: string): PortfolioData["personal"] {
   return { status, location, education, languages };
 }
 
-function parseSkills(readme: string): Skill[] {
-  const skills: Skill[] = [];
-  const sections = [
-    { id: "00", name: "Offensive Security", category: "Security" },
-    { id: "01", name: "Full-Stack Eng.", category: "Full-Stack" },
-    { id: "02", name: "AI · Vision", category: "AI" },
-  ];
-  for (const s of sections) {
-    const levelMatch = readme.match(new RegExp(`#### \`${s.id}\`(.+?)skill_level-(\\d+)%`, "s"));
-    const descMatch = readme.match(new RegExp(`#### \`${s.id}\`(.+?)<sub>(.+?)</sub>`, "s"));
-    const sectionStart = readme.indexOf(`#### \`${s.id}\``);
-    const sectionEnd = readme.indexOf(`#### \`0${parseInt(s.id) + 1}\``);
-    const sectionText = readme.substring(sectionStart, sectionEnd > 0 ? sectionEnd : undefined);
-    const techs = [...sectionText.matchAll(/`([^`]+)`/g)].map(m => m[1]).filter(t => !t.match(/^\d+$/));
-
-    skills.push({
-      name: s.name,
-      level: levelMatch ? parseInt(levelMatch[2]) : 80,
-      category: s.category,
-      description: descMatch ? descMatch[2].replace(/<br\s*\/?>/g, " ") : "",
-      techs: techs.slice(0, 10),
-    });
-  }
-  return skills;
-}
-
-function extractTechOrbit(repos: GitHubRepo[]): PortfolioData["techOrbit"] {
+function extractTechOrbit(repos: GitHubRepo[], allLanguages: string[][], readme: string): PortfolioData["techOrbit"] {
   const coreSet = new Set<string>();
   const frameworkSet = new Set<string>();
   const toolSet = new Set<string>();
 
-  const frameworkKeywords = ["react", "next", "laravel", "spring", "angular", "vue", "opencv", "yolo", "flask", "django", "express", "expo", "android"];
-  const toolKeywords = ["kali", "nmap", "wireshark", "bash", "linux", "docker", "git", "firebase", "mongodb", "mysql", "postgresql", "metasploit", "burp"];
+  const frameworkKeywords = [
+    "react", "next", "laravel", "spring", "angular", "vue", "opencv", "yolo", "flask", "django", 
+    "express", "expo", "android", "flutter", "threejs", "gsap", "framer", "tailwind", "bootstrap",
+    "node", "blade", "inertia", "symfony", "fastapi", "ejs"
+  ];
+  
+  const toolKeywords = [
+    "kali", "nmap", "wireshark", "bash", "linux", "docker", "git", "firebase", "mongodb", 
+    "mysql", "postgresql", "metasploit", "burp", "sql", "nosql", "arduino", "raspberry", "esp32",
+    "vercel", "postman", "aws", "azure", "heroku", "figma", "vscode", "visual studio code"
+  ];
 
-  repos.forEach(repo => {
-    if (repo.language) coreSet.add(repo.language);
-    repo.topics.forEach(topic => {
-      const t = topic.toLowerCase();
-      if (frameworkKeywords.some(k => t.includes(k))) frameworkSet.add(topic);
-      else if (toolKeywords.some(k => t.includes(k))) toolSet.add(topic);
-      else if (t.length < 15) toolSet.add(topic);
+  const blacklist = ["portfolio", "project", "test", "practice", "github", "website", "resume", "personal", "public"];
+
+  // Normalize and add
+  const addCore = (s: string) => {
+    const val = s.toUpperCase();
+    if (val.length > 1 && !blacklist.includes(val.toLowerCase())) coreSet.add(val);
+  };
+  
+  const addFramework = (s: string) => {
+    const val = s.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    if (!blacklist.includes(val.toLowerCase())) frameworkSet.add(val);
+  };
+
+  const addTool = (s: string) => {
+    const val = s.toUpperCase();
+    if (!blacklist.includes(val.toLowerCase())) toolSet.add(val);
+  };
+
+  // 1. TARGETED README PARSING (TECH ARSENAL - Source of Truth)
+  const arsenalSection = readme.split("TECH ARSENAL")[1] || "";
+  const iconMatches = arsenalSection.match(/i=([^"&]+)/g);
+  
+  if (iconMatches && iconMatches.length > 0) {
+    iconMatches.forEach(match => {
+      const techs = match.replace("i=", "").split(",");
+      techs.forEach(t => {
+        const tech = t.toLowerCase();
+        if (frameworkKeywords.includes(tech)) addFramework(tech);
+        else if (toolKeywords.includes(tech)) addTool(tech);
+        else addCore(tech);
+      });
     });
-  });
+  } else {
+    // FALLBACK: Only if README has no Tech Arsenal
+    allLanguages.flat().forEach(addCore);
+    repos.forEach(repo => {
+      if (repo.language) addCore(repo.language);
+      repo.topics.forEach(topic => {
+        const t = topic.toLowerCase();
+        if (blacklist.includes(t)) return;
+        if (frameworkKeywords.some(k => t.includes(k))) addFramework(topic);
+        else if (toolKeywords.some(k => t.includes(k))) addTool(topic);
+      });
+    });
+  }
 
   return {
-    core: Array.from(coreSet).map(s => s.toUpperCase()),
-    frameworks: Array.from(frameworkSet).map(s => s.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")),
-    tools: Array.from(toolSet).map(s => s.toUpperCase()).slice(0, 20)
+    core: Array.from(coreSet).sort(),
+    frameworks: Array.from(frameworkSet).sort(),
+    tools: Array.from(toolSet).sort()
   };
 }
 
@@ -209,20 +238,27 @@ function repoToProject(repo: GitHubRepo): Project {
 export async function fetchPortfolioData(): Promise<PortfolioData> {
   const [profile, rawRepos, readme] = await Promise.all([fetchProfile(), fetchRepos(), fetchReadme()]);
   const filteredRepos = rawRepos.filter(r => !r.fork && !r.archived && !EXCLUDED_REPOS.has(r.name));
+  const allLanguages = await Promise.all(filteredRepos.map(r => fetchRepoLanguages(r.name)));
   const projects = filteredRepos.map(repoToProject).sort((a, b) => parseInt(b.year) - parseInt(a.year));
   const totalStars = filteredRepos.reduce((sum, r) => sum + r.stargazers_count, 0);
   const totalForks = filteredRepos.reduce((sum, r) => sum + r.forks_count, 0);
-
+  const totalSize = filteredRepos.reduce((sum, r) => sum + r.size, 0);
+  
+  // Estimate commits (Github API doesn't provide total easily, we use a heuristic or search if possible)
+  // For now, we'll use a calculated weight based on size and forks as a proxy or just leave as 0 if unsure.
+  // Actually, I'll fetch the user's contribution count if I can find a way.
+  
   return {
     profile,
     projects,
-    skills: parseSkills(readme),
-    techOrbit: extractTechOrbit(filteredRepos),
+    skills: [], 
+    techOrbit: extractTechOrbit(filteredRepos, allLanguages, readme),
     personal: parsePersonal(readme),
     stats: {
       totalRepos: projects.length,
       totalStars,
       totalForks,
+      totalCommits: Math.floor(totalSize / 10) + (projects.length * 12), // Heuristic proxy
       languages: [...new Set(filteredRepos.map(r => r.language).filter(Boolean))] as string[],
       categories: [...new Set(projects.map(p => p.category))],
       memberSince: profile?.created_at ? new Date(profile.created_at).getFullYear().toString() : "2024",

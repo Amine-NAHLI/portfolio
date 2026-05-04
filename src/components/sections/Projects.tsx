@@ -30,7 +30,7 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
   }, [projects, cat, sort]);
 
   return (
-    <section id="projects" className="relative py-24 bg-bg-0">
+    <section id="projects" className="relative py-24 bg-transparent">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Elegant Header */}
@@ -43,26 +43,28 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
           </div>
           
           {/* Advanced Filter UI */}
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="flex p-1 rounded-full glass border border-white/5">
-              <LayoutGroup id="project-filter">
-                {CATEGORIES.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setCat(c)}
-                    className={`relative px-5 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase transition-colors ${cat === c ? "text-bg-0" : "text-text-4 hover:text-text-2"}`}
-                  >
-                    {cat === c && (
-                      <motion.div
-                        layoutId="active-pill"
-                        className="absolute inset-0 bg-text-1 rounded-full"
-                        transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
-                      />
-                    )}
-                    <span className="relative z-10">{c}</span>
-                  </button>
-                ))}
-              </LayoutGroup>
+          <div className="flex flex-col md:flex-row gap-3 overflow-hidden">
+            <div className="flex p-1 rounded-full glass border border-white/5 overflow-x-auto no-scrollbar max-w-full">
+              <div className="flex min-w-max">
+                <LayoutGroup id="project-filter">
+                  {CATEGORIES.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setCat(c)}
+                      className={`relative px-5 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase transition-colors whitespace-nowrap ${cat === c ? "text-bg-0" : "text-text-4 hover:text-text-2"}`}
+                    >
+                      {cat === c && (
+                        <motion.div
+                          layoutId="active-pill"
+                          className="absolute inset-0 bg-text-1 rounded-full"
+                          transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
+                        />
+                      )}
+                      <span className="relative z-10">{c}</span>
+                    </button>
+                  ))}
+                </LayoutGroup>
+              </div>
             </div>
 
             <div className="relative">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScroll from "@/components/ui/SmoothScroll";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 export const metadata: Metadata = {
   title: "Amine Nahli — Security Engineer × Full-Stack Builder",
@@ -19,28 +20,38 @@ export const metadata: Metadata = {
     "UPF Fès",
   ],
   authors: [{ name: "Amine Nahli" }],
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+  },
   openGraph: {
     title: "Amine Nahli — Security Engineer × Full-Stack Builder",
-    description:
-      "I break things to understand them — then I build better ones.",
+    description: "I break things to understand them — then I build better ones.",
     type: "website",
     locale: "en_US",
+    url: "https://amine-nahli.dev",
+    siteName: "Amine Nahli",
   },
-  robots: {
-    index: true,
-    follow: true,
+  twitter: {
+    card: "summary_large_image",
+    title: "Amine Nahli — Security Engineer × Full-Stack Builder",
+    description: "I break things to understand them — then I build better ones.",
   },
+  robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="antialiased">
       <body className="bg-bg text-text-primary">
-        <SmoothScroll>{children}</SmoothScroll>
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
+        <CustomCursor />
+        <SmoothScroll>
+          <div id="main-content">{children}</div>
+        </SmoothScroll>
       </body>
     </html>
   );

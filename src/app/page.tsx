@@ -1,9 +1,3 @@
-/**
- * Main page — Server component.
- * ALL data is fetched dynamically from GitHub API and profile README.
- * When you create a new repo or update your profile README, it appears here automatically.
- */
-
 import Navbar from "@/components/ui/Navbar";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
@@ -14,13 +8,13 @@ import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
 import { fetchPortfolioData } from "@/lib/github";
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
 
 export default async function Home() {
   const data = await fetchPortfolioData();
 
   return (
-    <main className="min-h-screen bg-bg">
+    <main>
       <Navbar />
       <Hero
         profile={data.profile}

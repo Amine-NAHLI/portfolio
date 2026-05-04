@@ -1,60 +1,111 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 
-const CustomCursor = () => {
+export default function CustomCursor() {
   const [visible, setVisible] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [hoverType, setHoverType] = useState<"none" | "link" | "card" | "three">("none");
 
-  const rawX = useMotionValue(-100);
-  const rawY = useMotionValue(-100);
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
 
-  const x = useSpring(rawX, { stiffness: 500, damping: 40 });
-  const y = useSpring(rawY, { stiffness: 500, damping: 40 });
+  const springConfig = { stiffness: 400, damping: 28 };
+  const x = useSpring(mouseX, springConfig);
+  const y = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-
-    const move = (e: MouseEvent) => {
-      rawX.set(e.clientX - 4);
-      rawY.set(e.clientY - 4);
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
       if (!visible) setVisible(true);
     };
 
-    const onEnter = () => setHovered(true);
-    const onLeave = () => setHovered(false);
+    const handleHover = () => {
+      const hoverables = document.querySelectorAll("a, button, [role='button']");
+      hoverables.forEach(el => {
+        el.addEventListener("mouseenter", () => setHoverType("link"));
+        el.addEventListener("mouseleave", () => setHoverType("none"));
+      });
 
-    const attachHover = () => {
-      document.querySelectorAll("a, button, [role='button'], [role='tab']").forEach((el) => {
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
+      const cards = document.querySelectorAll("#projects [role='button'], .project-card");
+      cards.forEach(el => {
+        el.addEventListener("mouseenter", () => setHoverType("card"));
+        el.addEventListener("mouseleave", () => setHoverType("none"));
+      });
+
+      const canvases = document.querySelectorAll("canvas");
+      canvases.forEach(el => {
+        el.addEventListener("mouseenter", () => setHoverType("three"));
+        el.addEventListener("mouseleave", () => setHoverType("none"));
       });
     };
 
-    window.addEventListener("mousemove", move);
-    attachHover();
+    window.addEventListener("mousemove", onMouseMove);
+    handleHover();
 
-    const obs = new MutationObserver(attachHover);
+    const obs = new MutationObserver(handleHover);
     obs.observe(document.body, { childList: true, subtree: true });
 
     return () => {
-      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mousemove", onMouseMove);
       obs.disconnect();
     };
-  }, [rawX, rawY, visible]);
+  }, [visible, mouseX, mouseY]);
 
   if (!visible) return null;
 
   return (
-    <motion.div
-      aria-hidden="true"
-      style={{ x, y, position: "fixed", top: 0, left: 0, pointerEvents: "none", zIndex: 9999 }}
-      animate={{ scale: hovered ? 3 : 1, opacity: hovered ? 0.5 : 0.9 }}
-      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="w-2 h-2 rounded-full bg-accent-cyan mix-blend-difference"
-    />
+    <div className="fixed inset-0 z-[9999] pointer-events-none">
+      <motion.div
+        style={{ x, y }}
+        className="relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2"
+      >
+        {/* Main Dot */}
+        <motion.div
+          animate={{
+            width: hoverType === "card" ? 80 : hoverType === "link" ? 40 : 8,
+            height: hoverType === "card" ? 80 : hoverType === "link" ? 40 : 8,
+            backgroundColor: hoverType === "link" ? "rgba(255,255,255,1)" : "rgba(6,182,212,1)",
+            mixBlendMode: hoverType === "link" ? "difference" : "normal",
+          }}
+          className="rounded-full flex items-center justify-center"
+        >
+          <AnimatePresence>
+            {hoverType === "card" && (
+              <motion.span
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="text-[10px] font-black text-bg-0 uppercase tracking-widest"
+              >
+                View
+              </motion.span>
+            )}
+            {hoverType === "three" && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="relative w-full h-full flex items-center justify-center"
+              >
+                 <div className="absolute w-4 h-px bg-cyan" />
+                 <div className="absolute h-4 w-px bg-cyan" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+        
+        {/* Ring */}
+        <motion.div
+          animate={{
+            scale: hoverType !== "none" ? 1.5 : 1,
+            opacity: hoverType !== "none" ? 0 : 0.5,
+          }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0 border border-cyan rounded-full w-8 h-8 -ml-4 -mt-4"
+        />
+      </motion.div>
+    </div>
   );
-};
-
-export default CustomCursor;
+}

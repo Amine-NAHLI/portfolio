@@ -1,129 +1,100 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Lock, Star, GitFork } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, ExternalLink, ArrowRight, Github } from "lucide-react";
+import { GithubIcon } from "@/components/ui/Icons";
+import { useTilt } from "@/hooks/useTilt";
 import type { Project } from "@/lib/github";
-import { cn } from "@/lib/utils";
-import { CategoryPill } from "@/components/ui/ProjectPanel";
 import dynamic from "next/dynamic";
 
 const ProjectPanel = dynamic(() => import("@/components/ui/ProjectPanel"), { ssr: false });
 
-const LANG_COLORS: Record<string, string> = {
-  Python:     "#3572A5", TypeScript: "#3178c6", JavaScript: "#f7df1e",
-  Go:         "#00ADD8", Rust:       "#dea584", Java:       "#b07219",
-  "C++":      "#f34b7d", C:          "#555555", PHP:        "#4F5D95",
-  Ruby:       "#701516", Swift:      "#F05138", Kotlin:     "#A97BFF",
-  Shell:      "#89e051", HTML:       "#e34c26", CSS:        "#563d7c",
-};
+const EASE = [0.16, 1, 0.3, 1] as const;
 
-const ProjectCard = ({ project }: { project: Project }) => {
+export default function ProjectCard({ project }: { project: Project }) {
   const [panelOpen, setPanelOpen] = useState(false);
-
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const x = useSpring(rawX, { stiffness: 300, damping: 30 });
-  const y = useSpring(rawY, { stiffness: 300, damping: 30 });
-  const rotateX = useTransform(y, [-0.5, 0.5], ["8deg", "-8deg"]);
-  const rotateY = useTransform(x, [-0.5, 0.5], ["-8deg", "8deg"]);
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    rawX.set((e.clientX - r.left) / r.width - 0.5);
-    rawY.set((e.clientY - r.top) / r.height - 0.5);
-  };
-
-  const onLeave = () => { rawX.set(0); rawY.set(0); };
-
-  const isPrivate = project.status === "private";
-  const langColor = project.language ? (LANG_COLORS[project.language] ?? "#64748b") : null;
-  const extraTags = project.tags.length - 3;
+  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt();
 
   return (
     <>
       <motion.div
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
+        layout
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
         onClick={() => setPanelOpen(true)}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: "1000px" }}
-        className={cn(
-          "relative flex flex-col rounded-2xl bg-bg-secondary/50 border border-white/8 backdrop-blur-sm cursor-pointer",
-          "transition-[border-color,box-shadow] duration-[250ms]",
-          "hover:border-accent-cyan/40 hover:shadow-[0_0_32px_rgba(6,182,212,0.08),inset_0_0_32px_rgba(6,182,212,0.03)]"
-        )}
-        tabIndex={0}
-        role="button"
-        aria-label={`View details for ${project.title}`}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setPanelOpen(true); } }}
+        style={{ rotateX, rotateY, perspective: 1000 }}
+        className="group relative h-[540px] rounded-[2.5rem] overflow-hidden bg-bg-1 border border-white/5 hover:border-white/10 transition-colors cursor-pointer shadow-2xl"
       >
-        {/* Private overlay */}
-        {isPrivate && (
-          <div className="absolute inset-0 rounded-2xl bg-bg/50 backdrop-blur-[2px] z-20 flex items-center justify-center" aria-hidden="true">
-            <div className="flex items-center gap-1.5 text-text-faint">
-              <Lock size={13} />
-              <span className="text-[11px] font-mono uppercase tracking-wider">Private</span>
-            </div>
-          </div>
-        )}
+        {/* Card Header (Category & Year) */}
+        <div className="absolute top-10 left-10 z-20 flex items-center gap-4">
+          <span className="px-4 py-1.5 rounded-full glass border border-white/10 font-mono text-[10px] text-cyan uppercase tracking-[0.2em]">
+            {project.category}
+          </span>
+          <span className="font-mono text-[10px] text-text-4 uppercase tracking-[0.2em]">{project.year}</span>
+        </div>
 
-        {/* Top bar */}
-        <div className="flex items-start justify-between p-5 pb-0">
-          <CategoryPill category={project.category} />
-          <span className="text-[11px] font-mono text-text-faint">{project.year}</span>
+        {/* Visual Background (Pattern + Glow) */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 grid-bg opacity-[0.15]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-bg-1 via-transparent to-bg-1" />
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+            style={{ 
+              background: `radial-gradient(circle at center, ${project.category === "Security" ? "#06b6d420" : project.category === "Full-Stack" ? "#6366f120" : "#a855f720"} 0%, transparent 70%)` 
+            }}
+          />
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-5">
-          <h3 className="text-base font-semibold text-text-primary mb-2 group-hover:text-accent-cyan transition-colors duration-[250ms] line-clamp-1">
-            {project.title}
-          </h3>
-          <p className="text-[13px] text-text-secondary leading-relaxed line-clamp-3">
-            {project.description}
-          </p>
+        <div className="absolute inset-0 z-10 p-12 flex flex-col justify-end">
+          <motion.div 
+            initial={false}
+            animate={{ y: 0 }}
+            className="space-y-6"
+          >
+            <h3 className="text-4xl md:text-5xl font-black tracking-tighter text-text-1 group-hover:text-cyan transition-colors leading-none">
+              {project.title.split(" ").map((word, i) => (
+                <span key={i}>{word} </span>
+              ))}
+            </h3>
+            
+            <p className="text-text-3 text-lg line-clamp-2 max-w-sm group-hover:text-text-2 transition-colors">
+              {project.description}
+            </p>
+
+            {/* Meta & Action */}
+            <div className="flex items-center justify-between pt-8 border-t border-white/5 mt-auto">
+               <div className="flex items-center gap-6">
+                 <div className="flex items-center gap-2 text-text-4 group-hover:text-amber-500/80 transition-colors">
+                   <Star size={16} />
+                   <span className="font-mono text-sm">{project.stars}</span>
+                 </div>
+                 <div className="flex items-center gap-2 text-text-4 group-hover:text-cyan/80 transition-colors">
+                   <GithubIcon size={16} />
+                   <span className="font-mono text-sm uppercase tracking-widest text-[10px]">{project.language}</span>
+                 </div>
+               </div>
+               
+               <div className="flex items-center gap-2 text-text-1 font-mono text-[10px] uppercase tracking-[0.3em] translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
+                 Explore <ArrowRight size={14} />
+               </div>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Bottom meta row */}
-        <div className="px-5 pb-5 pt-3 border-t border-white/5 flex items-center justify-between gap-3">
-          {/* Tags */}
-          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            {project.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[10px] font-mono text-text-faint whitespace-nowrap">
-                {tag}
-              </span>
-            ))}
-            {extraTags > 0 && (
-              <span className="text-[10px] font-mono text-text-faint">+{extraTags}</span>
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {langColor && project.language && (
-              <div className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ background: langColor }} aria-hidden="true" />
-                <span className="text-[10px] font-mono text-text-faint">{project.language}</span>
-              </div>
-            )}
-            {project.stars > 0 && (
-              <div className="flex items-center gap-0.5 text-[11px] font-mono text-text-faint">
-                <Star size={10} className="text-amber-400/70" aria-hidden="true" />
-                {project.stars}
-              </div>
-            )}
-            {project.forks > 0 && (
-              <div className="flex items-center gap-0.5 text-[11px] font-mono text-text-faint">
-                <GitFork size={10} className="text-accent-indigo/70" aria-hidden="true" />
-                {project.forks}
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Noise overlay for texture */}
+        <div className="absolute inset-0 noise-bg z-[1]" />
       </motion.div>
 
-      <ProjectPanel project={panelOpen ? project : null} onClose={() => setPanelOpen(false)} />
+      <AnimatePresence>
+        {panelOpen && (
+          <ProjectPanel 
+            project={project} 
+            onClose={() => setPanelOpen(false)} 
+          />
+        )}
+      </AnimatePresence>
     </>
   );
-};
-
-export default ProjectCard;
+}

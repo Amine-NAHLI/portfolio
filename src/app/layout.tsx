@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SmoothScroll from "@/components/ui/SmoothScroll";
-import CustomCursor from "@/components/ui/CustomCursor";
+import ClientLayout from "@/components/layout/ClientLayout";
 
 export const metadata: Metadata = {
   title: "Amine Nahli — Security Engineer × Full-Stack Builder",
@@ -38,15 +37,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="antialiased">
-      <body className="bg-bg text-text-primary">
+    <html lang="en" className="antialiased selection:bg-cyan selection:text-bg-0">
+      <body className="bg-bg-0 text-text-1">
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
-        <CustomCursor />
-        <SmoothScroll>
-          <div id="main-content">{children}</div>
-        </SmoothScroll>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

@@ -1,98 +1,28 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { motion, useInView, animate } from "framer-motion";
-import { GitCommit, Clock } from "lucide-react";
-import SectionHeader from "@/components/ui/SectionHeader";
+import React, { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useInView, animate } from "framer-motion";
+import { GitCommit, MapPin, GraduationCap, ArrowUpRight, ShieldCheck, Zap, Globe } from "lucide-react";
+import { useTilt } from "@/hooks/useTilt";
 import type { GitHubProfile, Project } from "@/lib/github";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
-const VP   = { once: true, margin: "-100px" } as const;
 
-/* ── Counter ─────────────────────────────────────────────────────── */
+/* ─── Refined Stat Card ─────────────────────────────────────────── */
 
-const Counter = ({ value }: { value: number }) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
-
-  useEffect(() => {
-    if (!inView) return;
-    const ctrl = animate(0, value, {
-      duration: 1.8,
-      ease: EASE,
-      onUpdate: (v) => setCount(Math.floor(v)),
-    });
-    return () => ctrl.stop();
-  }, [inView, value]);
-
-  return <span ref={ref} className="tabular-nums">{count}</span>;
-};
-
-/* ── Stat card ───────────────────────────────────────────────────── */
-
-interface StatCardProps { label: string; value: number | string; index: number; accent: string }
-
-const StatCard = ({ label, value, index, accent }: StatCardProps) => (
+const BentoCard = ({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={VP}
-    transition={{ delay: index * 0.08, duration: 0.5, ease: EASE }}
-    whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
-    className="relative p-6 rounded-[14px] bg-bg-card/60 border border-white/8 overflow-hidden group"
+    viewport={{ once: true }}
+    transition={{ duration: 1, delay, ease: EASE }}
+    className={`glass-card rounded-[2rem] p-8 flex flex-col justify-between group ${className}`}
   >
-    <div
-      className="absolute inset-x-0 bottom-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms]"
-      style={{ background: `linear-gradient(90deg, transparent, ${accent}80, transparent)` }}
-    />
-    <p
-      className="text-[44px] md:text-[54px] font-bold leading-none mb-2"
-      style={{ color: accent }}
-    >
-      {typeof value === "number" ? <Counter value={value} /> : value}
-    </p>
-    <p className="section-label" style={{ opacity: 0.7 }}>{label}</p>
+    {children}
   </motion.div>
 );
 
-/* ── Now Playing widget ──────────────────────────────────────────── */
-
-const NowPlaying = ({ project }: { project: Project }) => {
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const d = Math.floor(diff / 86400000);
-    if (d === 0) return "today";
-    if (d === 1) return "yesterday";
-    if (d < 30) return `${d}d ago`;
-    const m = Math.floor(d / 30);
-    return `${m}mo ago`;
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={VP}
-      transition={{ duration: 0.5, delay: 0.2, ease: EASE }}
-      className="mt-10 flex items-center gap-4 p-4 rounded-[10px] bg-bg-card/50 border border-white/6"
-    >
-      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center">
-        <GitCommit size={14} className="text-accent-cyan" aria-hidden="true" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-[11px] font-mono text-text-faint uppercase tracking-widest mb-0.5">Now working on</p>
-        <p className="text-sm font-medium text-text-primary truncate">{project.title}</p>
-      </div>
-      <div className="flex-shrink-0 flex items-center gap-1 text-[11px] font-mono text-text-faint ml-auto">
-        <Clock size={11} aria-hidden="true" />
-        {timeAgo(project.updatedAt)}
-      </div>
-    </motion.div>
-  );
-};
-
-/* ── About ───────────────────────────────────────────────────────── */
+/* ─── About Section ────────────────────────────────────────────── */
 
 interface AboutProps {
   profile: GitHubProfile | null;
@@ -108,98 +38,95 @@ interface AboutProps {
 }
 
 export default function About({ profile, personal, stats, latestProject }: AboutProps) {
-  const cards: StatCardProps[] = [
-    { label: "Projects Shipped", value: stats.totalRepos,       index: 0, accent: "#06b6d4" },
-    { label: "GitHub Stars",     value: stats.totalStars,       index: 1, accent: "#6366f1" },
-    { label: "Languages Used",   value: stats.languages.length, index: 2, accent: "#a855f7" },
-    { label: "Member Since",     value: stats.memberSince,      index: 3, accent: "#f59e0b" },
-  ];
-
+  const containerRef = useRef<HTMLElement>(null);
+  
   return (
-    <section id="about" className="relative py-24 md:py-32 bg-bg overflow-hidden">
+    <section ref={containerRef} id="about" className="relative py-40 bg-bg-0 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <SectionHeader
-          number="01"
-          label="About"
-          heading={<>Who I <span className="gradient-text">am.</span></>}
-          subheading="Security engineer by training, full-stack builder by obsession."
-        />
+        {/* Modern Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-24">
+          <div className="space-y-4">
+            <span className="font-mono text-cyan text-xs uppercase tracking-[0.5em]">System.initialize()</span>
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
+              The <span className="text-text-4">Architect.</span>
+            </h2>
+          </div>
+          <p className="max-w-md text-text-3 text-lg leading-relaxed mb-2">
+            I build defensive systems and high-performance applications with a focus on structural integrity and user experience.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-14 items-start">
-          {/* Left — editor card */}
-          <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={VP}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="relative"
-          >
-            <div className="rounded-[14px] overflow-hidden border border-white/8 bg-bg-raised/80">
-              {/* Title bar */}
-              <div className="bg-white/4 px-4 py-3 flex items-center gap-3 border-b border-white/6">
-                <div className="flex gap-1.5" aria-hidden="true">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
-                </div>
-                <div className="flex-1 text-center">
-                  <span className="text-[11px] font-mono text-text-faint">mission_brief.md</span>
-                </div>
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[240px]">
+          
+          {/* Large Mission Card */}
+          <BentoCard className="md:col-span-8 md:row-span-2">
+            <div className="space-y-6">
+              <ShieldCheck className="text-cyan" size={32} />
+              <h3 className="text-4xl font-bold tracking-tight max-w-lg leading-tight">
+                My mission is to engineer software that is as <span className="text-cyan">secure</span> as it is <span className="text-indigo">intuitive</span>.
+              </h3>
+              <p className="text-text-3 text-lg leading-relaxed max-w-xl">
+                With a background in security engineering, I approach every project with a defensive mindset, 
+                ensuring that performance and safety are never mutually exclusive. I specialize in bridging 
+                the gap between complex backend infrastructure and seamless frontend interactions.
+              </p>
+            </div>
+            <div className="flex gap-4 mt-8 pt-8 border-t border-white/5">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 text-xs font-mono uppercase tracking-widest">
+                <MapPin size={14} className="text-cyan" /> {personal.location}
               </div>
-
-              {/* Body with syntax highlighting style */}
-              <div className="p-6 md:p-8 font-mono text-[13px] leading-loose text-text-secondary border-l-2 border-accent-cyan/20">
-                <p className="mb-5">
-                  <span className="text-text-faint select-none">1  </span>
-                  <span className="text-accent-cyan">## </span>
-                  <span className="text-text-primary font-medium">{personal.education}</span>
-                  <span className="text-text-secondary"> student, </span>
-                  <span className="text-accent-indigo font-medium">{personal.location}</span>
-                  <span className="text-text-secondary">.</span>
-                </p>
-                <p className="mb-5">
-                  <span className="text-text-faint select-none">2  </span>
-                  <span className="text-accent-cyan">## </span>
-                  <span className="text-text-secondary">Shipped </span>
-                  <span className="text-accent-purple font-medium">{stats.totalRepos}</span>
-                  <span className="text-text-secondary"> projects across </span>
-                  <span className="text-accent-cyan font-medium">{stats.categories.length}</span>
-                  <span className="text-text-secondary"> domains.</span>
-                </p>
-                <p className="mb-5">
-                  <span className="text-text-faint select-none">3  </span>
-                  <span className="text-accent-cyan">## </span>
-                  <span className="text-text-secondary">Half my brain runs </span>
-                  <span className="text-accent-indigo font-medium">nmap</span>
-                  <span className="text-text-secondary">, the other writes </span>
-                  <span className="text-accent-purple font-medium">Laravel</span>
-                  <span className="text-text-secondary"> migrations.</span>
-                </p>
-                {(profile?.followers ?? 0) > 0 && (
-                  <p className="text-text-faint text-[12px] mt-4">
-                    <span className="text-text-faint select-none">4  </span>
-                    <span className="text-accent-cyan">→ </span>
-                    {profile!.followers} followers on GitHub
-                  </p>
-                )}
-                <div className="mt-6 flex items-center gap-1">
-                  <span className="text-accent-cyan" aria-hidden="true">❯</span>
-                  <span className="cursor-blink inline-block w-2 h-[1em] bg-accent-cyan/50 ml-1" aria-hidden="true" />
-                </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 text-xs font-mono uppercase tracking-widest">
+                <GraduationCap size={14} className="text-indigo" /> {personal.education}
               </div>
             </div>
+          </BentoCard>
 
-            {/* Shadow border */}
-            <div className="absolute -z-10 -bottom-2.5 -right-2.5 w-full h-full border border-accent-cyan/8 rounded-[14px]" aria-hidden="true" />
+          {/* Stats Cards */}
+          <BentoCard className="md:col-span-4" delay={0.1}>
+            <div className="flex justify-between items-start">
+              <Zap className="text-warning" size={24} />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-text-4">Efficiency</span>
+            </div>
+            <div>
+              <p className="text-5xl font-black text-text-1 mb-1">{stats.totalRepos}</p>
+              <p className="font-mono text-xs uppercase tracking-widest text-text-3">Active Repositories</p>
+            </div>
+          </BentoCard>
 
-            {/* Now Playing */}
-            {latestProject && <NowPlaying project={latestProject} />}
-          </motion.div>
+          <BentoCard className="md:col-span-4" delay={0.2}>
+            <div className="flex justify-between items-start">
+              <Globe className="text-indigo" size={24} />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-text-4">Reach</span>
+            </div>
+            <div>
+              <p className="text-5xl font-black text-text-1 mb-1">{stats.totalStars}</p>
+              <p className="font-mono text-xs uppercase tracking-widest text-text-3">Global Stars</p>
+            </div>
+          </BentoCard>
 
-          {/* Right — stat cards */}
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
-            {cards.map((c) => <StatCard key={c.label} {...c} />)}
-          </div>
+          {/* Latest Work Card */}
+          <BentoCard className="md:col-span-12 md:row-span-1 flex-row items-center gap-12" delay={0.3}>
+            <div className="flex-1 space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                <span className="font-mono text-[10px] uppercase tracking-widest text-text-4">Currently Shipping</span>
+              </div>
+              <h4 className="text-3xl font-bold group-hover:text-cyan transition-colors">
+                {latestProject?.title || "Developing next iteration..."}
+              </h4>
+            </div>
+            <div className="hidden md:block h-12 w-px bg-white/10" />
+            <div className="flex-1 hidden md:block">
+              <p className="text-text-3 line-clamp-2 max-w-sm italic">
+                {latestProject?.description || "Building something significant."}
+              </p>
+            </div>
+            <div className="p-4 rounded-full bg-white/5 group-hover:bg-cyan group-hover:text-bg-0 transition-all">
+              <ArrowUpRight size={24} />
+            </div>
+          </BentoCard>
+
         </div>
       </div>
     </section>

@@ -20,11 +20,6 @@ export const metadata: Metadata = {
     "UPF Fès",
   ],
   authors: [{ name: "Amine Nahli" }],
-  icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-  },
   openGraph: {
     title: "Amine Nahli — Security Engineer × Full-Stack Builder",
     description: "I break things to understand them — then I build better ones.",

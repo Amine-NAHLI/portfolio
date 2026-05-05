@@ -79,6 +79,7 @@ export interface PortfolioData {
     totalRepos: number;
     totalStars: number;
     totalForks: number;
+    totalCommits: number;
     languages: string[];
     categories: string[];
     memberSince: string;

@@ -34,8 +34,21 @@ export default function Footer({ latestProject }: { latestProject: Project | nul
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-
-        {/* Tactical Navigation & Data Grid (REMOVED per user request) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
+          <div className="space-y-6">
+            <h3 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-text-1">
+              End of <br /> <span className="text-text-4">Transmission.</span>
+            </h3>
+            <p className="text-text-3 max-w-sm font-mono text-[10px] uppercase tracking-[0.2em] leading-relaxed">
+              Synthesizing data... All systems operational. Terminal session will persist in cache.
+            </p>
+          </div>
+          <div className="flex flex-col justify-end">
+            <div className="max-w-md">
+              <TerminalEasterEgg />
+            </div>
+          </div>
+        </div>
 
         {/* Industrial Attribution */}
         <div className="pt-12 border-t border-bg-3 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">

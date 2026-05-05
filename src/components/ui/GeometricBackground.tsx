@@ -38,7 +38,7 @@ const Scene = () => {
   const shapes = useMemo(() => [
     {
       type: "torusKnot",
-      args: [1, 0.3, 128, 32],
+      args: [1, 0.3, 64, 16],
       position: [-4, 2, -5],
       rotationSpeed: [0.002, 0.003, 0.001],
       color: "#06B6D4" // Cyan
@@ -68,10 +68,6 @@ const Scene = () => {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#06B6D4" />
-      
       {shapes.map((shape, i) => (
         <MathematicalShape key={i} {...shape} />
       ))}
@@ -82,7 +78,15 @@ const Scene = () => {
 export default function GeometricBackground() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 bg-bg-0 overflow-hidden">
-      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 5], fov: 75 }}>
+      <Canvas 
+        dpr={[1, 1.5]} 
+        gl={{ 
+          antialias: false, 
+          powerPreference: "high-performance",
+          alpha: true 
+        }} 
+        camera={{ position: [0, 0, 5], fov: 75 }}
+      >
         <Scene />
       </Canvas>
       

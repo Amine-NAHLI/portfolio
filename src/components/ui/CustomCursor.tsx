@@ -14,6 +14,8 @@ export default function CustomCursor() {
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
+  const hoverTypeRef = useRef<string>("none");
+
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -26,16 +28,17 @@ export default function CustomCursor() {
       const hoverable = target.closest("a, button, [role='button'], .project-card");
       const isCanvas = target.tagName.toLowerCase() === "canvas";
 
-      if (isCanvas) {
-        setHoverType("three");
-      } else if (hoverable) {
-        if (hoverable.classList.contains("project-card") || hoverable.closest("#projects")) {
-          setHoverType("card");
-        } else {
-          setHoverType("link");
-        }
-      } else {
-        setHoverType("none");
+      let nextType: "none" | "link" | "card" | "three" = "none";
+      if (isCanvas) nextType = "three";
+      else if (hoverable) {
+        nextType = (hoverable.classList.contains("project-card") || hoverable.closest("#projects")) 
+          ? "card" 
+          : "link";
+      }
+
+      if (nextType !== hoverTypeRef.current) {
+        hoverTypeRef.current = nextType;
+        setHoverType(nextType);
       }
     };
 

@@ -66,28 +66,7 @@ export default function Contact({ profile }: { profile: GitHubProfile | null }) 
            />
         </div>
 
-        {/* Tactical Attribution Bar - Final Site Closure */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left"
-        >
-           <div className="flex flex-col md:flex-row items-center gap-6">
-              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">© {new Date().getFullYear()} Amine Nahli — Session Persistent</span>
-              <div className="hidden md:block h-px w-12 bg-white/10" />
-              <div className="flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                 <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan">Systems_Optimal</span>
-              </div>
-           </div>
-           
-           <div className="flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">
-              <span>Secure.Terminal</span>
-              <span>Fès, Morocco</span>
-           </div>
-        </motion.div>
-      </div>
+        </div>
     </section>
   );
 }

@@ -29,59 +29,61 @@
 
 @layer base {
   :root {
-    /* USER LIGHT PALETTE */
-    --bg-0: #F1F5F9;
-    --bg-1: #F8FAFC;
-    --bg-2: #E2E8F0;
-    --bg-3: #CBD5E1;
+    /* USER LIGHT PALETTE - CLEAN & NEUTRAL */
+    --bg-0: #f8fafc; /* General background */
+    --bg-1: #ffffff; /* Surface / Cards */
+    --bg-2: #f1f5f9; /* Alt Surface / Section background */
+    --bg-3: #e2e8f0; /* Borders / Inactive */
     
-    --text-1: #111827;
-    --text-2: #6B7280;
-    --text-3: #94A3B8;
-    --text-4: #CBD5E1;
+    --text-1: #0f172a; /* Primary - Midnight Slate */
+    --text-2: #475569; /* Secondary - Slate 600 */
+    --text-3: #64748b; /* Tertiary - Slate 500 */
+    --text-4: #94a3b8; /* Quaternary - Slate 400 */
     
-    --accent-indigo: #3B82F6;
+    --accent-cyan: #0ea5e9; /* Electric Blue */
+    --accent-indigo: #6366f1; /* Indigo */
     --accent-purple: #8B5CF6;
-    --accent-cyan: #06B6D4;
-    --accent-green: #22C55E;
+    --accent-green: #16a34a; /* Available text */
+    --accent-green-bg: #dcfce7; /* Available badge */
     
     color-scheme: light;
   }
 
   .light, [data-theme='light'] {
-    /* DEEP INDUSTRIAL LIGHT MODE (DIM) */
-    --bg-0: #94A3B8; /* Muted Slate Base */
-    --bg-1: #CBD5E1; /* Deep Slate Card */
-    --bg-2: #64748B; /* Darker Divider */
-    --bg-3: #475569;
+    /* Explicit light overrides if needed (redundant here but good for structure) */
+    --bg-0: #f8fafc;
+    --bg-1: #ffffff;
+    --bg-2: #f1f5f9;
+    --bg-3: #e2e8f0;
     
-    --text-1: #0F172A; /* Midnight Slate */
-    --text-2: #1E293B; /* Deep Slate - Body */
-    --text-3: #1E293B; /* High Contrast Subtext */
-    --text-4: #334155; /* Labels */
+    --text-1: #0f172a;
+    --text-2: #475569;
+    --text-3: #64748b;
+    --text-4: #94a3b8;
     
-    --accent-indigo: #312E81;
-    --accent-purple: #4C1D95;
-    --accent-cyan: #164E63;
-    --accent-green: #064E3B;
+    --accent-cyan: #0ea5e9;
+    --accent-indigo: #6366f1;
+    --accent-green: #16a34a;
   }
 
   .dark, [data-theme='dark'] {
-    /* USER DARK PALETTE */
-    --bg-0: #0B0F19;
-    --bg-1: #111827;
-    --bg-2: #1F2937;
-    --bg-3: #374151;
+    /* REFINED DARK PALETTE - GITHUB INSPIRED */
+    --bg-0: #0d1117; /* Base Background */
+    --bg-1: #111827; /* Surface / Cards */
+    --bg-2: #161b22; /* Alt Surface */
+    --bg-3: #30363d; /* Borders / Dividers */
     
-    --text-1: #E5E7EB;
-    --text-2: #9CA3AF;
-    --text-3: #6B7280;
-    --text-4: #4B5563;
+    --text-1: #f8fafc; /* Primary - Off White */
+    --text-2: #e6edf3; /* Secondary - Light Grey */
+    --text-3: #94a3b8; /* Tertiary - Muted Blue Grey */
+    --text-4: #484f58; /* Quaternary - Deep Grey */
     
-    --accent-indigo: #3B82F6;
-    --accent-purple: #8B5CF6;
-    --accent-cyan: #06B6D4;
-    --accent-green: #22C55E;
+    --accent-cyan: #38bdf8; /* Sky Blue Soft */
+    --accent-indigo: #818cf8; /* Indigo Soft */
+    --accent-purple: #c084fc;
+    --accent-green: #3fb950;
+    
+    --nav-border: #1e293b;
     
     color-scheme: dark;
   }

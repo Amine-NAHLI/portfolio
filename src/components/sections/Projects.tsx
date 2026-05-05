@@ -9,28 +9,15 @@ import type { Project } from "@/lib/github";
 
 const CATEGORIES = ["All", "Security", "Full-Stack", "AI/Vision", "Experiments"] as const;
 type Category = (typeof CATEGORIES)[number];
-type SortKey = "latest" | "stars" | "az";
-
-const SORT_LABELS: Record<SortKey, string> = {
-  latest: "Latest Deploy",
-  stars: "Star Power",
-  az: "Alphabetical",
-};
-
 export default function Projects({ projects, stats }: { projects: Project[]; stats: any }) {
   const [cat, setCat] = useState<Category>("All");
-  const [sort, setSort] = useState<SortKey>("latest");
-  const [sortOpen, setSortOpen] = useState(false);
 
   const filtered = useMemo(() => {
-    let list = projects.filter((p) => cat === "All" || p.category === cat);
-    if (sort === "stars") list = [...list].sort((a, b) => b.stars - a.stars);
-    if (sort === "az") list = [...list].sort((a, b) => a.title.localeCompare(b.title));
-    return list;
-  }, [projects, cat, sort]);
+    return projects.filter((p) => cat === "All" || p.category === cat);
+  }, [projects, cat]);
 
   return (
-    <section id="projects" className="relative py-24 bg-transparent">
+    <section id="projects" className="relative py-24 bg-bg-2 dark:bg-transparent transition-colors duration-500">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Elegant Header */}
@@ -44,57 +31,31 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
           
           {/* Advanced Filter UI */}
           <div className="flex flex-col md:flex-row gap-3 overflow-hidden">
-            <div className="flex p-1 rounded-full glass border border-white/5 overflow-x-auto no-scrollbar max-w-full">
+            <div className="flex p-1 rounded-full bg-bg-1 dark:bg-transparent border border-bg-3 dark:border-[#1e293b] overflow-x-auto no-scrollbar max-w-full">
               <div className="flex min-w-max">
                 <LayoutGroup id="project-filter">
                   {CATEGORIES.map((c) => (
                     <button
                       key={c}
                       onClick={() => setCat(c)}
-                      className={`relative px-5 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase transition-colors whitespace-nowrap ${cat === c ? "text-bg-0" : "text-text-4 hover:text-text-2"}`}
+                      className={`relative px-5 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase transition-colors whitespace-nowrap border border-transparent ${
+                        cat === c 
+                          ? "text-bg-0 dark:text-accent-cyan dark:border-accent-cyan" 
+                          : "text-text-2 dark:text-[#64748b] hover:text-text-1"
+                      }`}
                     >
                       {cat === c && (
                         <motion.div
                           layoutId="active-pill"
-                          className="absolute inset-0 bg-text-1 rounded-full"
+                          className="absolute inset-0 bg-text-1 dark:bg-[#1e3a5f] rounded-full"
                           transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
                         />
                       )}
-                      <span className="relative z-10">{c}</span>
+                      <span className="relative z-10 font-bold">{c}</span>
                     </button>
                   ))}
                 </LayoutGroup>
               </div>
-            </div>
-
-            <div className="relative">
-              <button
-                onClick={() => setSortOpen(!sortOpen)}
-                className="h-full flex items-center gap-2.5 px-6 py-2 rounded-full glass border border-white/5 text-[9px] font-mono text-text-2 hover:border-cyan/30 transition-all uppercase tracking-widest"
-              >
-                <span>{SORT_LABELS[sort]}</span>
-                <ChevronDown size={10} className={`transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {sortOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 top-full mt-4 z-50 py-3 rounded-2xl bg-bg-1 border border-white/10 shadow-3xl min-w-[220px]"
-                  >
-                    {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
-                      <button
-                        key={k}
-                        onClick={() => { setSort(k); setSortOpen(false); }}
-                        className={`w-full px-6 py-4 text-left text-[10px] font-mono uppercase tracking-widest transition-colors ${sort === k ? "text-cyan bg-cyan/5" : "text-text-2 hover:bg-white/5"}`}
-                      >
-                        {SORT_LABELS[k]}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
         </div>

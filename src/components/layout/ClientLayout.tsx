@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ThemeProvider } from "next-themes";
+import { motion } from "framer-motion";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import CustomCursor from "@/components/ui/CustomCursor";

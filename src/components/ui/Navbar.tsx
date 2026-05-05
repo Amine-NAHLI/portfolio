@@ -42,10 +42,14 @@ export default function Navbar() {
   return (
     <>
       <nav 
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolled ? "py-3" : "py-6"}`}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+          scrolled 
+            ? "py-0 bg-bg-1/80 backdrop-blur-md border-b border-bg-3 dark:border-nav-border" 
+            : "py-4 bg-transparent"
+        }`}
       >
         <div className="max-w-6xl mx-auto px-6">
-          <div className={`flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500 ${scrolled ? "glass shadow-2xl" : "bg-transparent"}`}>
+          <div className="flex items-center justify-between py-3">
             
             {/* Logo */}
             <Link href="#home" className="group flex items-center gap-2.5">
@@ -64,7 +68,7 @@ export default function Navbar() {
                   key={link.name}
                   href={link.href}
                   className={`font-mono text-[9px] uppercase tracking-[0.4em] transition-colors relative group ${
-                    activeSection === link.href.replace("#", "") ? "text-accent-cyan" : "text-text-4 hover:text-text-1"
+                    activeSection === link.href.replace("#", "") ? "text-accent-cyan" : "text-text-3 dark:text-text-4 hover:text-text-1"
                   }`}
                 >
                   {link.name}
@@ -77,7 +81,7 @@ export default function Navbar() {
               <ThemeToggle />
               <Link
                 href="#contact"
-                className="px-5 py-1.5 rounded-full border border-text-1/[0.1] text-[9px] font-mono uppercase tracking-[0.4em] text-text-1 hover:bg-text-1/[0.05] transition-colors"
+                className="px-5 py-1.5 rounded-full border border-bg-3 dark:border-text-1/[0.1] text-[9px] font-mono uppercase tracking-[0.4em] text-text-2 dark:text-text-1 hover:bg-bg-2 dark:hover:bg-text-1/[0.05] transition-colors"
               >
                 Hire
               </Link>

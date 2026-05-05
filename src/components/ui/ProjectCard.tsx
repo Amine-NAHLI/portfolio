@@ -45,23 +45,23 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           transformStyle: "preserve-3d" 
         }}
         animate={{ 
-          y: [0, -6, 0],
+          y: 0,
         }}
+        whileHover={{ y: -10 }}
         transition={{
-          duration: 5 + (index % 4),
-          repeat: Infinity,
-          ease: "easeInOut"
+          duration: 0.5,
+          ease: EASE
         }}
-        className="group relative h-full w-full rounded-[2.5rem] bg-bg-1/90 backdrop-blur-sm border border-text-1/10 overflow-hidden flex flex-col p-10 transition-all duration-700 cursor-pointer shadow-xl hover:shadow-2xl hover:border-text-1/20"
+        className="group relative h-full w-full rounded-[2.5rem] bg-bg-1 border border-bg-3 dark:border-[#1e293b] overflow-hidden flex flex-col p-10 transition-all duration-700 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none hover:shadow-2xl hover:border-accent-cyan/40"
       >
         {/* BACKGROUND ELEMENTS */}
         <div 
-          className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none"
+          className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 dark:group-hover:opacity-[0.05] transition-opacity duration-1000 pointer-events-none"
           style={{ backgroundColor: accentColor }}
         />
         
         <div className="absolute top-10 right-10 flex flex-col items-end opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700 select-none pointer-events-none">
-           <span className="text-[12rem] font-black leading-none uppercase tracking-tighter">
+           <span className="text-[12rem] font-black leading-none uppercase tracking-tighter text-text-1">
              {project.title?.charAt(0) || "P"}
            </span>
         </div>
@@ -69,14 +69,14 @@ export default function ProjectCard({ project, index }: { project: Project; inde
         {/* HEADER */}
         <div className="relative z-10 flex items-start justify-between mb-auto">
           <div 
-            className="w-14 h-14 rounded-2xl flex items-center justify-center text-text-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-lg"
+            className="w-14 h-14 rounded-2xl flex items-center justify-center text-text-3 dark:text-text-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-sm"
             style={{ backgroundColor: 'var(--bg-2)' }}
           >
             <Icon size={24} />
           </div>
           <div className="flex flex-col items-end gap-1">
              <span className="font-mono text-[10px] text-text-4 uppercase tracking-[0.3em]">{project.year}</span>
-             <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-text-1/[0.03] border border-text-1/[0.05]">
+             <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-bg-2 border border-bg-3 dark:bg-text-1/[0.03] dark:border-text-1/[0.05]">
                <Star size={10} className="text-amber-500" />
                <span className="font-mono text-[10px] text-text-2">{project.stars}</span>
              </div>
@@ -89,14 +89,14 @@ export default function ProjectCard({ project, index }: { project: Project; inde
             {project.title}
           </h3>
           
-          <p className={`text-text-3 font-medium opacity-70 group-hover:opacity-100 transition-all duration-500 mb-8 ${isLarge ? 'text-lg line-clamp-4' : 'text-sm line-clamp-2'}`}>
+          <p className={`text-text-3 font-medium transition-all duration-500 mb-8 ${isLarge ? 'text-lg line-clamp-4' : 'text-sm line-clamp-2'}`}>
             {project.description || "Experimental engineering project focused on modular architecture and performance optimization."}
           </p>
 
           {/* TECHNOLOGY TAGS */}
           <div className="flex flex-wrap gap-2 mb-10">
-             {project.tags.slice(0, isLarge ? 6 : 3).map(tag => (
-               <span key={tag} className="px-3 py-1 rounded-lg bg-text-1/[0.03] border border-text-1/[0.05] font-mono text-[9px] text-text-4 uppercase tracking-widest group-hover:border-text-1/[0.1] transition-colors">
+             {project.tags.slice(0, isLarge ? 6 : 3).map((tag, idx) => (
+               <span key={`${tag}-${idx}`} className="px-3 py-1 rounded-lg bg-[#eff6ff] text-[#3b82f6] border border-[#3b82f6]/10 dark:bg-text-1/[0.03] dark:text-text-4 dark:border-text-1/[0.05] font-mono text-[9px] uppercase tracking-widest group-hover:scale-105 transition-all">
                  {tag}
                </span>
              ))}

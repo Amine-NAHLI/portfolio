@@ -18,8 +18,8 @@ const ROLES = [
 /* ─── Animated Mesh Gradient ─────────────────────────────────────── */
 
 const MeshGradient = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20 dark:opacity-40 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
-    <div className="absolute inset-0 noise-bg mix-blend-soft-light opacity-20 dark:opacity-10" />
+  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 dark:opacity-[0.08] [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
+    <div className="absolute inset-0 noise-bg mix-blend-soft-light opacity-10 dark:opacity-[0.05]" />
     <motion.div
       animate={{
         x: [0, 100, -100, 0],
@@ -44,7 +44,7 @@ const MeshGradient = () => (
       transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
       className="absolute top-[20%] right-[10%] w-[60%] h-[60%] rounded-full bg-accent-purple/10 blur-[120px]"
     />
-    <div className="absolute inset-0 grid-bg opacity-[0.05] dark:opacity-[0.03]" />
+    <div className="absolute inset-0 grid-bg opacity-[0.05] dark:opacity-[0.02]" />
   </div>
 );
 
@@ -80,6 +80,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
 
   return (
     <section id="home" className="relative min-h-svh w-full flex items-center justify-center overflow-hidden py-12 bg-transparent">
+      <MeshGradient />
       <motion.div 
         style={{ opacity, y }}
         variants={container}
@@ -88,12 +89,12 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
         className="relative z-10 w-full max-w-6xl px-6 md:px-12 flex flex-col items-center text-center"
       >
         {/* Availability */}
-        <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full glass border border-white/5 mb-8 shadow-xl">
+        <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent-green-bg dark:bg-[#111827] border border-accent-green/10 dark:border-[#1e293b] mb-8 shadow-sm dark:shadow-none transition-colors">
           <div className="relative flex h-2 w-2">
-            <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-success"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+            <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-accent-green"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-text-3">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-green font-bold">
             Available for opportunities
           </span>
         </motion.div>
@@ -106,7 +107,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
                  initial={{ y: "100%" }}
                  animate={{ y: 0 }}
                  transition={{ delay: 0.5 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                 className={`inline-block ${i === 1 ? "gradient-text" : "text-text-1"}`}
+                 className={`inline-block ${i === 1 ? "text-accent-cyan" : "text-text-1"}`}
                >
                  {word}
                </motion.span>
@@ -115,7 +116,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
         </motion.h1>
 
         {/* Tagline */}
-        <motion.div variants={item} className="font-mono text-lg md:text-xl text-text-3 flex items-center justify-center gap-4">
+        <motion.div variants={item} className="font-mono text-lg md:text-xl text-text-2 dark:text-text-3 flex items-center justify-center gap-4">
           <span>{displayText}</span>
           <motion.span 
             animate={{ opacity: [1, 0, 1] }}
@@ -128,7 +129,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
         <motion.div variants={item} className="mt-12 flex flex-wrap items-center justify-center gap-6">
           <Link
             href="#projects"
-            className="group flex items-center gap-2.5 px-8 py-4 rounded-full bg-text-1 text-bg-0 font-bold uppercase tracking-widest text-[10px] transition-all hover:scale-[1.03] active:scale-[0.98] shadow-2xl"
+            className="group flex items-center gap-2.5 px-8 py-4 rounded-full bg-text-1 text-bg-0 dark:bg-accent-cyan dark:text-[#0f172a] font-bold uppercase tracking-widest text-[10px] transition-all hover:bg-accent-cyan dark:hover:bg-accent-cyan/80 hover:scale-[1.03] active:scale-[0.98] shadow-2xl"
           >
             Explore Work
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -137,7 +138,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
           <div className="flex items-center gap-5">
             <Link
               href="#contact"
-              className="font-mono text-[9px] uppercase tracking-[0.3em] text-text-4 hover:text-text-1 transition-colors"
+              className="px-8 py-4 rounded-full border border-bg-3 dark:border-white/10 font-mono text-[9px] uppercase tracking-[0.3em] text-text-2 dark:text-text-4 hover:text-text-1 dark:hover:text-text-1 transition-all"
             >
               Contact
             </Link>

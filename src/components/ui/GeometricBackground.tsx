@@ -16,20 +16,18 @@ const MathematicalShape = ({ position, rotationSpeed, args, color, type }: any) 
   });
 
   return (
-    <Float speed={2} rotationIntensity={1} floatIntensity={2}>
+    <Float speed={1} rotationIntensity={0.5} floatIntensity={1}>
       <mesh position={position} ref={meshRef}>
         {type === "icosahedron" && <icosahedronGeometry args={args} />}
-        {type === "torusKnot" && <torusKnotGeometry args={args} />}
+        {type === "torusKnot" && <torusKnotGeometry args={[args[0], args[1], 64, 16]} />}
         {type === "octahedron" && <octahedronGeometry args={args} />}
         {type === "dodecahedron" && <dodecahedronGeometry args={args} />}
         
-        <meshStandardMaterial 
+        <meshBasicMaterial 
           color={color} 
           wireframe 
           transparent 
-          opacity={0.15} 
-          emissive={color}
-          emissiveIntensity={0.5}
+          opacity={0.1} 
         />
       </mesh>
     </Float>

@@ -21,35 +21,30 @@ export default function CustomCursor() {
       if (!visible) setVisible(true);
     };
 
-    const handleHover = () => {
-      const hoverables = document.querySelectorAll("a, button, [role='button']");
-      hoverables.forEach(el => {
-        el.addEventListener("mouseenter", () => setHoverType("link"));
-        el.addEventListener("mouseleave", () => setHoverType("none"));
-      });
+    const onMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const hoverable = target.closest("a, button, [role='button'], .project-card");
+      const isCanvas = target.tagName.toLowerCase() === "canvas";
 
-      const cards = document.querySelectorAll("#projects [role='button'], .project-card");
-      cards.forEach(el => {
-        el.addEventListener("mouseenter", () => setHoverType("card"));
-        el.addEventListener("mouseleave", () => setHoverType("none"));
-      });
-
-      const canvases = document.querySelectorAll("canvas");
-      canvases.forEach(el => {
-        el.addEventListener("mouseenter", () => setHoverType("three"));
-        el.addEventListener("mouseleave", () => setHoverType("none"));
-      });
+      if (isCanvas) {
+        setHoverType("three");
+      } else if (hoverable) {
+        if (hoverable.classList.contains("project-card") || hoverable.closest("#projects")) {
+          setHoverType("card");
+        } else {
+          setHoverType("link");
+        }
+      } else {
+        setHoverType("none");
+      }
     };
 
-    window.addEventListener("mousemove", onMouseMove);
-    handleHover();
-
-    const obs = new MutationObserver(handleHover);
-    obs.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("mouseover", onMouseOver, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
-      obs.disconnect();
+      window.removeEventListener("mouseover", onMouseOver);
     };
   }, [visible, mouseX, mouseY]);
 

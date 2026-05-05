@@ -144,8 +144,8 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 pt-4">
-                {project.tags.map(tag => (
-                  <span key={tag} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-mono text-text-4 uppercase tracking-widest hover:border-accent-cyan/30 transition-colors">
+                {project.tags.map((tag, idx) => (
+                  <span key={`${tag}-${idx}`} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-mono text-text-4 uppercase tracking-widest hover:border-accent-cyan/30 transition-colors">
                     {tag}
                   </span>
                 ))}

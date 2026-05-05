@@ -25,7 +25,7 @@ export default function Footer({ latestProject }: { latestProject: Project | nul
   }, []);
 
   return (
-    <footer className="relative pt-48 pb-12 bg-bg-0 overflow-hidden border-t border-white/5">
+    <footer className="relative pt-48 pb-12 bg-bg-0 overflow-hidden border-t border-bg-3 dark:border-white/5">
       {/* Dynamic Background Grid */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.02]">
          <div className="absolute inset-0 grid-bg" />
@@ -35,20 +35,19 @@ export default function Footer({ latestProject }: { latestProject: Project | nul
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
 
-
         {/* Tactical Navigation & Data Grid (REMOVED per user request) */}
 
         {/* Industrial Attribution */}
-        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="pt-12 border-t border-bg-3 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-6">
              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">© {new Date().getFullYear()} Amine Nahli — Session Persistent</span>
-             <div className="h-px w-12 bg-white/10" />
-             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan">Secure.Terminal</span>
+             <div className="h-px w-12 bg-bg-3 dark:bg-white/10" />
+             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-bold">Secure.Terminal</span>
           </div>
 
           <div className="flex items-center gap-8 font-mono text-[9px] uppercase tracking-[0.4em] text-text-4">
              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                <div className="w-1.5 h-1.5 rounded-full bg-accent-green" />
                 <span>Systems_Optimal</span>
              </div>
              <span>Fès, Morocco</span>

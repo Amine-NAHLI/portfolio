@@ -15,12 +15,16 @@ export default function CustomCursor() {
   const y = useSpring(mouseY, springConfig);
 
   const hoverTypeRef = useRef<string>("none");
+  const visibleRef = useRef(false);
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-      if (!visible) setVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setVisible(true);
+      }
     };
 
     const onMouseOver = (e: MouseEvent) => {
@@ -49,7 +53,7 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseover", onMouseOver);
     };
-  }, [visible, mouseX, mouseY]);
+  }, [mouseX, mouseY]);
 
   if (!visible) return null;
 
@@ -87,8 +91,8 @@ export default function CustomCursor() {
                 exit={{ opacity: 0 }}
                 className="relative w-full h-full flex items-center justify-center"
               >
-                 <div className="absolute w-4 h-px bg-cyan" />
-                 <div className="absolute h-4 w-px bg-cyan" />
+                 <div className="absolute w-4 h-px bg-accent-cyan" />
+                 <div className="absolute h-4 w-px bg-accent-cyan" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -101,7 +105,7 @@ export default function CustomCursor() {
             opacity: hoverType !== "none" ? 0 : 0.5,
           }}
           transition={{ duration: 0.5 }}
-          className="absolute inset-0 border border-cyan rounded-full w-8 h-8 -ml-4 -mt-4"
+          className="absolute inset-0 border border-accent-cyan rounded-full w-8 h-8 -ml-4 -mt-4"
         />
       </motion.div>
     </div>

@@ -57,7 +57,7 @@ export default function Footer({ latestProject }: { latestProject: Project | nul
               <div className="h-px w-12 bg-bg-3 dark:bg-white/10" />
               <Link 
                 href="/admin/login" 
-                className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-bold hover:text-white transition-colors cursor-pointer"
+                className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-bold hover:text-accent-cyan/70 dark:hover:text-white transition-colors cursor-pointer"
               >
                 Secure.Terminal
               </Link>

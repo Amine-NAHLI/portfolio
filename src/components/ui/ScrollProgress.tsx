@@ -20,7 +20,7 @@ export default function ScrollProgress() {
           cx="50"
           cy="50"
           r="40"
-          stroke="rgba(255,255,255,0.1)"
+          stroke="var(--border-card)"
           strokeWidth="6"
           fill="none"
         />

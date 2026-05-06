@@ -24,34 +24,22 @@ interface ProjectProps {
 export default function ProjectCard({ project, index }: { project: ProjectProps; index: number }) {
   const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt();
 
-  // Smart Bento Logic - Only Width Asymmetry to prevent empty vertical space
-  const isLarge = index % 6 === 0; 
+  // only width asymmetry — avoids empty vertical space in the bento grid
+  const isLarge = index % 6 === 0;
   const isWide = index % 6 === 3;
 
   const getCategoryTheme = (cat: string) => {
     const c = cat.toLowerCase();
-    
-    // Security / Cyber
-    if (c.includes("security") || c.includes("cyber")) 
+    if (c.includes("security") || c.includes("cyber"))
       return { Icon: Shield, color: "var(--accent-cyan)" };
-    
-    // AI / ML
-    if (c.includes("ai") || c.includes("machine") || c.includes("vision") || c.includes("intelligence") || c.includes("brain")) 
+    if (c.includes("ai") || c.includes("machine") || c.includes("vision") || c.includes("intelligence") || c.includes("brain"))
       return { Icon: Brain, color: "var(--accent-purple)" };
-    
-    // Frontend / Web
-    if (c.includes("front") || c.includes("web") || c.includes("layout") || c.includes("ui")) 
+    if (c.includes("front") || c.includes("web") || c.includes("layout") || c.includes("ui"))
       return { Icon: Layout, color: "var(--accent-indigo)" };
-    
-    // DevOps / Infra
-    if (c.includes("devops") || c.includes("infra") || c.includes("cloud") || c.includes("server") || c.includes("docker")) 
+    if (c.includes("devops") || c.includes("infra") || c.includes("cloud") || c.includes("server") || c.includes("docker"))
       return { Icon: Server, color: "var(--accent-green)" };
-    
-    // Mobile
-    if (c.includes("mobile") || c.includes("app") || c.includes("phone")) 
+    if (c.includes("mobile") || c.includes("app") || c.includes("phone"))
       return { Icon: Smartphone, color: "var(--accent-cyan)" };
-
-    // Default
     return { Icon: Database, color: "var(--accent-cyan)" };
   };
 
@@ -74,57 +62,58 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
         rel="noopener noreferrer"
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        style={{ 
+        style={{
           rotateX, rotateY,
-          transformStyle: "preserve-3d" 
+          transformStyle: "preserve-3d"
         }}
         animate={{ y: 0 }}
         whileHover={{ y: -10 }}
         transition={{ duration: 0.5, ease: EASE }}
-        className={`group relative h-fit w-full rounded-[2.5rem] bg-bg-1 border border-bg-3 dark:border-[#1e293b] overflow-hidden flex flex-col transition-all duration-700 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none hover:shadow-2xl hover:border-accent-cyan/40 ${isLarge ? 'p-10' : 'p-8'}`}
+        className={`group relative h-fit w-full rounded-[2.5rem] bg-bg-1 border border-bg-3 dark:border-white/10 overflow-hidden flex flex-col transition-all duration-700 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none hover:shadow-2xl hover:border-accent-cyan/40 ${isLarge ? 'p-10' : 'p-8'}`}
       >
-        {/* BACKGROUND ELEMENTS */}
-        <div 
+        <div
           className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 dark:group-hover:opacity-[0.05] transition-opacity duration-1000 pointer-events-none"
           style={{ backgroundColor: accentColor }}
         />
-        
+
         <div className="absolute top-10 right-10 flex flex-col items-end opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700 select-none pointer-events-none">
            <span className={`${isLarge ? 'text-[12rem]' : 'text-[8rem]'} font-black leading-none uppercase tracking-tighter text-text-1`}>
              {project.title?.charAt(0) || "P"}
            </span>
         </div>
- 
-        {/* HEADER */}
+
         <div className="relative z-20 flex items-start justify-between mb-6">
-          <div 
+          <div
             className={`${isLarge ? 'w-14 h-14' : 'w-12 h-12'} rounded-2xl flex items-center justify-center text-text-3 dark:text-text-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-sm`}
             style={{ backgroundColor: 'var(--bg-2)' }}
           >
             <Icon size={isLarge ? 24 : 20} />
           </div>
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-end gap-2 text-right">
              <span className="font-mono text-[9px] text-text-3 uppercase tracking-[0.3em]">{year}</span>
              {project.language && (
-               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-2 border border-bg-3 dark:bg-text-1/[0.03] dark:border-text-1/[0.05] max-w-[120px] md:max-w-none">
-                 <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan flex-shrink-0" />
-                 <span className="font-mono text-[8px] md:text-[9px] text-text-2 truncate">{project.language}</span>
+               <div className="flex flex-wrap justify-end gap-1.5 max-w-[200px]">
+                 {project.language.split(',').map((lang, i) => (
+                   <div key={i} className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-bg-2 border border-bg-3 dark:bg-text-1/[0.03] dark:border-text-1/[0.05]">
+                     <div className="w-1 h-1 rounded-full bg-accent-cyan flex-shrink-0" />
+                     <span className="font-mono text-[8px] text-text-2 whitespace-nowrap">{lang.trim()}</span>
+                   </div>
+                 ))}
                </div>
              )}
           </div>
         </div>
- 
+
         {/* MAIN CONTENT */}
         <div className="relative z-10 flex-none flex flex-col">
-          <h3 className={`font-black tracking-tighter text-text-1 leading-[0.95] mb-4 group-hover:text-accent-cyan transition-colors ${isLarge ? 'text-5xl md:text-6xl' : 'text-2xl md:text-3xl'}`}>
+          <h3 className={`font-black tracking-tighter text-text-1 leading-[1.1] mb-4 group-hover:text-accent-cyan transition-colors ${isLarge ? 'text-5xl md:text-6xl' : 'text-2xl md:text-3xl'}`}>
             {formatProjectTitle(project.title)}
           </h3>
-          
+
           <p className={`text-text-3 font-medium transition-all duration-500 mb-6 flex-1 ${isLarge ? 'text-lg' : 'text-xs'}`}>
             {project.description}
           </p>
- 
-          {/* TECHNOLOGY TAGS */}
+
           <div className="flex flex-wrap gap-1.5 mb-8">
              {(project.tags || []).map((tag, idx) => (
                <span key={`${tag}-${idx}`} className="px-2.5 py-1 rounded-lg bg-bg-2 text-text-2 border border-bg-3 dark:bg-text-1/[0.03] dark:text-text-3 dark:border-text-1/[0.05] font-mono text-[8px] uppercase tracking-widest transition-all hover:text-accent-cyan">
@@ -132,9 +121,8 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
                </span>
              ))}
           </div>
- 
-          {/* ACTION BAR */}
-          <div className="pt-6 border-t border-text-1/[0.05] flex items-center justify-between opacity-100">
+
+          <div className="pt-6 border-t border-slate-200 dark:border-text-1/[0.05] flex items-center justify-between opacity-100">
             <div className="flex flex-col">
                <span className="font-mono text-[7px] md:text-[8px] uppercase tracking-[0.4em] text-text-3 mb-1">Source</span>
                  <span className="text-text-2 font-bold text-[9px] md:text-xs uppercase tracking-widest flex items-center gap-2">
@@ -142,8 +130,8 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
                    {isLarge ? 'View Repository' : 'Source'}
                  </span>
             </div>
-            
-            <motion.div 
+
+            <motion.div
               whileHover={{ x: 5 }}
               className="flex items-center gap-3"
             >
@@ -154,7 +142,7 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
             </motion.div>
           </div>
         </div>
- 
+
       </motion.a>
     </motion.div>
   );

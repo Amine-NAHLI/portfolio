@@ -97,7 +97,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
         {/* LEFT CONTENT */}
         <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
           {/* Availability */}
-          <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent-green-bg dark:bg-[#111827] border border-accent-green/10 dark:border-[#1e293b] mb-10 shadow-sm dark:shadow-none transition-colors">
+          <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent-green-bg border border-accent-green/20 dark:border-white/10 mb-10 shadow-sm dark:shadow-none transition-colors">
             <div className="relative flex h-2 w-2">
               <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-accent-green"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
@@ -165,7 +165,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
               href={githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-4 hover:text-cyan transition-colors"
+              className="text-text-4 hover:text-accent-cyan transition-colors"
             >
               <GithubIcon size={20} />
             </a>
@@ -208,7 +208,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
             <div className="absolute -top-4 -right-4 w-24 h-24 border-t-2 border-r-2 border-accent-cyan/20 rounded-tr-[3rem] pointer-events-none" />
             <div className="absolute -bottom-4 -left-4 w-24 h-24 border-b-2 border-l-2 border-accent-cyan/20 rounded-bl-[3rem] pointer-events-none" />
             
-            <div className="relative w-[280px] h-[350px] md:w-[350px] md:h-[450px] rounded-[3rem] border-2 border-white/5 p-3 bg-white/[0.02] backdrop-blur-3xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
+            <div className="relative w-[280px] h-[350px] md:w-[350px] md:h-[450px] rounded-[3rem] border-2 border-slate-200 dark:border-white/5 p-3 bg-slate-50 dark:bg-white/[0.02] backdrop-blur-3xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
               <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative">
                 <img 
                   src="/nahli.png" 
@@ -260,11 +260,11 @@ const ScrollIndicator = () => (
     transition={{ delay: 2, duration: 1 }}
     className="absolute bottom-12 right-12 hidden lg:flex flex-col items-center gap-4"
   >
-    <div className="h-24 w-px bg-white/10 relative overflow-hidden">
+    <div className="h-24 w-px bg-slate-200 dark:bg-white/10 relative overflow-hidden">
       <motion.div 
         animate={{ y: ["-100%", "100%"] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan to-transparent"
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-cyan to-transparent"
       />
     </div>
     <span className="font-mono text-[9px] uppercase tracking-[0.5em] vertical-text text-text-4">Scroll</span>

@@ -2,9 +2,11 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Layout, Sparkles, FolderCode } from "lucide-react";
+import { ArrowRight, Shield, Layout, Sparkles, FolderCode, Brain, Server, Smartphone, Database } from "lucide-react";
 import { GithubIcon } from "@/components/ui/Icons";
 import { useTilt } from "@/hooks/useTilt";
+
+import { formatProjectTitle } from "@/lib/utils";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -28,11 +30,29 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
 
   const getCategoryTheme = (cat: string) => {
     const c = cat.toLowerCase();
-    if (c.includes("security") || c.includes("cyber")) return { Icon: Shield, color: "var(--accent-cyan)" };
-    if (c.includes("full-stack") || c.includes("web") || c.includes("frontend") || c.includes("backend")) return { Icon: Layout, color: "var(--accent-indigo)" };
-    if (c.includes("ai") || c.includes("machine") || c.includes("vision") || c.includes("intelligence")) return { Icon: Sparkles, color: "var(--accent-purple)" };
-    if (c.includes("infra") || c.includes("devops") || c.includes("cloud") || c.includes("docker")) return { Icon: FolderCode, color: "var(--accent-green)" };
-    return { Icon: FolderCode, color: "var(--accent-cyan)" };
+    
+    // Security / Cyber
+    if (c.includes("security") || c.includes("cyber")) 
+      return { Icon: Shield, color: "var(--accent-cyan)" };
+    
+    // AI / ML
+    if (c.includes("ai") || c.includes("machine") || c.includes("vision") || c.includes("intelligence") || c.includes("brain")) 
+      return { Icon: Brain, color: "var(--accent-purple)" };
+    
+    // Frontend / Web
+    if (c.includes("front") || c.includes("web") || c.includes("layout") || c.includes("ui")) 
+      return { Icon: Layout, color: "var(--accent-indigo)" };
+    
+    // DevOps / Infra
+    if (c.includes("devops") || c.includes("infra") || c.includes("cloud") || c.includes("server") || c.includes("docker")) 
+      return { Icon: Server, color: "var(--accent-green)" };
+    
+    // Mobile
+    if (c.includes("mobile") || c.includes("app") || c.includes("phone")) 
+      return { Icon: Smartphone, color: "var(--accent-cyan)" };
+
+    // Default
+    return { Icon: Database, color: "var(--accent-cyan)" };
   };
 
   const { Icon, color: accentColor } = getCategoryTheme(project.category);
@@ -84,7 +104,7 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
             <Icon size={isLarge ? 24 : 20} />
           </div>
           <div className="flex flex-col items-end gap-1">
-             <span className="font-mono text-[9px] text-text-4 uppercase tracking-[0.3em]">{year}</span>
+             <span className="font-mono text-[9px] text-text-3 uppercase tracking-[0.3em]">{year}</span>
              {project.language && (
                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-2 border border-bg-3 dark:bg-text-1/[0.03] dark:border-text-1/[0.05] max-w-[120px] md:max-w-none">
                  <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan flex-shrink-0" />
@@ -97,7 +117,7 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
         {/* MAIN CONTENT */}
         <div className="relative z-10 flex-none flex flex-col">
           <h3 className={`font-black tracking-tighter text-text-1 leading-[0.95] mb-4 group-hover:text-accent-cyan transition-colors ${isLarge ? 'text-5xl md:text-6xl' : 'text-2xl md:text-3xl'}`}>
-            {project.title}
+            {formatProjectTitle(project.title)}
           </h3>
           
           <p className={`text-text-3 font-medium transition-all duration-500 mb-6 flex-1 ${isLarge ? 'text-lg' : 'text-xs'}`}>
@@ -107,7 +127,7 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
           {/* TECHNOLOGY TAGS */}
           <div className="flex flex-wrap gap-1.5 mb-8">
              {(project.tags || []).map((tag, idx) => (
-               <span key={`${tag}-${idx}`} className="px-2.5 py-1 rounded-lg bg-[#eff6ff] text-[#3b82f6] border border-[#3b82f6]/10 dark:bg-text-1/[0.03] dark:text-text-4 dark:border-text-1/[0.05] font-mono text-[8px] uppercase tracking-widest transition-all">
+               <span key={`${tag}-${idx}`} className="px-2.5 py-1 rounded-lg bg-bg-2 text-text-2 border border-bg-3 dark:bg-text-1/[0.03] dark:text-text-3 dark:border-text-1/[0.05] font-mono text-[8px] uppercase tracking-widest transition-all hover:text-accent-cyan">
                  {tag}
                </span>
              ))}
@@ -116,9 +136,9 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
           {/* ACTION BAR */}
           <div className="pt-6 border-t border-text-1/[0.05] flex items-center justify-between opacity-100">
             <div className="flex flex-col">
-               <span className="font-mono text-[7px] md:text-[8px] uppercase tracking-[0.4em] text-text-4 mb-1">Source</span>
+               <span className="font-mono text-[7px] md:text-[8px] uppercase tracking-[0.4em] text-text-3 mb-1">Source</span>
                  <span className="text-text-2 font-bold text-[9px] md:text-xs uppercase tracking-widest flex items-center gap-2">
-                   <GithubIcon size={isLarge ? 14 : 12} className="text-text-4" />
+                   <GithubIcon size={isLarge ? 14 : 12} className="text-text-3" />
                    {isLarge ? 'View Repository' : 'Source'}
                  </span>
             </div>
@@ -135,14 +155,6 @@ export default function ProjectCard({ project, index }: { project: ProjectProps;
           </div>
         </div>
  
-        {/* DECORATIVE ORBIT */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
-           <div 
-             className="absolute top-0 right-0 w-[500px] h-[500px] border border-text-1/[0.02] rounded-full -translate-y-1/3 translate-x-1/3 animate-spin-slow"
-             style={{ borderColor: `${accentColor}10` }}
-           />
-           <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-bg-0/50 to-transparent" />
-        </div>
       </motion.a>
     </motion.div>
   );

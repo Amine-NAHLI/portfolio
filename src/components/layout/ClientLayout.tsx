@@ -1,16 +1,10 @@
 "use client";
 
 import React, { useEffect } from "react";
-import dynamic from "next/dynamic";
 import { ThemeProvider } from "next-themes";
-import { motion } from "framer-motion";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import CustomCursor from "@/components/ui/CustomCursor";
-
-const GeometricBackground = dynamic(() => import("@/components/ui/GeometricBackground"), {
-  ssr: false,
-});
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -27,7 +21,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} storageKey="theme" enableColorScheme={true}>
-      <GeometricBackground />
       <CustomCursor />
       <ScrollProgress />
       <SmoothScroll>

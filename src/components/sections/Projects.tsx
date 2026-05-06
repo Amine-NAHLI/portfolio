@@ -108,16 +108,21 @@ export default function Projects({ projects, stats }: { projects: SupabaseProjec
         )}
 
         {/* Explore Archive */}
-        <div className="mt-24 flex justify-center">
-           <a 
-             href={stats.githubUrl || `https://github.com/Amine-NAHLI`} 
-             target="_blank"
-             className="flex flex-col items-center gap-4 group"
-           >
-             <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4 group-hover:text-text-2 transition-colors">Explore Archive</span>
-             <div className="w-px h-16 bg-text-1/[0.1] group-hover:h-24 transition-all duration-700" />
-           </a>
-        </div>
+        {projects.length > 0 && (
+          <div className="mt-10 flex justify-center">
+             <a 
+               href={stats.githubUrl || `https://github.com/Amine-NAHLI`} 
+               target="_blank"
+               className="w-full max-w-xl flex flex-col items-center gap-6 p-10 border border-dashed border-bg-3 dark:border-white/10 rounded-2xl group transition-all hover:bg-white/[0.02]"
+             >
+               <div className="flex flex-col items-center gap-2">
+                 <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4 group-hover:text-accent-cyan transition-colors">Explore Archive</span>
+                 <p className="text-xs text-text-3 font-medium">Full repository list on GitHub</p>
+               </div>
+               <div className="w-px h-8 bg-text-1/[0.1] group-hover:h-12 group-hover:bg-accent-cyan transition-all duration-700" />
+             </a>
+          </div>
+        )}
       </div>
     </section>
   );

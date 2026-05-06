@@ -48,14 +48,14 @@ export default function AdminLogin() {
               <ShieldCheck size={32} />
             </div>
             <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-text-1 uppercase">Admin Access</h1>
-            <p className="text-slate-400 dark:text-text-4 font-mono text-[10px] uppercase tracking-widest mt-2">Secure Terminal Session</p>
+            <p className="text-slate-500 dark:text-text-4 font-mono text-[10px] uppercase tracking-widest mt-2">Secure Terminal Session</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-text-4 ml-4">Identifier</label>
               <div className="relative">
-                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-text-4" size={18} />
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-text-4" size={18} />
                 <input 
                   type="email" 
                   value={email}
@@ -70,7 +70,7 @@ export default function AdminLogin() {
             <div className="space-y-2">
               <label className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-text-4 ml-4">Access Key</label>
               <div className="relative">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-text-4" size={18} />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-text-4" size={18} />
                 <input 
                   type="password" 
                   value={password}
@@ -108,7 +108,7 @@ export default function AdminLogin() {
           <div className="mt-8 flex justify-center">
             <button 
               onClick={() => router.push("/")}
-              className="text-slate-400 dark:text-text-4 font-mono text-[9px] uppercase tracking-widest hover:text-accent-cyan transition-colors"
+              className="text-slate-500 dark:text-text-4 font-mono text-[9px] uppercase tracking-widest hover:text-accent-cyan transition-colors"
             >
               ← Return to Portfolio
             </button>

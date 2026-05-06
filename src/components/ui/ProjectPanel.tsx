@@ -55,10 +55,10 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.5, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-4xl max-h-[90vh] bg-bg-1 border border-white/10 rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden z-10"
+            className="relative w-full max-w-4xl max-h-[90vh] bg-bg-1 border border-slate-200 dark:border-white/10 rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden z-10"
           >
             {/* Header */}
-            <div className="p-8 md:p-10 border-b border-white/5 flex items-start justify-between bg-bg-1/50 backdrop-blur-md sticky top-0 z-20">
+            <div className="p-8 md:p-10 border-b border-slate-100 dark:border-white/5 flex items-start justify-between bg-bg-1/80 dark:bg-bg-1/50 backdrop-blur-md sticky top-0 z-20">
               <div>
                 <div className="flex items-center gap-3 mb-3">
                    <span className="font-mono text-[10px] text-accent-cyan uppercase tracking-widest px-2.5 py-1 bg-accent-cyan/10 border border-accent-cyan/20 rounded-lg">
@@ -70,7 +70,7 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
               </div>
               <button 
                 onClick={onClose}
-                className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-text-4 hover:text-text-1 transition-all"
+                className="p-3 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-text-4 hover:text-text-1 transition-all"
               >
                 <X size={24} />
               </button>
@@ -85,7 +85,7 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
                   { icon: GitFork, val: project.forks || 0, label: "Forks", color: "text-accent-indigo" },
                   { icon: Calendar, val: new Date(project.updatedAt).getFullYear(), label: "Updated", color: "text-accent-cyan" }
                 ].map((stat, i) => (
-                  <div key={i} className="p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
+                  <div key={i} className="p-6 rounded-[2rem] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10 transition-colors">
                     <stat.icon size={20} className={stat.color + " mb-4"} />
                     <p className="text-3xl font-black text-text-1 tracking-tighter">{stat.val}</p>
                     <p className="text-[10px] font-mono uppercase text-text-4 tracking-[0.3em]">{stat.label}</p>
@@ -99,7 +99,7 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
                   <Layout size={18} className="text-accent-cyan" />
                   <h3 className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-3">Language Ecosystem</h3>
                 </div>
-                <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden flex">
+                <div className="h-3 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden flex">
                   <div 
                     className="h-full" 
                     style={{ 
@@ -128,12 +128,12 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
                   <BookOpen size={18} className="text-accent-cyan" />
                   <h3 className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-3">README_PREVIEW.MD</h3>
                 </div>
-                <div className="relative p-8 rounded-[2rem] bg-bg-0/50 border border-white/5 font-mono text-sm leading-relaxed text-text-3 overflow-hidden min-h-[200px]">
+                <div className="relative p-8 rounded-[2rem] bg-slate-50 dark:bg-bg-0/50 border border-slate-200 dark:border-white/5 font-mono text-sm leading-relaxed text-text-3 overflow-hidden min-h-[200px]">
                   {loading ? (
                     <div className="space-y-6 animate-pulse">
-                      <div className="h-4 w-3/4 bg-white/5 rounded" />
-                      <div className="h-4 w-1/2 bg-white/5 rounded" />
-                      <div className="h-32 w-full bg-white/5 rounded" />
+                      <div className="h-4 w-3/4 bg-slate-200 dark:bg-white/5 rounded" />
+                      <div className="h-4 w-1/2 bg-slate-200 dark:bg-white/5 rounded" />
+                      <div className="h-32 w-full bg-slate-200 dark:bg-white/5 rounded" />
                     </div>
                   ) : (
                     <pre className="whitespace-pre-wrap">{readme}</pre>
@@ -145,7 +145,7 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 pt-4">
                 {project.tags.map((tag, idx) => (
-                  <span key={`${tag}-${idx}`} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-mono text-text-4 uppercase tracking-widest hover:border-accent-cyan/30 transition-colors">
+                  <span key={`${tag}-${idx}`} className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 text-[10px] font-mono text-text-4 uppercase tracking-widest hover:border-accent-cyan/30 transition-colors">
                     {tag}
                   </span>
                 ))}
@@ -153,11 +153,11 @@ export default function ProjectPanel({ project, onClose }: { project: Project | 
             </div>
 
             {/* Footer Actions */}
-            <div className="p-8 md:p-10 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4 bg-bg-1/50 backdrop-blur-md">
+            <div className="p-8 md:p-10 border-t border-slate-100 dark:border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4 bg-bg-1/80 dark:bg-bg-1/50 backdrop-blur-md">
               <a 
                 href={project.githubUrl} 
                 target="_blank" 
-                className="flex items-center justify-center gap-4 py-5 rounded-2xl bg-white/5 border border-white/10 text-text-1 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white/10 transition-all"
+                className="flex items-center justify-center gap-4 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-text-1 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
               >
                 <GithubIcon size={20} />
                 Source Code

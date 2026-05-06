@@ -85,7 +85,7 @@ const ChannelCard = ({ label, val, href, icon: Icon, color }: any) => (
        className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-700 pointer-events-none"
        style={{ background: `radial-gradient(circle at center, ${color}, transparent)` }}
      />
-     <div className="w-16 h-16 rounded-2xl bg-bg-page-alt flex items-center justify-center text-text-3 group-hover:text-text-1 transition-colors relative z-10">
+     <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-text-3 group-hover:text-text-1 transition-colors relative z-10">
        <Icon size={24} />
      </div>
      <div className="space-y-1 relative z-10">

@@ -10,7 +10,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function About({ personal }: { personal: any }) {
   return (
-    <section id="about" className="relative py-32 bg-transparent overflow-hidden">
+    <section id="about" className="relative py-32 bg-white dark:bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Simplified Header */}

@@ -79,7 +79,7 @@ export default function Projects({ projects, stats }: { projects: SupabaseProjec
                         className={`w-full flex items-center px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all ${
                           cat === c 
                             ? "bg-accent-cyan text-bg-0" 
-                            : "text-text-2 hover:bg-white/5 hover:text-text-1"
+                            : "text-text-2 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-text-1"
                         }`}
                       >
                         {c}
@@ -113,7 +113,7 @@ export default function Projects({ projects, stats }: { projects: SupabaseProjec
              <a 
                href={stats.githubUrl || `https://github.com/Amine-NAHLI`} 
                target="_blank"
-               className="w-full max-w-xl flex flex-col items-center gap-6 p-10 border border-dashed border-bg-3 dark:border-white/10 rounded-2xl group transition-all hover:bg-white/[0.02]"
+               className="w-full max-w-xl flex flex-col items-center gap-6 p-10 border border-dashed border-bg-3 dark:border-white/10 rounded-2xl group transition-all hover:bg-white dark:hover:bg-white/[0.02]"
              >
                <div className="flex flex-col items-center gap-2">
                  <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-text-4 group-hover:text-accent-cyan transition-colors">Explore Archive</span>

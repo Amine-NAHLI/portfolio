@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useMemo, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
-/* ─── Constants ────────────────────────────────────────────────── */
+import React, { useMemo } from "react";
+import { motion } from "framer-motion";
+import { 
+  Code2, Terminal, Shield, Brain, Cpu, Database, Server, Layout, 
+  Globe, Cloud, Lock, Zap, Layers, Box, GitBranch, Search, 
+  Settings, Monitor, Smartphone, Gauge, Command
+} from "lucide-react";
 
 interface SupabaseSkill {
   id: string;
@@ -11,147 +14,165 @@ interface SupabaseSkill {
   category: string;
 }
 
-/* ─── Components ─────────────────────────────────────────────── */
+const getSkillIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes("security") || n.includes("pen") || n.includes("audit") || n.includes("hack")) return { icon: Shield, color: "#ef4444" };
+  if (n.includes("crypto") || n.includes("hash") || n.includes("vault") || n.includes("lock")) return { icon: Lock, color: "#f59e0b" };
+  if (n.includes("python") || n.includes("java") || n.includes("php") || n.includes("code") || n.includes("script")) return { icon: Code2, color: "#38bdf8" };
+  if (n.includes("rust") || n.includes("go") || n.includes("c++")) return { icon: Zap, color: "#facc15" };
+  if (n.includes("node") || n.includes("deno") || n.includes("backend")) return { icon: Server, color: "#22c55e" };
+  if (n.includes("sql") || n.includes("db") || n.includes("mongo") || n.includes("data") || n.includes("redis")) return { icon: Database, color: "#6366f1" };
+  if (n.includes("react") || n.includes("next") || n.includes("vue") || n.includes("angular") || n.includes("frontend")) return { icon: Layout, color: "#60a5fa" };
+  if (n.includes("css") || n.includes("sass") || n.includes("tailwind") || n.includes("ui")) return { icon: Monitor, color: "#38bdf8" };
+  if (n.includes("html") || n.includes("web") || n.includes("browser")) return { icon: Globe, color: "#f97316" };
+  if (n.includes("ai") || n.includes("machine") || n.includes("learning") || n.includes("vision") || n.includes("brain")) return { icon: Brain, color: "#a855f7" };
+  if (n.includes("tensor") || n.includes("gpu") || n.includes("cuda") || n.includes("model")) return { icon: Cpu, color: "#ec4899" };
+  if (n.includes("docker") || n.includes("container") || n.includes("k8s") || n.includes("kubernetes")) return { icon: Box, color: "#0ea5e9" };
+  if (n.includes("cloud") || n.includes("aws") || n.includes("azure") || n.includes("gcp")) return { icon: Cloud, color: "#0ea5e9" };
+  if (n.includes("linux") || n.includes("unix") || n.includes("bash") || n.includes("shell") || n.includes("cli")) return { icon: Terminal, color: "#ffffff" };
+  return { icon: Terminal, color: "var(--accent-cyan)" };
+};
 
-const ACCENT_COLOR = "var(--accent-cyan)";
-
-const SkillCard = ({ cat, index }: { cat: any; index: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
-
+const SkillModule = ({ name, delay }: { name: string; delay: number }) => {
+  const { icon: Icon, color } = getSkillIcon(name);
+  
   return (
-    <div
-      ref={cardRef}
-      className={`group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-xl p-8 border-t-2 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:hover:shadow-none dark:hover:bg-white/[0.05] ${cat.gridClass} ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-      style={{ 
-        borderTopColor: ACCENT_COLOR,
-        transitionDelay: `${index * 60}ms`,
+    <motion.div 
+      initial={{ y: 0 }}
+      animate={{ y: [0, -15, 0] }}
+      transition={{ 
+        duration: 4 + Math.random() * 2, 
+        repeat: Infinity, 
+        ease: "easeInOut",
+        delay 
       }}
+      className="group relative flex items-center gap-4 px-8 py-5 rounded-[2rem] bg-bg-1/40 dark:bg-white/[0.02] border border-bg-3 dark:border-white/[0.08] backdrop-blur-2xl shadow-2xl transition-all duration-700 hover:border-white/40 overflow-hidden"
     >
-      {/* Subtle Glow - Refined for both modes */}
+      {/* Background Active Glow */}
       <div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-[0.08] dark:group-hover:opacity-[0.03] transition-opacity duration-700 pointer-events-none rounded-xl blur-3xl"
-        style={{ backgroundColor: ACCENT_COLOR }}
+        className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
+        style={{ backgroundColor: color }}
       />
 
-      <div className="relative z-10 flex flex-col h-full">
-        <h3 
-          className="text-[11px] font-black uppercase tracking-[0.2em] mb-6 opacity-70 group-hover:opacity-100 transition-opacity"
-          style={{ color: ACCENT_COLOR }}
-        >
-          {cat.label}
-        </h3>
+      {/* Module ID / Metadata (Decorative) */}
+      <div className="absolute top-2 left-8 flex gap-1 opacity-[0.2]">
+         <div className="w-1 h-1 rounded-full bg-white" />
+         <div className="w-1 h-1 rounded-full bg-white" />
+         <span className="text-[6px] font-mono uppercase tracking-tighter">Active_Mod</span>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          {cat.skills.map((skill: string, sIdx: number) => (
-            <React.Fragment key={skill}>
-              <span className="text-sm text-text-1 font-semibold tracking-tight">
-                {skill}
-              </span>
-              {sIdx < cat.skills.length - 1 && (
-                <span className="text-xs opacity-30 select-none font-light" style={{ color: ACCENT_COLOR }}>/</span>
-              )}
-            </React.Fragment>
-          ))}
+      <div 
+        className="flex items-center justify-center w-12 h-12 rounded-xl bg-bg-2 dark:bg-white/5 transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg]"
+        style={{ color: color }}
+      >
+        <Icon size={24} strokeWidth={1.5} />
+      </div>
+
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm md:text-base font-black text-text-1 tracking-tighter uppercase group-hover:text-white transition-colors">
+          {name}
+        </span>
+        <div className="flex items-center gap-2">
+           <div className="h-1 w-12 bg-bg-3 dark:bg-white/10 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-accent-cyan"
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                style={{ backgroundColor: color }}
+              />
+           </div>
+           <span className="text-[8px] font-mono text-text-4 uppercase">Syncing...</span>
         </div>
       </div>
 
-      <style jsx>{`
-        div:hover {
-          border-top-color: ${ACCENT_COLOR} !important;
-          box-shadow: 0 10px 40px -10px ${ACCENT_COLOR}15;
-        }
-      `}</style>
-    </div>
+      {/* Scanning Light */}
+      <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:animate-[scan_2s_linear_infinite]" />
+    </motion.div>
   );
 };
 
 export default function SkillsSection({ skills }: { skills: SupabaseSkill[] }) {
-  const groupedSkills = useMemo(() => {
-    const groups: Record<string, string[]> = {};
-    
-    skills.forEach(skill => {
-      let cat = (skill.category || "General").trim();
-      const lowerCat = cat.toLowerCase();
-      if (lowerCat.includes("lang") || lowerCat.includes("code")) cat = "Languages";
-      else if (lowerCat.includes("front") || lowerCat.includes("ui") || lowerCat.includes("web")) cat = "Frontend";
-      else if (lowerCat.includes("back") || lowerCat.includes("server") || lowerCat.includes("api")) cat = "Backend";
-      else if (lowerCat.includes("ai") || lowerCat.includes("ml") || lowerCat.includes("intelligence") || lowerCat.includes("vision")) cat = "AI / ML";
-      else if (lowerCat.includes("db") || lowerCat.includes("data") || lowerCat.includes("sql") || lowerCat.includes("mongo")) cat = "Database";
-      else if (lowerCat.includes("dev") || lowerCat.includes("cloud") || lowerCat.includes("infra") || lowerCat.includes("git")) cat = "DevOps";
-      
-      const normCat = cat.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-      if (!groups[normCat]) groups[normCat] = [];
-      if (!groups[normCat].includes(skill.name)) groups[normCat].push(skill.name);
-    });
-
-    const fixedLayout: Record<string, string> = {
-      "Languages": "md:col-span-2 md:row-span-1",
-      "AI / ML": "md:col-span-1 md:row-span-1",
-      "DevOps": "md:col-span-1 md:row-span-1",
-      "Frontend": "md:col-span-2 md:row-span-1",
-      "Database": "md:col-span-1 md:row-span-1",
-      "Backend": "md:col-span-1 md:row-span-2",
-    };
-
-    // Get all unique categories from groups
-    const allLabels = Object.keys(groups);
-    
-    return allLabels.map(label => {
-      return {
-        id: label.toLowerCase().replace(/\s+/g, '-'),
-        label,
-        gridClass: fixedLayout[label] || "md:col-span-1 md:row-span-1",
-        skills: (groups[label] || []).sort()
-      };
-    }).sort((a, b) => {
-      // Prioritize fixed layout items for better aesthetics
-      const aFixed = !!fixedLayout[a.label];
-      const bFixed = !!fixedLayout[b.label];
-      if (aFixed && !bFixed) return -1;
-      if (!aFixed && bFixed) return 1;
-      return a.label.localeCompare(b.label);
-    });
+  const row1 = useMemo(() => {
+    const s = [...skills].sort(() => Math.random() - 0.5);
+    return [...s, ...s, ...s, ...s];
   }, [skills]);
 
-  return (
-    <section id="stack" className="py-32 bg-transparent relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        
-        {/* Section Header */}
-        <div className="mb-20 space-y-6">
-           <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-3">Skillset_Matrix_v4.2</span>
-           </div>
-           <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] uppercase">
-              Technical <br /> <span className="text-text-3">Arsenal.</span>
-           </h2>
-        </div>
+  const row2 = useMemo(() => {
+    const s = [...skills].sort(() => Math.random() - 0.5);
+    return [...s, ...s, ...s, ...s];
+  }, [skills]);
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-min">
-          {groupedSkills.map((cat, idx) => (
-            <SkillCard key={cat.id} cat={cat} index={idx} />
-          ))}
+  if (skills.length === 0) return null;
+
+  return (
+    <section id="stack" className="py-48 bg-transparent relative overflow-hidden">
+      {/* Background Grid Accent */}
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] grid-bg pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 mb-32 relative z-10">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
+           <div className="space-y-6">
+              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent-cyan/10 border border-accent-cyan/20">
+                 <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
+                 <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-black">Tactical_Core_v7.4</span>
+              </div>
+              <h2 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-none uppercase">
+                 Technical <br /> <span className="text-text-4/20 dark:text-white/10 stroke-text-1">Arsenal.</span>
+              </h2>
+           </div>
+           <div className="flex flex-col gap-4 border-l-2 border-accent-cyan pl-8 py-2">
+              <p className="max-w-sm text-[11px] uppercase tracking-[0.2em] text-text-3 font-mono leading-relaxed">
+                 High-fidelity operational capabilities across cyber security, full-stack architecture, and machine intelligence.
+              </p>
+              <div className="flex gap-2">
+                 <div className="w-2 h-2 rounded-full bg-bg-3" />
+                 <div className="w-2 h-2 rounded-full bg-bg-3" />
+                 <div className="w-2 h-2 rounded-full bg-accent-cyan" />
+              </div>
+           </div>
         </div>
       </div>
+
+      {/* Vortex Container */}
+      <div className="relative flex flex-col gap-12 [perspective:3000px] py-20">
+        {/* Row 1 */}
+        <div className="flex items-center [transform:rotateX(20deg)_rotateY(-10deg)_translateZ(0px)] opacity-95">
+          <motion.div 
+            className="flex gap-10 pr-10"
+            animate={{ x: ["-25%", "0%"] }}
+            transition={{ ease: "linear", duration: 40, repeat: Infinity }}
+          >
+            {row1.map((skill, idx) => (
+              <SkillModule key={`v1-${skill.id}-${idx}`} name={skill.name} delay={idx * 0.2} />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Row 2 */}
+        <div className="flex items-center [transform:rotateX(-20deg)_rotateY(10deg)_translateZ(100px)] opacity-90">
+          <motion.div 
+            className="flex gap-10 pr-10"
+            animate={{ x: ["0%", "-25%"] }}
+            transition={{ ease: "linear", duration: 60, repeat: Infinity }}
+          >
+            {row2.map((skill, idx) => (
+              <SkillModule key={`v2-${skill.id}-${idx}`} name={skill.name} delay={idx * 0.3} />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Depth Fog */}
+        <div className="absolute inset-y-0 left-0 w-64 bg-gradient-to-r from-bg-0 to-transparent z-20 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-bg-0 to-transparent z-20 pointer-events-none" />
+      </div>
+
+      <style jsx global>{`
+        @keyframes scan {
+          0% { transform: translateX(-100%) skewX(-20deg); }
+          100% { transform: translateX(300%) skewX(-20deg); }
+        }
+      `}</style>
     </section>
   );
 }

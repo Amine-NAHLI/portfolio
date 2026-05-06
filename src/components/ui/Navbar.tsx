@@ -45,7 +45,7 @@ export default function Navbar() {
       <nav 
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
           scrolled 
-            ? "py-0 bg-bg-1/80 backdrop-blur-md border-b border-bg-3 dark:border-nav-border" 
+            ? "py-0 bg-bg-1/80 backdrop-blur-md border-b border-bg-3 dark:border-white/10"
             : "py-4 bg-transparent"
         }`}
       >
@@ -114,7 +114,7 @@ export default function Navbar() {
           >
             <button 
               onClick={() => setMobileOpen(false)}
-              className="absolute top-10 right-10 p-3 rounded-full bg-white/5 text-text-4 hover:text-text-1 transition-all"
+              className="absolute top-10 right-10 p-3 rounded-full bg-slate-100 dark:bg-white/5 text-text-4 hover:text-text-1 transition-all"
             >
               <X size={24} />
             </button>

@@ -4,8 +4,8 @@ export async function POST(req: Request) {
   try {
     const { url } = await req.json();
 
-    // Extraire owner/repo depuis l'URL GitHub
-    const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
+    // Extraire owner/repo depuis l'URL GitHub (gère le .git et les slashs de fin)
+    const match = url.replace(/\.git$/, '').replace(/\/$/, '').match(/github\.com\/([^/]+)\/([^/]+)/);
     if (!match) {
       return NextResponse.json({ error: 'Invalid GitHub URL' }, { status: 400 });
     }

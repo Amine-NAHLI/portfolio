@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { Mail, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight, Download } from "lucide-react";
 import { useTypingCycle } from "@/hooks/useTypingCycle";
 import { GithubIcon } from "@/components/ui/Icons";
 import type { GitHubProfile } from "@/lib/github";
@@ -126,7 +126,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
         </motion.div>
 
         {/* CTAs */}
-        <motion.div variants={item} className="mt-12 flex flex-wrap items-center justify-center gap-6">
+        <motion.div variants={item} className="mt-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
           <Link
             href="#projects"
             className="group flex items-center gap-2.5 px-8 py-4 rounded-full bg-text-1 text-bg-0 dark:bg-accent-cyan dark:text-[#0f172a] font-bold uppercase tracking-widest text-[10px] transition-all hover:bg-accent-cyan dark:hover:bg-accent-cyan/80 hover:scale-[1.03] active:scale-[0.98] shadow-2xl"
@@ -134,6 +134,15 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
             Explore Work
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
+
+          <a
+            href="/nahli amine cv.pdf"
+            download="nahli amine cv.pdf"
+            className="group flex items-center gap-2.5 px-8 py-4 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-accent-cyan font-bold uppercase tracking-widest text-[10px] transition-all hover:bg-accent-cyan hover:text-bg-0 hover:scale-[1.03] active:scale-[0.98]"
+          >
+            <Download size={14} />
+            Download CV
+          </a>
 
           <div className="flex items-center gap-5">
             <Link

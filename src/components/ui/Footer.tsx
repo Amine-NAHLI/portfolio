@@ -54,8 +54,13 @@ export default function Footer({ latestProject }: { latestProject: Project | nul
         <div className="pt-12 border-t border-bg-3 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-6">
              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">© {new Date().getFullYear()} Amine Nahli — Session Persistent</span>
-             <div className="h-px w-12 bg-bg-3 dark:bg-white/10" />
-             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-bold">Secure.Terminal</span>
+              <div className="h-px w-12 bg-bg-3 dark:bg-white/10" />
+              <Link 
+                href="/admin/login" 
+                className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-bold hover:text-white transition-colors cursor-pointer"
+              >
+                Secure.Terminal
+              </Link>
           </div>
 
           <div className="flex items-center gap-8 font-mono text-[9px] uppercase tracking-[0.4em] text-text-4">

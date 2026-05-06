@@ -2,15 +2,31 @@
 
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import SectionHeader from "@/components/ui/SectionHeader";
 import ProjectCard from "@/components/ui/ProjectCard";
-import { SlidersHorizontal, ChevronDown } from "lucide-react";
-import type { Project } from "@/lib/github";
 
-const CATEGORIES = ["All", "Security", "Full-Stack", "AI/Vision", "Experiments"] as const;
+const CATEGORIES = ["All", "Security", "Full-Stack", "AI", "Experiments"] as const;
 type Category = (typeof CATEGORIES)[number];
-export default function Projects({ projects, stats }: { projects: Project[]; stats: any }) {
-  const [cat, setCat] = useState<Category>("All");
+
+interface SupabaseProject {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  github_url: string;
+  language: string;
+  created_at: string;
+  visible: boolean;
+}
+
+export default function Projects({ projects, stats }: { projects: SupabaseProject[]; stats: any }) {
+  const [cat, setCat] = useState<string>("All");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const categories = useMemo(() => {
+    const cats = new Set(projects.map(p => p.category));
+    return ["All", ...Array.from(cats)].filter(Boolean);
+  }, [projects]);
 
   const filtered = useMemo(() => {
     return projects.filter((p) => cat === "All" || p.category === cat);
@@ -29,39 +45,55 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
             </h2>
           </div>
           
-          {/* Advanced Filter UI */}
-          <div className="flex flex-col md:flex-row gap-3 overflow-hidden">
-            <div className="flex p-1 rounded-full bg-bg-1 dark:bg-transparent border border-bg-3 dark:border-[#1e293b] overflow-x-auto no-scrollbar max-w-full">
-              <div className="flex min-w-max">
-                <LayoutGroup id="project-filter">
-                  {CATEGORIES.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => setCat(c)}
-                      className={`relative px-5 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase transition-colors whitespace-nowrap border border-transparent ${
-                        cat === c 
-                          ? "text-bg-0 dark:text-accent-cyan dark:border-accent-cyan" 
-                          : "text-text-2 dark:text-[#64748b] hover:text-text-1"
-                      }`}
-                    >
-                      {cat === c && (
-                        <motion.div
-                          layoutId="active-pill"
-                          className="absolute inset-0 bg-text-1 dark:bg-[#1e3a5f] rounded-full"
-                          transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
-                        />
-                      )}
-                      <span className="relative z-10 font-bold">{c}</span>
-                    </button>
-                  ))}
-                </LayoutGroup>
-              </div>
+          {/* Advanced Filter UI - Dropdown Style */}
+          <div className="relative z-40">
+            <div className="flex flex-col items-end gap-2">
+              <span className="font-mono text-[9px] uppercase tracking-widest text-text-4">Filter by Domain</span>
+              <button 
+                onClick={() => setIsOpen(!isOpen)}
+                className="group flex items-center gap-4 px-6 py-3 rounded-2xl bg-bg-1 dark:bg-[#1e293b]/50 border border-bg-3 dark:border-white/5 hover:border-accent-cyan/50 transition-all min-w-[200px] justify-between"
+              >
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-1">{cat}</span>
+                <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </motion.div>
+              </button>
+
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full mt-2 w-full bg-bg-1 dark:bg-[#1e293b] border border-bg-3 dark:border-white/10 rounded-2xl p-2 shadow-2xl backdrop-blur-xl overflow-hidden"
+                  >
+                    {categories.map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => {
+                          setCat(c);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full flex items-center px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all ${
+                          cat === c 
+                            ? "bg-accent-cyan text-bg-0" 
+                            : "text-text-2 hover:bg-white/5 hover:text-text-1"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
 
         {/* Projects Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[280px] grid-flow-dense">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-dense">
           <AnimatePresence mode="popLayout">
             {filtered.map((project, i) => (
               <ProjectCard key={project.id} project={project} index={i} />
@@ -69,10 +101,16 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
           </AnimatePresence>
         </div>
 
-        {/* Load More / Explore More */}
+        {filtered.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-24 space-y-4">
+            <p className="font-mono text-sm text-text-4 uppercase tracking-[0.3em]">No projects in this category yet.</p>
+          </div>
+        )}
+
+        {/* Explore Archive */}
         <div className="mt-24 flex justify-center">
            <a 
-             href={stats.githubUrl} 
+             href={stats.githubUrl || `https://github.com/Amine-NAHLI`} 
              target="_blank"
              className="flex flex-col items-center gap-4 group"
            >

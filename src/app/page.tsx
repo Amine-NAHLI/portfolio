@@ -6,27 +6,91 @@ import Projects from "@/components/sections/Projects";
 import Stack from "@/components/sections/Stack";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
-import { fetchPortfolioData } from "@/lib/github";
+import { createClient } from "@supabase/supabase-js";
 import Loading from "./loading";
 
-export const revalidate = 3600;
+export const revalidate = 60; // Revalidate every 60 seconds (fast updates after admin changes)
+
+const GITHUB_API = "https://api.github.com";
+const GITHUB_USERNAME = "Amine-NAHLI";
+const RAW_GITHUB = "https://raw.githubusercontent.com";
+
+// Lightweight profile fetch (only 1 API call, very fast)
+async function fetchProfile() {
+  try {
+    const res = await fetch(`${GITHUB_API}/users/${GITHUB_USERNAME}`, {
+      headers: { Accept: "application/vnd.github.v3+json" },
+      next: { revalidate: 3600 },
+    });
+    return res.ok ? res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+// Lightweight README parse for personal info
+async function fetchPersonal() {
+  try {
+    const res = await fetch(`${RAW_GITHUB}/${GITHUB_USERNAME}/${GITHUB_USERNAME}/main/README.md`, {
+      next: { revalidate: 3600 },
+    });
+    const readme = res.ok ? await res.text() : "";
+    return {
+      status: readme.match(/<kbd>🟢\s*([^<]+)<\/kbd>/)?.[1] || "Available 2026",
+      location: readme.match(/<kbd>📍\s*([^<]+)<\/kbd>/)?.[1] || "Fès, Morocco",
+      education: readme.match(/<kbd>🎓\s*([^<]+)<\/kbd>/)?.[1] || "UPF · 3rd Year Eng.",
+      languages: readme.match(/<kbd>🌐\s*([^<]+)<\/kbd>/)?.[1] || "AR · FR · EN",
+    };
+  } catch {
+    return { status: "Available 2026", location: "Fès, Morocco", education: "UPF · 3rd Year Eng.", languages: "AR · FR · EN" };
+  }
+}
+
+// Fetch projects & skills from Supabase (the single source of truth)
+async function fetchFromSupabase() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const [projectsRes, skillsRes] = await Promise.all([
+    supabase.from("projects").select("*").eq("visible", true).order("created_at", { ascending: false }),
+    supabase.from("skills").select("*").order("name"),
+  ]);
+
+  return {
+    projects: projectsRes.data || [],
+    skills: skillsRes.data || [],
+  };
+}
 
 async function PortfolioContent() {
-  const data = await fetchPortfolioData();
-  const latestProject = data.projects[0] ?? null;
+  const [profile, personal, { projects, skills }] = await Promise.all([
+    fetchProfile(),
+    fetchPersonal(),
+    fetchFromSupabase(),
+  ]);
+
+  const latestProject = projects[0] ?? null;
+
+  const stats = {
+    totalRepos: projects.length,
+    totalStars: 0,
+    totalForks: 0,
+    totalCommits: 0,
+    languages: [...new Set(projects.map((p: any) => p.language).filter(Boolean))],
+    categories: [...new Set(projects.map((p: any) => p.category))],
+    memberSince: profile?.created_at ? new Date(profile.created_at).getFullYear().toString() : "2024",
+    githubUrl: profile?.html_url || `https://github.com/${GITHUB_USERNAME}`,
+  };
 
   return (
     <>
-      <Hero profile={data.profile} stats={data.stats} />
-      <About
-        profile={data.profile}
-        stats={data.stats}
-        personal={data.personal}
-        latestProject={latestProject}
-      />
-      <Projects projects={data.projects} stats={data.stats} />
-      <Stack orbit={data.techOrbit} />
-      <Contact profile={data.profile} />
+      <Hero profile={profile} stats={stats} />
+      <About profile={profile} stats={stats} personal={personal} latestProject={latestProject} />
+      <Projects projects={projects} stats={stats} />
+      <Stack skills={skills} />
+      <Contact profile={profile} />
       <Footer latestProject={latestProject} />
     </>
   );

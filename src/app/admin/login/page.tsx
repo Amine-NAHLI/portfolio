@@ -104,6 +104,15 @@ export default function AdminLogin() {
               )}
             </button>
           </form>
+          
+          <div className="mt-8 flex justify-center">
+            <button 
+              onClick={() => router.push("/")}
+              className="text-text-4 font-mono text-[9px] uppercase tracking-widest hover:text-accent-cyan transition-colors"
+            >
+              ← Return to Portfolio
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

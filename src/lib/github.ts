@@ -203,13 +203,13 @@ function extractTechOrbit(repos: GitHubRepo[], allLanguages: string[][], readme:
 
 const EXCLUDED_REPOS = new Set(["Amine-NAHLI", "portfolio"]);
 
-function inferCategory(repo: GitHubRepo): Project["category"] {
+function inferCategory(repo: GitHubRepo): string {
   const name = repo.name.toLowerCase();
   const desc = (repo.description || "").toLowerCase();
   const topics = repo.topics.map(t => t.toLowerCase());
   if (["security", "pentest", "vulnerability", "nmap", "port-scanner", "cve"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "Security";
-  if (["ai", "ml", "vision", "opencv", "yolo", "detection", "robot"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "AI/Vision";
-  if (["laravel", "spring", "node", "react", "next", "angular", "php", "web", "app", "gestion"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "Full-Stack";
+  if (["ai", "ml", "vision", "opencv", "yolo", "detection", "robot", "tensor", "torch"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "AI";
+  if (["laravel", "spring", "node", "react", "next", "angular", "php", "web", "app", "gestion", "stack", "fullstack"].some(k => name.includes(k) || desc.includes(k) || topics.includes(k))) return "Full-Stack";
   return "Experiments";
 }
 

@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Loader2, ShieldCheck, LogOut, Eye, EyeOff, Trash2,
-  ExternalLink, Github, Sparkles, Save, X, Check, Search
+  Sparkles, Save, X, Check, Search, Cpu, Database, LayoutGrid
 } from "lucide-react";
+import { GithubIcon, ExternalLinkIcon } from "@/components/ui/Icons";
 
 /* ─── Types ──────────────────────────────────────────── */
 interface Project {
@@ -22,478 +23,555 @@ interface Project {
   visible: boolean;
 }
 
-interface RepoData {
+interface Skill {
+  id: string;
   name: string;
-  full_name: string;
-  description: string;
-  topics: string[];
-  languages: string[];
-  main_language: string;
-  stars: number;
-  html_url: string;
-  created_at: string;
-  readme: string;
+  category: string;
+  proficiency: number;
+  icon_name: string;
 }
 
-interface AnalysisResult {
-  category: string;
-  short_description: string;
-  tags: string[];
+interface RepoData {
+  name: string;
+  description: string;
+  main_language: string;
+  html_url: string;
+  readme: string;
 }
 
 /* ─── Dashboard ──────────────────────────────────────── */
 export default function AdminDashboard() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"projects" | "skills">("projects");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Add project flow
-  const [showAddPanel, setShowAddPanel] = useState(false);
+  // Forms Visibility
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showSkillForm, setShowSkillForm] = useState(false);
+
+  // Project Form State
   const [githubUrl, setGithubUrl] = useState("");
-  const [step, setStep] = useState<"input" | "fetching" | "analyzing" | "review">("input");
-  const [repoData, setRepoData] = useState<RepoData | null>(null);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [projectStep, setProjectStep] = useState<"input" | "loading" | "review">("input");
   const [editableProject, setEditableProject] = useState({
-    title: "",
-    description: "",
-    category: "",
-    tags: [] as string[],
-    language: "",
-    github_url: "",
+    title: "", description: "", category: "Full-Stack", tags: [] as string[], language: "", github_url: ""
   });
+
+  // Skill Form State
+  const [skillName, setSkillName] = useState("");
+  const [skillLoading, setSkillLoading] = useState(false);
+  const [editableSkill, setEditableSkill] = useState<Skill | null>(null);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /* ─── Auth Check ───────────────────────────────────── */
+  /* ─── Initialization ───────────────────────────────── */
   useEffect(() => {
-    const checkAuth = async () => {
+    const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         router.push("/admin/login");
         return;
       }
-      fetchProjects();
+      await Promise.all([fetchProjects(), fetchSkills()]);
+      setLoading(false);
     };
-    checkAuth();
+    init();
   }, []);
 
-  /* ─── Fetch Projects ───────────────────────────────── */
   const fetchProjects = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
-
+    const { data } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
     if (data) setProjects(data);
-    setLoading(false);
   };
 
-  /* ─── Toggle Visibility ────────────────────────────── */
+  const fetchSkills = async () => {
+    const { data } = await supabase.from("skills").select("*").order("name");
+    if (data) setSkills(data);
+  };
+
+  /* ─── Actions ──────────────────────────────────────── */
   const toggleVisibility = async (id: string, visible: boolean) => {
     await supabase.from("projects").update({ visible: !visible }).eq("id", id);
     setProjects(prev => prev.map(p => p.id === id ? { ...p, visible: !visible } : p));
   };
 
-  /* ─── Delete Project ───────────────────────────────── */
-  const deleteProject = async (id: string) => {
-    if (!confirm("Supprimer ce projet définitivement ?")) return;
-    await supabase.from("projects").delete().eq("id", id);
-    setProjects(prev => prev.filter(p => p.id !== id));
+  const deleteItem = async (table: "projects" | "skills", id: string) => {
+    if (!confirm("Confirm deletion?")) return;
+    await supabase.from(table).delete().eq("id", id);
+    if (table === "projects") setProjects(prev => prev.filter(p => p.id !== id));
+    else setSkills(prev => prev.filter(s => s.id !== id));
   };
 
-  /* ─── Logout ───────────────────────────────────────── */
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
   };
 
-  /* ─── Step 1: Fetch GitHub Repo ────────────────────── */
-  const handleFetchRepo = async () => {
+  /* ─── AI Project Analysis ─────────────────────────── */
+  const handleAnalyzeProject = async () => {
+    setProjectStep("loading");
     setError(null);
-    setStep("fetching");
-
     try {
+      // 1. Fetch
       const res = await fetch("/api/github-fetch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: githubUrl }),
       });
+      if (!res.ok) throw new Error("Repo not found");
+      const repo: RepoData = await res.json();
 
-      if (!res.ok) throw new Error("Repository not found");
-
-      const data: RepoData = await res.json();
-      setRepoData(data);
-      setStep("analyzing");
-
-      // Step 2: Send to Ollama
-      const analysisRes = await fetch("/api/analyze", {
+      // 2. Analyze
+      const anaRes = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoData: data }),
+        body: JSON.stringify({ repoData: repo }),
       });
+      
+      const ana = await anaRes.json();
+      
+      if (!anaRes.ok) {
+        throw new Error(ana.details || ana.error || "Analysis failed");
+      }
 
-      if (!analysisRes.ok) throw new Error("Ollama analysis failed");
-
-      const result: AnalysisResult = await analysisRes.json();
-      setAnalysis(result);
-
-      // Pre-fill editable form
       setEditableProject({
-        title: data.name,
-        description: result.short_description,
-        category: result.category,
-        tags: result.tags,
-        language: data.main_language,
-        github_url: data.html_url,
+        title: repo.name,
+        description: ana.short_description,
+        category: ana.category,
+        tags: ana.tags,
+        language: ana.languages || repo.main_language, // On utilise les langages de l'IA
+        github_url: repo.html_url
       });
-
-      setStep("review");
+      setProjectStep("review");
     } catch (err: any) {
+      console.error("Analysis Flow Error:", err);
       setError(err.message);
-      setStep("input");
+      setProjectStep("input");
     }
   };
 
-  /* ─── Step 3: Save to Supabase ─────────────────────── */
-  const handleSave = async () => {
+  /* ─── AI Skill Analysis ───────────────────────────── */
+  const handleAnalyzeSkill = async () => {
+    setSkillLoading(true);
+    try {
+      const res = await fetch("/api/analyze-skill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skillName }),
+      });
+      
+      const ana = await res.json();
+      
+      if (!res.ok) throw new Error(ana.error || "Skill analysis failed");
+      
+      setEditableSkill({
+        id: "",
+        name: ana.name || skillName,
+        category: ana.category || "General",
+        proficiency: 80,
+        icon_name: ana.icon || skillName.toLowerCase()
+      });
+    } catch (err: any) {
+      console.error(err);
+      setEditableSkill({ id: "", name: skillName, category: "Tools", proficiency: 80, icon_name: "" });
+    }
+    setSkillLoading(false);
+  };
+
+  const saveProject = async () => {
     setSaving(true);
-    const { error } = await supabase.from("projects").insert({
-      title: editableProject.title,
-      description: editableProject.description,
-      category: editableProject.category,
-      tags: editableProject.tags,
-      github_url: editableProject.github_url,
-      language: editableProject.language,
-      visible: true,
+    setError(null);
+    const { error } = await supabase.from("projects").insert({ ...editableProject, visible: true });
+    
+    if (!error) {
+      // SYNC SKILLS: Automatically add discovered tags to skills table if they don't exist
+      const tags = editableProject.tags || [];
+      for (const tag of tags) {
+        const cleanTag = tag.trim();
+        if (!cleanTag) continue;
+
+        const { data: existing } = await supabase
+          .from("skills")
+          .select("id")
+          .ilike("name", cleanTag)
+          .maybeSingle();
+
+        if (!existing) {
+          await supabase.from("skills").insert({
+            name: cleanTag,
+            category: "Project Stack",
+            proficiency: 75,
+            icon_name: cleanTag.toLowerCase().replace(/\s+/g, '')
+          });
+        }
+      }
+
+      setShowProjectForm(false);
+      setProjectStep("input");
+      setGithubUrl("");
+      setEditableProject({
+        title: "", description: "", category: "Full-Stack", tags: [] as string[], language: "", github_url: ""
+      });
+      fetchProjects();
+      fetchSkills(); // Refresh skills list too
+    } else setError(error.message);
+    setSaving(false);
+  };
+
+  const saveSkill = async () => {
+    if (!editableSkill) return;
+    setSaving(true);
+    setError(null);
+
+    // Check for duplicates
+    const { data: existing } = await supabase
+      .from("skills")
+      .select("id")
+      .ilike("name", editableSkill.name.trim())
+      .maybeSingle();
+
+    if (existing) {
+      setError(`The skill "${editableSkill.name}" is already in your arsenal!`);
+      setSaving(false);
+      return;
+    }
+
+    const { error } = await supabase.from("skills").insert({
+      name: editableSkill.name,
+      category: editableSkill.category,
+      proficiency: editableSkill.proficiency,
+      icon_name: editableSkill.icon_name
     });
 
-    if (error) {
-      setError(error.message);
+    if (!error) {
+      setShowSkillForm(false);
+      setSkillName("");
+      setEditableSkill(null);
+      fetchSkills();
     } else {
-      // Reset and refresh
-      setShowAddPanel(false);
-      setStep("input");
-      setGithubUrl("");
-      setRepoData(null);
-      setAnalysis(null);
-      fetchProjects();
+      setError(error.message);
     }
     setSaving(false);
   };
 
-  /* ─── Reset Panel ──────────────────────────────────── */
-  const resetPanel = () => {
-    setShowAddPanel(false);
-    setStep("input");
-    setGithubUrl("");
-    setRepoData(null);
-    setAnalysis(null);
-    setError(null);
-  };
-
-  /* ─── Categories ───────────────────────────────────── */
-  const CATEGORIES = ["Security", "Full-Stack", "AI", "Experiments"];
-
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white font-sans">
-
+    <div className="min-h-screen bg-[#0B0F19] text-white font-sans selection:bg-accent-cyan/30">
+      
       {/* ─── Header ─────────────────────────────────── */}
-      <header className="border-b border-white/5 px-8 py-5 flex items-center justify-between bg-[#0B0F19]/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-white/5 px-8 py-4 flex items-center justify-between bg-[#0B0F19]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-accent-cyan/10 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-accent-cyan/10 flex items-center justify-center border border-accent-cyan/20">
             <ShieldCheck size={20} className="text-accent-cyan" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-tight">Admin Dashboard</h1>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-white/40">Project Management System</p>
+            <h1 className="text-lg font-black tracking-tight">System Admin</h1>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
+              <p className="text-[9px] font-mono uppercase tracking-widest text-white/40">Groq Cloud Online</p>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowAddPanel(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-cyan text-[#0B0F19] font-bold text-xs uppercase tracking-widest hover:bg-accent-cyan/80 transition-all"
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={async () => {
+              await supabase.auth.signOut();
+              router.push("/");
+            }} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 text-white/40 hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest"
           >
-            <Plus size={16} />
-            Add Project
+            <Eye size={16} /> View Portfolio & Exit
           </button>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-white/60 text-xs uppercase tracking-widest hover:text-white hover:border-white/20 transition-all"
-          >
-            <LogOut size={14} />
-            Logout
+          <button onClick={handleLogout} className="p-2.5 rounded-xl border border-white/5 hover:bg-white/5 text-white/40 hover:text-white transition-all">
+            <LogOut size={16} />
           </button>
         </div>
       </header>
 
-      {/* ─── Projects Table ─────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-8 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-black tracking-tight">Selected Works</h2>
-          <span className="font-mono text-xs text-white/40">{projects.length} projects</span>
+      <main className="max-w-6xl mx-auto px-8 py-10 relative z-10">
+        
+        {/* ─── Tabs ───────────────────────────────────── */}
+        <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center gap-2 p-1.5 bg-white/10 border border-white/10 rounded-2xl w-fit backdrop-blur-xl shadow-2xl">
+            <button 
+              onClick={() => setActiveTab("projects")}
+              className={`flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "projects" ? "bg-accent-cyan text-[#0B0F19] shadow-[0_0_20px_rgba(34,211,238,0.3)]" : "text-white/60 hover:text-white hover:bg-white/5"}`}
+            >
+              <LayoutGrid size={16} /> Projects
+            </button>
+            <button 
+              onClick={() => setActiveTab("skills")}
+              className={`flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "skills" ? "bg-accent-indigo text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]" : "text-white/60 hover:text-white hover:bg-white/5"}`}
+            >
+              <Cpu size={16} /> Skills
+            </button>
+          </div>
+
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold"
+            >
+              <X size={16} className="cursor-pointer" onClick={() => setError(null)} />
+              {error}
+            </motion.div>
+          )}
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-accent-cyan" size={32} />
-          </div>
-        ) : projects.length === 0 ? (
-          <div className="text-center py-20 border border-dashed border-white/10 rounded-2xl">
-            <Github size={48} className="mx-auto text-white/20 mb-4" />
-            <p className="text-white/40 font-mono text-sm">No projects yet. Click "Add Project" to start.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {projects.map((project) => (
-              <motion.div
-                key={project.id}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="group bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all"
+        {/* ─── PROJECTS SECTION ───────────────────────── */}
+        {activeTab === "projects" && (
+          <div className="space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-black tracking-tighter">Project <span className="text-accent-cyan">Vault.</span></h2>
+              <button 
+                onClick={() => setShowProjectForm(!showProjectForm)}
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-accent-cyan/50 hover:bg-accent-cyan/5 text-accent-cyan text-xs font-bold uppercase tracking-widest transition-all"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-base font-bold">{project.title}</h3>
-                      <span className="px-2.5 py-0.5 rounded-md bg-accent-cyan/10 text-accent-cyan text-[10px] font-mono uppercase tracking-widest">
-                        {project.category}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-md bg-white/5 text-white/50 text-[10px] font-mono">
-                        {project.language}
-                      </span>
-                    </div>
-                    <p className="text-sm text-white/50 mb-3 max-w-2xl">{project.description}</p>
-                    <div className="flex items-center gap-2">
-                      {project.tags?.map((tag) => (
-                        <span key={tag} className="px-2 py-0.5 rounded bg-white/5 text-[10px] font-mono text-white/40">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                {showProjectForm ? <X size={16} /> : <Plus size={16} />}
+                {showProjectForm ? "Cancel" : "Add Project"}
+              </button>
+            </div>
 
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a
-                      href={project.github_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
-                    >
-                      <ExternalLink size={14} className="text-white/60" />
-                    </a>
-                    <button
-                      onClick={() => toggleVisibility(project.id, project.visible)}
-                      className={`p-2.5 rounded-xl border transition-all ${
-                        project.visible ? "border-green-500/30 text-green-500" : "border-white/10 text-white/30"
-                      } hover:bg-white/5`}
-                    >
-                      {project.visible ? <Eye size={14} /> : <EyeOff size={14} />}
-                    </button>
-                    <button
-                      onClick={() => deleteProject(project.id)}
-                      className="p-2.5 rounded-xl border border-red-500/20 text-red-500/60 hover:bg-red-500/10 transition-all"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ─── Add Project Panel (Slide-over) ─────────── */}
-      <AnimatePresence>
-        {showAddPanel && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={resetPanel}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-            />
-
-            {/* Panel */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-full max-w-xl bg-[#0f1420] border-l border-white/5 z-50 overflow-y-auto"
-            >
-              <div className="p-8">
-                {/* Panel Header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="text-xl font-black tracking-tight">Add Project</h2>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-white/40 mt-1">GitHub → Ollama → Supabase</p>
-                  </div>
-                  <button onClick={resetPanel} className="p-2 rounded-xl border border-white/10 hover:bg-white/5 transition-all">
-                    <X size={16} className="text-white/60" />
-                  </button>
-                </div>
-
-                {/* Step: Input URL */}
-                {step === "input" && (
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="font-mono text-[10px] uppercase tracking-widest text-white/40">GitHub Repository URL</label>
-                      <div className="relative">
-                        <Github className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
-                        <input
-                          type="url"
-                          value={githubUrl}
-                          onChange={(e) => setGithubUrl(e.target.value)}
-                          placeholder="https://github.com/username/repo"
-                          className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:border-accent-cyan/50 outline-none transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {error && (
-                      <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono">
-                        {error}
+            {/* Integrated Form */}
+            <AnimatePresence>
+              {showProjectForm && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="bg-[#161B22]/50 border border-white/10 rounded-3xl p-8 mb-8 backdrop-blur-xl">
+                    {projectStep === "input" && (
+                      <div className="flex gap-4">
+                        <div className="flex-1 relative">
+                          <GithubIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                          <input 
+                            type="text" 
+                            placeholder="Enter GitHub Repository URL..."
+                            value={githubUrl}
+                            onChange={(e) => setGithubUrl(e.target.value)}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-accent-cyan/50 transition-all font-mono text-sm"
+                          />
+                        </div>
+                        <button 
+                          onClick={handleAnalyzeProject}
+                          className="px-8 bg-accent-cyan text-[#0B0F19] font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                        >
+                          <Search size={16} /> Analyze
+                        </button>
                       </div>
                     )}
 
-                    <button
-                      onClick={handleFetchRepo}
-                      disabled={!githubUrl.includes("github.com")}
-                      className="w-full py-4 rounded-xl bg-accent-cyan text-[#0B0F19] font-bold text-xs uppercase tracking-widest hover:bg-accent-cyan/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      <Search size={16} />
-                      Analyze Repository
+                    {projectStep === "loading" && (
+                      <div className="flex flex-col items-center py-12 gap-4">
+                        <div className="relative">
+                          <Loader2 size={40} className="animate-spin text-accent-cyan" />
+                          <Sparkles size={16} className="absolute -top-1 -right-1 text-accent-cyan animate-pulse" />
+                        </div>
+                        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Groq Cloud Analysis...</p>
+                      </div>
+                    )}
+
+                    {projectStep === "review" && (
+                      <div className="grid grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="space-y-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Title</label>
+                            <input value={editableProject.title} onChange={e => setEditableProject({...editableProject, title: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent-cyan/40 outline-none" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">AI Description</label>
+                            <textarea rows={4} value={editableProject.description} onChange={e => setEditableProject({...editableProject, description: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent-cyan/40 outline-none resize-none" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">🚀 Technologies & Stack</label>
+                            <input value={editableProject.language} onChange={e => setEditableProject({...editableProject, language: e.target.value})} placeholder="e.g. Next.js, Tailwind, Supabase, Groq" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent-cyan/40 outline-none" />
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Category</label>
+                            <div className="flex flex-col gap-2">
+                              <input 
+                                value={editableProject.category} 
+                                onChange={e => setEditableProject({...editableProject, category: e.target.value})} 
+                                placeholder="e.g. Full-Stack, AI, Security..."
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent-cyan/40 outline-none"
+                              />
+                              <div className="flex flex-wrap gap-1.5">
+                                {["Security", "Full-Stack", "AI", "Infrastructure", "Experiments"].map(cat => (
+                                  <button 
+                                    key={cat} 
+                                    type="button"
+                                    onClick={() => setEditableProject({...editableProject, category: cat})} 
+                                    className={`px-3 py-1 text-[9px] font-bold uppercase tracking-tighter rounded-md border transition-all ${editableProject.category === cat ? "bg-accent-cyan/20 border-accent-cyan text-accent-cyan" : "border-white/5 text-white/30 hover:border-white/20"}`}
+                                  >
+                                    {cat}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Tags</label>
+                            <input value={editableProject.tags?.join(", ")} onChange={e => setEditableProject({...editableProject, tags: e.target.value.split(",").map(t => t.trim())})} placeholder="e.g. Next.js, JWT Auth, TensorFlow" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent-cyan/40 outline-none" />
+                          </div>
+                          <div className="flex items-center gap-4 pt-4 h-[56px]">
+                            <button 
+                              onClick={saveProject} 
+                              disabled={saving} 
+                              className="h-full flex-[3] bg-green-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-green-400 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
+                            >
+                              {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />} Commit to Supabase
+                            </button>
+                            <button 
+                              onClick={() => setProjectStep("input")} 
+                              className="h-full px-8 border border-white/10 text-white/40 uppercase font-bold text-[10px] rounded-2xl hover:bg-white/5 hover:text-white transition-all whitespace-nowrap"
+                            >
+                              Back
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="grid gap-4 relative z-10">
+              {projects.map(p => (
+                <div key={p.id} className="group bg-[#161B22]/90 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:border-accent-cyan/30 transition-all flex items-center justify-between shadow-xl">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/5">
+                      <Database className="text-white/20" size={24} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-lg font-bold">{p.title}</h3>
+                        <span className="px-2 py-0.5 bg-accent-cyan/10 text-accent-cyan text-[9px] font-mono uppercase tracking-widest border border-accent-cyan/20 rounded">{p.category}</span>
+                      </div>
+                      <p className="text-sm text-white/40 max-w-xl line-clamp-1">{p.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => toggleVisibility(p.id, p.visible)} className={`p-3 rounded-xl border transition-all ${p.visible ? "text-green-500 border-green-500/20 bg-green-500/5" : "text-white/20 border-white/10"}`}>
+                      {p.visible ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                    <button onClick={() => deleteItem("projects", p.id)} className="p-3 rounded-xl border border-red-500/10 text-red-500/40 hover:bg-red-500/5 hover:text-red-500 transition-all">
+                      <Trash2 size={16} />
                     </button>
                   </div>
-                )}
-
-                {/* Step: Fetching */}
-                {step === "fetching" && (
-                  <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                    <Loader2 className="animate-spin text-accent-cyan" size={32} />
-                    <p className="font-mono text-xs text-white/40 uppercase tracking-widest">Fetching repository data...</p>
-                  </div>
-                )}
-
-                {/* Step: Analyzing with Ollama */}
-                {step === "analyzing" && (
-                  <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                    <Sparkles className="animate-pulse text-accent-cyan" size={32} />
-                    <p className="font-mono text-xs text-white/40 uppercase tracking-widest">Ollama is analyzing...</p>
-                    <p className="text-[10px] text-white/20 font-mono">Model: mistral</p>
-                  </div>
-                )}
-
-                {/* Step: Review & Edit */}
-                {step === "review" && (
-                  <div className="space-y-6">
-                    <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3">
-                      <Check size={16} className="text-green-500" />
-                      <span className="text-green-400 text-xs font-mono uppercase tracking-widest">Analysis complete — Review below</span>
-                    </div>
-
-                    {/* Title */}
-                    <div className="space-y-2">
-                      <label className="font-mono text-[10px] uppercase tracking-widest text-white/40">Project Title</label>
-                      <input
-                        value={editableProject.title}
-                        onChange={(e) => setEditableProject(prev => ({ ...prev, title: e.target.value }))}
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-accent-cyan/50 outline-none"
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <div className="space-y-2">
-                      <label className="font-mono text-[10px] uppercase tracking-widest text-white/40">Description (by Ollama)</label>
-                      <textarea
-                        value={editableProject.description}
-                        onChange={(e) => setEditableProject(prev => ({ ...prev, description: e.target.value }))}
-                        rows={3}
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-accent-cyan/50 outline-none resize-none"
-                      />
-                    </div>
-
-                    {/* Category */}
-                    <div className="space-y-2">
-                      <label className="font-mono text-[10px] uppercase tracking-widest text-white/40">Category</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {CATEGORIES.map((cat) => (
-                          <button
-                            key={cat}
-                            onClick={() => setEditableProject(prev => ({ ...prev, category: cat }))}
-                            className={`py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border ${
-                              editableProject.category === cat
-                                ? "bg-accent-cyan/10 border-accent-cyan/50 text-accent-cyan"
-                                : "bg-white/[0.02] border-white/10 text-white/40 hover:text-white/60"
-                            }`}
-                          >
-                            {cat}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="space-y-2">
-                      <label className="font-mono text-[10px] uppercase tracking-widest text-white/40">Tags</label>
-                      <div className="flex flex-wrap gap-2">
-                        {editableProject.tags.map((tag, i) => (
-                          <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 text-xs font-mono text-white/60">
-                            {tag}
-                            <button
-                              onClick={() => setEditableProject(prev => ({
-                                ...prev,
-                                tags: prev.tags.filter((_, idx) => idx !== i)
-                              }))}
-                              className="text-white/30 hover:text-red-400"
-                            >
-                              <X size={10} />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Language */}
-                    <div className="space-y-2">
-                      <label className="font-mono text-[10px] uppercase tracking-widest text-white/40">Language</label>
-                      <input
-                        value={editableProject.language}
-                        onChange={(e) => setEditableProject(prev => ({ ...prev, language: e.target.value }))}
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-accent-cyan/50 outline-none"
-                      />
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-4">
-                      <button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="flex-1 py-4 rounded-xl bg-accent-cyan text-[#0B0F19] font-bold text-xs uppercase tracking-widest hover:bg-accent-cyan/80 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                      >
-                        {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                        Save to Database
-                      </button>
-                      <button
-                        onClick={resetPanel}
-                        className="px-6 py-4 rounded-xl border border-white/10 text-white/60 text-xs uppercase tracking-widest hover:text-white transition-all"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+
+        {/* ─── SKILLS SECTION ─────────────────────────── */}
+        {activeTab === "skills" && (
+          <div className="space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-black tracking-tighter text-accent-indigo">Technical <span className="text-white">Arsenal.</span></h2>
+              <button 
+                onClick={() => setShowSkillForm(!showSkillForm)}
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-accent-indigo/50 hover:bg-accent-indigo/5 text-accent-indigo text-xs font-bold uppercase tracking-widest transition-all"
+              >
+                {showSkillForm ? <X size={16} /> : <Plus size={16} />}
+                {showSkillForm ? "Cancel" : "Add Skill"}
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {showSkillForm && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  <div className="bg-[#161B22]/50 border border-white/10 rounded-3xl p-8 mb-8 backdrop-blur-xl">
+                    {!editableSkill ? (
+                      <div className="flex gap-4">
+                        <input 
+                          type="text" 
+                          placeholder="Skill name (e.g. React, Docker, Python)..."
+                          value={skillName}
+                          onChange={(e) => setSkillName(e.target.value)}
+                          className="flex-1 bg-white/[0.03] border border-white/10 rounded-2xl py-4 px-6 outline-none focus:border-accent-indigo/50 transition-all font-mono text-sm"
+                        />
+                        <button 
+                          onClick={handleAnalyzeSkill}
+                          disabled={!skillName || skillLoading}
+                          className="px-8 bg-accent-indigo text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-30"
+                        >
+                          {skillLoading ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />} AI Classify
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-8 items-end">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Name</label>
+                          <input value={editableSkill.name} onChange={e => setEditableSkill({...editableSkill, name: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Category</label>
+                          <input 
+                            value={editableSkill.category} 
+                            onChange={e => setEditableSkill({...editableSkill, category: e.target.value})}
+                            placeholder="e.g. Core, Frameworks, Tools, DevOps..."
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-accent-indigo/40"
+                          />
+                        </div>
+                        <div className="flex items-center gap-3 h-[52px]">
+                          <button 
+                            onClick={saveSkill} 
+                            disabled={saving} 
+                            className="h-full flex-[2] bg-accent-indigo text-white font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent-indigo/20"
+                          >
+                            {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Save Component
+                          </button>
+                          <button 
+                            onClick={() => setEditableSkill(null)} 
+                            className="h-full px-6 border border-white/10 text-white/40 uppercase font-bold text-[10px] rounded-2xl hover:bg-white/5 hover:text-white transition-all whitespace-nowrap"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="grid grid-cols-3 gap-4 relative z-10">
+              {skills.map(s => (
+                <div key={s.id} className="group bg-[#161B22]/90 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:border-accent-indigo/30 transition-all flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
+                      <Cpu size={20} className="text-accent-indigo" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold">{s.name}</h3>
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-white/30">{s.category}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => deleteItem("skills", s.id)} className="p-2.5 rounded-lg border border-red-500/10 text-red-500/20 group-hover:text-red-500/60 hover:bg-red-500/5 transition-all">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* Floating Background Shapes (Visual only) */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 opacity-20">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-cyan/10 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-indigo/10 blur-[120px] rounded-full animate-pulse delay-1000" />
+      </div>
+
     </div>
   );
 }

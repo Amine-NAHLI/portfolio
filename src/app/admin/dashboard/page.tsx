@@ -9,6 +9,7 @@ import {
   Sparkles, Save, X, Check, Search, Cpu, Database, LayoutGrid
 } from "lucide-react";
 import { GithubIcon, ExternalLinkIcon } from "@/components/ui/Icons";
+import { formatProjectTitle } from "@/lib/utils";
 
 /* ─── Types ──────────────────────────────────────────── */
 interface Project {
@@ -323,8 +324,15 @@ export default function AdminDashboard() {
         {/* ─── PROJECTS SECTION ───────────────────────── */}
         {activeTab === "projects" && (
           <div className="space-y-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-black tracking-tighter">Project <span className="text-accent-cyan">Vault.</span></h2>
+            <div className="flex items-center justify-between relative">
+              <div className="relative">
+                <span className="absolute -top-6 -left-2 text-6xl font-black text-slate-900/5 dark:text-white/5 select-none pointer-events-none -z-10 uppercase tracking-tighter">
+                  Projects
+                </span>
+                <h2 className="text-3xl font-black tracking-tighter relative z-10 text-slate-900 dark:text-white">
+                  Project <span className="text-accent-cyan">Vault.</span>
+                </h2>
+              </div>
               <button 
                 onClick={() => setShowProjectForm(!showProjectForm)}
                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-accent-cyan/50 hover:bg-accent-cyan/5 text-accent-cyan text-xs font-bold uppercase tracking-widest transition-all"
@@ -451,7 +459,7 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-lg font-bold">{p.title}</h3>
+                        <h3 className="text-lg font-bold">{formatProjectTitle(p.title)}</h3>
                         <span className="px-2 py-0.5 bg-accent-cyan/10 text-accent-cyan text-[9px] font-mono uppercase tracking-widest border border-accent-cyan/20 rounded">{p.category}</span>
                       </div>
                       <p className="text-sm text-white/40 max-w-xl line-clamp-1">{p.description}</p>
@@ -474,8 +482,15 @@ export default function AdminDashboard() {
         {/* ─── SKILLS SECTION ─────────────────────────── */}
         {activeTab === "skills" && (
           <div className="space-y-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-black tracking-tighter text-accent-indigo">Technical <span className="text-white">Arsenal.</span></h2>
+            <div className="flex items-center justify-between relative">
+              <div className="relative">
+                <span className="absolute -top-6 -left-2 text-6xl font-black text-slate-900/5 dark:text-white/5 select-none pointer-events-none -z-10 uppercase tracking-tighter">
+                  Arsenal
+                </span>
+                <h2 className="text-3xl font-black tracking-tighter relative z-10 text-slate-900 dark:text-white">
+                  Technical <span className="text-accent-indigo">Arsenal.</span>
+                </h2>
+              </div>
               <button 
                 onClick={() => setShowSkillForm(!showSkillForm)}
                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-accent-indigo/50 hover:bg-accent-indigo/5 text-accent-indigo text-xs font-bold uppercase tracking-widest transition-all"

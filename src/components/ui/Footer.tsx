@@ -104,18 +104,20 @@ const TerminalEasterEgg = () => {
   }, [index, hasRun]);
 
   return (
-    <div className="w-full flex flex-col gap-2 p-6 rounded-[1.5rem] bg-bg-1/50 border border-white/5 backdrop-blur-xl">
+    <div className="w-full flex flex-col p-5 rounded-lg bg-[#1e1e2e] dark:bg-[#0d1117] border border-[#374151] dark:border-[#30363d] shadow-2xl font-mono">
+      {/* Terminal Window Dots */}
+      <div className="flex gap-1.5 mb-4">
+        <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+        <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+        <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+      </div>
+
       <div className="flex items-center justify-between mb-2">
-         <span className="font-mono text-[8px] uppercase tracking-widest text-text-4">Kernel_Log</span>
-         <div className="flex gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-            <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-            <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-         </div>
+         <span className="font-mono text-[8px] uppercase tracking-widest text-slate-500">Kernel_Log</span>
       </div>
       <div className="flex items-center gap-3">
         <span className="text-accent-cyan font-mono text-xs">❯</span>
-        <span className="font-mono text-[11px] text-text-2 tracking-widest flex-1">{text}</span>
+        <span className="font-mono text-[11px] text-[#e2e8f0] tracking-widest flex-1">{text}</span>
         {!hasRun && <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1.5 h-4 bg-accent-cyan/60" />}
       </div>
     </div>

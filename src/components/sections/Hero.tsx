@@ -17,36 +17,42 @@ const ROLES = [
 
 /* ─── Animated Mesh Gradient ─────────────────────────────────────── */
 
-const MeshGradient = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 dark:opacity-[0.08] [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
-    <div className="absolute inset-0 noise-bg mix-blend-soft-light opacity-10 dark:opacity-[0.05]" />
-    <motion.div
-      animate={{
-        x: [0, 100, -100, 0],
-        y: [0, -100, 100, 0],
-      }}
-      transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-      className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-accent-cyan/20 blur-[120px]"
-    />
-    <motion.div
-      animate={{
-        x: [0, -150, 150, 0],
-        y: [0, 150, -150, 0],
-      }}
-      transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-      className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] rounded-full bg-accent-indigo/20 blur-[120px]"
-    />
-    <motion.div
-      animate={{
-        x: [0, 150, -150, 0],
-        y: [0, 150, -150, 0],
-      }}
-      transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-      className="absolute top-[20%] right-[10%] w-[60%] h-[60%] rounded-full bg-accent-purple/10 blur-[120px]"
-    />
-    <div className="absolute inset-0 grid-bg opacity-[0.05] dark:opacity-[0.02]" />
-  </div>
-);
+const MeshGradient = () => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      setMousePos({ x: (e.clientX / window.innerWidth - 0.5) * 50, y: (e.clientY / window.innerHeight - 0.5) * 50 });
+    };
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 dark:opacity-[0.08] [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
+      <div className="absolute inset-0 noise-bg mix-blend-soft-light opacity-10 dark:opacity-[0.05]" />
+      <motion.div
+        animate={{
+          x: [0, 100, -100, 0],
+          y: [0, -100, 100, 0],
+        }}
+        style={{ translateX: mousePos.x, translateY: mousePos.y }}
+        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-accent-cyan/20 blur-[120px]"
+      />
+      <motion.div
+        animate={{
+          x: [0, -150, 150, 0],
+          y: [0, 150, -150, 0],
+        }}
+        style={{ translateX: -mousePos.x * 1.5, translateY: -mousePos.y * 1.5 }}
+        transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] rounded-full bg-accent-indigo/20 blur-[120px]"
+      />
+      <div className="absolute inset-0 grid-bg opacity-[0.05] dark:opacity-[0.02]" />
+    </div>
+  );
+};
 
 /* ─── Hero Section ───────────────────────────────────────────────── */
 
@@ -67,99 +73,164 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.08, delayChildren: 0.3 }
+      transition: { staggerChildren: 0.05, delayChildren: 0.1 }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
   };
 
   if (!mounted) return <section id="home" className="min-h-svh bg-bg-0" />;
 
   return (
-    <section id="home" className="relative min-h-svh w-full flex items-center justify-center overflow-hidden py-12 bg-transparent">
+    <section id="home" className="relative min-h-screen w-full flex items-start justify-center overflow-hidden pt-28 md:pt-32 lg:pt-[120px] pb-20 bg-transparent">
       <MeshGradient />
       <motion.div 
         style={{ opacity, y }}
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative z-10 w-full max-w-6xl px-6 md:px-12 flex flex-col items-center text-center"
+        className="relative z-10 w-full max-w-7xl px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-16"
       >
-        {/* Availability */}
-        <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent-green-bg dark:bg-[#111827] border border-accent-green/10 dark:border-[#1e293b] mb-8 shadow-sm dark:shadow-none transition-colors">
-          <div className="relative flex h-2 w-2">
-            <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-accent-green"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
-          </div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-green font-bold">
-            Available for opportunities
-          </span>
-        </motion.div>
-
-        {/* Heading Reveal (Scaled Down) */}
-        <motion.h1 variants={item} className="text-5xl md:text-7xl lg:text-[6vw] font-black tracking-tighter leading-[0.9] uppercase mb-6">
-          {displayName.split(" ").map((word, i) => (
-            <span key={i} className="inline-block mr-3 last:mr-0 overflow-hidden">
-               <motion.span
-                 initial={{ y: "100%" }}
-                 animate={{ y: 0 }}
-                 transition={{ delay: 0.5 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                 className={`inline-block ${i === 1 ? "text-accent-cyan" : "text-text-1"}`}
-               >
-                 {word}
-               </motion.span>
+        {/* LEFT CONTENT */}
+        <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
+          {/* Availability */}
+          <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent-green-bg dark:bg-[#111827] border border-accent-green/10 dark:border-[#1e293b] mb-10 shadow-sm dark:shadow-none transition-colors">
+            <div className="relative flex h-2 w-2">
+              <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-accent-green"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-green font-bold">
+              Available for opportunities
             </span>
-          ))}
-        </motion.h1>
+          </motion.div>
 
-        {/* Tagline */}
-        <motion.div variants={item} className="font-mono text-lg md:text-xl text-text-2 dark:text-text-3 flex items-center justify-center gap-4">
-          <span>{displayText}</span>
-          <motion.span 
-            animate={{ opacity: [1, 0, 1] }}
-            transition={{ repeat: Infinity, duration: 0.8 }}
-            className="w-2 h-[1em] bg-accent-cyan"
-          />
-        </motion.div>
+          {/* Heading */}
+          <motion.h1 variants={item} className="text-6xl md:text-8xl lg:text-[7vw] font-black tracking-tighter leading-[0.85] uppercase mb-8">
+            {displayName.split(" ").map((word, i) => (
+              <span key={i} className="inline-block mr-3 last:mr-0 overflow-hidden">
+                 <motion.span
+                   initial={{ y: "100%" }}
+                   animate={{ y: 0 }}
+                   transition={{ delay: 0.2 + i * 0.05, duration: 0.4, ease: "easeOut" }}
+                   className={`inline-block ${i === 1 ? "text-accent-cyan" : "text-text-1"}`}
+                 >
+                   {word}
+                 </motion.span>
+              </span>
+            ))}
+          </motion.h1>
 
-        {/* CTAs */}
-        <motion.div variants={item} className="mt-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
-          <Link
-            href="#projects"
-            className="group flex items-center gap-2.5 px-8 py-4 rounded-full bg-text-1 text-bg-0 dark:bg-accent-cyan dark:text-[#0f172a] font-bold uppercase tracking-widest text-[10px] transition-all hover:bg-accent-cyan dark:hover:bg-accent-cyan/80 hover:scale-[1.03] active:scale-[0.98] shadow-2xl"
-          >
-            Explore Work
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+          {/* Tagline */}
+          <motion.div variants={item} className="font-mono text-xl md:text-2xl text-text-2 dark:text-text-3 flex items-center gap-4 mb-12">
+            <span>{displayText}</span>
+            <motion.span 
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ repeat: Infinity, duration: 0.8 }}
+              className="w-2 h-[1em] bg-accent-cyan"
+            />
+          </motion.div>
 
-          <a
-            href="/nahli amine cv.pdf"
-            download="nahli amine cv.pdf"
-            className="group flex items-center gap-2.5 px-8 py-4 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-accent-cyan font-bold uppercase tracking-widest text-[10px] transition-all hover:bg-accent-cyan hover:text-bg-0 hover:scale-[1.03] active:scale-[0.98]"
-          >
-            <Download size={14} />
-            Download CV
-          </a>
+          {/* CTAs */}
+          <motion.div variants={item} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-6">
+            <Link
+              href="#projects"
+              className="group flex items-center gap-2.5 px-10 py-5 rounded-full bg-text-1 text-bg-0 dark:bg-accent-cyan dark:text-[#0f172a] font-bold uppercase tracking-widest text-[11px] transition-all hover:bg-accent-cyan dark:hover:bg-accent-cyan/80 hover:scale-[1.03] active:scale-[0.98] shadow-2xl"
+            >
+              Explore Work
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
 
-          <div className="flex items-center gap-5">
+            <a
+              href="/nahli amine cv.pdf"
+              download="nahli amine cv.pdf"
+              className="group flex items-center gap-2.5 px-10 py-5 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-accent-cyan font-bold uppercase tracking-widest text-[11px] transition-all hover:bg-accent-cyan hover:text-bg-0 hover:scale-[1.03] active:scale-[0.98]"
+            >
+              <Download size={14} />
+              Download CV
+            </a>
+          </motion.div>
+
+          <motion.div variants={item} className="mt-12 flex items-center gap-8">
             <Link
               href="#contact"
-              className="px-8 py-4 rounded-full border border-bg-3 dark:border-white/10 font-mono text-[9px] uppercase tracking-[0.3em] text-text-2 dark:text-text-4 hover:text-text-1 dark:hover:text-text-1 transition-all"
+              className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-3 hover:text-text-1 transition-all"
             >
               Contact
             </Link>
-            <div className="h-px w-6 bg-white/10" />
+            <div className="h-px w-12 bg-bg-3" />
             <a
               href={githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-4 hover:text-cyan transition-colors"
             >
-              <GithubIcon size={18} />
+              <GithubIcon size={20} />
             </a>
+          </motion.div>
+        </div>
+
+        {/* RIGHT CONTENT: PROFILE PHOTO */}
+        <motion.div 
+          variants={item}
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            e.currentTarget.style.setProperty("--tilt-x", `${y * 20}deg`);
+            e.currentTarget.style.setProperty("--tilt-y", `${-x * 20}deg`);
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.setProperty("--tilt-x", `0deg`);
+            e.currentTarget.style.setProperty("--tilt-y", `0deg`);
+          }}
+          className="flex-1 flex justify-center lg:justify-end order-1 lg:order-2 perspective-1000"
+        >
+          <div 
+            className="relative group transition-transform duration-500 ease-out"
+            style={{ transform: "rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))" }}
+          >
+            {/* Artistic Decorations */}
+            <div className="absolute -inset-10 bg-accent-cyan/10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+            
+            {/* Floating Code Signature */}
+            <div className="absolute -top-12 -left-12 font-mono text-[9px] text-accent-cyan/40 select-none pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 group-hover:-translate-y-2">
+               <div className="flex flex-col gap-1">
+                  <span>01  struct Engineer &#123;</span>
+                  <span>02    let status: String = "Active"</span>
+                  <span>03    let focus: String = "Security"</span>
+                  <span>04  &#125;</span>
+               </div>
+            </div>
+
+            <div className="absolute -top-4 -right-4 w-24 h-24 border-t-2 border-r-2 border-accent-cyan/20 rounded-tr-[3rem] pointer-events-none" />
+            <div className="absolute -bottom-4 -left-4 w-24 h-24 border-b-2 border-l-2 border-accent-cyan/20 rounded-bl-[3rem] pointer-events-none" />
+            
+            <div className="relative w-[280px] h-[350px] md:w-[350px] md:h-[450px] rounded-[3rem] border-2 border-white/5 p-3 bg-white/[0.02] backdrop-blur-3xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative">
+                <img 
+                  src="/nahli.png" 
+                  alt="Amine Nahli" 
+                  className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-bg-0/60 via-transparent to-transparent opacity-60" />
+              </div>
+            </div>
+
+            {/* Float Badge */}
+            <motion.div 
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -bottom-6 -right-6 min-w-[160px] px-6 py-3 rounded-2xl bg-white dark:bg-bg-1 border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-2xl backdrop-blur-xl flex items-center gap-4 z-20"
+            >
+              <div className="w-2.5 h-2.5 rounded-full bg-accent-green shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+              <div className="flex flex-col">
+               <span className="font-mono text-[9px] uppercase tracking-widest text-text-3">Status</span>
+                <span className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-wider whitespace-nowrap">Operational</span>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </motion.div>
@@ -172,7 +243,7 @@ export default function Hero({ profile }: { profile: GitHubProfile | null }) {
         className="absolute bottom-12 left-12 hidden lg:flex flex-col gap-8"
       >
         <div className="flex flex-col gap-2">
-           <span className="font-mono text-[9px] uppercase tracking-widest text-text-4">Current Coordinates</span>
+           <span className="font-mono text-[9px] uppercase tracking-widest text-text-3">Current Coordinates</span>
            <span className="font-mono text-[10px] uppercase tracking-widest text-text-2">Fès, Morocco (UTC+1)</span>
         </div>
       </motion.div>

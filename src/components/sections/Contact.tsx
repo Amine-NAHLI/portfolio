@@ -34,7 +34,7 @@ export default function Contact({ profile }: { profile: GitHubProfile | null }) 
              <span className="font-mono text-accent-cyan text-[10px] uppercase tracking-[0.4em]">Direct_Access_v1.0</span>
           </div>
           <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] uppercase">
-            Let's Start <br /> <span className="text-text-4">The Signal.</span>
+            Let's Start <br /> <span className="text-text-3">The Signal.</span>
           </h2>
           <p className="max-w-xl mx-auto text-text-3 text-lg md:text-xl leading-relaxed">
             I'm currently open to high-impact engineering roles, offensive security research, and complex full-stack architecture.
@@ -79,19 +79,19 @@ const ChannelCard = ({ label, val, href, icon: Icon, color }: any) => (
     whileInView={{ opacity: 1, y: 0 }}
     whileHover={{ y: -8, scale: 1.02 }}
     transition={{ duration: 0.5, ease: EASE }}
-    className="group relative p-8 rounded-[2.5rem] bg-bg-1 border border-text-1/[0.05] hover:border-white/20 transition-all flex flex-col items-center gap-6 overflow-hidden shadow-2xl"
+    className="group relative p-8 rounded-[2.5rem] bg-white dark:bg-bg-1 border border-slate-200 dark:border-white/5 hover:border-accent-cyan/30 transition-all flex flex-col items-center gap-6 overflow-hidden shadow-sm dark:shadow-none hover:shadow-2xl"
   >
      <div 
        className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-700 pointer-events-none"
        style={{ background: `radial-gradient(circle at center, ${color}, transparent)` }}
      />
-     <div className="w-16 h-16 rounded-2xl bg-bg-2 flex items-center justify-center text-text-4 group-hover:text-text-1 transition-colors relative z-10">
+     <div className="w-16 h-16 rounded-2xl bg-bg-page-alt flex items-center justify-center text-text-3 group-hover:text-text-1 transition-colors relative z-10">
        <Icon size={24} />
      </div>
      <div className="space-y-1 relative z-10">
-        <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-4 group-hover:text-accent-cyan transition-colors">{label}</p>
+        <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-3 group-hover:text-accent-cyan transition-colors">{label}</p>
         <p className="text-lg font-bold text-text-1 tracking-tight">{val}</p>
      </div>
-     <ArrowRight size={14} className="mt-4 text-text-4 group-hover:text-text-1 group-hover:translate-x-2 transition-all opacity-0 group-hover:opacity-100" />
+     <ArrowRight size={14} className="mt-4 text-text-3 group-hover:text-text-1 group-hover:translate-x-2 transition-all opacity-0 group-hover:opacity-100" />
   </motion.a>
 );

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Loader2, ShieldCheck, LogOut, Eye, EyeOff, Trash2,
-  Sparkles, Save, X, Check, Search, Cpu, Database, LayoutGrid
+  Sparkles, Save, X, Check, Search, Cpu, Database, LayoutGrid, Star, MessageSquare
 } from "lucide-react";
 import { GithubIcon, ExternalLinkIcon } from "@/components/ui/Icons";
 import { formatProjectTitle } from "@/lib/utils";
@@ -33,6 +33,17 @@ interface Skill {
   icon_name: string;
 }
 
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  message: string;
+  rating: number;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+}
+
 interface RepoData {
   name: string;
   description: string;
@@ -44,14 +55,17 @@ interface RepoData {
 /* ─── Dashboard ──────────────────────────────────────── */
 export default function AdminDashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"projects" | "skills">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "skills" | "testimonials">("projects");
   const [projects, setProjects] = useState<Project[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Forms Visibility
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showSkillForm, setShowSkillForm] = useState(false);
+  const [showTestimonialForm, setShowTestimonialForm] = useState(false);
+  const [newTestimonial, setNewTestimonial] = useState({ name: "", role: "", company: "", message: "", rating: 5 });
 
   // Project Form State
   const [githubUrl, setGithubUrl] = useState("");
@@ -75,7 +89,7 @@ export default function AdminDashboard() {
         router.push("/admin/login");
         return;
       }
-      await Promise.all([fetchProjects(), fetchSkills()]);
+      await Promise.all([fetchProjects(), fetchSkills(), fetchTestimonials()]);
       setLoading(false);
     };
     init();
@@ -90,6 +104,90 @@ export default function AdminDashboard() {
     const { data } = await supabase.from("skills").select("*").order("name");
     if (data) setSkills(data);
   };
+
+  const fetchTestimonials = async () => {
+    const { data } = await supabase.from("testimonials").select("*").order("created_at", { ascending: false });
+    if (data) {
+      setTestimonials(data);
+      if (data.length === 0) await seedDemoTestimonials();
+    }
+  };
+
+  const seedDemoTestimonials = async () => {
+    const demos = [
+      { name: "Dr. Mehdi Alaoui", role: "Professor", company: "UPF · Fès", message: "Amine's ability to identify vulnerabilities while simultaneously proposing architectural improvements is rare. He delivered a thorough security audit and full remediation plan weeks ahead of schedule.", rating: 5, status: "approved" },
+      { name: "Yassine Berrada", role: "Tech Lead", company: "Startup · Casablanca", message: "One of the most driven engineers I've worked with. Amine built our entire backend from scratch, integrated real-time threat detection, and documented every decision. Exceptional quality.", rating: 5, status: "approved" },
+      { name: "Salma Idrissi", role: "CTF Teammate", company: "Morocco Cyber Collective", message: "He joins a CTF team and immediately becomes a force multiplier. Sharp instincts, deep knowledge of exploitation techniques, and always sharing knowledge with teammates.", rating: 5, status: "approved" },
+    ];
+    const { data } = await supabase.from("testimonials").insert(demos).select();
+    if (data) setTestimonials(data);
+  };
+
+  const saveTestimonial = async () => {
+    if (!newTestimonial.name.trim() || !newTestimonial.message.trim()) return;
+    setSaving(true);
+    setError(null);
+    const { error } = await supabase.from("testimonials").insert({ ...newTestimonial, status: "approved" });
+    if (!error) {
+      setNewTestimonial({ name: "", role: "", company: "", message: "", rating: 5 });
+      setShowTestimonialForm(false);
+      fetchTestimonials();
+    } else setError(error.message);
+    setSaving(false);
+  };
+
+  const approveTestimonial = async (id: string) => {
+    const res = await fetch("/api/admin/testimonials", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status: "approved" }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      console.error("[admin] approve error:", json.error);
+      alert(`Erreur lors de l'approbation : ${json.error}`);
+      return;
+    }
+    await fetchTestimonials();
+  };
+
+  const rejectTestimonial = async (id: string) => {
+    if (!confirm("Reject and delete this review?")) return;
+    const res = await fetch("/api/admin/testimonials", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      console.error("[admin] reject error:", json.error);
+      alert(`Erreur lors du rejet : ${json.error}`);
+      return;
+    }
+    await fetchTestimonials();
+  };
+
+  const deleteTestimonial = async (id: string) => {
+    if (!confirm("Confirm deletion?")) return;
+    const res = await fetch("/api/admin/testimonials", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) await fetchTestimonials();
+  };
+
+  /* ─── Realtime subscription for testimonials ──────── */
+  useEffect(() => {
+    if (activeTab !== "testimonials") return;
+    const channel = supabase
+      .channel("admin-testimonials-rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "testimonials" }, () => {
+        fetchTestimonials();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [activeTab]);
 
   /* ─── Actions ──────────────────────────────────────── */
   const toggleVisibility = async (id: string, visible: boolean) => {
@@ -265,11 +363,22 @@ export default function AdminDashboard() {
             >
               <LayoutGrid size={16} /> Projects
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab("skills")}
               className={`flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "skills" ? "bg-accent-indigo text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]" : "text-white/60 hover:text-white hover:bg-white/5"}`}
             >
               <Cpu size={16} /> Skills
+            </button>
+            <button
+              onClick={() => setActiveTab("testimonials")}
+              className={`flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "testimonials" ? "bg-yellow-500 text-[#0B0F19] shadow-[0_0_20px_rgba(234,179,8,0.3)]" : "text-white/60 hover:text-white hover:bg-white/5"}`}
+            >
+              <MessageSquare size={16} /> Reviews
+              {testimonials.filter(t => t.status === "pending").length > 0 && (
+                <span className="min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center px-1">
+                  {testimonials.filter(t => t.status === "pending").length}
+                </span>
+              )}
             </button>
           </div>
 
@@ -399,6 +508,174 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* ─── TESTIMONIALS SECTION ───────────────────── */}
+        {activeTab === "testimonials" && (() => {
+          const pending = testimonials.filter(t => t.status === "pending");
+          const approved = testimonials.filter(t => t.status === "approved" || !t.status);
+          return (
+            <div className="space-y-10">
+              {/* Header */}
+              <div className="flex items-center justify-between relative">
+                <div className="relative">
+                  <span className="absolute -top-6 -left-2 text-6xl font-black text-white/5 select-none pointer-events-none -z-10 uppercase tracking-tighter">Reviews</span>
+                  <h2 className="text-3xl font-black tracking-tighter relative z-10 text-white">Client <span className="text-yellow-400">Reviews.</span></h2>
+                </div>
+                <button
+                  onClick={() => setShowTestimonialForm(!showTestimonialForm)}
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-yellow-500/50 hover:bg-yellow-500/5 text-yellow-400 text-xs font-bold uppercase tracking-widest transition-all"
+                >
+                  {showTestimonialForm ? <X size={16} /> : <Plus size={16} />}
+                  {showTestimonialForm ? "Cancel" : "Add Approved Review"}
+                </button>
+              </div>
+
+              {/* Manual add form (saved as approved) */}
+              <AnimatePresence>
+                {showTestimonialForm && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                    <div className="bg-[#161B22]/50 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          {[
+                            { label: "Name", key: "name", placeholder: "Full name..." },
+                            { label: "Role", key: "role", placeholder: "Tech Lead, Professor..." },
+                            { label: "Company", key: "company", placeholder: "Company · City..." },
+                          ].map(({ label, key, placeholder }) => (
+                            <div key={key} className="space-y-1">
+                              <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">{label}</label>
+                              <input value={(newTestimonial as any)[key]} onChange={e => setNewTestimonial({...newTestimonial, [key]: e.target.value})} placeholder={placeholder} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-yellow-500/40 transition-all" />
+                            </div>
+                          ))}
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Rating</label>
+                            <div className="flex gap-2">
+                              {[1,2,3,4,5].map(star => (
+                                <button key={star} type="button" onClick={() => setNewTestimonial({...newTestimonial, rating: star})} className="transition-transform hover:scale-110">
+                                  <Star size={22} className={star <= newTestimonial.rating ? "text-yellow-400" : "text-white/20"} fill={star <= newTestimonial.rating ? "currentColor" : "none"} />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                          <div className="space-y-1 flex-1 flex flex-col">
+                            <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Message</label>
+                            <textarea rows={6} value={newTestimonial.message} onChange={e => setNewTestimonial({...newTestimonial, message: e.target.value})} placeholder="Testimonial text..." className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none resize-none focus:border-yellow-500/40 transition-all" />
+                          </div>
+                          <button onClick={saveTestimonial} disabled={saving || !newTestimonial.name.trim() || !newTestimonial.message.trim()} className="w-full py-4 bg-yellow-500 text-[#0B0F19] font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-yellow-400 transition-all flex items-center justify-center gap-2 disabled:opacity-30">
+                            {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Save as Approved
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* ── PENDING ── */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 pb-2 border-b border-white/5">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white/50">En Attente</h3>
+                  {pending.length > 0 && (
+                    <span className="px-2.5 py-0.5 bg-red-500/15 text-red-400 text-[9px] font-black rounded-full border border-red-500/20">
+                      {pending.length} PENDING
+                    </span>
+                  )}
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
+                    <span className="text-[9px] font-mono text-white/20 uppercase">Realtime</span>
+                  </div>
+                </div>
+
+                {pending.length === 0 ? (
+                  <div className="text-center py-10 text-white/20 font-mono text-[10px] uppercase tracking-widest border border-dashed border-white/5 rounded-2xl">
+                    No pending reviews ✓
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatePresence>
+                      {pending.map(t => (
+                        <motion.div
+                          key={t.id}
+                          initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+                          className="bg-[#161B22]/90 border border-red-500/15 rounded-2xl p-5 space-y-3"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0">
+                                <span className="text-[10px] font-black text-red-400">
+                                  {t.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                                </span>
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-sm">{t.name}</h4>
+                                <p className="text-[10px] font-mono text-white/40">{t.role}{t.company ? ` · ${t.company}` : ""}</p>
+                                <p className="text-[9px] font-mono text-white/20 mt-0.5">{new Date(t.created_at).toLocaleDateString("fr-FR")}</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-1.5 flex-shrink-0">
+                              <button onClick={() => approveTestimonial(t.id)} title="Approuver" className="p-2 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 transition-all">
+                                <Check size={14} />
+                              </button>
+                              <button onClick={() => rejectTestimonial(t.id)} title="Rejeter" className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all">
+                                <X size={14} />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {[1,2,3,4,5].map(s => <Star key={s} size={10} className={s <= t.rating ? "text-yellow-400" : "text-white/10"} fill={s <= t.rating ? "currentColor" : "none"} />)}
+                          </div>
+                          <p className="text-white/40 text-xs line-clamp-3">{t.message}</p>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+              </div>
+
+              {/* ── APPROVED ── */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 pb-2 border-b border-white/5">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white/50">Approuvés</h3>
+                  <span className="text-[10px] font-mono text-white/25">{approved.length} avis publiés</span>
+                </div>
+                {approved.length === 0 ? (
+                  <div className="text-center py-10 text-white/20 font-mono text-[10px] uppercase tracking-widest border border-dashed border-white/5 rounded-2xl">
+                    No approved reviews yet
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {approved.map(t => (
+                      <div key={t.id} className="group bg-[#161B22]/90 border border-white/10 rounded-2xl p-5 hover:border-yellow-500/25 transition-all">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[10px] font-black text-yellow-400">
+                                {t.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-sm">{t.name}</h4>
+                              <p className="text-[10px] font-mono text-white/40">{t.role}{t.company ? ` · ${t.company}` : ""}</p>
+                            </div>
+                          </div>
+                          <button onClick={() => deleteTestimonial(t.id)} className="p-2 rounded-lg border border-red-500/10 text-red-500/20 group-hover:text-red-500/60 hover:bg-red-500/5 transition-all flex-shrink-0">
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                        <div className="flex gap-0.5 mt-2.5">
+                          {[1,2,3,4,5].map(s => <Star key={s} size={10} className={s <= t.rating ? "text-yellow-400" : "text-white/10"} fill={s <= t.rating ? "currentColor" : "none"} />)}
+                        </div>
+                        <p className="text-white/40 text-xs mt-2 line-clamp-2">{t.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ─── SKILLS SECTION ─────────────────────────── */}
         {activeTab === "skills" && (

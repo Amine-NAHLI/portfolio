@@ -22,7 +22,11 @@
       "Bash(cd \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\")",
       "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\))",
       "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\" -type f -name \"*.ts\" -o -name \"*.tsx\")",
-      "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\\\\\\\\lib\" -type f -name \"*.ts\")"
+      "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\\\\\\\\lib\" -type f -name \"*.ts\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\NAHLI-AMINE\\\\portfolio\\\\supabase\\\\migrations\")",
+      "Bash(Out-Null)",
+      "Bash(Write-Output \"done\")",
+      "PowerShell(New-Item *)"
     ]
   }
 }

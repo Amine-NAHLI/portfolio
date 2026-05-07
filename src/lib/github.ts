@@ -48,7 +48,7 @@ export interface Project {
   title: string;
   description: string;
   year: string;
-  category: "Security" | "Full-Stack" | "AI/Vision" | "Experiments";
+  category: string;
   tags: string[];
   githubUrl: string;
   homepage: string | null;

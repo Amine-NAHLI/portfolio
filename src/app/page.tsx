@@ -6,6 +6,7 @@ import Projects from "@/components/sections/Projects";
 import Stack from "@/components/sections/Stack";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
+import ContentReadySignal from "@/components/ui/ContentReadySignal";
 import { createClient } from "@supabase/supabase-js";
 import Loading from "./loading";
 
@@ -82,6 +83,12 @@ async function PortfolioContent() {
     categories: [...new Set(projects.map((p: any) => p.category))],
     memberSince: profile?.created_at ? new Date(profile.created_at).getFullYear().toString() : "2024",
     githubUrl: profile?.html_url || `https://github.com/${GITHUB_USERNAME}`,
+    counts: {
+      security: projects.filter((p: any) => p.category?.toLowerCase().includes('security')).length,
+      web: projects.filter((p: any) => p.category?.toLowerCase().includes('web') || p.category?.toLowerCase().includes('full')).length,
+      ai: projects.filter((p: any) => p.category?.toLowerCase().includes('ai')).length,
+      mobile: projects.filter((p: any) => p.category?.toLowerCase().includes('mobile')).length,
+    }
   };
 
   return (
@@ -92,6 +99,8 @@ async function PortfolioContent() {
       <Stack skills={skills} />
       <Contact profile={profile} />
       <Footer latestProject={latestProject} />
+      {/* Fires portfolio:content-ready once all sections are hydrated */}
+      <ContentReadySignal />
     </>
   );
 }

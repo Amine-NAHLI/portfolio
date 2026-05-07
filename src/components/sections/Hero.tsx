@@ -1,272 +1,169 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import Link from "next/link";
-import { Mail, ArrowRight, Download } from "lucide-react";
-import { useTypingCycle } from "@/hooks/useTypingCycle";
-import { GithubIcon } from "@/components/ui/Icons";
-import type { GitHubProfile } from "@/lib/github";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { Terminal, Shield, Zap, Activity, Cpu } from "lucide-react";
 
-const ROLES = [
-  "Security Engineer.",
-  "Full-Stack Builder.",
-  "Curious Mind.",
-  "Problem Solver.",
-];
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
-/* ─── Animated Mesh Gradient ─────────────────────────────────────── */
-
-const MeshGradient = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+const DecipherText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+  const [displayText, setDisplayText] = useState("");
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
 
   useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      setMousePos({ x: (e.clientX / window.innerWidth - 0.5) * 50, y: (e.clientY / window.innerHeight - 0.5) * 50 });
-    };
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, []);
+    let iteration = 0;
+    const interval = setInterval(() => {
+      setDisplayText(
+        text
+          .split("")
+          .map((char, index) => {
+            if (index < iteration) return text[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
 
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 dark:opacity-[0.08] [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
-      <div className="absolute inset-0 noise-bg mix-blend-soft-light opacity-10 dark:opacity-[0.05]" />
-      <motion.div
-        animate={{
-          x: [0, 100, -100, 0],
-          y: [0, -100, 100, 0],
-        }}
-        style={{ translateX: mousePos.x, translateY: mousePos.y }}
-        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-accent-cyan/20 blur-[120px]"
-      />
-      <motion.div
-        animate={{
-          x: [0, -150, 150, 0],
-          y: [0, 150, -150, 0],
-        }}
-        style={{ translateX: -mousePos.x * 1.5, translateY: -mousePos.y * 1.5 }}
-        transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] rounded-full bg-accent-indigo/20 blur-[120px]"
-      />
-      <div className="absolute inset-0 grid-bg opacity-[0.05] dark:opacity-[0.02]" />
-    </div>
-  );
+      if (iteration >= text.length) clearInterval(interval);
+      iteration += 1 / 3;
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <span>{displayText}</span>;
 };
 
-/* ─── Hero Section ───────────────────────────────────────────────── */
+const HUDMetric = ({ label, value, icon: Icon, delay }: any) => (
+  <motion.div
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay, duration: 1, ease: EASE_OUT_EXPO }}
+    className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md"
+  >
+    <div className="w-8 h-8 rounded-lg bg-accent-cyan/10 flex items-center justify-center border border-accent-cyan/20">
+      <Icon size={14} className="text-accent-cyan" />
+    </div>
+    <div className="flex flex-col">
+      <span className="text-[8px] font-mono text-text-4 uppercase tracking-[0.2em]">{label}</span>
+      <span className="text-[11px] font-mono text-text-1 font-black">{value}</span>
+    </div>
+  </motion.div>
+);
 
-export default function Hero({ profile }: { profile: GitHubProfile | null }) {
-  const [mounted, setMounted] = useState(false);
-  const { displayText } = useTypingCycle(ROLES);
+export default function Hero({ profile, stats }: { profile: any; stats: any }) {
   const { scrollY } = useScroll();
-  
-  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const y = useTransform(scrollY, [0, 400], [0, 100]);
-
-  useEffect(() => setMounted(true), []);
-
-  const displayName = profile?.name ?? "Amine Nahli";
-  const githubUrl = profile?.html_url ?? "https://github.com/Amine-NAHLI";
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05, delayChildren: 0.1 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-  };
-
-  if (!mounted) return <section id="home" className="min-h-svh bg-bg-0" />;
+  const y1 = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section id="home" className="relative min-h-screen w-full flex items-start justify-center overflow-hidden pt-28 md:pt-32 lg:pt-[120px] pb-20 bg-transparent">
-      <MeshGradient />
-      <motion.div 
-        style={{ opacity, y }}
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 w-full max-w-7xl px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-16"
-      >
-        {/* LEFT CONTENT */}
-        <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
-          {/* Availability */}
-          <motion.div variants={item} className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent-green-bg border border-accent-green/20 dark:border-white/10 mb-10 shadow-sm dark:shadow-none transition-colors">
-            <div className="relative flex h-2 w-2">
-              <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-accent-green"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
-            </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-green font-bold">
-              Available for opportunities
-            </span>
-          </motion.div>
-
-          {/* Heading */}
-          <motion.h1 variants={item} className="text-6xl md:text-8xl lg:text-[7vw] font-black tracking-tighter leading-[0.85] uppercase mb-8">
-            {displayName.split(" ").map((word, i) => (
-              <span key={i} className="inline-block mr-3 last:mr-0 overflow-hidden">
-                 <motion.span
-                   initial={{ y: "100%" }}
-                   animate={{ y: 0 }}
-                   transition={{ delay: 0.2 + i * 0.05, duration: 0.4, ease: "easeOut" }}
-                   className={`inline-block ${i === 1 ? "text-accent-cyan" : "text-text-1"}`}
-                 >
-                   {word}
-                 </motion.span>
-              </span>
-            ))}
-          </motion.h1>
-
-          {/* Tagline */}
-          <motion.div variants={item} className="font-mono text-xl md:text-2xl text-text-2 dark:text-text-3 flex items-center gap-4 mb-12">
-            <span>{displayText}</span>
-            <motion.span 
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ repeat: Infinity, duration: 0.8 }}
-              className="w-2 h-[1em] bg-accent-cyan"
-            />
-          </motion.div>
-
-          {/* CTAs */}
-          <motion.div variants={item} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-6">
-            <Link
-              href="#projects"
-              className="group flex items-center gap-2.5 px-10 py-5 rounded-full bg-text-1 text-bg-0 dark:bg-accent-cyan dark:text-[#0f172a] font-bold uppercase tracking-widest text-[11px] transition-all hover:bg-accent-cyan dark:hover:bg-accent-cyan/80 hover:scale-[1.03] active:scale-[0.98] shadow-2xl"
-            >
-              Explore Work
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <a
-              href="/nahli amine cv.pdf"
-              download="nahli amine cv.pdf"
-              className="group flex items-center gap-2.5 px-10 py-5 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-accent-cyan font-bold uppercase tracking-widest text-[11px] transition-all hover:bg-accent-cyan hover:text-bg-0 hover:scale-[1.03] active:scale-[0.98]"
-            >
-              <Download size={14} />
-              Download CV
-            </a>
-          </motion.div>
-
-          <motion.div variants={item} className="mt-12 flex items-center gap-8">
-            <Link
-              href="#contact"
-              className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-3 hover:text-text-1 transition-all"
-            >
-              Contact
-            </Link>
-            <div className="h-px w-12 bg-bg-3" />
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-4 hover:text-accent-cyan transition-colors"
-            >
-              <GithubIcon size={20} />
-            </a>
-          </motion.div>
-        </div>
-
-        {/* RIGHT CONTENT: PROFILE PHOTO */}
+    <section id="home" className="relative min-h-screen flex flex-col items-center justify-center py-20 overflow-hidden">
+      
+      {/* ─── TACTICAL HUD BACKGROUND ─────────────────── */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div 
-          variants={item}
-          onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            e.currentTarget.style.setProperty("--tilt-x", `${y * 20}deg`);
-            e.currentTarget.style.setProperty("--tilt-y", `${-x * 20}deg`);
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.setProperty("--tilt-x", `0deg`);
-            e.currentTarget.style.setProperty("--tilt-y", `0deg`);
-          }}
-          className="flex-1 flex justify-center lg:justify-end order-1 lg:order-2 perspective-1000"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] border-[0.5px] border-accent-cyan/10 rounded-full"
         >
-          <div 
-            className="relative group transition-transform duration-500 ease-out"
-            style={{ transform: "rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))" }}
-          >
-            {/* Artistic Decorations */}
-            <div className="absolute -inset-10 bg-accent-cyan/10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            
-            {/* Floating Code Signature */}
-            <div className="absolute -top-12 -left-12 font-mono text-[9px] text-accent-cyan/40 select-none pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 group-hover:-translate-y-2">
-               <div className="flex flex-col gap-1">
-                  <span>01  struct Engineer &#123;</span>
-                  <span>02    let status: String = "Active"</span>
-                  <span>03    let focus: String = "Security"</span>
-                  <span>04  &#125;</span>
-               </div>
-            </div>
+          <div className="absolute top-0 left-1/2 w-px h-6 bg-accent-cyan/20" />
+          <div className="absolute bottom-0 left-1/2 w-px h-6 bg-accent-cyan/20" />
+          <div className="absolute left-0 top-1/2 w-6 h-px bg-accent-cyan/20" />
+          <div className="absolute right-0 top-1/2 w-6 h-px bg-accent-cyan/20" />
+        </motion.div>
 
-            <div className="absolute -top-4 -right-4 w-24 h-24 border-t-2 border-r-2 border-accent-cyan/20 rounded-tr-[3rem] pointer-events-none" />
-            <div className="absolute -bottom-4 -left-4 w-24 h-24 border-b-2 border-l-2 border-accent-cyan/20 rounded-bl-[3rem] pointer-events-none" />
-            
-            <div className="relative w-[280px] h-[350px] md:w-[350px] md:h-[450px] rounded-[3rem] border-2 border-slate-200 dark:border-white/5 p-3 bg-slate-50 dark:bg-white/[0.02] backdrop-blur-3xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
-              <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative">
-                <img 
-                  src="/nahli.png" 
-                  alt="Amine Nahli" 
-                  className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-bg-0/60 via-transparent to-transparent opacity-60" />
-              </div>
-            </div>
+        <div className="absolute inset-0 opacity-[0.03] grid-bg" style={{ backgroundSize: '80px 80px' }} />
+        
+        <div className="absolute left-10 top-1/2 -translate-y-1/2 flex flex-col gap-4 hidden lg:flex">
+           <HUDMetric label="System_Core" value="Groq_Cloud" icon={Cpu} delay={1} />
+           <HUDMetric label="Net_Latency" value="14ms" icon={Zap} delay={1.1} />
+           <HUDMetric label="Sec_Status" value="ENCRYPTED" icon={Shield} delay={1.2} />
+        </div>
+      </div>
 
-            {/* Float Badge */}
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-6 -right-6 min-w-[160px] px-6 py-3 rounded-2xl bg-white dark:bg-bg-1 border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-2xl backdrop-blur-xl flex items-center gap-4 z-20"
-            >
-              <div className="w-2.5 h-2.5 rounded-full bg-accent-green shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-              <div className="flex flex-col">
-               <span className="font-mono text-[9px] uppercase tracking-widest text-text-3">Status</span>
-                <span className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-wider whitespace-nowrap">Operational</span>
-              </div>
-            </motion.div>
+      {/* ─── MAIN CONTENT ────────────────────────────── */}
+      <motion.div 
+        style={{ y: y1, opacity }}
+        className="relative z-10 container mx-auto px-6 text-center flex flex-col items-center"
+      >
+        {/* Profile Image Restoration */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: EASE_OUT_EXPO }}
+          className="relative mb-12"
+        >
+          <div className="absolute inset-0 bg-accent-cyan/20 blur-3xl rounded-full" />
+          <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] border-2 border-accent-cyan/20 p-2 bg-bg-1/40 backdrop-blur-xl">
+             <img 
+               src="/nahli.png" 
+               alt="Amine Nahli" 
+               className="w-full h-full object-cover rounded-[1.8rem] grayscale hover:grayscale-0 transition-all duration-700"
+             />
+             <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-accent-cyan flex items-center justify-center border-4 border-bg-0">
+                <Shield size={12} className="text-bg-0" />
+             </div>
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: EASE_OUT_EXPO }}
+          className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 mb-8"
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
+          <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent-cyan font-black">
+            Authorized_Access: Level_8
+          </span>
+        </motion.div>
+
+        <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase mb-8">
+          <div className="text-text-1">
+            <DecipherText text="AMINE" />
+          </div>
+          <div className="text-text-4/20 dark:text-white/5 stroke-text-1">
+            <DecipherText text="NAHLI." />
+          </div>
+        </h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 1.5 }}
+          className="max-w-xl mx-auto text-base md:text-lg text-text-3 font-medium leading-relaxed tracking-tight"
+        >
+          I architect secure systems and build high-fidelity digital intelligence. 
+          <span className="text-text-1 block mt-4 font-mono text-[10px] uppercase tracking-[0.2em] opacity-40">
+            Security Engineer × Full-Stack Builder
+          </span>
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 1, ease: EASE_OUT_EXPO }}
+          className="mt-12 flex flex-wrap justify-center gap-4"
+        >
+          <a href="#projects" className="group relative px-8 py-4 rounded-2xl bg-text-1 text-bg-0 font-black uppercase tracking-widest text-[10px] overflow-hidden transition-all">
+             <span className="relative z-10">Access_Vault</span>
+             <div className="absolute inset-0 bg-accent-cyan translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+          </a>
+          <a href="#contact" className="group px-8 py-4 rounded-2xl border border-white/10 text-text-1 font-black uppercase tracking-widest text-[10px] hover:bg-white/5 transition-all">
+             Initialize_Bridge
+          </a>
         </motion.div>
       </motion.div>
 
-      {/* Aesthetic Accents */}
+      {/* ─── SCROLL INDICATOR ────────────────────────── */}
       <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 1 }}
-        className="absolute bottom-12 left-12 hidden lg:flex flex-col gap-8"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-30"
       >
-        <div className="flex flex-col gap-2">
-           <span className="font-mono text-[9px] uppercase tracking-widest text-text-3">Current Coordinates</span>
-           <span className="font-mono text-[10px] uppercase tracking-widest text-text-2">Fès, Morocco (UTC+1)</span>
-        </div>
+        <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-4">Scroll_To_Analyze</span>
+        <div className="w-px h-12 bg-gradient-to-b from-accent-cyan to-transparent" />
       </motion.div>
 
-      <ScrollIndicator />
     </section>
   );
 }
-
-const ScrollIndicator = () => (
-  <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 2, duration: 1 }}
-    className="absolute bottom-12 right-12 hidden lg:flex flex-col items-center gap-4"
-  >
-    <div className="h-24 w-px bg-slate-200 dark:bg-white/10 relative overflow-hidden">
-      <motion.div 
-        animate={{ y: ["-100%", "100%"] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-cyan to-transparent"
-      />
-    </div>
-    <span className="font-mono text-[9px] uppercase tracking-[0.5em] vertical-text text-text-4">Scroll</span>
-  </motion.div>
-);

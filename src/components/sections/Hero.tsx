@@ -144,17 +144,16 @@ export default function Hero({ profile, stats }: { profile: any; stats: any }) {
           transition={{ delay: 1.2, duration: 1, ease: EASE_OUT_EXPO }}
           className="mt-12 flex flex-wrap justify-center gap-4"
         >
-          <a href="#projects" className="group relative px-8 py-4 rounded-2xl bg-text-1 text-bg-0 font-black uppercase tracking-widest text-[10px] overflow-hidden transition-all">
-             <span className="relative z-10">Access_Vault</span>
-             <div className="absolute inset-0 bg-accent-cyan translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+          <a href="#projects" className="group px-8 py-4 rounded-2xl border border-[#00B4D8] text-white bg-transparent font-black uppercase tracking-widest text-[10px] hover:bg-[#00B4D8] hover:text-white transition-all duration-300">
+            Access_Vault
           </a>
-          <a href="#contact" className="group px-8 py-4 rounded-2xl border border-white/10 text-text-1 font-black uppercase tracking-widest text-[10px] hover:bg-white/5 transition-all">
-             Initialize_Bridge
+          <a href="#contact" className="group px-8 py-4 rounded-2xl border border-[#00B4D8] text-white bg-transparent font-black uppercase tracking-widest text-[10px] hover:bg-[#00B4D8] hover:text-white transition-all duration-300">
+            Initialize_Bridge
           </a>
           <a
             href="/cv.pdf"
             download
-            className="group flex items-center gap-2 px-8 py-4 rounded-2xl border border-accent-cyan/30 bg-accent-cyan/5 text-accent-cyan font-black uppercase tracking-widest text-[10px] hover:bg-accent-cyan/10 hover:border-accent-cyan/60 transition-all duration-300"
+            className="group flex items-center gap-2 px-8 py-4 rounded-2xl border border-[#00B4D8] text-white bg-transparent font-black uppercase tracking-widest text-[10px] hover:bg-[#00B4D8] hover:text-white transition-all duration-300"
           >
             <Download size={14} />
             Download_CV
@@ -162,15 +161,6 @@ export default function Hero({ profile, stats }: { profile: any; stats: any }) {
         </motion.div>
       </motion.div>
 
-      {/* ─── SCROLL INDICATOR ────────────────────────── */}
-      <motion.div 
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-30"
-      >
-        <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-4">Scroll_To_Analyze</span>
-        <div className="w-px h-12 bg-gradient-to-b from-accent-cyan to-transparent" />
-      </motion.div>
 
     </section>
   );

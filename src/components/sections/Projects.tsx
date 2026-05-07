@@ -20,6 +20,7 @@ interface Project {
 
 const INITIAL_COUNT = 3;
 const EASE = [0.16, 1, 0.3, 1] as const;
+const KNOWN_CATEGORIES = ["FULL STACK DEVELOPMENT", "CYBERSECURITY ENGINEERING", "AI & MACHINE LEARNING"];
 
 export default function Projects({ projects, stats }: { projects: Project[]; stats?: any }) {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -27,9 +28,12 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
   const [expanded, setExpanded] = useState(false);
 
   const filteredProjects = useMemo(() => {
-    return projects.filter(
-      p => p.visible && (activeCategory === "all" || p.category === activeCategory)
-    );
+    return projects.filter(p => {
+      if (!p.visible) return false;
+      if (activeCategory === "all") return true;
+      if (activeCategory === "exp_lab") return !KNOWN_CATEGORIES.includes(p.category);
+      return p.category === activeCategory;
+    });
   }, [projects, activeCategory]);
 
   // Collapse back to 3 whenever the filter changes
@@ -107,7 +111,8 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
                   >
                     <ProjectCard
                       project={project}
-                      isLarge={index === 0 && activeCategory === "all"}
+                      index={index}
+                      isLarge={false}
                     />
                   </motion.div>
                 ))}
@@ -131,7 +136,7 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
                       onClick={() => setSelectedProject(project)}
                       className="cursor-pointer"
                     >
-                      <ProjectCard project={project} isLarge={false} />
+                      <ProjectCard project={project} isLarge={false} index={INITIAL_COUNT + index} />
                     </motion.div>
                   ))}
               </AnimatePresence>

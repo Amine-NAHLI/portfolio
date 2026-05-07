@@ -11,10 +11,10 @@ interface FilterProps {
 
 const categories = [
   { id: "all", label: "All_Systems", icon: LayoutGrid },
-  { id: "Full-Stack", label: "Full_Stack", icon: Cpu },
-  { id: "Security", label: "Cyber_Sec", icon: Shield },
-  { id: "AI", label: "Neural_Net", icon: Brain },
-  { id: "Experiments", label: "Exp_Lab", icon: Box },
+  { id: "FULL STACK DEVELOPMENT", label: "Full_Stack", icon: Cpu },
+  { id: "CYBERSECURITY ENGINEERING", label: "Cyber_Sec", icon: Shield },
+  { id: "AI & MACHINE LEARNING", label: "Neural_Net", icon: Brain },
+  { id: "exp_lab", label: "Exp_Lab", icon: Box },
 ];
 
 export default function ProjectFilters({ activeCategory, setActiveCategory }: FilterProps) {

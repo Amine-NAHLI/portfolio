@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Terminal, Shield, Zap, Activity, Cpu } from "lucide-react";
+import { Terminal, Shield, Zap, Activity, Cpu, Download } from "lucide-react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -150,6 +150,14 @@ export default function Hero({ profile, stats }: { profile: any; stats: any }) {
           </a>
           <a href="#contact" className="group px-8 py-4 rounded-2xl border border-white/10 text-text-1 font-black uppercase tracking-widest text-[10px] hover:bg-white/5 transition-all">
              Initialize_Bridge
+          </a>
+          <a
+            href="/cv.pdf"
+            download
+            className="group flex items-center gap-2 px-8 py-4 rounded-2xl border border-accent-cyan/30 bg-accent-cyan/5 text-accent-cyan font-black uppercase tracking-widest text-[10px] hover:bg-accent-cyan/10 hover:border-accent-cyan/60 transition-all duration-300"
+          >
+            <Download size={14} />
+            Download_CV
           </a>
         </motion.div>
       </motion.div>

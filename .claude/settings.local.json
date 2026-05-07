@@ -17,7 +17,8 @@
       "Bash(node -e \"const fs=require\\('fs'\\); const content=fs.readFileSync\\('node_modules/next/dist/compiled/next-server/pages.runtime.prod.js','utf-8'\\); const pos=content.indexOf\\('tG\\(\\)'\\); console.log\\('Position of tG\\(\\):', pos\\); if\\(pos>0\\) { console.log\\(content.substring\\(pos-20, pos+500\\)\\); }\")",
       "Bash(node -e ' *)",
       "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
-      "Bash(Write-Host \"Cleaned .next\")"
+      "Bash(Write-Host \"Cleaned .next\")",
+      "PowerShell(Test-Path *)"
     ]
   }
 }

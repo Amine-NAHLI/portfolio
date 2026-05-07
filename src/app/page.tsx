@@ -4,6 +4,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Projects from "@/components/sections/Projects";
 import Stack from "@/components/sections/Stack";
+import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/ui/Footer";
 import ContentReadySignal from "@/components/ui/ContentReadySignal";
@@ -97,6 +98,7 @@ async function PortfolioContent() {
       <About profile={profile} stats={stats} personal={personal} latestProject={latestProject} />
       <Projects projects={projects} stats={stats} />
       <Stack skills={skills} />
+      <Testimonials />
       <Contact profile={profile} />
       <Footer latestProject={latestProject} />
       {/* Fires portfolio:content-ready once all sections are hydrated */}

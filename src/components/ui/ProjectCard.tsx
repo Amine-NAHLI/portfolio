@@ -16,6 +16,7 @@ interface Project {
   language: string;
   visible: boolean;
   image_url?: string;
+  metrics?: string;
 }
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
@@ -97,6 +98,12 @@ export default function ProjectCard({ project, isLarge }: { project: Project; is
             {project.description}
           </p>
           
+          {project.metrics && (
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-cyan/5 border border-accent-cyan/20 self-start">
+              <Zap size={12} className="text-accent-cyan flex-shrink-0" />
+              <span className="text-[9px] font-mono text-accent-cyan uppercase tracking-widest">{project.metrics}</span>
+            </div>
+          )}
           <div className="flex items-center gap-8">
              <div className="flex items-center gap-2">
                 <Shield size={14} className="text-accent-cyan" />

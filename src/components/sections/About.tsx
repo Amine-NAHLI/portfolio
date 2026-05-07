@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Terminal as TerminalIcon, Shield, Brain, Fingerprint, Activity, Database } from "lucide-react";
+import { Terminal as TerminalIcon, Shield, Brain, Fingerprint, Activity, Database, GraduationCap, Code2, Globe, Music, BookOpen, Coffee } from "lucide-react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -123,7 +123,7 @@ export default function About({
           </div>
 
           {/* ─── RIGHT: TERMINAL & BIO ──────────────────── */}
-          <div className="space-y-12">
+          <div className="space-y-10">
              <div className="space-y-6">
                 <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent-indigo/10 border border-accent-indigo/20">
                    <Activity size={14} className="text-accent-indigo" />
@@ -143,9 +143,9 @@ export default function About({
                 </div>
                 <div className="space-y-2 text-accent-cyan/80">
                    {logs.slice(0, terminalLine).map((log, i) => (
-                     <motion.p 
-                        key={i} 
-                        initial={{ opacity: 0, x: -10 }} 
+                     <motion.p
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                      >
                         {log}
@@ -160,16 +160,79 @@ export default function About({
                         I am a Security Engineer and Full-Stack Developer who views every system as a puzzle. My approach is simple: understand the vulnerability, master the architecture, and rebuild it with absolute integrity. Based in Fès, I bridge the gap between aggressive security research and high-performance product engineering.
                      </motion.p>
                    )}
-                   <motion.div 
-                     animate={{ opacity: [1, 0] }} 
+                   <motion.div
+                     animate={{ opacity: [1, 0] }}
                      transition={{ repeat: Infinity, duration: 0.8 }}
                      className="w-2 h-5 bg-accent-cyan inline-block align-middle ml-1"
                    />
                 </div>
              </div>
+
+             {/* ─── BEYOND CODE ────────────────────────── */}
+             <div className="space-y-4">
+               <div className="flex items-center gap-3">
+                 <div className="w-4 h-px bg-accent-cyan/40" />
+                 <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-4">Beyond_Code</span>
+               </div>
+               <div className="flex flex-wrap gap-2">
+                 {[
+                   { icon: Music, label: "Music" },
+                   { icon: BookOpen, label: "Research" },
+                   { icon: Globe, label: "CTF_Comps" },
+                   { icon: Coffee, label: "Late_Night_Builds" },
+                 ].map(({ icon: Icon, label }) => (
+                   <div key={label} className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent-cyan/20 transition-colors">
+                     <Icon size={10} className="text-accent-cyan" />
+                     <span className="text-[9px] font-mono text-text-3 uppercase tracking-widest">{label}</span>
+                   </div>
+                 ))}
+               </div>
+               <p className="text-[10px] font-mono text-text-4 italic border-l-2 border-accent-cyan/30 pl-4 leading-relaxed">
+                 "The best security engineers are the ones who never stopped being curious about how things break."
+               </p>
+             </div>
           </div>
 
         </div>
+
+        {/* ─── TRUST SIGNALS ──────────────────────────── */}
+        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="flex items-center gap-5 px-8 py-6 rounded-[2rem] bg-bg-1/40 border border-white/5 backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center flex-shrink-0">
+              <GraduationCap size={20} className="text-accent-cyan" />
+            </div>
+            <div>
+              <div className="font-black text-text-1 text-sm tracking-tight">Université Privée de Fès</div>
+              <div className="font-mono text-[9px] text-text-4 uppercase tracking-widest mt-1">3rd Year · Software Engineering</div>
+            </div>
+          </div>
+
+          <a
+            href="https://github.com/Amine-NAHLI"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-5 px-8 py-6 rounded-[2rem] bg-bg-1/40 border border-white/5 backdrop-blur-xl hover:border-accent-cyan/20 transition-colors group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-accent-cyan/30 transition-colors">
+              <Code2 size={20} className="text-text-2 group-hover:text-accent-cyan transition-colors" />
+            </div>
+            <div>
+              <div className="font-black text-text-1 text-sm tracking-tight">Open Source</div>
+              <div className="font-mono text-[9px] text-text-4 uppercase tracking-widest mt-1">github.com/Amine-NAHLI</div>
+            </div>
+          </a>
+
+          <div className="flex items-center gap-5 px-8 py-6 rounded-[2rem] bg-bg-1/40 border border-white/5 backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-accent-indigo/10 border border-accent-indigo/20 flex items-center justify-center flex-shrink-0">
+              <Shield size={20} className="text-accent-indigo" />
+            </div>
+            <div>
+              <div className="font-black text-text-1 text-sm tracking-tight">Security Researcher</div>
+              <div className="font-mono text-[9px] text-text-4 uppercase tracking-widest mt-1">CTF · Pentesting · Web_Sec</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );

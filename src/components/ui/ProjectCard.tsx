@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { GithubIcon, ExternalLinkIcon } from "@/components/ui/Icons";
+import React from "react";
+import { motion } from "framer-motion";
+import { GithubIcon } from "@/components/ui/Icons";
 import { formatProjectTitle } from "@/lib/utils";
-import { Code2, Shield, Zap, Terminal } from "lucide-react";
+import { Shield, Terminal } from "lucide-react";
 
 interface Project {
   id: string;
@@ -19,107 +19,131 @@ interface Project {
   metrics?: string;
 }
 
-const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+const getCategoryStyle = (category: string) => {
+  const cat = (category || "").toUpperCase();
+  if (cat.includes("CYBER") || cat.includes("SECURITY")) {
+    return {
+      borderTop: "border-t-2 border-t-red-500",
+      badge: "bg-red-500/10 text-red-400 border border-red-500/20",
+      dot: "bg-red-400",
+      label: "CYBER_SEC",
+    };
+  }
+  if (cat.includes("AI") || cat.includes("MACHINE") || cat.includes("NEURAL")) {
+    return {
+      borderTop: "border-t-2 border-t-purple-500",
+      badge: "bg-purple-500/10 text-purple-400 border border-purple-500/20",
+      dot: "bg-purple-400",
+      label: "NEURAL_NET",
+    };
+  }
+  if (cat.includes("FULL") || cat.includes("STACK")) {
+    return {
+      borderTop: "border-t-2 border-t-cyan-500",
+      badge: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
+      dot: "bg-cyan-400",
+      label: "FULL_STACK",
+    };
+  }
+  if (cat.includes("MOBILE")) {
+    return {
+      borderTop: "border-t-2 border-t-green-500",
+      badge: "bg-green-500/10 text-green-400 border border-green-500/20",
+      dot: "bg-green-400",
+      label: "MOBILE",
+    };
+  }
+  return {
+    borderTop: "border-t-2 border-t-yellow-500",
+    badge: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
+    dot: "bg-yellow-400",
+    label: "EXP_LAB",
+  };
+};
 
-export default function ProjectCard({ project, isLarge }: { project: Project; isLarge?: boolean }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const year = new Date().getFullYear();
+export default function ProjectCard({
+  project,
+  index = 0,
+}: {
+  project: Project;
+  index?: number;
+  isLarge?: boolean;
+}) {
+  const styles = getCategoryStyle(project.category);
+  const num = String(index + 1).padStart(2, "0");
+  const tags = project.tags || [];
 
   return (
     <motion.div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`group relative rounded-[2.5rem] bg-bg-1 border border-bg-3 dark:border-white/5 overflow-hidden [perspective:2000px] ${
-        isLarge ? "md:col-span-2 md:row-span-2 h-[600px]" : "h-[400px]"
-      }`}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className={`group relative rounded-2xl bg-[#0d0d0f] border border-white/5 overflow-hidden ${styles.borderTop} hover:shadow-[0_0_30px_rgba(0,180,216,0.08)] transition-shadow duration-300`}
     >
-      {/* ─── BACKGROUND LAYER (Deepest) ───────────────── */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        <span className={`absolute -bottom-10 -right-10 leading-none font-black text-text-1 opacity-[0.03] select-none pointer-events-none transition-transform duration-1000 ${
-          isHovered ? "scale-110 -translate-x-10 -translate-y-10" : "scale-100"
-        } ${isLarge ? 'text-[20rem]' : 'text-[12rem]'}`}>
-          {project.title.charAt(0)}
-        </span>
+      <div className="p-6 flex flex-col gap-4">
+
+        {/* Top row: ghost number behind badge + tech dots */}
+        <div className="flex items-start justify-between relative">
+          <span className="absolute -top-3 -left-1 text-[5rem] leading-none font-black text-white/[0.035] select-none pointer-events-none">
+            {num}
+          </span>
+          <span className={`relative z-10 px-2.5 py-1 rounded text-[9px] font-mono uppercase tracking-widest ${styles.badge}`}>
+            {styles.label}
+          </span>
+          <div className="flex gap-1.5 flex-wrap justify-end max-w-[120px]">
+            {tags.slice(0, 6).map((tag, i) => (
+              <div
+                key={i}
+                title={tag}
+                className={`w-2 h-2 rounded-full ${styles.dot} opacity-70`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Separator */}
+        <div className="h-px w-full bg-white/5" />
+
+        {/* Title */}
+        <h3 className="text-xl font-black text-white tracking-tight leading-tight group-hover:text-[#00B4D8] transition-colors duration-300">
+          {formatProjectTitle(project.title)}
+        </h3>
+
+        {/* Description */}
+        <p className="text-white/40 text-sm leading-relaxed line-clamp-3">
+          {project.description}
+        </p>
+
+        {/* Bottom: status badges + github link */}
+        <div className="flex items-center justify-between mt-2 pt-3 border-t border-white/5">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <Shield size={11} className="text-[#00B4D8]" />
+              <span className="text-[8px] font-mono text-white/25 uppercase tracking-widest">
+                Secure_Build
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Terminal size={11} className="text-[#00B4D8]" />
+              <span className="text-[8px] font-mono text-white/25 uppercase tracking-widest">
+                CLI_Ready
+              </span>
+            </div>
+          </div>
+
+          <a
+            href={project.github_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:bg-[#00B4D8] hover:text-black transition-all duration-300"
+          >
+            <GithubIcon size={16} />
+          </a>
+        </div>
       </div>
 
-      {/* ─── CONTENT CONTAINER (Exploded Layers) ──────── */}
-      <motion.div 
-        animate={{ 
-          rotateX: isHovered ? 5 : 0, 
-          rotateY: isHovered ? -5 : 0,
-          z: isHovered ? 50 : 0 
-        }}
-        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
-        className="relative z-10 w-full h-full p-8 md:p-12 flex flex-col justify-between [transform-style:preserve-3d]"
-      >
-        
-        {/* TOP LAYER: Metadata & Links */}
-        <div className="flex justify-between items-start [transform:translateZ(100px)]">
-          <div className="flex gap-2">
-            <a 
-              href={project.github_url} 
-              target="_blank" 
-              className="w-12 h-12 rounded-2xl bg-bg-2 border border-bg-3 dark:bg-white/5 flex items-center justify-center text-text-1 hover:bg-accent-cyan hover:text-bg-0 transition-all duration-500 shadow-xl"
-            >
-              <GithubIcon size={22} />
-            </a>
-          </div>
-          
-          <div className="flex flex-col items-end gap-2 text-right">
-             <span className="font-mono text-[9px] text-text-3 uppercase tracking-[0.4em]">{year}</span>
-             <div className="flex flex-wrap justify-end gap-1.5 max-w-[240px]">
-               {project.language?.split(',').map((lang, i) => (
-                 <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-2 border border-bg-3 dark:bg-white/5 shadow-sm">
-                   <div className="w-1 h-1 rounded-full bg-accent-cyan" />
-                   <span className="font-mono text-[8px] text-text-2 uppercase">{lang.trim()}</span>
-                 </div>
-               ))}
-             </div>
-          </div>
-        </div>
-
-        {/* MIDDLE LAYER: Title & Branding */}
-        <div className="[transform:translateZ(150px)]">
-          <div className="flex items-center gap-3 mb-4">
-             <span className="px-3 py-1 rounded-md bg-accent-cyan/10 border border-accent-cyan/20 text-[9px] font-mono text-accent-cyan uppercase tracking-widest">
-               {project.category}
-             </span>
-             <div className="flex-1 h-px bg-white/5" />
-          </div>
-          <h3 className={`font-black tracking-tighter text-text-1 leading-[1.1] group-hover:text-accent-cyan transition-colors duration-500 ${isLarge ? 'text-3xl md:text-5xl' : 'text-xl md:text-2xl'}`}>
-            {formatProjectTitle(project.title)}
-          </h3>
-        </div>
-
-        {/* BOTTOM LAYER: Description & Stats */}
-        <div className="space-y-6 [transform:translateZ(80px)]">
-          <p className="text-text-3 text-sm md:text-base leading-relaxed max-w-xl line-clamp-3">
-            {project.description}
-          </p>
-          
-          {project.metrics && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-cyan/5 border border-accent-cyan/20 self-start">
-              <Zap size={12} className="text-accent-cyan flex-shrink-0" />
-              <span className="text-[9px] font-mono text-accent-cyan uppercase tracking-widest">{project.metrics}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-8">
-             <div className="flex items-center gap-2">
-                <Shield size={14} className="text-accent-cyan" />
-                <span className="text-[10px] font-mono text-text-4 uppercase tracking-widest">Secure_Build</span>
-             </div>
-             <div className="flex items-center gap-2">
-                <Terminal size={14} className="text-accent-cyan" />
-                <span className="text-[10px] font-mono text-text-4 uppercase tracking-widest">CLI_Ready</span>
-             </div>
-          </div>
-        </div>
-
-      </motion.div>
-
-      {/* OVERLAY SCANLINE (Tactical Feel) */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
+      {/* Scanline overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px]" />
     </motion.div>
   );
 }

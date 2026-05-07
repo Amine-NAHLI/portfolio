@@ -18,7 +18,11 @@
       "Bash(node -e ' *)",
       "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
       "Bash(Write-Host \"Cleaned .next\")",
-      "PowerShell(Test-Path *)"
+      "PowerShell(Test-Path *)",
+      "Bash(cd \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\")",
+      "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\))",
+      "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\" -type f -name \"*.ts\" -o -name \"*.tsx\")",
+      "Bash(find \"D:\\\\\\\\NAHLI-AMINE\\\\\\\\portfolio\\\\\\\\src\\\\\\\\lib\" -type f -name \"*.ts\")"
     ]
   }
 }

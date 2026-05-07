@@ -20,7 +20,20 @@ interface Project {
 
 const INITIAL_COUNT = 3;
 const EASE = [0.16, 1, 0.3, 1] as const;
-const KNOWN_CATEGORIES = ["FULL STACK DEVELOPMENT", "CYBERSECURITY ENGINEERING", "AI & MACHINE LEARNING"];
+
+// Keyword-based matching — handles AI variations like "Full-Stack Development" vs "Full Stack Development"
+function matchesFilter(category: string, filterId: string): boolean {
+  const cat = (category || "").toLowerCase().replace(/[-_]/g, " ").replace(/\s+/g, " ").trim();
+  if (filterId === "cybersecurity engineering")
+    return cat.includes("cyber") || cat.includes("security") || cat.includes("penetration");
+  if (filterId === "ai & machine learning")
+    return cat === "ai" || cat.startsWith("ai ") || cat.endsWith(" ai") || cat.includes(" ai ") ||
+           cat.includes("machine learn") || cat.includes("deep learn") || cat.includes("neural");
+  if (filterId === "full stack development")
+    return cat.includes("full") || cat.includes("full stack");
+  return cat === filterId;
+}
+const KNOWN_FILTER_IDS = ["cybersecurity engineering", "ai & machine learning", "full stack development"];
 
 export default function Projects({ projects, stats }: { projects: Project[]; stats?: any }) {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -31,8 +44,8 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
     return projects.filter(p => {
       if (!p.visible) return false;
       if (activeCategory === "all") return true;
-      if (activeCategory === "exp_lab") return !KNOWN_CATEGORIES.includes(p.category);
-      return p.category === activeCategory;
+      if (activeCategory === "exp_lab") return !KNOWN_FILTER_IDS.some(id => matchesFilter(p.category, id));
+      return matchesFilter(p.category, activeCategory);
     });
   }, [projects, activeCategory]);
 
@@ -94,20 +107,20 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
           />
 
           <div className="flex-1">
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
 
-              {/* First 3 — existing filter pop-layout animation preserved */}
+              {/* First 3 — stagger animation + scroll trigger */}
               <AnimatePresence mode="popLayout">
                 {initialProjects.map((project, index) => (
                   <motion.div
                     key={project.id}
                     layout
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    transition={{ duration: 0.5, ease: EASE }}
+                    transition={{ duration: 0.55, ease: EASE, delay: index * 0.1 }}
                     onClick={() => setSelectedProject(project)}
-                    className="cursor-pointer"
+                    className={`cursor-pointer ${index === 0 ? "md:row-span-2" : ""}`}
                   >
                     <ProjectCard
                       project={project}

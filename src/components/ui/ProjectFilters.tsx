@@ -11,9 +11,9 @@ interface FilterProps {
 
 const categories = [
   { id: "all", label: "All_Systems", icon: LayoutGrid },
-  { id: "FULL STACK DEVELOPMENT", label: "Full_Stack", icon: Cpu },
-  { id: "CYBERSECURITY ENGINEERING", label: "Cyber_Sec", icon: Shield },
-  { id: "AI & MACHINE LEARNING", label: "Neural_Net", icon: Brain },
+  { id: "full stack development", label: "Full_Stack", icon: Cpu },
+  { id: "cybersecurity engineering", label: "Cyber_Sec", icon: Shield },
+  { id: "ai & machine learning", label: "Neural_Net", icon: Brain },
   { id: "exp_lab", label: "Exp_Lab", icon: Box },
 ];
 

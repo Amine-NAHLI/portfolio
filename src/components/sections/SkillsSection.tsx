@@ -1,12 +1,7 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { motion } from "framer-motion";
-import { 
-  Code2, Terminal, Shield, Brain, Cpu, Database, Server, Layout, 
-  Globe, Cloud, Lock, Zap, Layers, Box, GitBranch, Search, 
-  Settings, Monitor, Smartphone, Gauge, Command
-} from "lucide-react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 interface SupabaseSkill {
   id: string;
@@ -14,164 +9,217 @@ interface SupabaseSkill {
   category: string;
 }
 
-const getSkillIcon = (name: string) => {
-  const n = name.toLowerCase();
-  if (n.includes("security") || n.includes("pen") || n.includes("audit") || n.includes("hack")) return { icon: Shield, color: "#ef4444" };
-  if (n.includes("crypto") || n.includes("hash") || n.includes("vault") || n.includes("lock")) return { icon: Lock, color: "#f59e0b" };
-  if (n.includes("python") || n.includes("java") || n.includes("php") || n.includes("code") || n.includes("script")) return { icon: Code2, color: "#38bdf8" };
-  if (n.includes("rust") || n.includes("go") || n.includes("c++")) return { icon: Zap, color: "#facc15" };
-  if (n.includes("node") || n.includes("deno") || n.includes("backend")) return { icon: Server, color: "#22c55e" };
-  if (n.includes("sql") || n.includes("db") || n.includes("mongo") || n.includes("data") || n.includes("redis")) return { icon: Database, color: "#6366f1" };
-  if (n.includes("react") || n.includes("next") || n.includes("vue") || n.includes("angular") || n.includes("frontend")) return { icon: Layout, color: "#60a5fa" };
-  if (n.includes("css") || n.includes("sass") || n.includes("tailwind") || n.includes("ui")) return { icon: Monitor, color: "#38bdf8" };
-  if (n.includes("html") || n.includes("web") || n.includes("browser")) return { icon: Globe, color: "#f97316" };
-  if (n.includes("ai") || n.includes("machine") || n.includes("learning") || n.includes("vision") || n.includes("brain")) return { icon: Brain, color: "#a855f7" };
-  if (n.includes("tensor") || n.includes("gpu") || n.includes("cuda") || n.includes("model")) return { icon: Cpu, color: "#ec4899" };
-  if (n.includes("docker") || n.includes("container") || n.includes("k8s") || n.includes("kubernetes")) return { icon: Box, color: "#0ea5e9" };
-  if (n.includes("cloud") || n.includes("aws") || n.includes("azure") || n.includes("gcp")) return { icon: Cloud, color: "#0ea5e9" };
-  if (n.includes("linux") || n.includes("unix") || n.includes("bash") || n.includes("shell") || n.includes("cli")) return { icon: Terminal, color: "#ffffff" };
-  return { icon: Terminal, color: "var(--accent-cyan)" };
+const getIconUrl = (name: string) => {
+  const n = name.toLowerCase().trim();
+  const mapping: Record<string, string> = {
+    "next.js": "nextjs", "nextjs": "nextjs", "react": "react",
+    "node.js": "nodejs", "nodejs": "nodejs", "express": "express",
+    "mongodb": "mongodb", "postgresql": "postgres", "postgres": "postgres",
+    "supabase": "supabase", "tailwind": "tailwind", "typescript": "ts",
+    "javascript": "js", "python": "py", "docker": "docker",
+    "kubernetes": "kubernetes", "aws": "aws", "git": "git",
+    "linux": "linux", "tensorflow": "tensorflow", "pytorch": "pytorch",
+    "fastapi": "fastapi", "rust": "rust", "go": "go", "cpp": "cpp",
+  };
+  const slug = mapping[n] || n.replace(/[^a-z0-9]/g, "");
+  return `https://skillicons.dev/icons?i=${slug}`;
 };
 
-const SkillModule = ({ name, delay }: { name: string; delay: number }) => {
-  const { icon: Icon, color } = getSkillIcon(name);
-  
+const SkillModule = ({
+  name,
+  isBackRow,
+}: {
+  name: string;
+  isBackRow?: boolean;
+}) => {
+  const iconUrl = getIconUrl(name);
+
   return (
-    <motion.div 
-      initial={{ y: 0 }}
-      animate={{ y: [0, -15, 0] }}
-      transition={{ 
-        duration: 4 + Math.random() * 2, 
-        repeat: Infinity, 
-        ease: "easeInOut",
-        delay 
-      }}
-      className="group relative flex items-center gap-4 px-8 py-5 rounded-[2rem] bg-bg-1/40 dark:bg-white/[0.02] border border-bg-3 dark:border-white/[0.08] backdrop-blur-2xl shadow-2xl transition-all duration-700 hover:border-white/40 overflow-hidden"
+    <div
+      className={`relative flex items-center gap-4 px-8 py-5 rounded-[2rem] bg-bg-1/40 dark:bg-white/[0.02] border border-bg-3 dark:border-white/[0.08] backdrop-blur-2xl shadow-2xl overflow-hidden ${
+        isBackRow ? "opacity-60" : ""
+      }`}
     >
-      {/* Background Active Glow */}
-      <div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
-        style={{ backgroundColor: color }}
-      />
-
-      {/* Module ID / Metadata (Decorative) */}
-      <div className="absolute top-2 left-8 flex gap-1 opacity-[0.2]">
-         <div className="w-1 h-1 rounded-full bg-white" />
-         <div className="w-1 h-1 rounded-full bg-white" />
-         <span className="text-[6px] font-mono uppercase tracking-tighter">Active_Mod</span>
-      </div>
-
-      <div 
-        className="flex items-center justify-center w-12 h-12 rounded-xl bg-bg-2 dark:bg-white/5 transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg]"
-        style={{ color: color }}
-      >
-        <Icon size={24} strokeWidth={1.5} />
+      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-bg-2 dark:bg-white/5 overflow-hidden p-2">
+        <img
+          src={iconUrl}
+          alt={name}
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src =
+              "https://skillicons.dev/icons?i=code";
+          }}
+        />
       </div>
 
       <div className="flex flex-col gap-0.5">
-        <span className="text-sm md:text-base font-black text-text-1 tracking-tighter uppercase group-hover:text-white transition-colors">
+        <span className="text-sm md:text-base font-black text-text-1 tracking-tighter uppercase">
           {name}
         </span>
         <div className="flex items-center gap-2">
-           <div className="h-1 w-12 bg-bg-3 dark:bg-white/10 rounded-full overflow-hidden">
-              <motion.div 
-                className="h-full bg-accent-cyan"
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                style={{ backgroundColor: color }}
-              />
-           </div>
-           <span className="text-[8px] font-mono text-text-4 uppercase">Syncing...</span>
+          <div className="h-1 w-12 bg-bg-3 dark:bg-white/10 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-accent-cyan"
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+            />
+          </div>
+          <span className="text-[8px] font-mono text-text-4 uppercase">
+            Online
+          </span>
         </div>
       </div>
-
-      {/* Scanning Light */}
-      <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:animate-[scan_2s_linear_infinite]" />
-    </motion.div>
+    </div>
   );
 };
 
 export default function SkillsSection({ skills }: { skills: SupabaseSkill[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 50, stiffness: 30 };
+  const rotateXSpring = useSpring(
+    useTransform(mouseY, [-0.5, 0.5], [3, -3]),
+    springConfig
+  );
+  const rotateYSpring = useSpring(
+    useTransform(mouseX, [-0.5, 0.5], [-3, 3]),
+    springConfig
+  );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   const row1 = useMemo(() => {
+    if (!mounted) return [];
     const s = [...skills].sort(() => Math.random() - 0.5);
-    return [...s, ...s, ...s, ...s];
-  }, [skills]);
+    return [...s, ...s];
+  }, [skills, mounted]);
 
   const row2 = useMemo(() => {
+    if (!mounted) return [];
     const s = [...skills].sort(() => Math.random() - 0.5);
-    return [...s, ...s, ...s, ...s];
-  }, [skills]);
+    return [...s, ...s];
+  }, [skills, mounted]);
 
   if (skills.length === 0) return null;
 
   return (
-    <section id="stack" className="py-48 bg-transparent relative overflow-hidden">
-      {/* Background Grid Accent */}
+    <section
+      id="stack"
+      className="py-48 bg-transparent relative overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] grid-bg pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 mb-32 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
-           <div className="space-y-6">
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent-cyan/10 border border-accent-cyan/20">
-                 <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
-                 <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan font-black">Tactical_Core_v7.4</span>
-              </div>
-              <h2 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-none uppercase">
-                 Technical <br /> <span className="text-text-4/20 dark:text-white/10 stroke-text-1">Arsenal.</span>
-              </h2>
-           </div>
-           <div className="flex flex-col gap-4 border-l-2 border-accent-cyan pl-8 py-2">
-              <p className="max-w-sm text-[11px] uppercase tracking-[0.2em] text-text-3 font-mono leading-relaxed">
-                 High-fidelity operational capabilities across cyber security, full-stack architecture, and machine intelligence.
-              </p>
-              <div className="flex gap-2">
-                 <div className="w-2 h-2 rounded-full bg-bg-3" />
-                 <div className="w-2 h-2 rounded-full bg-bg-3" />
-                 <div className="w-2 h-2 rounded-full bg-accent-cyan" />
-              </div>
-           </div>
+          <div className="relative">
+            <span className="absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black text-text-1 opacity-[0.02] select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
+              Arsenal
+            </span>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-8 h-1 bg-accent-cyan rounded-full" />
+              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent-cyan font-black">
+                Neural_Grid_v9.2
+              </span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.85] uppercase">
+              Technical <br />
+              <span
+                className="text-transparent"
+                style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}
+              >
+                Arsenal.
+              </span>
+            </h2>
+          </div>
+
+          <div className="max-w-sm lg:text-right flex flex-col lg:items-end gap-6">
+            <div className="h-px w-24 bg-white/10 hidden lg:block" />
+            <p className="text-[10px] font-mono text-text-4 uppercase tracking-[0.3em] leading-relaxed">
+              Deploying high-fidelity toolkits: Synthesizing full-stack
+              engineering with aggressive security research and neural logic.
+            </p>
+            <div className="flex gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
+              <span className="text-[8px] font-mono text-text-3 uppercase">
+                Status: Fully_Operational
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Vortex Container */}
-      <div className="relative flex flex-col gap-12 [perspective:3000px] py-20">
+      <motion.div
+        ref={containerRef}
+        style={{ rotateX: rotateXSpring, rotateY: rotateYSpring }}
+        className="relative flex flex-col gap-16 py-20"
+      >
         {/* Row 1 */}
-        <div className="flex items-center [transform:rotateX(20deg)_rotateY(-10deg)_translateZ(0px)] opacity-95">
-          <motion.div 
-            className="flex gap-10 pr-10"
-            animate={{ x: ["-25%", "0%"] }}
-            transition={{ ease: "linear", duration: 40, repeat: Infinity }}
+        <div className="flex items-center overflow-hidden">
+          <div
+            className="flex gap-10 pr-10 skills-row-right"
+            style={{ willChange: "transform" }}
           >
             {row1.map((skill, idx) => (
-              <SkillModule key={`v1-${skill.id}-${idx}`} name={skill.name} delay={idx * 0.2} />
+              <SkillModule
+                key={`v1-${skill.id}-${idx}`}
+                name={skill.name}
+              />
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {/* Row 2 */}
-        <div className="flex items-center [transform:rotateX(-20deg)_rotateY(10deg)_translateZ(100px)] opacity-90">
-          <motion.div 
-            className="flex gap-10 pr-10"
-            animate={{ x: ["0%", "-25%"] }}
-            transition={{ ease: "linear", duration: 60, repeat: Infinity }}
+        <div className="flex items-center">
+          <div
+            className="flex gap-12 pr-12 skills-row-left"
+            style={{ willChange: "transform" }}
           >
             {row2.map((skill, idx) => (
-              <SkillModule key={`v2-${skill.id}-${idx}`} name={skill.name} delay={idx * 0.3} />
+              <SkillModule
+                key={`v2-${skill.id}-${idx}`}
+                name={skill.name}
+                isBackRow
+              />
             ))}
-          </motion.div>
+          </div>
         </div>
 
-        {/* Depth Fog */}
-        <div className="absolute inset-y-0 left-0 w-64 bg-gradient-to-r from-bg-0 to-transparent z-20 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-bg-0 to-transparent z-20 pointer-events-none" />
-      </div>
+        <div className="absolute inset-y-0 left-0 w-64 bg-gradient-to-r from-bg-0 to-transparent z-40 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-bg-0 to-transparent z-40 pointer-events-none" />
+      </motion.div>
 
       <style jsx global>{`
-        @keyframes scan {
-          0% { transform: translateX(-100%) skewX(-20deg); }
-          100% { transform: translateX(300%) skewX(-20deg); }
+        @keyframes skills-scroll-left {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
+        @keyframes skills-scroll-right {
+          0%   { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .skills-row-left  { animation: skills-scroll-left  55s linear infinite; }
+        .skills-row-right { animation: skills-scroll-right 35s linear infinite; }
       `}</style>
     </section>
   );

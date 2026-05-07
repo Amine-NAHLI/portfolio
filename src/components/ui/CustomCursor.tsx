@@ -1,113 +1,82 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
-  const [visible, setVisible] = useState(false);
-  const [hoverType, setHoverType] = useState<"none" | "link" | "card" | "three">("none");
+  const [isHovering, setIsHovering] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
 
-  const mouseX = useMotionValue(-100);
-  const mouseY = useMotionValue(-100);
+  const cursorX = useSpring(0, { damping: 20, stiffness: 250, mass: 0.5 });
+  const cursorY = useSpring(0, { damping: 20, stiffness: 250, mass: 0.5 });
 
-  const springConfig = { stiffness: 400, damping: 28 };
-  const x = useSpring(mouseX, springConfig);
-  const y = useSpring(mouseY, springConfig);
-
-  const hoverTypeRef = useRef<string>("none");
-  const visibleRef = useRef(false);
+  const ringX = useSpring(0, { damping: 30, stiffness: 150, mass: 0.8 });
+  const ringY = useSpring(0, { damping: 30, stiffness: 150, mass: 0.8 });
 
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-      if (!visibleRef.current) {
-        visibleRef.current = true;
-        setVisible(true);
-      }
-    };
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
+      ringX.set(e.clientX);
+      ringY.set(e.clientY);
 
-    const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const hoverable = target.closest("a, button, [role='button'], .project-card");
-      const isCanvas = target.tagName.toLowerCase() === "canvas";
-
-      let nextType: "none" | "link" | "card" | "three" = "none";
-      if (isCanvas) nextType = "three";
-      else if (hoverable) {
-        nextType = (hoverable.classList.contains("project-card") || hoverable.closest("#projects")) 
-          ? "card" 
-          : "link";
-      }
-
-      if (nextType !== hoverTypeRef.current) {
-        hoverTypeRef.current = nextType;
-        setHoverType(nextType);
-      }
+      setIsHovering(
+        !!target.closest('button') || 
+        !!target.closest('a') || 
+        target.style.cursor === 'pointer'
+      );
     };
 
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    window.addEventListener("mouseover", onMouseOver, { passive: true });
+    const handleMouseDown = () => setIsClicking(true);
+    const handleMouseUp = () => setIsClicking(false);
+
+    window.addEventListener("mousemove", moveCursor);
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseover", onMouseOver);
+      window.removeEventListener("mousemove", moveCursor);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [mouseX, mouseY]);
-
-  if (!visible) return null;
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-[9999] pointer-events-none">
+    <div className="fixed inset-0 pointer-events-none z-[9999] hidden md:block">
+      {/* Inner Dot */}
       <motion.div
-        style={{ x, y }}
-        className="relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2"
+        style={{ x: cursorX, y: cursorY, translateX: "-50%", translateY: "-50%" }}
+        className="w-1.5 h-1.5 bg-accent-cyan rounded-full"
+        animate={{ scale: isClicking ? 0.8 : 1 }}
+      />
+
+      {/* Outer Ring */}
+      <motion.div
+        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
+        animate={{ 
+          scale: isHovering ? 2.5 : 1,
+          borderWidth: isHovering ? "1px" : "2px",
+          opacity: isHovering ? 0.6 : 0.3
+        }}
+        className="w-8 h-8 rounded-full border-2 border-accent-cyan transition-all duration-300 ease-out"
       >
-        {/* Main Dot */}
-        <motion.div
-          animate={{
-            width: hoverType === "card" ? 80 : hoverType === "link" ? 40 : 8,
-            height: hoverType === "card" ? 80 : hoverType === "link" ? 40 : 8,
-            backgroundColor: hoverType === "link" ? "rgba(255,255,255,1)" : "rgba(6,182,212,1)",
-            mixBlendMode: hoverType === "link" ? "difference" : "normal",
-          }}
-          className="rounded-full flex items-center justify-center"
-        >
-          <AnimatePresence>
-            {hoverType === "card" && (
-              <motion.span
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.5 }}
-                className="text-[10px] font-black text-bg-0 uppercase tracking-widest"
-              >
-                View
-              </motion.span>
-            )}
-            {hoverType === "three" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="relative w-full h-full flex items-center justify-center"
-              >
-                 <div className="absolute w-4 h-px bg-accent-cyan" />
-                 <div className="absolute h-4 w-px bg-accent-cyan" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-        
-        {/* Ring */}
-        <motion.div
-          animate={{
-            scale: hoverType !== "none" ? 1.5 : 1,
-            opacity: hoverType !== "none" ? 0 : 0.5,
-          }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 border border-accent-cyan rounded-full w-8 h-8 -ml-4 -mt-4"
-        />
+        {/* Tactical Crosshairs on Hover */}
+        {isHovering && (
+          <div className="absolute inset-0">
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-1.5 bg-accent-cyan" />
+             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-1.5 bg-accent-cyan" />
+             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-px bg-accent-cyan" />
+             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-px bg-accent-cyan" />
+          </div>
+        )}
       </motion.div>
+
+      {/* Trailing Glow */}
+      <motion.div
+        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
+        className="w-20 h-20 bg-accent-cyan/5 rounded-full blur-2xl"
+      />
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useMemo, useState } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
-import { Html, Float, Sphere, OrbitControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { Float, OrbitControls, Text } from "@react-three/drei";
 import * as THREE from "three";
 import type { Skill } from "@/lib/github";
 
@@ -15,14 +15,14 @@ const CAT_COLORS: Record<string, string> = {
 
 /* ─── Tech Sphere ────────────────────────────────────────────────── */
 
-const TechNode = ({ 
-  skill, 
-  tech, 
-  position, 
-  onSelect 
-}: { 
-  skill: Skill; 
-  tech: string; 
+const TechNode = ({
+  skill,
+  tech,
+  position,
+  onSelect
+}: {
+  skill: Skill;
+  tech: string;
   position: [number, number, number];
   onSelect: (name: string | null) => void;
 }) => {
@@ -46,17 +46,27 @@ const TechNode = ({
           metalness={0.8}
         />
       </mesh>
-      
+
       {hovered && (
-        <Html distanceFactor={10} zIndexRange={[100, 0]}>
-          <div className="pointer-events-none p-3 rounded-xl bg-bg-3/90 border border-white/10 backdrop-blur-md shadow-2xl min-w-[120px]">
-            <p className="text-xs font-bold text-text-1 mb-1">{tech}</p>
-            <p className="text-[10px] font-mono uppercase tracking-widest" style={{ color }}>{skill.category}</p>
-            <div className="mt-2 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-cyan transition-all" style={{ width: `${skill.level}%` }} />
-            </div>
-          </div>
-        </Html>
+        <group position={[0, size + 0.4, 0]}>
+          <Text
+            fontSize={0.25}
+            color="white"
+            anchorX="center"
+            anchorY="bottom"
+          >
+            {tech}
+          </Text>
+          <Text
+            position={[0, -0.3, 0]}
+            fontSize={0.18}
+            color={color}
+            anchorX="center"
+            anchorY="bottom"
+          >
+            {skill.category}
+          </Text>
+        </group>
       )}
     </group>
   );
@@ -66,19 +76,19 @@ const TechNode = ({
 
 export default function StackVisual({ skills, onSelect }: { skills: Skill[]; onSelect: (name: string | null) => void }) {
   const groupRef = useRef<THREE.Group>(null!);
-  
+
   const nodes = useMemo(() => {
     const allTechs = skills.flatMap(s => s.techs.map(t => ({ tech: t, skill: s })));
     const count = allTechs.length;
-    const phi = Math.PI * (3 - Math.sqrt(5)); // golden angle
-    
+    const phi = Math.PI * (3 - Math.sqrt(5));
+
     return allTechs.map((node, i) => {
-      const y = 1 - (i / (count - 1)) * 2; // y from 1 to -1
+      const y = 1 - (i / (count - 1)) * 2;
       const radius = Math.sqrt(1 - y * y);
       const theta = phi * i;
       const x = Math.cos(theta) * radius;
       const z = Math.sin(theta) * radius;
-      
+
       return {
         ...node,
         position: [x * 4, y * 4, z * 4] as [number, number, number]
@@ -86,7 +96,7 @@ export default function StackVisual({ skills, onSelect }: { skills: Skill[]; onS
     });
   }, [skills]);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.002;
     }
@@ -96,22 +106,21 @@ export default function StackVisual({ skills, onSelect }: { skills: Skill[]; onS
     <>
       <group ref={groupRef}>
         {nodes.map((node, i) => (
-          <TechNode 
-            key={`${node.tech}-${i}`} 
-            skill={node.skill} 
-            tech={node.tech} 
+          <TechNode
+            key={`${node.tech}-${i}`}
+            skill={node.skill}
+            tech={node.tech}
             position={node.position}
             onSelect={onSelect}
           />
         ))}
-        
-        {/* Connections */}
+
         {nodes.map((node, i) => {
           if (i === 0) return null;
           const prev = nodes[i - 1];
           const dist = new THREE.Vector3(...node.position).distanceTo(new THREE.Vector3(...prev.position));
           if (dist > 3) return null;
-          
+
           return (
             <line key={`line-${i}`}>
               <bufferGeometry attach="geometry" {...new THREE.BufferGeometry().setFromPoints([
@@ -123,14 +132,14 @@ export default function StackVisual({ skills, onSelect }: { skills: Skill[]; onS
           );
         })}
       </group>
-      
-      <OrbitControls 
-        enableZoom={false} 
+
+      <OrbitControls
+        enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI / 1.5}
       />
-      
+
       <pointLight position={[10, 10, 10]} intensity={1} />
       <ambientLight intensity={0.5} />
     </>

@@ -1,16 +1,12 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Shield, Layout, Sparkles, FolderCode, Brain, Server, Smartphone, Database } from "lucide-react";
-import { GithubIcon } from "@/components/ui/Icons";
-import { useTilt } from "@/hooks/useTilt";
-
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { GithubIcon, ExternalLinkIcon } from "@/components/ui/Icons";
 import { formatProjectTitle } from "@/lib/utils";
+import { Code2, Shield, Zap, Terminal } from "lucide-react";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-interface ProjectProps {
+interface Project {
   id: string;
   title: string;
   description: string;
@@ -18,132 +14,105 @@ interface ProjectProps {
   tags: string[];
   github_url: string;
   language: string;
-  created_at: string;
+  visible: boolean;
+  image_url?: string;
 }
 
-export default function ProjectCard({ project, index }: { project: ProjectProps; index: number }) {
-  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt();
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
-  // only width asymmetry — avoids empty vertical space in the bento grid
-  const isLarge = index % 6 === 0;
-  const isWide = index % 6 === 3;
-
-  const getCategoryTheme = (cat: string) => {
-    const c = cat.toLowerCase();
-    if (c.includes("security") || c.includes("cyber"))
-      return { Icon: Shield, color: "var(--accent-cyan)" };
-    if (c.includes("ai") || c.includes("machine") || c.includes("vision") || c.includes("intelligence") || c.includes("brain"))
-      return { Icon: Brain, color: "var(--accent-purple)" };
-    if (c.includes("front") || c.includes("web") || c.includes("layout") || c.includes("ui"))
-      return { Icon: Layout, color: "var(--accent-indigo)" };
-    if (c.includes("devops") || c.includes("infra") || c.includes("cloud") || c.includes("server") || c.includes("docker"))
-      return { Icon: Server, color: "var(--accent-green)" };
-    if (c.includes("mobile") || c.includes("app") || c.includes("phone"))
-      return { Icon: Smartphone, color: "var(--accent-cyan)" };
-    return { Icon: Database, color: "var(--accent-cyan)" };
-  };
-
-  const { Icon, color: accentColor } = getCategoryTheme(project.category);
-
-  const year = project.created_at ? new Date(project.created_at).getFullYear().toString() : "";
+export default function ProjectCard({ project, isLarge }: { project: Project; isLarge?: boolean }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const year = new Date().getFullYear();
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: index * 0.05, ease: EASE }}
-      className={`relative ${(isLarge || isWide) ? 'md:col-span-2' : ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative rounded-[2.5rem] bg-bg-1 border border-bg-3 dark:border-white/5 overflow-hidden [perspective:2000px] ${
+        isLarge ? "md:col-span-2 md:row-span-2 h-[600px]" : "h-[400px]"
+      }`}
     >
-      <motion.a
-        href={project.github_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        style={{
-          rotateX, rotateY,
-          transformStyle: "preserve-3d"
+      {/* ─── BACKGROUND LAYER (Deepest) ───────────────── */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        <span className={`absolute -bottom-10 -right-10 leading-none font-black text-text-1 opacity-[0.03] select-none pointer-events-none transition-transform duration-1000 ${
+          isHovered ? "scale-110 -translate-x-10 -translate-y-10" : "scale-100"
+        } ${isLarge ? 'text-[20rem]' : 'text-[12rem]'}`}>
+          {project.title.charAt(0)}
+        </span>
+      </div>
+
+      {/* ─── CONTENT CONTAINER (Exploded Layers) ──────── */}
+      <motion.div 
+        animate={{ 
+          rotateX: isHovered ? 5 : 0, 
+          rotateY: isHovered ? -5 : 0,
+          z: isHovered ? 50 : 0 
         }}
-        animate={{ y: 0 }}
-        whileHover={{ y: -10 }}
-        transition={{ duration: 0.5, ease: EASE }}
-        className={`group relative h-fit w-full rounded-[2.5rem] bg-bg-1 border border-bg-3 dark:border-white/10 overflow-hidden flex flex-col transition-all duration-700 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none hover:shadow-2xl hover:border-accent-cyan/40 ${isLarge ? 'p-10' : 'p-8'}`}
+        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
+        className="relative z-10 w-full h-full p-8 md:p-12 flex flex-col justify-between [transform-style:preserve-3d]"
       >
-        <div
-          className="absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 dark:group-hover:opacity-[0.05] transition-opacity duration-1000 pointer-events-none"
-          style={{ backgroundColor: accentColor }}
-        />
-
-        <div className="absolute top-10 right-10 flex flex-col items-end opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700 select-none pointer-events-none">
-           <span className={`${isLarge ? 'text-[12rem]' : 'text-[8rem]'} font-black leading-none uppercase tracking-tighter text-text-1`}>
-             {project.title?.charAt(0) || "P"}
-           </span>
-        </div>
-
-        <div className="relative z-20 flex items-start justify-between mb-6">
-          <div
-            className={`${isLarge ? 'w-14 h-14' : 'w-12 h-12'} rounded-2xl flex items-center justify-center text-text-3 dark:text-text-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-sm`}
-            style={{ backgroundColor: 'var(--bg-2)' }}
-          >
-            <Icon size={isLarge ? 24 : 20} />
+        
+        {/* TOP LAYER: Metadata & Links */}
+        <div className="flex justify-between items-start [transform:translateZ(100px)]">
+          <div className="flex gap-2">
+            <a 
+              href={project.github_url} 
+              target="_blank" 
+              className="w-12 h-12 rounded-2xl bg-bg-2 border border-bg-3 dark:bg-white/5 flex items-center justify-center text-text-1 hover:bg-accent-cyan hover:text-bg-0 transition-all duration-500 shadow-xl"
+            >
+              <GithubIcon size={22} />
+            </a>
           </div>
+          
           <div className="flex flex-col items-end gap-2 text-right">
-             <span className="font-mono text-[9px] text-text-3 uppercase tracking-[0.3em]">{year}</span>
-             {project.language && (
-               <div className="flex flex-wrap justify-end gap-1.5 max-w-[200px]">
-                 {project.language.split(',').map((lang, i) => (
-                   <div key={i} className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-bg-2 border border-bg-3 dark:bg-text-1/[0.03] dark:border-text-1/[0.05]">
-                     <div className="w-1 h-1 rounded-full bg-accent-cyan flex-shrink-0" />
-                     <span className="font-mono text-[8px] text-text-2 whitespace-nowrap">{lang.trim()}</span>
-                   </div>
-                 ))}
-               </div>
-             )}
+             <span className="font-mono text-[9px] text-text-3 uppercase tracking-[0.4em]">{year}</span>
+             <div className="flex flex-wrap justify-end gap-1.5 max-w-[240px]">
+               {project.language?.split(',').map((lang, i) => (
+                 <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-2 border border-bg-3 dark:bg-white/5 shadow-sm">
+                   <div className="w-1 h-1 rounded-full bg-accent-cyan" />
+                   <span className="font-mono text-[8px] text-text-2 uppercase">{lang.trim()}</span>
+                 </div>
+               ))}
+             </div>
           </div>
         </div>
 
-        {/* MAIN CONTENT */}
-        <div className="relative z-10 flex-none flex flex-col">
-          <h3 className={`font-black tracking-tighter text-text-1 leading-[1.1] mb-4 group-hover:text-accent-cyan transition-colors ${isLarge ? 'text-5xl md:text-6xl' : 'text-2xl md:text-3xl'}`}>
+        {/* MIDDLE LAYER: Title & Branding */}
+        <div className="[transform:translateZ(150px)]">
+          <div className="flex items-center gap-3 mb-4">
+             <span className="px-3 py-1 rounded-md bg-accent-cyan/10 border border-accent-cyan/20 text-[9px] font-mono text-accent-cyan uppercase tracking-widest">
+               {project.category}
+             </span>
+             <div className="flex-1 h-px bg-white/5" />
+          </div>
+          <h3 className={`font-black tracking-tighter text-text-1 leading-[1.1] group-hover:text-accent-cyan transition-colors duration-500 ${isLarge ? 'text-3xl md:text-5xl' : 'text-xl md:text-2xl'}`}>
             {formatProjectTitle(project.title)}
           </h3>
+        </div>
 
-          <p className={`text-text-3 font-medium transition-all duration-500 mb-6 flex-1 ${isLarge ? 'text-lg' : 'text-xs'}`}>
+        {/* BOTTOM LAYER: Description & Stats */}
+        <div className="space-y-6 [transform:translateZ(80px)]">
+          <p className="text-text-3 text-sm md:text-base leading-relaxed max-w-xl line-clamp-3">
             {project.description}
           </p>
-
-          <div className="flex flex-wrap gap-1.5 mb-8">
-             {(project.tags || []).map((tag, idx) => (
-               <span key={`${tag}-${idx}`} className="px-2.5 py-1 rounded-lg bg-bg-2 text-text-2 border border-bg-3 dark:bg-text-1/[0.03] dark:text-text-3 dark:border-text-1/[0.05] font-mono text-[8px] uppercase tracking-widest transition-all hover:text-accent-cyan">
-                 {tag}
-               </span>
-             ))}
-          </div>
-
-          <div className="pt-6 border-t border-slate-200 dark:border-text-1/[0.05] flex items-center justify-between opacity-100">
-            <div className="flex flex-col">
-               <span className="font-mono text-[7px] md:text-[8px] uppercase tracking-[0.4em] text-text-3 mb-1">Source</span>
-                 <span className="text-text-2 font-bold text-[9px] md:text-xs uppercase tracking-widest flex items-center gap-2">
-                   <GithubIcon size={isLarge ? 14 : 12} className="text-text-3" />
-                   {isLarge ? 'View Repository' : 'Source'}
-                 </span>
-            </div>
-
-            <motion.div
-              whileHover={{ x: 5 }}
-              className="flex items-center gap-3"
-            >
-              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-text-1 opacity-0 group-hover:opacity-100 transition-opacity">GitHub</span>
-              <div className={`${isLarge ? 'w-10 h-10' : 'w-8 h-8'} rounded-full bg-text-1 text-bg-0 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-500`}>
-                 <GithubIcon size={isLarge ? 18 : 14} />
-              </div>
-            </motion.div>
+          
+          <div className="flex items-center gap-8">
+             <div className="flex items-center gap-2">
+                <Shield size={14} className="text-accent-cyan" />
+                <span className="text-[10px] font-mono text-text-4 uppercase tracking-widest">Secure_Build</span>
+             </div>
+             <div className="flex items-center gap-2">
+                <Terminal size={14} className="text-accent-cyan" />
+                <span className="text-[10px] font-mono text-text-4 uppercase tracking-widest">CLI_Ready</span>
+             </div>
           </div>
         </div>
 
-      </motion.a>
+      </motion.div>
+
+      {/* OVERLAY SCANLINE (Tactical Feel) */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
     </motion.div>
   );
 }

@@ -135,15 +135,15 @@ export default function Testimonials() {
                       <span className="w-5 h-5 rounded-md bg-[#00B4D8]/10 border border-[#00B4D8]/20 flex items-center justify-center text-[10px] font-black text-[#00B4D8]">{t.rating}</span>
                     </div>
                   </div>
-                  <p className="text-text-3 text-sm leading-relaxed flex-1">"{t.message}"</p>
+                  <p className="text-text-3 text-sm leading-relaxed flex-1 break-words overflow-hidden">"{t.message}"</p>
                   <div className="flex items-center gap-4 pt-4 border-t border-white/5">
                     <div className="w-10 h-10 rounded-full bg-accent-indigo/10 border border-accent-indigo/20 flex items-center justify-center flex-shrink-0">
                       <span className="text-[10px] font-black text-accent-indigo">{getInitials(t.name)}</span>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-sm font-black text-text-1 tracking-tight">{t.name}</span>
-                      <span className="text-[9px] font-mono text-text-4 uppercase tracking-widest">{t.role}</span>
-                      {t.company && <span className="text-[8px] font-mono text-[#00B4D8]/50 uppercase tracking-widest">{t.company}</span>}
+                    <div className="flex flex-col gap-0.5 overflow-hidden">
+                      <span className="text-sm font-black text-text-1 tracking-tight truncate">{t.name}</span>
+                      <span className="text-[9px] font-mono text-text-4 uppercase tracking-widest truncate">{t.role}</span>
+                      {t.company && <span className="text-[8px] font-mono text-[#00B4D8]/50 uppercase tracking-widest truncate">{t.company}</span>}
                     </div>
                   </div>
                   <div className="absolute top-6 right-6 w-6 h-6 border-t border-r border-accent-indigo/20 rounded-tr-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

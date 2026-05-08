@@ -28,7 +28,9 @@
       "Bash(Write-Output \"done\")",
       "PowerShell(New-Item *)",
       "Bash(Get-ChildItem -Path \"D:\\\\NAHLI-AMINE\\\\portfolio\" -Recurse -Directory)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\NAHLI-AMINE\\\\portfolio\" -Recurse | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "Bash(npx next *)"
     ]
   }
 }

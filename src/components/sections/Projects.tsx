@@ -21,14 +21,13 @@ interface Project {
 const INITIAL_COUNT = 3;
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-// Keyword-based matching — handles AI variations like "Full-Stack Development" vs "Full Stack Development"
 function matchesFilter(category: string, filterId: string): boolean {
   const cat = (category || "").toLowerCase().replace(/[-_]/g, " ").replace(/\s+/g, " ").trim();
   if (filterId === "cybersecurity engineering")
     return cat.includes("cyber") || cat.includes("security") || cat.includes("penetration");
   if (filterId === "ai & machine learning")
     return cat === "ai" || cat.startsWith("ai ") || cat.endsWith(" ai") || cat.includes(" ai ") ||
-           cat.includes("machine learn") || cat.includes("deep learn") || cat.includes("neural");
+      cat.includes("machine learn") || cat.includes("deep learn") || cat.includes("neural");
   if (filterId === "full stack development")
     return cat.includes("full") || cat.includes("full stack");
   return cat === filterId;
@@ -49,7 +48,6 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
     });
   }, [projects, activeCategory]);
 
-  // Collapse back to 3 whenever the filter changes
   useEffect(() => {
     setExpanded(false);
   }, [activeCategory]);
@@ -60,7 +58,6 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
 
   return (
     <section id="projects" className="py-32 relative overflow-hidden scroll-mt-20">
-      {/* Background Accent */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-cyan/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -68,7 +65,8 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
         {/* ─── HEADER ─────────────────────────────────── */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-24">
           <div className="relative">
-            <span className="absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black text-text-1 opacity-[0.02] select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
+            {/* Ghost decorative text — adapts via CSS vars */}
+            <span className="ghost-text absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
               Vault
             </span>
 
@@ -81,10 +79,8 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
 
             <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.85] uppercase">
               Project <br />
-              <span
-                className="text-transparent"
-                style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}
-              >
+              {/* Ghost outline text — stroke adapts to theme */}
+              <span className="ghost-stroke">
                 Archive.
               </span>
             </h2>
@@ -109,7 +105,6 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
           <div className="flex-1">
             <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-6 md:auto-rows-fr">
 
-              {/* First 3 — stagger animation + scroll trigger */}
               <AnimatePresence mode="popLayout">
                 {initialProjects.map((project, index) => (
                   <motion.div
@@ -122,16 +117,11 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
                     onClick={() => setSelectedProject(project)}
                     className={`cursor-pointer ${index === 0 ? "md:row-span-2" : ""}`}
                   >
-                    <ProjectCard
-                      project={project}
-                      index={index}
-                      isLarge={false}
-                    />
+                    <ProjectCard project={project} index={index} isLarge={false} />
                   </motion.div>
                 ))}
               </AnimatePresence>
 
-              {/* Extra projects — staggered slide-in on expand, fade-out on collapse */}
               <AnimatePresence>
                 {expanded &&
                   extraProjects.map((project, index) => (
@@ -141,11 +131,7 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
                       initial={{ opacity: 0, y: 40 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
-                      transition={{
-                        duration: 0.5,
-                        ease: EASE,
-                        delay: index * 0.1,
-                      }}
+                      transition={{ duration: 0.5, ease: EASE, delay: index * 0.1 }}
                       onClick={() => setSelectedProject(project)}
                       className="cursor-pointer"
                     >
@@ -155,14 +141,13 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
               </AnimatePresence>
             </motion.div>
 
-            {/* Empty state */}
             {filteredProjects.length === 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-40 border border-dashed border-white/10 rounded-[3rem] bg-white/[0.01] backdrop-blur-sm"
+                className="flex flex-col items-center justify-center py-40 border border-dashed border-[var(--border)] rounded-[3rem] bg-text-1/[0.01] backdrop-blur-sm"
               >
-                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                <div className="w-16 h-16 rounded-full bg-text-1/5 flex items-center justify-center mb-6">
                   <div className="w-2 h-2 rounded-full bg-accent-cyan animate-ping" />
                 </div>
                 <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-text-4">
@@ -174,18 +159,15 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
               </motion.div>
             )}
 
-            {/* ─── DISCOVER MORE / SHOW LESS ───────────── */}
             {hasMore && (
               <motion.div layout className="flex justify-center mt-16">
                 <button
                   onClick={() => {
                     if (expanded) {
                       const section = document.getElementById("projects");
-                      if (section) {
-                        section.scrollIntoView({ behavior: "smooth" });
-                      }
+                      if (section) section.scrollIntoView({ behavior: "smooth" });
                     }
-                    setExpanded((prev) => !prev);
+                    setExpanded(prev => !prev);
                   }}
                   className="group flex items-center gap-3 px-8 py-3 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan/60 transition-all duration-300 font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan"
                 >
@@ -198,13 +180,7 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
                     animate={{ rotate: expanded ? 180 : 0 }}
                     transition={{ duration: 0.35, ease: EASE }}
                   >
-                    <path
-                      d="M2 4L6 8L10 4"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </motion.svg>
                 </button>
               </motion.div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientLayout from "@/components/layout/ClientLayout";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +41,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark antialiased" suppressHydrationWarning>
+      <head>
+        {/* Anti-flash: restore saved theme before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}catch(e){}})();` }} />
+      </head>
       <body className="bg-bg-0 text-text-1" suppressHydrationWarning>
         <div id="splash-screen" suppressHydrationWarning>
           <div className="splash-scanner"></div>
@@ -48,7 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
-        <ClientLayout>{children}</ClientLayout>
+        <ThemeProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -93,7 +93,7 @@ export default function Testimonials() {
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-24">
               <div className="relative">
-                <span className="absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black text-text-1 opacity-[0.02] select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
+                <span className="ghost-text absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
                   Signal
                 </span>
                 <div className="flex items-center gap-4 mb-6">
@@ -104,9 +104,7 @@ export default function Testimonials() {
                 </div>
                 <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.85] uppercase">
                   What They <br />
-                  <span className="text-transparent" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}>
-                    Say.
-                  </span>
+                  <span className="ghost-stroke">Say.</span>
                 </h2>
               </div>
               <div className="max-w-sm border-l-2 border-accent-indigo pl-8 py-2">
@@ -124,26 +122,26 @@ export default function Testimonials() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.8, ease: EASE, delay: index * 0.12 }}
-                  className="relative flex flex-col gap-6 p-8 rounded-[2.5rem] bg-bg-1/40 border border-white/5 backdrop-blur-2xl shadow-2xl hover:border-accent-indigo/20 transition-colors duration-500 group"
+                  className="relative flex flex-col gap-6 p-8 rounded-[2.5rem] bg-bg-1/40 border border-[var(--border)] backdrop-blur-2xl hover:border-accent-indigo/20 transition-colors duration-500 group"
                 >
                   <div className="flex items-center justify-between">
                     <div className="w-10 h-10 rounded-2xl bg-accent-indigo/10 border border-accent-indigo/20 flex items-center justify-center group-hover:bg-accent-indigo/20 transition-colors">
                       <Quote size={16} className="text-accent-indigo" />
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{RATING_LABELS[t.rating]}</span>
-                      <span className="w-5 h-5 rounded-md bg-[#00B4D8]/10 border border-[#00B4D8]/20 flex items-center justify-center text-[10px] font-black text-[#00B4D8]">{t.rating}</span>
+                      <span className="text-[10px] font-mono text-text-4 uppercase tracking-widest">{RATING_LABELS[t.rating]}</span>
+                      <span className="w-5 h-5 rounded-md bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-[10px] font-black text-accent-cyan">{t.rating}</span>
                     </div>
                   </div>
                   <p className="text-text-3 text-sm leading-relaxed flex-1 break-words overflow-hidden">"{t.message}"</p>
-                  <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+                  <div className="flex items-center gap-4 pt-4 border-t border-[var(--border)]">
                     <div className="w-10 h-10 rounded-full bg-accent-indigo/10 border border-accent-indigo/20 flex items-center justify-center flex-shrink-0">
                       <span className="text-[10px] font-black text-accent-indigo">{getInitials(t.name)}</span>
                     </div>
                     <div className="flex flex-col gap-0.5 overflow-hidden">
                       <span className="text-sm font-black text-text-1 tracking-tight truncate">{t.name}</span>
                       <span className="text-[9px] font-mono text-text-4 uppercase tracking-widest truncate">{t.role}</span>
-                      {t.company && <span className="text-[8px] font-mono text-[#00B4D8]/50 uppercase tracking-widest truncate">{t.company}</span>}
+                      {t.company && <span className="text-[8px] font-mono text-accent-cyan/60 uppercase tracking-widest truncate">{t.company}</span>}
                     </div>
                   </div>
                   <div className="absolute top-6 right-6 w-6 h-6 border-t border-r border-accent-indigo/20 rounded-tr-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -165,7 +163,7 @@ export default function Testimonials() {
               exit={{ scale: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: EASE }}
               onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#0d1117] border border-[#00B4D8]/30 text-[#00B4D8] font-mono font-bold uppercase tracking-widest text-[10px] hover:border-[#00B4D8]/60 hover:bg-[#00B4D8]/5 transition-all duration-300 shadow-[0_0_20px_rgba(0,180,216,0.15)]"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-bg-0 border border-accent-cyan/30 text-accent-cyan font-mono font-bold uppercase tracking-widest text-[10px] hover:border-accent-cyan/60 hover:bg-accent-cyan/5 transition-all duration-300 shadow-[0_0_20px_rgba(0,180,216,0.15)]"
             >
               <Terminal size={14} />
               Leave_Review
@@ -182,15 +180,15 @@ export default function Testimonials() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-24 right-8 z-50 px-5 py-4 rounded-xl bg-[#0d1117] border border-[#00B4D8]/25 shadow-[0_0_30px_rgba(0,0,0,0.6)]"
+            className="fixed bottom-24 right-8 z-50 px-5 py-4 rounded-xl bg-bg-0 border border-accent-cyan/25 shadow-[0_0_30px_rgba(0,0,0,0.3)]"
           >
-            <p className="text-[11px] font-mono text-[#00B4D8] tracking-widest">&gt; REVIEW_SUBMITTED</p>
-            <p className="text-[10px] font-mono text-white/30 mt-1 tracking-wide">Your review is pending moderation.</p>
+            <p className="text-[11px] font-mono text-accent-cyan tracking-widest">&gt; REVIEW_SUBMITTED</p>
+            <p className="text-[10px] font-mono text-text-4 mt-1 tracking-wide">Your review is pending moderation.</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ─── MODAL ─── */}
+      {/* ─── MODAL — terminal aesthetic, always dark ─── */}
       <AnimatePresence>
         {showForm && (
           <motion.div
@@ -203,12 +201,13 @@ export default function Testimonials() {
           >
             <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" />
 
+            {/* Modal uses terminal-dark so it stays dark in both modes */}
             <motion.div
               initial={{ scale: 0.96, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.96, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: EASE }}
-              className="relative w-full max-w-lg bg-[#0d1117] border border-white/8 rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.8)] z-10 overflow-hidden"
+              className="terminal-dark relative w-full max-w-lg rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.8)] z-10 overflow-hidden border"
             >
               {/* Top accent line */}
               <div className="h-px bg-gradient-to-r from-transparent via-[#00B4D8]/40 to-transparent" />
@@ -218,8 +217,8 @@ export default function Testimonials() {
                 <div className="flex items-start justify-between mb-8">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <Terminal size={13} className="text-[#00B4D8]" />
-                      <span className="text-[9px] font-mono text-[#00B4D8] uppercase tracking-[0.3em]">Review_Form</span>
+                      <Terminal size={13} className="text-accent-cyan" />
+                      <span className="text-[9px] font-mono text-accent-cyan uppercase tracking-[0.3em]">Review_Form</span>
                     </div>
                     <h3 className="text-lg font-black text-white tracking-tight">Leave a testimonial</h3>
                     <p className="text-[10px] font-mono text-white/25 mt-0.5 tracking-wide">Will be published after manual moderation.</p>
@@ -237,24 +236,24 @@ export default function Testimonials() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-mono text-white/30 uppercase tracking-[0.25em]">
-                        Full Name <span className="text-[#00B4D8]">*</span>
+                        Full Name <span className="text-accent-cyan">*</span>
                       </label>
                       <input
                         value={formData.name}
                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                         placeholder="John Doe"
-                        className="w-full bg-white/[0.04] border border-white/8 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none focus:border-[#00B4D8]/40 focus:bg-[#00B4D8]/[0.03] transition-all font-mono"
+                        className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none focus:border-accent-cyan/40 focus:bg-accent-cyan/[0.03] font-mono"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-mono text-white/30 uppercase tracking-[0.25em]">
-                        Title / Role <span className="text-[#00B4D8]">*</span>
+                        Title / Role <span className="text-accent-cyan">*</span>
                       </label>
                       <input
                         value={formData.role}
                         onChange={e => setFormData({ ...formData, role: e.target.value })}
                         placeholder="Tech Lead"
-                        className="w-full bg-white/[0.04] border border-white/8 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none focus:border-[#00B4D8]/40 focus:bg-[#00B4D8]/[0.03] transition-all font-mono"
+                        className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none focus:border-accent-cyan/40 focus:bg-accent-cyan/[0.03] font-mono"
                       />
                     </div>
                   </div>
@@ -266,11 +265,11 @@ export default function Testimonials() {
                       value={formData.company}
                       onChange={e => setFormData({ ...formData, company: e.target.value })}
                       placeholder="Company · City"
-                      className="w-full bg-white/[0.04] border border-white/8 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none focus:border-[#00B4D8]/40 focus:bg-[#00B4D8]/[0.03] transition-all font-mono"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none focus:border-accent-cyan/40 focus:bg-accent-cyan/[0.03] font-mono"
                     />
                   </div>
 
-                  {/* Rating pills */}
+                  {/* Rating */}
                   <div className="space-y-2">
                     <label className="text-[9px] font-mono text-white/30 uppercase tracking-[0.25em]">Rating</label>
                     <div className="flex gap-2">
@@ -281,8 +280,8 @@ export default function Testimonials() {
                           onClick={() => setFormData({ ...formData, rating: n })}
                           className={`flex-1 py-2 rounded-lg border text-[10px] font-mono font-bold uppercase tracking-widest transition-all duration-200 ${
                             formData.rating === n
-                              ? "bg-[#00B4D8]/10 border-[#00B4D8]/50 text-[#00B4D8]"
-                              : "bg-white/[0.03] border-white/8 text-white/25 hover:border-white/20 hover:text-white/50"
+                              ? "bg-accent-cyan/10 border-accent-cyan/50 text-accent-cyan"
+                              : "bg-white/[0.03] border-white/10 text-white/25 hover:border-white/20 hover:text-white/50"
                           }`}
                         >
                           {n}
@@ -298,9 +297,9 @@ export default function Testimonials() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <label className="text-[9px] font-mono text-white/30 uppercase tracking-[0.25em]">
-                        Testimonial <span className="text-[#00B4D8]">*</span>
+                        Testimonial <span className="text-accent-cyan">*</span>
                       </label>
-                      <span className={`text-[9px] font-mono tabular-nums ${charCount >= 50 ? "text-[#00B4D8]/50" : "text-white/20"}`}>
+                      <span className={`text-[9px] font-mono tabular-nums ${charCount >= 50 ? "text-accent-cyan/50" : "text-white/20"}`}>
                         {charCount}/50 min
                       </span>
                     </div>
@@ -309,7 +308,7 @@ export default function Testimonials() {
                       value={formData.message}
                       onChange={e => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Describe your experience working with Amine..."
-                      className="w-full bg-white/[0.04] border border-white/8 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none resize-none focus:border-[#00B4D8]/40 focus:bg-[#00B4D8]/[0.03] transition-all font-mono leading-relaxed"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/15 outline-none resize-none focus:border-accent-cyan/40 focus:bg-accent-cyan/[0.03] font-mono leading-relaxed"
                     />
                   </div>
 
@@ -328,7 +327,7 @@ export default function Testimonials() {
                     <button
                       onClick={handleSubmit}
                       disabled={!canSubmit}
-                      className="flex-[2] py-3 rounded-lg bg-[#00B4D8]/10 border border-[#00B4D8]/30 text-[#00B4D8] text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-[#00B4D8]/15 hover:border-[#00B4D8]/50 transition-all flex items-center justify-center gap-2 disabled:opacity-25 disabled:cursor-not-allowed"
+                      className="flex-[2] py-3 rounded-lg bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-accent-cyan/15 hover:border-accent-cyan/50 transition-all flex items-center justify-center gap-2 disabled:opacity-25 disabled:cursor-not-allowed"
                     >
                       {submitting
                         ? <><Loader2 size={13} className="animate-spin" /> Submitting...</>

@@ -43,7 +43,7 @@ const getCategoryStyle = (category: string) => {
       borderTop: "border-t-2 border-t-cyan-500",
       badge: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
       dot: "bg-cyan-400",
-      glow: "rgba(6,182,212,0.18)",
+      glow: "rgba(0,180,216,0.18)",
       label: "FULL_STACK",
     };
   }
@@ -99,8 +99,8 @@ export default function ProjectCard({
   if (!mounted) {
     return (
       <div
-        className={`rounded-2xl border border-white/5 animate-pulse ${styles.borderTop} ${isFeatured ? "md:row-span-2" : ""}`}
-        style={{ background: "rgba(255,255,255,0.02)", minHeight: isFeatured ? 380 : 200 }}
+        className={`rounded-2xl border border-[var(--border)] animate-pulse ${styles.borderTop} ${isFeatured ? "md:row-span-2" : ""}`}
+        style={{ background: "var(--bg-card)", minHeight: isFeatured ? 380 : 200 }}
       />
     );
   }
@@ -117,21 +117,21 @@ export default function ProjectCard({
         transition: tilt.active ? "transform 0.08s ease" : "transform 0.4s ease",
         boxShadow: tilt.active
           ? `0 30px 60px -10px ${styles.glow}, 0 0 50px -20px ${styles.glow}`
-          : "0 4px 24px -8px rgba(0,0,0,0.4)",
+          : "var(--shadow-card)",
       }}
       className={`group relative rounded-2xl overflow-hidden ${styles.borderTop} h-full`}
     >
-      {/* Glassmorphism base */}
+      {/* Card base */}
       <div
         className="absolute inset-0 rounded-[inherit]"
-        style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(10px)" }}
+        style={{ background: "var(--bg-card)", backdropFilter: "blur(10px)" }}
       />
 
       {/* Dynamic border */}
       <div
         className="absolute inset-0 rounded-[inherit] transition-all duration-300"
         style={{
-          border: `1px solid ${tilt.active ? "rgba(0,180,216,0.25)" : "rgba(0,180,216,0.08)"}`,
+          border: `1px solid ${tilt.active ? "rgba(0,180,216,0.25)" : "var(--border)"}`,
         }}
       />
 
@@ -144,10 +144,15 @@ export default function ProjectCard({
         }}
       />
 
-      {/* Ghost number */}
+      {/* Ghost number — adapts opacity and color via CSS vars */}
       <span
         className="absolute bottom-1 right-2 font-black select-none pointer-events-none"
-        style={{ fontSize: 120, lineHeight: 0.85, opacity: 0.04, color: "white" }}
+        style={{
+          fontSize: 120,
+          lineHeight: 0.85,
+          opacity: "var(--ghost-opacity)" as any,
+          color: "var(--text-primary)",
+        }}
       >
         {num}
       </span>
@@ -173,11 +178,11 @@ export default function ProjectCard({
         </div>
 
         {/* Separator */}
-        <div className="h-px bg-white/[0.06]" />
+        <div className="h-px" style={{ background: "var(--border)" }} />
 
         {/* Title */}
         <h3
-          className={`font-black text-white tracking-tight leading-tight transition-colors duration-300 group-hover:text-[#00B4D8] ${
+          className={`font-black text-text-1 tracking-tight leading-tight transition-colors duration-300 group-hover:text-accent-cyan ${
             isFeatured ? "text-2xl md:text-[1.65rem]" : "text-lg md:text-xl"
           }`}
         >
@@ -185,22 +190,22 @@ export default function ProjectCard({
         </h3>
 
         {/* Description */}
-        <p className={`text-white/40 text-sm leading-relaxed flex-1 ${isFeatured ? "line-clamp-5" : "line-clamp-3"}`}>
+        <p className={`text-text-3 text-sm leading-relaxed flex-1 ${isFeatured ? "line-clamp-5" : "line-clamp-3"}`}>
           {project.description}
         </p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
+        <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid var(--border)" }}>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <Shield size={11} className="text-[#00B4D8]" />
-              <span className="text-[8px] font-mono text-white/25 uppercase tracking-widest">
+              <Shield size={11} className="text-accent-cyan" />
+              <span className="text-[8px] font-mono text-text-4 uppercase tracking-widest">
                 Secure_Build
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Terminal size={11} className="text-[#00B4D8]" />
-              <span className="text-[8px] font-mono text-white/25 uppercase tracking-widest">
+              <Terminal size={11} className="text-accent-cyan" />
+              <span className="text-[8px] font-mono text-text-4 uppercase tracking-widest">
                 CLI_Ready
               </span>
             </div>
@@ -211,7 +216,7 @@ export default function ProjectCard({
             target="_blank"
             rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
-            className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:bg-[#00B4D8] hover:text-black transition-all duration-300"
+            className="w-8 h-8 rounded-lg bg-text-1/5 flex items-center justify-center text-text-3 hover:bg-accent-cyan hover:text-[#0D1117] transition-all duration-300"
             style={tilt.active ? { boxShadow: "0 0 15px rgba(0,180,216,0.5)" } : {}}
           >
             <GithubIcon size={16} />
@@ -219,7 +224,7 @@ export default function ProjectCard({
         </div>
       </div>
 
-      {/* Scanline */}
+      {/* Scanline texture */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.015] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px]" />
     </div>
   );

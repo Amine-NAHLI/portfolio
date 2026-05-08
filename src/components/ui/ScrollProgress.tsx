@@ -44,17 +44,17 @@ export default function ScrollProgress() {
       </div>
 
       {/* Progress Bar Container */}
-      <div className="relative w-1 h-48 bg-white/5 dark:bg-white/5 rounded-full overflow-hidden border border-white/5">
+      <div className="relative w-1 h-48 rounded-full overflow-hidden border border-[var(--border)]" style={{ background: "var(--border)" }}>
         <motion.div
           className="absolute top-0 left-0 w-full bg-accent-cyan origin-top"
           style={{ scaleY }}
         />
-        
-        {/* Scanning Bit (Moving dot) */}
-        <motion.div 
+
+        {/* Scanning Bit */}
+        <motion.div
           animate={{ y: [0, 192, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          className="absolute top-0 left-0 w-full h-2 bg-white/40 blur-sm z-10"
+          className="absolute top-0 left-0 w-full h-2 bg-text-1/40 blur-sm z-10"
         />
       </div>
 

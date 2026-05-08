@@ -36,18 +36,17 @@ const SkillModule = ({
 
   return (
     <div
-      className={`relative flex items-center gap-2 md:gap-4 px-4 py-3 md:px-8 md:py-5 rounded-2xl md:rounded-[2rem] bg-bg-1/40 dark:bg-white/[0.02] border border-bg-3 dark:border-white/[0.08] backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 ${
+      className={`relative flex items-center gap-2 md:gap-4 px-4 py-3 md:px-8 md:py-5 rounded-2xl md:rounded-[2rem] bg-bg-1/40 border border-[var(--border)] backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 ${
         isBackRow ? "opacity-30 blur-[2px] scale-75 grayscale-[0.5]" : ""
       }`}
     >
-      <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-bg-2 dark:bg-white/5 overflow-hidden p-1.5 md:p-2">
+      <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-bg-2 overflow-hidden p-1.5 md:p-2">
         <img
           src={iconUrl}
           alt={name}
           className="w-full h-full object-contain"
           onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              "https://skillicons.dev/icons?i=code";
+            (e.target as HTMLImageElement).src = "https://skillicons.dev/icons?i=code";
           }}
         />
       </div>
@@ -57,7 +56,7 @@ const SkillModule = ({
           {name}
         </span>
         <div className="flex items-center gap-1.5 md:gap-2">
-          <div className="h-0.5 md:h-1 w-8 md:w-12 bg-bg-3 dark:bg-white/10 rounded-full overflow-hidden">
+          <div className="h-0.5 md:h-1 w-8 md:w-12 bg-[var(--border)] rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-accent-cyan"
               initial={{ width: "0%" }}
@@ -128,12 +127,12 @@ export default function SkillsSection({ skills }: { skills: SupabaseSkill[] }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] grid-bg pointer-events-none" />
+      <div className="absolute inset-0 opacity-[var(--ghost-opacity)] grid-bg pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 mb-32 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
           <div className="relative">
-            <span className="absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black text-text-1 opacity-[0.02] select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
+            <span className="ghost-text absolute -top-12 -left-4 text-[6rem] md:text-[10rem] font-black select-none pointer-events-none -z-10 uppercase tracking-tighter leading-none">
               Arsenal
             </span>
             <div className="flex items-center gap-4 mb-6">
@@ -144,17 +143,14 @@ export default function SkillsSection({ skills }: { skills: SupabaseSkill[] }) {
             </div>
             <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.85] uppercase">
               Technical <br />
-              <span
-                className="text-transparent"
-                style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}
-              >
+              <span className="ghost-stroke">
                 Arsenal.
               </span>
             </h2>
           </div>
 
           <div className="max-w-sm lg:text-right flex flex-col lg:items-end gap-6">
-            <div className="h-px w-24 bg-white/10 hidden lg:block" />
+            <div className="h-px w-24 bg-[var(--border)] hidden lg:block" />
             <p className="text-[10px] font-mono text-text-4 uppercase tracking-[0.3em] leading-relaxed">
               Deploying high-fidelity toolkits: Synthesizing full-stack
               engineering with aggressive security research and neural logic.
@@ -176,35 +172,23 @@ export default function SkillsSection({ skills }: { skills: SupabaseSkill[] }) {
       >
         {/* Row 1 */}
         <div className="flex items-center overflow-hidden">
-          <div
-            className="flex gap-10 pr-10 skills-row-right"
-            style={{ willChange: "transform" }}
-          >
+          <div className="flex gap-10 pr-10 skills-row-right" style={{ willChange: "transform" }}>
             {row1.map((skill, idx) => (
-              <SkillModule
-                key={`v1-${skill.id}-${idx}`}
-                name={skill.name}
-              />
+              <SkillModule key={`v1-${skill.id}-${idx}`} name={skill.name} />
             ))}
           </div>
         </div>
 
         {/* Row 2 */}
         <div className="flex items-center">
-          <div
-            className="flex gap-12 pr-12 skills-row-left"
-            style={{ willChange: "transform" }}
-          >
+          <div className="flex gap-12 pr-12 skills-row-left" style={{ willChange: "transform" }}>
             {row2.map((skill, idx) => (
-              <SkillModule
-                key={`v2-${skill.id}-${idx}`}
-                name={skill.name}
-                isBackRow
-              />
+              <SkillModule key={`v2-${skill.id}-${idx}`} name={skill.name} isBackRow />
             ))}
           </div>
         </div>
 
+        {/* Fade masks — use bg-bg-0 so they adapt to theme */}
         <div className="absolute inset-y-0 left-0 w-64 bg-gradient-to-r from-bg-0 to-transparent z-40 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-bg-0 to-transparent z-40 pointer-events-none" />
       </motion.div>

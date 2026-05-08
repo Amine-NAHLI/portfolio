@@ -36,11 +36,11 @@ const SkillModule = ({
 
   return (
     <div
-      className={`relative flex items-center gap-4 px-8 py-5 rounded-[2rem] bg-bg-1/40 dark:bg-white/[0.02] border border-bg-3 dark:border-white/[0.08] backdrop-blur-2xl shadow-2xl overflow-hidden ${
-        isBackRow ? "opacity-60" : ""
+      className={`relative flex items-center gap-2 md:gap-4 px-4 py-3 md:px-8 md:py-5 rounded-2xl md:rounded-[2rem] bg-bg-1/40 dark:bg-white/[0.02] border border-bg-3 dark:border-white/[0.08] backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 ${
+        isBackRow ? "opacity-30 blur-[2px] scale-75 grayscale-[0.5]" : ""
       }`}
     >
-      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-bg-2 dark:bg-white/5 overflow-hidden p-2">
+      <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-bg-2 dark:bg-white/5 overflow-hidden p-1.5 md:p-2">
         <img
           src={iconUrl}
           alt={name}
@@ -53,11 +53,11 @@ const SkillModule = ({
       </div>
 
       <div className="flex flex-col gap-0.5">
-        <span className="text-sm md:text-base font-black text-text-1 tracking-tighter uppercase">
+        <span className="text-[10px] md:text-base font-black text-text-1 tracking-tighter uppercase leading-none">
           {name}
         </span>
-        <div className="flex items-center gap-2">
-          <div className="h-1 w-12 bg-bg-3 dark:bg-white/10 rounded-full overflow-hidden">
+        <div className="flex items-center gap-1.5 md:gap-2">
+          <div className="h-0.5 md:h-1 w-8 md:w-12 bg-bg-3 dark:bg-white/10 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-accent-cyan"
               initial={{ width: "0%" }}
@@ -65,7 +65,7 @@ const SkillModule = ({
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
             />
           </div>
-          <span className="text-[8px] font-mono text-text-4 uppercase">
+          <span className="text-[6px] md:text-[8px] font-mono text-text-4 uppercase">
             Online
           </span>
         </div>
@@ -218,8 +218,8 @@ export default function SkillsSection({ skills }: { skills: SupabaseSkill[] }) {
           0%   { transform: translateX(-50%); }
           100% { transform: translateX(0); }
         }
-        .skills-row-left  { animation: skills-scroll-left  55s linear infinite; }
-        .skills-row-right { animation: skills-scroll-right 35s linear infinite; }
+        .skills-row-left  { animation: skills-scroll-left  80s linear infinite; }
+        .skills-row-right { animation: skills-scroll-right 60s linear infinite; }
       `}</style>
     </section>
   );

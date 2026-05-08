@@ -59,7 +59,7 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
   const hasMore = extraProjects.length > 0;
 
   return (
-    <section id="projects" className="py-32 relative overflow-hidden">
+    <section id="projects" className="py-32 relative overflow-hidden scroll-mt-20">
       {/* Background Accent */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-cyan/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
@@ -178,7 +178,15 @@ export default function Projects({ projects, stats }: { projects: Project[]; sta
             {hasMore && (
               <motion.div layout className="flex justify-center mt-16">
                 <button
-                  onClick={() => setExpanded(prev => !prev)}
+                  onClick={() => {
+                    if (expanded) {
+                      const section = document.getElementById("projects");
+                      if (section) {
+                        section.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }
+                    setExpanded((prev) => !prev);
+                  }}
                   className="group flex items-center gap-3 px-8 py-3 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan/60 transition-all duration-300 font-mono text-[10px] uppercase tracking-[0.4em] text-accent-cyan"
                 >
                   <span>{expanded ? "Show Less" : "Discover More"}</span>

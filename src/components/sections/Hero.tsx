@@ -121,8 +121,8 @@ export default function Hero({ profile, stats }: { profile: any; stats: any }) {
           <div className="text-text-1">
             <DecipherText text="AMINE" />
           </div>
-          {/* Ghost text — opacity and stroke adapt via CSS vars */}
-          <div className="ghost-text" style={{ WebkitTextStroke: "var(--ghost-stroke)", color: "transparent" }}>
+          {/* Ghost text — improved visibility by removing transparent color and adjusting stroke */}
+          <div className="text-text-1 opacity-20" style={{ WebkitTextStroke: "1px var(--text-1)" }}>
             <DecipherText text="NAHLI." />
           </div>
         </h1>

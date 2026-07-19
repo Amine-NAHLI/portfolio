@@ -63,8 +63,8 @@
     --shadow-input-focus: 0 0 0 4px rgba(0, 180, 216, 0.15);
 
     /* Ghost decorative elements */
-    --ghost-opacity: 0.05;
-    --ghost-stroke: 1px rgba(15, 25, 35, 0.15);
+    --ghost-opacity: 0.15;
+    --ghost-stroke: 1px rgba(15, 25, 35, 0.3);
 
     --radius-sm: 0.375rem;
     --radius-md: 0.75rem;
@@ -119,8 +119,8 @@
     --shadow-card: none;
     --shadow-card-hover: 0 0 40px rgba(0, 180, 216, 0.08);
 
-    --ghost-opacity: 0.04;
-    --ghost-stroke: 1px rgba(255, 255, 255, 0.1);
+    --ghost-opacity: 0.12;
+    --ghost-stroke: 1px rgba(255, 255, 255, 0.25);
 
     --accent-green-bg: rgba(255, 255, 255, 0.04);
 

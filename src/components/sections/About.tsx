@@ -127,8 +127,8 @@ export default function About({
               </div>
               <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">
                 Breaking <br />
-                {/* Ghost "to Build." — always rendered via CSS vars */}
-                <span className="ghost-text" style={{ WebkitTextStroke: "var(--ghost-stroke)", color: "transparent" }}>
+                {/* Ghost "to Build." — improved visibility */}
+                <span className="text-text-1 opacity-20" style={{ WebkitTextStroke: "1px var(--text-1)" }}>
                   to Build.
                 </span>
               </h2>

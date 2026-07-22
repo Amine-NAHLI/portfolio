@@ -1,3 +1,5 @@
+> **Archive historique — état antérieur à la refonte.** Les composants Lenis, Framer Motion, Three.js et l'ancienne navigation décrits ici ont été retirés.
+
 # Navigation Diagnosis
 
 ## Symptoms reproduced

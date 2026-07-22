@@ -1,12 +1,32 @@
--- Run this in your Supabase SQL Editor (Dashboard > SQL Editor)
--- Step 1: Add the status column with default 'pending'
-ALTER TABLE testimonials
-ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'pending'
-CHECK (status IN ('pending', 'approved', 'rejected'));
+-- Legacy compatibility migration.
+-- Testimonials are no longer part of the public product, but this migration is
+-- kept because it may already have been applied to an existing Supabase project.
+-- It deliberately creates no demo data and approves no pending submission.
 
--- Step 2: Mark all existing testimonials as approved (they were already published)
-UPDATE testimonials SET status = 'approved' WHERE status = 'pending';
+create table if not exists public.testimonials (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  role text,
+  company text,
+  message text not null,
+  rating smallint not null default 5 check (rating between 1 and 5),
+  created_at timestamptz not null default now()
+);
 
--- Step 3: Enable Realtime on the testimonials table (run in Supabase Dashboard > Database > Replication)
--- or via SQL:
--- ALTER PUBLICATION supabase_realtime ADD TABLE testimonials;
+alter table public.testimonials
+  add column if not exists status text not null default 'pending';
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'testimonials_status_check'
+      and conrelid = 'public.testimonials'::regclass
+  ) then
+    alter table public.testimonials
+      add constraint testimonials_status_check
+      check (status in ('pending', 'approved', 'rejected'));
+  end if;
+end
+$$;

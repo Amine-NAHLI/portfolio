@@ -1,3 +1,5 @@
+> **Archive historique — état antérieur à la refonte.** Ce rapport cite des fichiers et dépendances supprimés. Pour l'état actuel, consulter `README.md` et `docs/`.
+
 # PORTFOLIO AUDIT — Phase 0
 **Project:** Amine Nahli Portfolio  
 **Stack:** Next.js 16.2.4 · React 19 · TypeScript · Tailwind v4 · Framer Motion · Three.js · Lenis  

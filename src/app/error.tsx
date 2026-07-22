@@ -1,12 +1,27 @@
 "use client";
-export default function Error() {
+
+import Link from "next/link";
+import { useEffect } from "react";
+
+type ErrorPageProps = {
+  error: Error & { digest?: string };
+  reset: () => void;
+};
+
+export default function ErrorPage({ error, reset }: ErrorPageProps) {
+  useEffect(() => {
+    console.error("Unhandled application error", error);
+  }, [error]);
+
   return (
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#030712",color:"#f1f5f9"}}>
-      <div style={{textAlign:"center"}}>
-        <h1 style={{fontSize:"6rem",fontWeight:900,margin:0}}>500</h1>
-        <p style={{opacity:0.6}}>Something went wrong</p>
-        <a href="/" style={{color:"#06b6d4",display:"block",marginTop:"2rem"}}>Go home</a>
+    <main className="mx-auto grid min-h-screen max-w-2xl place-content-center px-5 py-20 text-center">
+      <p className="eyebrow">Erreur · Error</p>
+      <h1 className="mt-4 text-3xl font-semibold text-text-primary sm:text-4xl">Le contenu n’a pas pu être chargé.</h1>
+      <p className="mt-4 leading-7 text-text-secondary">The content could not be loaded. You can try again or return home.</p>
+      <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <button type="button" className="button-primary" onClick={reset}>Réessayer · Try again</button>
+        <Link href="/fr" className="button-secondary">Accueil · Home</Link>
       </div>
-    </div>
+    </main>
   );
 }

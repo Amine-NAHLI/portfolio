@@ -16,6 +16,10 @@ export async function submitTestimonial(prevState: unknown, formData: FormData) 
     return { error: "Veuillez remplir les champs obligatoires (Prénom, Nom, Message).", success: false };
   }
 
+  if (message.trim().length < 20) {
+    return { error: "Votre avis doit contenir au moins 20 caractères.", success: false };
+  }
+
   const supabase = createAdminClient();
 
   const { error } = await supabase.from("testimonials").insert({
@@ -24,6 +28,8 @@ export async function submitTestimonial(prevState: unknown, formData: FormData) 
     last_name: lastName,
     role: role || null,
     company: company || null,
+    job_title: role || null,
+    organization: company || null,
     message: message,
     rating: rating,
     locale: locale || "fr",
@@ -33,7 +39,7 @@ export async function submitTestimonial(prevState: unknown, formData: FormData) 
 
   if (error) {
     console.error("Testimonial submission failed:", error);
-    return { error: "Une erreur est survenue lors de l'envoi de votre avis. Veuillez réessayer.", success: false };
+    return { error: `Erreur d'insertion: ${error.message || JSON.stringify(error)}`, success: false };
   }
 
   return { success: true, message: "Merci ! Votre avis a été envoyé et sera examiné prochainement." };

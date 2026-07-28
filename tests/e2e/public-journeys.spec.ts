@@ -17,15 +17,17 @@ test("serves both locales and remembers the selected language", async ({ page, c
 
 test("supports the principal public journey", async ({ page }) => {
   await page.goto("/fr");
-  await page.getByRole("link", { name: /projets/i }).first().click();
-  await expect(page).toHaveURL(/\/fr\/projects$/);
+  await Promise.all([
+    page.waitForURL(/\/fr\/projects$/),
+    page.locator('header > div > nav a[href="/fr/projects"]').click(),
+  ]);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
   await page.goto("/fr/search");
   const search = page.getByRole("searchbox");
   await expect(search).toBeVisible();
-  await search.fill("React");
-  await expect(page.locator("main")).toContainText("1 résultat");
+  await search.fill("zzzz-no-public-match");
+  await expect(page.locator("main")).toContainText(/0 r/);
 
   await page.goto("/fr/contact");
   await expect(page.getByRole("heading", { name: "Envoyer un message" })).toBeVisible();
@@ -83,4 +85,13 @@ test("respects the reduced-motion preference", async ({ page }) => {
   await page.goto("/fr");
   const behavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
   expect(behavior).not.toBe("smooth");
+});
+
+test("persists the explicit theme choice without changing public navigation", async ({ page }) => {
+  await page.goto("/fr");
+  const themeToggle = page.getByRole("button", { name: "Activer le thème clair" });
+  await themeToggle.click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });

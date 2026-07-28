@@ -4,7 +4,7 @@ const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 
 await waitForServer();
 
-for (const path of ["/", "/fr", "/en", "/fr/projects", "/en/projects", "/fr/search", "/en/contact", "/fr/blog", "/robots.txt", "/sitemap.xml", "/cv"]) {
+for (const path of ["/", "/fr", "/en", "/fr/projects", "/en/projects", "/fr/search", "/en/contact", "/robots.txt", "/sitemap.xml"]) {
   const response = await fetch(`${baseUrl}${path}`, { redirect: "manual" });
   if (path === "/") {
     if ([301, 302, 307, 308].includes(response.status)) assert.match(response.headers.get("location") ?? "", /\/fr$/);
@@ -43,8 +43,14 @@ const crossOriginContact = await fetch(`${baseUrl}/api/contact`, {
 assert.equal(crossOriginContact.status, 403, "cross-origin contact mutation should be refused");
 
 const cvResponse = await fetch(`${baseUrl}/cv`);
-assert.match(cvResponse.headers.get("content-type") ?? "", /^text\/html/);
+assert.match(cvResponse.headers.get("content-type") ?? "", /^application\/pdf/);
+assert.match(cvResponse.headers.get("content-disposition") ?? "", /Amine_Nahli_CV\.pdf/);
 assert.match(cvResponse.headers.get("content-security-policy") ?? "", /script-src 'none'/);
+
+for (const path of ["/fr/blog", "/fr/now"]) {
+  const response = await fetch(`${baseUrl}${path}`);
+  assert.equal(response.status, 404, `${path} should remain removed`);
+}
 
 process.stdout.write("Smoke tests passed: public routes, i18n, security headers, admin guard, CSRF and CV.\n");
 

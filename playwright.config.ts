@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const isCi = Boolean(process.env.CI);
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3210";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -10,14 +11,14 @@ export default defineConfig({
   workers: isCi ? 2 : undefined,
   reporter: [["line"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://127.0.0.1:3100",
+    baseURL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "off",
   },
   webServer: process.env.PLAYWRIGHT_MANAGED_SERVER ? undefined : {
-    command: "node node_modules/next/dist/bin/next start -p 3100",
-    url: "http://127.0.0.1:3100/robots.txt",
+    command: "node node_modules/next/dist/bin/next start -p 3210",
+    url: "http://127.0.0.1:3210/robots.txt",
     reuseExistingServer: false,
     timeout: 120_000,
   },

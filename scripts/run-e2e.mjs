@@ -2,7 +2,8 @@ import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { resolve } from "node:path";
 
-const port = 3100;
+const port = Number(process.env.E2E_PORT ?? 3210);
+if (!Number.isInteger(port) || port < 1024 || port > 65_535) throw new Error("E2E_PORT must be a valid TCP port.");
 const baseUrl = `http://127.0.0.1:${port}`;
 const nextCli = resolve("node_modules/next/dist/bin/next");
 const playwrightCli = resolve("node_modules/@playwright/test/cli.js");
@@ -19,6 +20,7 @@ try {
   exitCode = await run(process.execPath, [playwrightCli, "test", ...process.argv.slice(2)], {
     ...process.env,
     PLAYWRIGHT_MANAGED_SERVER: "1",
+    PLAYWRIGHT_BASE_URL: baseUrl,
   });
 } finally {
   await stopServer();
@@ -50,6 +52,10 @@ function run(command, args, env) {
 
 async function stopServer() {
   if (server.exitCode !== null) return;
+  if (process.platform === "win32" && server.pid) {
+    await run("taskkill", ["/pid", String(server.pid), "/t", "/f"], process.env).catch(() => 1);
+    return;
+  }
   server.kill("SIGTERM");
   await Promise.race([once(server, "exit"), delay(3_000)]);
   if (server.exitCode === null) server.kill("SIGKILL");

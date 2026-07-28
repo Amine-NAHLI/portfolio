@@ -20,6 +20,7 @@ const dictionaries = {
       contact: "Contact",
       search: "Recherche",
       resume: "CV",
+      testimonials: "Avis",
     },
     footer: {
       navigation: "Navigation",
@@ -57,6 +58,7 @@ const dictionaries = {
       contact: "Contact",
       search: "Search",
       resume: "Resume",
+      testimonials: "Reviews",
     },
     footer: {
       navigation: "Navigation",

@@ -31,9 +31,6 @@ export default function PortfolioEmptyState({ collection, locale, className }: {
       <Inbox aria-hidden="true" className="mx-auto size-6 text-accent" />
       <h2 className="mt-4 text-xl font-semibold text-text-primary">{copy.title}</h2>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-text-secondary">{copy.description}</p>
-      <Link href={target} className="button-secondary mt-6 inline-flex">
-        {copy.action}<ArrowUpRight aria-hidden="true" className="size-4" />
-      </Link>
     </TechnicalFrame>
   );
 }

@@ -22,7 +22,8 @@ export default function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
   const navigation = useMemo<NavigationItem[]>(() => [
     { label: dictionary.nav.home, href: `/${locale}` }, { label: dictionary.nav.projects, href: `/${locale}/projects` },
     { label: dictionary.nav.journey, href: `/${locale}/journey` }, { label: dictionary.nav.skills, href: `/${locale}/skills` },
-    { label: dictionary.nav.certifications, href: `/${locale}/certifications` }, { label: dictionary.nav.contact, href: `/${locale}/contact` },
+    { label: dictionary.nav.certifications, href: `/${locale}/certifications` }, { label: dictionary.nav.testimonials, href: `/${locale}/testimonials` },
+    { label: dictionary.nav.contact, href: `/${locale}/contact` },
   ], [dictionary, locale]);
   const alternatePath = useMemo(() => { const segments = pathname.split("/"); segments[1] = alternateLocale; return segments.join("/") || `/${alternateLocale}`; }, [alternateLocale, pathname]);
 

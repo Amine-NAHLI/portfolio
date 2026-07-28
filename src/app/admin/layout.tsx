@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import "@/app/globals.css";
 import { getSiteUrl } from "@/config/site";
 
 export const dynamic = "force-dynamic";
@@ -19,5 +18,5 @@ export const viewport: Viewport = {
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <html lang="fr"><body>{children}</body></html>;
+  return children;
 }

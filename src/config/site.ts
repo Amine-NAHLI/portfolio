@@ -15,15 +15,21 @@ export const siteConfig = {
 } as const;
 
 export function getSiteUrl(): URL {
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const configuredUrls = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+  ];
 
-  if (configuredUrl) {
+  for (const configuredUrl of configuredUrls) {
+    if (!configuredUrl) continue;
     try {
-      return new URL(configuredUrl);
+      return new URL(configuredUrl.startsWith("http") ? configuredUrl : `https://${configuredUrl}`);
     } catch {
-      // A safe local URL keeps metadata generation deterministic when misconfigured.
+      // Continue to the next server-controlled deployment URL.
     }
   }
 
+  // Local development and CI intentionally keep an explicit local base URL.
   return new URL("http://localhost:3000");
 }

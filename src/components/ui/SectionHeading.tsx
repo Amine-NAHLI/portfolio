@@ -18,7 +18,7 @@ export default function SectionHeading({
   return (
     <header className={cn("max-w-3xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-      <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
+      <h2 className="mt-3 text-balance font-display text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
         {title}
       </h2>
       {description ? (
@@ -29,4 +29,3 @@ export default function SectionHeading({
     </header>
   );
 }
-

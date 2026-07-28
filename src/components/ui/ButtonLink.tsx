@@ -14,7 +14,7 @@ export default function ButtonLink({
   return (
     <Link
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,transform] duration-200",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-[.06em] transition-[background-color,border-color,color,transform] duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page",
         "active:translate-y-px",
         variant === "primary" &&
@@ -29,4 +29,3 @@ export default function ButtonLink({
     />
   );
 }
-

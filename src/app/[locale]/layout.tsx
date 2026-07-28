@@ -6,8 +6,8 @@ import SiteHeader from "@/components/layout/SiteHeader";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { PrivacyAnalytics } from "@/components/analytics/PrivacyAnalytics";
+import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttributes";
 import { getSiteUrl, siteConfig } from "@/config/site";
-import "@/app/globals.css";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -44,8 +44,8 @@ const metadataByLocale: Record<Locale, Pick<Metadata, "title" | "description" | 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark",
-  themeColor: "#0f1720",
+  colorScheme: "dark light",
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f7f9f9" }, { media: "(prefers-color-scheme: dark)", color: "#121416" }],
 };
 
 export function generateStaticParams() {
@@ -81,20 +81,17 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const dictionary = getDictionary(candidate);
 
   return (
-    <html lang={candidate}>
-      <body>
-        <div className="flex min-h-screen flex-col">
-          <a href="#main-content" className="skip-link">
-            {dictionary.skipToContent}
-          </a>
-          <SiteHeader locale={candidate} dictionary={dictionary} />
-          <PrivacyAnalytics locale={candidate} />
-          <main id="main-content" className="flex-1" tabIndex={-1}>
-            {children}
-          </main>
-          <SiteFooter locale={candidate} dictionary={dictionary} />
-        </div>
-      </body>
-    </html>
+    <div className="flex min-h-screen flex-col">
+      <LocaleDocumentAttributes locale={candidate} />
+      <a href="#main-content" className="skip-link">
+        {dictionary.skipToContent}
+      </a>
+      <SiteHeader locale={candidate} dictionary={dictionary} />
+      <PrivacyAnalytics locale={candidate} />
+      <main id="main-content" className="page-enter flex-1" tabIndex={-1}>
+        {children}
+      </main>
+      <SiteFooter locale={candidate} dictionary={dictionary} />
+    </div>
   );
 }

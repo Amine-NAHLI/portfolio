@@ -15,7 +15,7 @@ export type PublicJourneyEntry = {
 
 export type PublicSkill = { name: string; level: "beginner" | "intermediate" | "advanced"; evidence: string[] };
 export type PublicSkillGroup = { id: string; title: string; description: string | null; skills: PublicSkill[] };
-export type PublicCertification = { id: string; name: string; description: string | null; issuer: string | null; status: "completed" | "in_progress" | "expired"; skills: string[]; issuedOn: string | null; verificationUrl: string | null; hasDocument: boolean };
+export type PublicCertification = { id: string; name: string; description: string | null; issuer: string | null; status: "completed" | "in_progress" | "expired"; skills: string[]; issuedOn: string | null; verificationUrl: string | null; hasDocument: boolean; documentMimeType: string | null };
 export type PublicTestimonial = { id: string; name: string; role: string | null; organization: string | null; message: string; rating: number; locale: "fr" | "en" };
 
 async function queryJourney(locale: Locale): Promise<PublicJourneyEntry[]> {
@@ -102,9 +102,29 @@ async function querySkills(locale: Locale): Promise<PublicSkillGroup[]> {
 async function queryCertificates(locale: Locale): Promise<PublicCertification[]> {
   if (!hasSupabasePublicConfig()) return [];
   try {
-    const { data, error } = await createPublicClient().from("certifications").select("id, name_fr, name_en, description_fr, description_en, issuer, credential_status, skills, issued_on, verification_url, document_media_id").order("sort_order").order("issued_on", { ascending: false });
+    const { data, error } = await createPublicClient()
+      .from("certifications")
+      .select("id, name_fr, name_en, description_fr, description_en, issuer, credential_status, skills, issued_on, verification_url, document_media_id, media_assets ( mime_type )")
+      .order("sort_order")
+      .order("issued_on", { ascending: false });
     if (error) return [];
-    return (data ?? []).map((certificate) => ({ id: certificate.id, name: locale === "fr" ? certificate.name_fr : certificate.name_en, description: locale === "fr" ? certificate.description_fr : certificate.description_en, issuer: certificate.issuer, status: certificate.credential_status, skills: certificate.skills, issuedOn: certificate.issued_on, verificationUrl: certificate.verification_url, hasDocument: Boolean(certificate.document_media_id) }));
+    
+    return (data ?? []).map((certificate) => {
+      // @ts-ignore - Supabase types don't perfectly infer the join if it's a 1:1 or 1:N
+      const mimeType = certificate.media_assets?.mime_type || (Array.isArray(certificate.media_assets) ? certificate.media_assets[0]?.mime_type : null) || null;
+      return { 
+        id: certificate.id, 
+        name: locale === "fr" ? certificate.name_fr : certificate.name_en, 
+        description: locale === "fr" ? certificate.description_fr : certificate.description_en, 
+        issuer: certificate.issuer, 
+        status: certificate.credential_status, 
+        skills: certificate.skills, 
+        issuedOn: certificate.issued_on, 
+        verificationUrl: certificate.verification_url, 
+        hasDocument: Boolean(certificate.document_media_id),
+        documentMimeType: mimeType
+      };
+    });
   } catch { return []; }
 }
 

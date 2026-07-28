@@ -46,12 +46,20 @@ export default async function CertificationsPage({ params }: CertificationsPageP
               <div key={certification.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface-raised transition-all hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5">
                 <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-border bg-surface-subtle">
                   {certification.hasDocument ? (
-                    <object
-                      data={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                      type="application/pdf"
-                      className="pointer-events-none h-full w-full object-cover"
-                      aria-label={`Preview of ${certification.name}`}
-                    />
+                    certification.documentMimeType?.startsWith("image/") ? (
+                      <img
+                        src={`/api/certifications/${certification.id}/document`}
+                        alt={`Preview of ${certification.name}`}
+                        className="pointer-events-none h-full w-full object-cover"
+                      />
+                    ) : (
+                      <iframe
+                        src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                        title={`Preview of ${certification.name}`}
+                        className="pointer-events-none h-full w-full border-none"
+                        tabIndex={-1}
+                      />
+                    )
                   ) : (
                     <div className="grid h-full place-items-center text-text-muted">
                       <Award className="size-12 opacity-20" />

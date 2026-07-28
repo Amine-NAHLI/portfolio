@@ -24,7 +24,6 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       .select("bucket_id, storage_path, mime_type")
       .eq("id", certificate.document_media_id)
       .eq("publication_status", "published")
-      .eq("mime_type", "application/pdf")
       .maybeSingle();
     if (!media) return new NextResponse(null, { status: 404 });
 

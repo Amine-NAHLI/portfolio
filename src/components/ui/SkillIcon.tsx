@@ -61,6 +61,7 @@ export default function SkillIcon({ name, className = "" }: { name: string; clas
     ? `https://cdn.simpleicons.org/${slug}/white` 
     : `https://cdn.simpleicons.org/${slug}`;
 
+  // eslint-disable-next-line @next/next/no-img-element
   return (
     <img 
       src={finalUrl} 

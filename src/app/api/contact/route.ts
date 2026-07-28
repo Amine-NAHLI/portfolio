@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   }
   if ((recentResult.count ?? 0) >= 3 || (dailyResult.count ?? 0) >= 10) return respond("limited", 429, responseLocale);
 
-  const { data: savedMessage, error } = await supabase.from("contact_messages").insert({
+  const { error } = await supabase.from("contact_messages").insert({
     sender_name: name,
     sender_email: email,
     subject,

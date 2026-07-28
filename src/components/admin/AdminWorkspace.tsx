@@ -7,8 +7,7 @@ export type AdminWorkspaceSection = "projects" | "journey" | "skills" | "certifi
 type RecordValue = Record<string, unknown>;
 type SkillLevel = "beginner" | "intermediate" | "advanced";
 type SkillCategory = { id: string; name_fr: string };
-type SkillRecord = { id: string; name: string; category: string; level: SkillLevel; sort_order: number };
-type MissingTechnology = { name: string; action: "add" | "ignore"; category: string; newCategory: string; level: SkillLevel; sortOrder: number };
+
 
 const labels: Record<AdminWorkspaceSection, { title: string; description: string; create?: string }> = {
   projects: { title: "Projets", description: "Créez et modifiez les projets, leurs deux descriptions et leurs technologies au même endroit.", create: "Ajouter un projet" },

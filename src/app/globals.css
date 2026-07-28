@@ -86,7 +86,7 @@
 
   *, *::before, *::after { box-sizing: border-box; }
   html { min-width: 20rem; overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { min-height: 100vh; overflow-x: clip; background-color: var(--bg-page); background-image: var(--bg-gradient); background-attachment: fixed; background-size: cover; color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
+  body { min-height: 100vh; overflow-x: clip; background-color: transparent; color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
   h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.025em; }
   a, button, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
   button, [role="button"] { cursor: pointer; }
@@ -157,6 +157,16 @@
 @keyframes orbital-float { from { transform: translate3d(0, -50%, 0) scale(.98); } to { transform: translate3d(-1.5rem, calc(-50% - 1rem), 0) scale(1.04); } }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fluid-blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-fluid-blob {
+  animation: fluid-blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 @media (max-width: 63.99rem) { .hero-atelier { min-height: auto; }.hero-atelier::before { right: -15rem; top: 30%; opacity: .72; }.hero-atelier::after { display: none; }.hero-readout { display: none; } }
-@media (prefers-reduced-motion: reduce) { .page-enter > *, .hero-atelier::before, .hero-atelier::after, .hero-monogram::before, .hero-monogram::after { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .page-enter > *, .hero-atelier::before, .hero-atelier::after, .hero-monogram::before, .hero-monogram::after, .animate-fluid-blob { animation: none !important; } }

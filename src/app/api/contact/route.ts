@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { sendContactNotification } from "@/features/contact/resend";
+import { sendContactNotification } from "@/features/contact/web3forms";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
 import { validateContactMessage } from "@/features/contact/validation";

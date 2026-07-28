@@ -14,5 +14,5 @@ export function getMissingContactStorageConfiguration(environment: Environment):
 }
 
 export function getMissingContactNotificationConfiguration(environment: Environment): string[] {
-  return environment.RESEND_API_KEY ? [] : ["RESEND_API_KEY"];
+  return environment.WEB3FORMS_ACCESS_KEY ? [] : ["WEB3FORMS_ACCESS_KEY"];
 }

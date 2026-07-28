@@ -8,6 +8,7 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { PrivacyAnalytics } from "@/components/analytics/PrivacyAnalytics";
 import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttributes";
 import { getSiteUrl, siteConfig } from "@/config/site";
+import FluidBackground from "@/components/layout/FluidBackground";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -82,6 +83,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <div className="flex min-h-screen flex-col">
+      <FluidBackground />
       <LocaleDocumentAttributes locale={candidate} />
       <a href="#main-content" className="skip-link">
         {dictionary.skipToContent}

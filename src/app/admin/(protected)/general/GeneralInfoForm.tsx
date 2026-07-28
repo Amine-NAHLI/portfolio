@@ -31,7 +31,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
         setMessage({ type: "success", text: "Modifications enregistrées avec succès !" });
         setTimeout(() => setMessage(null), 5000);
       }
-    } catch (e) {
+    } catch {
       setMessage({ type: "error", text: "Erreur lors de l'enregistrement." });
     } finally {
       setPending(false);

@@ -6,9 +6,35 @@ export function acceptsSameOriginMutation(request: NextRequest): boolean {
   const origin = request.headers.get("origin");
   const fetchSite = request.headers.get("sec-fetch-site");
 
-  if (!origin || origin !== request.nextUrl.origin) return false;
+  if (!origin || !isTrustedOrigin(origin, request)) return false;
   if (fetchSite && fetchSite !== "same-origin") return false;
   return true;
+}
+
+function isTrustedOrigin(origin: string, request: NextRequest): boolean {
+  let candidate: URL;
+  try {
+    candidate = new URL(origin);
+  } catch {
+    return false;
+  }
+
+  if (candidate.origin === request.nextUrl.origin) return true;
+
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configuredSiteUrl) {
+    try {
+      if (candidate.origin === new URL(configuredSiteUrl).origin) return true;
+    } catch {
+      // Invalid deployment configuration must not broaden the allowlist.
+    }
+  }
+
+  if (process.env.NODE_ENV === "production") return false;
+  const localHosts = new Set(["localhost", "127.0.0.1", "[::1]"]);
+  return candidate.protocol === request.nextUrl.protocol
+    && localHosts.has(candidate.hostname)
+    && localHosts.has(request.nextUrl.hostname);
 }
 
 export function acceptsJsonBody(request: NextRequest): boolean {

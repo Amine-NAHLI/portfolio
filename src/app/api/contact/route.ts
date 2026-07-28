@@ -1,8 +1,10 @@
 import { createHmac } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
+import { sendContactNotification } from "@/features/contact/resend";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
 import { validateContactMessage } from "@/features/contact/validation";
+import { getMissingContactNotificationConfiguration, getMissingContactStorageConfiguration } from "@/features/contact/config";
 
 export const runtime = "nodejs";
 
@@ -33,8 +35,12 @@ export async function POST(request: NextRequest) {
   const body = await readJsonObject(request);
   if (!body) return respond("invalidForm", 400);
   const responseLocale = body.locale === "en" ? "en" : "fr";
-  const secret = process.env.CONTACT_FINGERPRINT_SECRET;
-  if (!secret || secret.length < 32) return respond("unavailable", 503, responseLocale);
+  const missingStorageConfiguration = getMissingContactStorageConfiguration(process.env);
+  if (missingStorageConfiguration.length) {
+    console.error("Contact form unavailable: missing server configuration", { missing: missingStorageConfiguration });
+    return respond("unavailable", 503, responseLocale);
+  }
+  const secret = process.env.CONTACT_FINGERPRINT_SECRET!;
   if (typeof body.website === "string" && body.website) return respond("received", 201, responseLocale);
 
   const startedAt = typeof body.startedAt === "number" ? body.startedAt : 0;
@@ -55,9 +61,16 @@ export async function POST(request: NextRequest) {
     supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("fingerprint_hash", fingerprint).gte("created_at", fifteenMinutesAgo),
     supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("fingerprint_hash", fingerprint).gte("created_at", oneDayAgo),
   ]);
+  if (recentResult.error || dailyResult.error) {
+    console.error("Contact rate-limit lookup failed", {
+      recent: recentResult.error?.message,
+      daily: dailyResult.error?.message,
+    });
+    return respond("unavailable", 503, responseLocale);
+  }
   if ((recentResult.count ?? 0) >= 3 || (dailyResult.count ?? 0) >= 10) return respond("limited", 429, responseLocale);
 
-  const { error } = await supabase.from("contact_messages").insert({
+  const { data: savedMessage, error } = await supabase.from("contact_messages").insert({
     sender_name: name,
     sender_email: email,
     subject,
@@ -66,7 +79,38 @@ export async function POST(request: NextRequest) {
     status: "new",
     fingerprint_hash: fingerprint,
     user_agent_summary: null,
-  });
+  }).select("id, created_at").single();
   if (error) return respond("storageError", 500, responseLocale);
+  const missingNotificationConfiguration = getMissingContactNotificationConfiguration(process.env);
+  if (missingNotificationConfiguration.length) {
+    console.error("Contact notification email unavailable: missing server configuration", { missing: missingNotificationConfiguration, messageId: savedMessage?.id });
+    const notificationMessage = locale === "fr"
+      ? "Votre message est enregistré, mais l’e-mail de notification n’a pas pu être envoyé."
+      : "Your message has been saved, but the notification email could not be sent.";
+    return NextResponse.json({ message: notificationMessage, notification: "not_sent" }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
+  }
+  try {
+    await sendContactNotification({
+      id: savedMessage?.id ?? "unknown",
+      createdAt: savedMessage?.created_at ?? new Date().toISOString(),
+      name,
+      email,
+      subject,
+      message,
+      locale,
+    });
+  } catch (notificationError) {
+    console.error("Contact notification email failed", {
+      messageId: savedMessage?.id,
+      error: notificationError instanceof Error ? notificationError.message : String(notificationError),
+    });
+    const notificationMessage = locale === "fr"
+      ? "Votre message est enregistré, mais l’e-mail de notification n’a pas pu être envoyé."
+      : "Your message has been saved, but the email notification could not be sent."
+    return NextResponse.json(
+      { message: notificationMessage, notification: "not_sent" },
+      { status: 201, headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
   return respond("saved", 201, locale);
 }

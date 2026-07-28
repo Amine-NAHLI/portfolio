@@ -35,7 +35,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
       <Container className="py-12 sm:py-16 lg:py-20">
         <div className="grid gap-5 md:grid-cols-3">
           {links.map(({ label, value, href, icon: Icon, external }) => (
-            <a key={href} href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} data-analytics-event={href === siteConfig.links.github ? "github_click" : undefined} className="surface-card group flex min-h-48 flex-col p-6 transition-[border-color,transform] hover:-translate-y-0.5 hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+            <a key={href} href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} data-analytics-event={href === siteConfig.links.github ? "github_click" : undefined} className="technical-frame group flex min-h-48 flex-col p-6 transition-[border-color,transform] hover:-translate-y-0.5 hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
               <Icon aria-hidden="true" className="size-6 text-accent" />
               <span className="mt-auto pt-8 text-sm font-semibold text-text-primary">{label}</span>
               <span className="mt-1 flex items-center gap-1 break-all text-sm text-text-muted">{value}{external ? <ArrowUpRight aria-hidden="true" className="size-3.5 shrink-0" /> : null}</span>

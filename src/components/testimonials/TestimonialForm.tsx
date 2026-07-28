@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { MessageSquarePlus, X, Send, CheckCircle2 } from "lucide-react";
 import { submitTestimonial } from "@/app/[locale]/testimonials/actions";
 import type { Locale } from "@/i18n/config";
-import { cn } from "@/lib/utils";
 
 export default function TestimonialForm({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(false);

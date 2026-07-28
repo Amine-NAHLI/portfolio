@@ -16,7 +16,7 @@ const navigation = [
   { href: "/admin/messages", label: "Messages", icon: Inbox },
 ] as const;
 
-export function AdminSidebar({ email }: { email: string | null }) {
+export function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 

@@ -1,8 +1,7 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { ExternalLink, LogOut, LayoutDashboard, FolderKanban, Milestone, Wrench, Award, MessageSquare, Inbox, Settings, Bell, Search, User, ChevronRight, Menu } from "lucide-react";
-import { signOutAdmin } from "@/app/admin/(protected)/actions";
+import { Bell, Search, User, ChevronRight } from "lucide-react";
 import { AdminSidebar } from "./AdminSidebar";
+import { AdminAutoLogout } from "./AdminAutoLogout";
 
 export type AdminShellProps = { children: ReactNode; email: string | null };
 
@@ -10,7 +9,8 @@ export function AdminShell({ children, email }: AdminShellProps) {
   return (
     <div className="bg-bg-page font-body text-text-primary min-h-screen flex">
       {/* Sidebar - Client Component for active path tracking & mobile toggle */}
-      <AdminSidebar email={email} />
+      <AdminSidebar />
+      <AdminAutoLogout />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen lg:pl-72 w-full">

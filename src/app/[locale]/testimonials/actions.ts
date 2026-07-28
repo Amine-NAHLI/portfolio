@@ -3,7 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Locale } from "@/i18n/config";
 
-export async function submitTestimonial(prevState: any, formData: FormData) {
+export async function submitTestimonial(prevState: unknown, formData: FormData) {
   const firstName = formData.get("firstName") as string;
   const lastName = formData.get("lastName") as string;
   const role = formData.get("role") as string;

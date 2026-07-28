@@ -47,15 +47,15 @@ export default async function TestimonialsPage({ params }: TestimonialsPageProps
                 >
                   <Quote className="size-8 text-accent/40 mb-4" />
                   <blockquote className="flex-1 text-base leading-relaxed text-text-secondary italic">
-                    "{testimonial.message}"
+                    &quot;{testimonial.message}&quot;
                   </blockquote>
                   <div className="mt-6 border-t border-border pt-4">
                     <p className="font-display font-semibold text-text-primary">
                       {testimonial.name}
                     </p>
-                    {(testimonial.role || testimonial.organization || testimonial.company) && (
+                    {(testimonial.role || testimonial.organization) && (
                       <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-text-muted">
-                        {[testimonial.role, testimonial.organization || testimonial.company].filter(Boolean).join(" — ")}
+                        {[testimonial.role, testimonial.organization].filter(Boolean).join(" — ")}
                       </p>
                     )}
                   </div>

@@ -73,7 +73,7 @@ export default async function HomePage({ params }: HomePageProps) {
             <div className="flex flex-col justify-center lg:col-span-7">
               <div className="flex items-center gap-4 text-sm font-semibold tracking-[0.15em] text-accent uppercase">
                 <span className="h-px w-8 bg-accent" />
-                L'ingénieur
+                L&apos;ingénieur
               </div>
               
               <h1 className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]">

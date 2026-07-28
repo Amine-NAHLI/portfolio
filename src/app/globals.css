@@ -25,66 +25,68 @@
 
 @layer base {
   :root {
-    --bg-page: #121416;
-    --surface-subtle: #1a1c1e;
-    --surface: #1e2022;
-    --surface-raised: #282a2c;
-    --surface-deep: #0c0e10;
+    --bg-page: #040d1a;
+    --bg-gradient: radial-gradient(ellipse at top, #0a254d 0%, #040d1a 80%);
+    --surface-subtle: #081628;
+    --surface: #0a1a30;
+    --surface-raised: #0f2340;
+    --surface-deep: #020810;
     --border: rgb(255 255 255 / 8%);
-    --border-strong: #3b494c;
-    --text-primary: #e2e2e5;
-    --text-secondary: #bac9cc;
-    --text-muted: #849396;
-    --text-on-accent: #00363d;
-    --accent: #00e5ff;
-    --accent-hover: #9cf0ff;
-    --accent-soft: rgb(0 229 255 / 12%);
-    --amber: #ffd799;
-    --success: #83e3b8;
-    --warning: #ffd799;
-    --danger: #ffb4ab;
-    --info: #c3f5ff;
+    --border-strong: #1e3a5f;
+    --text-primary: #f0f6fc;
+    --text-secondary: #a3b8cc;
+    --text-muted: #6b89a8;
+    --text-on-accent: #ffffff;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-soft: rgb(59 130 246 / 15%);
+    --amber: #f59e0b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
     --radius-sm: 0.125rem;
     --radius-md: 0.25rem;
     --radius-lg: 0.375rem;
     --radius-xl: 0.5rem;
     --pointer-x: 50vw;
     --pointer-y: 20vh;
-    --ambient-cyan: rgb(0 229 255 / 13%);
-    --ambient-amber: rgb(254 179 0 / 7%);
-    --shadow-soft: 0 1.5rem 4rem rgb(0 0 0 / 18%);
+    --ambient-cyan: rgb(59 130 246 / 15%);
+    --ambient-amber: rgb(245 158 11 / 7%);
+    --shadow-soft: 0 1.5rem 4rem rgb(0 0 0 / 25%);
     color-scheme: dark;
   }
 
   :root[data-theme="light"] {
-    --bg-page: #f3f0ea;
-    --surface-subtle: #ebe7df;
-    --surface: #fbfaf7;
-    --surface-raised: #f1ede5;
-    --surface-deep: #e6e0d5;
-    --border: #d8d1c5;
-    --border-strong: #a79f91;
-    --text-primary: #24231f;
-    --text-secondary: #56544d;
-    --text-muted: #77736a;
+    --bg-page: #eef5f9;
+    --bg-gradient: radial-gradient(circle at top right, #f2fcff 0%, #daedf5 60%, #cce5f0 100%);
+    --surface-subtle: #f4f9fb;
+    --surface: #ffffff;
+    --surface-raised: #ffffff;
+    --surface-deep: #e2eff5;
+    --border: #c9e0ea;
+    --border-strong: #96bbcc;
+    --text-primary: #112233;
+    --text-secondary: #334e68;
+    --text-muted: #627d98;
     --text-on-accent: #ffffff;
-    --accent: #197983;
-    --accent-hover: #126772;
-    --accent-soft: #cfe7e5;
-    --amber: #926319;
-    --success: #087f5b;
-    --warning: #8a5a00;
-    --danger: #b3261e;
-    --info: #006a74;
-    --ambient-cyan: rgb(25 121 131 / 10%);
-    --ambient-amber: rgb(146 99 25 / 6%);
-    --shadow-soft: 0 1.5rem 4rem rgb(68 57 39 / 8%);
+    --accent: #0284c7;
+    --accent-hover: #0369a1;
+    --accent-soft: rgb(2 132 199 / 10%);
+    --amber: #d97706;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --info: #0284c7;
+    --ambient-cyan: rgb(2 132 199 / 10%);
+    --ambient-amber: rgb(217 119 6 / 6%);
+    --shadow-soft: 0 1.5rem 4rem rgb(17 34 51 / 6%);
     color-scheme: light;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
   html { min-width: 20rem; overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { min-height: 100vh; overflow-x: clip; background: var(--bg-page); color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
+  body { min-height: 100vh; overflow-x: clip; background-color: var(--bg-page); background-image: var(--bg-gradient); background-attachment: fixed; background-size: cover; color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
   h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.025em; }
   a, button, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
   button, [role="button"] { cursor: pointer; }

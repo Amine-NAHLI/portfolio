@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Activity, Cpu, Terminal, Search, Edit2, Eye, Trash2, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/admin";
 
@@ -167,7 +166,7 @@ export default async function AdminDashboardPage() {
               <span className="font-mono text-[10px] text-text-secondary whitespace-nowrap mt-1">14:15:10</span>
               <div className="flex flex-col">
                 <span className="font-mono text-[10px] font-bold text-accent uppercase tracking-wider">Project Synced</span>
-                <span className="font-body text-[13px] text-text-secondary leading-snug">'Quantum-Redesign-24' deployed to production edge nodes.</span>
+                <span className="font-body text-[13px] text-text-secondary leading-snug">&apos;Quantum-Redesign-24&apos; deployed to production edge nodes.</span>
               </div>
             </div>
             

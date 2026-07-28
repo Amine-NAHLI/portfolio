@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowUpRight, Inbox } from "lucide-react";
+import { Inbox } from "lucide-react";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import type { Locale } from "@/i18n/config";
 
@@ -24,7 +23,6 @@ const emptyCopy: Record<Locale, Record<PortfolioCollection, { title: string; des
 
 export default function PortfolioEmptyState({ collection, locale, className }: { collection: PortfolioCollection; locale: Locale; className?: string }) {
   const copy = emptyCopy[locale][collection];
-  const target = collection === "testimonials" ? "/admin/testimonials" : `/admin/${collection}`;
 
   return (
     <TechnicalFrame as="section" index="00" label="Content queue" className={`p-7 text-center sm:p-10 ${className ?? ""}`}>

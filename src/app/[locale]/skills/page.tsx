@@ -11,6 +11,7 @@ import { publicCopy } from "@/content/copy";
 import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
+import SkillIcon from "@/components/ui/SkillIcon";
 
 type SkillsPageProps = { params: Promise<{ locale: string }> };
 
@@ -37,7 +38,14 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
               <h2 className="text-2xl font-semibold text-text-primary">{group.title}</h2>
               {group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}
               <ul className="mt-6 flex flex-wrap gap-2">
-                {group.skills.map((skill) => <li key={skill.name}><Badge title={skill.level}>{skill.name}</Badge></li>)}
+                {group.skills.map((skill) => (
+                  <li key={skill.name}>
+                    <Badge title={skill.level} className="flex items-center gap-1.5 px-3 py-1.5">
+                      <SkillIcon name={skill.name} className="text-[16px]" />
+                      <span>{skill.name}</span>
+                    </Badge>
+                  </li>
+                ))}
               </ul>
               {Array.from(new Set(group.skills.flatMap((skill) => skill.evidence))).length ? <div className="mt-8 border-t border-border pt-5">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-text-muted">{copy.evidence}</h3>

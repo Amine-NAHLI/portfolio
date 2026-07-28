@@ -361,8 +361,71 @@ async function updateRecord(context: AdminContext, section: Section, id: string,
   if (section === "testimonials") {
     const status = input.status === "pending" || input.status === "approved" || input.status === "rejected" ? input.status : null;
     if (!status) throw new Error("Statut d’avis invalide.");
-    const { error } = await db.from("testimonials").update({ status, consent_to_publish: status === "approved", moderated_by: context.userId, moderated_at: new Date().toISOString() }).eq("id", id);
-    if (error) throw error;
+    
+    const { data: testimonial, error: fetchError } = await db.from("testimonials").select("*").eq("id", id).maybeSingle();
+    if (fetchError || !testimonial) throw fetchError ?? new Error("Avis introuvable.");
+
+    if (status === "approved" && testimonial.status !== "approved") {
+      const apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey) throw new Error("Clé API Groq manquante.");
+
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          temperature: 0,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: "You are a bilingual language classifier and translator. Analyze the following testimonial message. First, detect if it's in French ('fr') or English ('en'). Second, translate the message to the OTHER language. Return ONLY a valid JSON object strictly matching this format: {\"detected_lang\":\"fr\",\"translated_lang\":\"en\",\"translated_message\":\"...\"}. Do not wrap it in markdown." },
+            { role: "user", content: testimonial.message },
+          ],
+        }),
+        signal: AbortSignal.timeout(20_000),
+      });
+
+      if (!response.ok) throw new Error("Erreur de l'API de traduction.");
+      const payload = await response.json();
+      const content = payload.choices?.[0]?.message?.content;
+      if (!content) throw new Error("Réponse de traduction invalide.");
+      
+      const parsed = JSON.parse(content) as { detected_lang: string; translated_lang: string; translated_message: string };
+      
+      const { error: updateError } = await db.from("testimonials").update({ 
+        status, 
+        consent_to_publish: true, 
+        moderated_by: context.userId, 
+        moderated_at: new Date().toISOString(),
+        locale: parsed.detected_lang === "en" ? "en" : "fr"
+      }).eq("id", id);
+      if (updateError) throw updateError;
+
+      const { error: insertError } = await db.from("testimonials").insert({
+        first_name: testimonial.first_name,
+        last_name: testimonial.last_name,
+        job_title: testimonial.job_title,
+        organization: testimonial.organization,
+        message: parsed.translated_message,
+        rating: testimonial.rating,
+        locale: parsed.translated_lang === "fr" ? "fr" : "en",
+        status: "approved",
+        consent_to_publish: true,
+        fingerprint_hash: testimonial.fingerprint_hash,
+        moderated_by: context.userId,
+        moderated_at: new Date().toISOString(),
+        created_at: testimonial.created_at
+      });
+      if (insertError) throw insertError;
+    } else {
+      const { error } = await db.from("testimonials").update({ 
+        status, 
+        consent_to_publish: status === "approved", 
+        moderated_by: context.userId, 
+        moderated_at: new Date().toISOString() 
+      }).eq("id", id);
+      if (error) throw error;
+    }
+
     await audit(context, "update", "testimonials", id, ["status"]);
     return id;
   }

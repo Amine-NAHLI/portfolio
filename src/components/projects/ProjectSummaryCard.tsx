@@ -5,6 +5,7 @@ import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { projectCategoryLabels, publicCopy } from "@/content/copy";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
+import SkillIcon from "@/components/ui/SkillIcon";
 
 type ProjectSummaryCardProps = {
   project: PortfolioProject;
@@ -26,9 +27,12 @@ export default function ProjectSummaryCard({ project, locale, cta, index }: Proj
         <p className="mt-2 text-sm font-medium text-accent">{project.subtitle[locale]}</p>
         <p className="mt-4 text-sm leading-6 text-text-secondary">{project.summary[locale]}</p>
       </div>
-      <ul className="mt-6 flex flex-wrap gap-2" aria-label={publicCopy[locale].projects.technologies}>
+      <ul className="mt-6 flex flex-wrap gap-3" aria-label={publicCopy[locale].projects.technologies}>
         {project.technologies.slice(0, 4).map((technology) => (
-          <li key={technology} className="font-mono text-xs text-text-muted">{technology}</li>
+          <li key={technology} className="flex items-center gap-1.5 font-mono text-xs text-text-muted">
+            <SkillIcon name={technology} className="text-[14px]" />
+            <span>{technology}</span>
+          </li>
         ))}
       </ul>
       <Link

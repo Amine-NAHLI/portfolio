@@ -11,6 +11,7 @@ import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { getSiteUrl } from "@/config/site";
 import { notFound } from "next/navigation";
+import SkillIcon from "@/components/ui/SkillIcon";
 
 type ProjectPageProps = { params: Promise<{ locale: string; slug: string }> };
 
@@ -108,7 +109,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <TechnicalFrame as="div" index="//" label="Project system" className="p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-text-muted">{copy.technologies}</h2>
               <ul className="mt-5 flex flex-wrap gap-2">
-                {project.technologies.map((technology) => <li key={technology}><Badge>{technology}</Badge></li>)}
+                {project.technologies.map((technology) => (
+                  <li key={technology}>
+                    <Badge className="flex items-center gap-1.5 px-3 py-1.5">
+                      <SkillIcon name={technology} className="text-[16px]" />
+                      <span>{technology}</span>
+                    </Badge>
+                  </li>
+                ))}
               </ul>
               {project.githubUrl || project.demoUrl ? (
                 <div className="mt-6 grid gap-2 border-t border-border pt-5">

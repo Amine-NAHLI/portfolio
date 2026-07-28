@@ -143,7 +143,7 @@ export function AdminWorkspace({ section }: { section: AdminWorkspaceSection }) 
         {meta.create ? <button className="button-primary shrink-0" type="button" onClick={() => setEditor("new")}><Plus aria-hidden="true" className="size-4" />{meta.create}</button> : null}
       </header>
       {error ? <p className="mt-6 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger" role="alert">{error}</p> : null}
-      {loading ? <p className="mt-8 text-sm text-text-muted">Chargement…</p> : <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />}
+      {loading ? <p className="mt-8 text-sm text-text-muted">Chargement…</p> : section === "testimonials" ? <TestimonialsWorkspace records={records} onView={view} onDelete={remove} onModerate={moderate} /> : <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />}
       {editor && section !== "testimonials" && section !== "messages" ? <WorkspaceEditor section={section} record={editor === "new" ? null : editor} categories={categories} onClose={() => setEditor(null)} onSaved={async () => { setEditor(null); await load(); }} /> : null}
       {detail ? <DetailDialog section={section} record={detail} onClose={() => setDetail(null)} /> : null}
     </div>
@@ -270,4 +270,38 @@ function formatDate(value: unknown) {
   if (typeof value !== "string") return "—";
   const date = new Date(value);
   return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(date);
+}
+
+function TestimonialsWorkspace({ records, onView, onDelete, onModerate }: { records: RecordValue[]; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void }) {
+  const pending = records.filter((r) => r.status === "pending" || r.status === "new");
+  const approvedFr = records.filter((r) => r.status === "approved" && r.locale === "fr");
+  const approvedEn = records.filter((r) => r.status === "approved" && r.locale === "en");
+  const rejected = records.filter((r) => r.status === "rejected");
+
+  return (
+    <div className="mt-8 flex flex-col gap-12">
+      <section>
+        <h3 className="font-display text-xl font-semibold text-text-primary">En attente ({pending.length})</h3>
+        <p className="mt-1 text-sm text-text-secondary">Les nouveaux avis qui attendent votre modération. En les approuvant, ils seront automatiquement traduits.</p>
+        <WorkspaceTable section="testimonials" records={pending} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+      </section>
+      <section>
+        <h3 className="font-display text-xl font-semibold text-text-primary">Français ({approvedFr.length})</h3>
+        <p className="mt-1 text-sm text-text-secondary">Les avis approuvés publiés sur la version française du site.</p>
+        <WorkspaceTable section="testimonials" records={approvedFr} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+      </section>
+      <section>
+        <h3 className="font-display text-xl font-semibold text-text-primary">Anglais ({approvedEn.length})</h3>
+        <p className="mt-1 text-sm text-text-secondary">Les avis approuvés publiés sur la version anglaise du site.</p>
+        <WorkspaceTable section="testimonials" records={approvedEn} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+      </section>
+      {rejected.length > 0 && (
+        <section>
+          <h3 className="font-display text-xl font-semibold text-text-primary">Rejetés ({rejected.length})</h3>
+          <p className="mt-1 text-sm text-text-secondary">Les avis que vous avez refusés.</p>
+          <WorkspaceTable section="testimonials" records={rejected} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+        </section>
+      )}
+    </div>
+  );
 }

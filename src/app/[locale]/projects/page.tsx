@@ -26,9 +26,9 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
   return (
     <>
       <PageIntro eyebrow={copy.eyebrow} title={copy.title} description={copy.description} />
-      <Container className="py-12 sm:py-16 lg:py-20">
+      <Container className="py-12 sm:py-16 lg:py-20"><div className="editorial-shell py-1">
         <ProjectExplorer locale={locale} projects={projects} />
-      </Container>
+      </div></Container>
     </>
   );
 }

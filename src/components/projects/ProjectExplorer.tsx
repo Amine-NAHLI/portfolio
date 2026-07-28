@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import ProjectSummaryCard from "@/components/projects/ProjectSummaryCard";
+import PortfolioEmptyState from "@/components/ui/PortfolioEmptyState";
 import { projectCategoryLabels, publicCopy } from "@/content/copy";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject, ProjectCategory } from "@/types/content";
@@ -47,9 +48,13 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
     setSort("featured");
   }
 
+  if (projects.length === 0) {
+    return <PortfolioEmptyState collection="projects" locale={locale} />;
+  }
+
   return (
     <div>
-      <div className="grid gap-4 rounded-2xl border border-border bg-surface-subtle p-4 sm:grid-cols-2 lg:grid-cols-[1fr_15rem_14rem] lg:p-5">
+      <div className="grid gap-4 border border-border bg-surface-subtle/70 p-4 sm:grid-cols-2 lg:grid-cols-[1fr_15rem_14rem] lg:p-5">
         <label className="grid gap-2 text-sm font-medium text-text-primary">
           {copy.searchLabel}
           <span className="relative">
@@ -100,7 +105,7 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
           ))}
         </div>
       ) : (
-        <div className="mt-5 rounded-2xl border border-border bg-surface p-8 text-center" role="status">
+          <div className="mt-5 border border-border bg-surface p-8 text-center" role="status">
           <p className="text-text-secondary">{copy.empty}</p>
           <button type="button" className="button-secondary mt-5" onClick={resetFilters}>{copy.reset}</button>
         </div>
@@ -108,4 +113,3 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
     </div>
   );
 }
-

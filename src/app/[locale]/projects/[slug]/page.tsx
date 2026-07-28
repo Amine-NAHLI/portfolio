@@ -4,19 +4,15 @@ import { ArrowLeft, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import Container from "@/components/ui/Container";
 import JsonLd from "@/components/ui/JsonLd";
+import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { projectCategoryLabels, publicCopy } from "@/content/copy";
-import { projects as codeManagedProjects } from "@/content/portfolio";
 import { getPublishedProject } from "@/features/projects/data";
-import { isLocale, locales } from "@/i18n/config";
+import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { getSiteUrl } from "@/config/site";
 import { notFound } from "next/navigation";
 
 type ProjectPageProps = { params: Promise<{ locale: string; slug: string }> };
-
-export function generateStaticParams() {
-  return locales.flatMap((locale) => codeManagedProjects.map((project) => ({ locale, slug: project.slug })));
-}
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -47,7 +43,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         author: { "@type": "Person", name: "Amine Nahli" },
       }} />
       <article>
-        <header className="border-b border-border py-14 sm:py-20 lg:py-24">
+        <header className="relative overflow-hidden border-b border-border py-14 sm:py-20 lg:py-28">
           <Container>
             <Link href={`/${locale}/projects`} className="inline-flex min-h-11 items-center gap-2 rounded-lg text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
               <ArrowLeft aria-hidden="true" className="size-4" />{copy.back}
@@ -55,7 +51,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <div className="mt-8 flex flex-wrap gap-2">
               {project.categories.map((category) => <Badge key={category}>{projectCategoryLabels[category][locale]}</Badge>)}
             </div>
-            <h1 className="mt-6 text-balance text-5xl font-semibold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">{project.title}</h1>
+            <h1 className="mt-6 text-balance font-display text-5xl font-semibold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">{project.title}</h1>
             <p className="mt-4 text-xl font-medium text-accent sm:text-2xl">{project.subtitle[locale]}</p>
             <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-text-secondary">{project.summary[locale]}</p>
           </Container>
@@ -89,7 +85,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <h2 id="architecture-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.architecture}</h2>
               <ul className="mt-6 grid gap-3 sm:grid-cols-2">
                 {project.architecture.map((item) => (
-                  <li key={item[locale]} className="flex gap-3 rounded-xl border border-border bg-surface p-4 text-sm leading-6 text-text-secondary">
+                  <li key={item[locale]} className="flex gap-3 border border-border bg-surface p-4 text-sm leading-6 text-text-secondary">
                     <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />{item[locale]}
                   </li>
                 ))}
@@ -109,7 +105,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="surface-card p-6">
+            <TechnicalFrame as="div" index="//" label="Project system" className="p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-text-muted">{copy.technologies}</h2>
               <ul className="mt-5 flex flex-wrap gap-2">
                 {project.technologies.map((technology) => <li key={technology}><Badge>{technology}</Badge></li>)}
@@ -120,7 +116,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   {project.demoUrl ? <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="button-primary"><ArrowUpRight aria-hidden="true" className="size-4" />{copy.liveDemo}</a> : null}
                 </div>
               ) : null}
-            </div>
+            </TechnicalFrame>
             <p className="mt-5 text-xs leading-5 text-text-muted">{copy.sourceNote}</p>
           </aside>
         </Container>

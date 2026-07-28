@@ -1,7 +1,6 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { projects as codeManagedProjects } from "@/content/portfolio";
 import { hasSupabasePublicConfig } from "@/lib/env/supabase";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Locale } from "@/i18n/config";
@@ -11,25 +10,20 @@ import type { PortfolioProject, ProjectCategory } from "@/types/content";
 const allowedCategories = new Set<ProjectCategory>(["software", "cybersecurity", "artificial-intelligence", "embedded"]);
 
 async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[]> {
-  if (!hasSupabasePublicConfig()) return codeManagedProjects;
+  if (!hasSupabasePublicConfig()) return [];
   const supabase = createPublicClient();
 
   try {
-    const [settingsResult, projectsResult, translationsResult, relationsResult, skillsResult] = await Promise.all([
-      supabase.from("site_settings").select("value").eq("key", "projects.source").eq("is_public", true).maybeSingle(),
+    const [projectsResult, translationsResult, relationsResult, skillsResult] = await Promise.all([
       supabase.from("projects").select("*").order("sort_order", { ascending: true }).order("published_at", { ascending: false }),
       supabase.from("project_translations").select("*").eq("review_status", "validated"),
       supabase.from("project_skills").select("*"),
       supabase.from("skills").select("id, name"),
     ] as const);
 
-    if (settingsResult.error || projectsResult.error || translationsResult.error || relationsResult.error || skillsResult.error) {
-      return codeManagedProjects;
+    if (projectsResult.error || translationsResult.error || relationsResult.error || skillsResult.error) {
+      return [];
     }
-
-    // Code-managed content remains the safe default until an administrator
-    // explicitly confirms that the bilingual CMS collection is ready.
-    if (settingsResult.data?.value !== "cms") return codeManagedProjects;
 
     const translationsByProject = new Map<string, Map<Locale, (typeof translationsResult.data)[number]>>();
     for (const translation of translationsResult.data ?? []) {
@@ -46,7 +40,7 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
       skillIdsByProject.set(relation.project_id, current);
     }
 
-    return (projectsResult.data ?? []).flatMap((project) => {
+    const projects = (projectsResult.data ?? []).flatMap((project) => {
       const translations = translationsByProject.get(project.id);
       const french = translations?.get("fr");
       const english = translations?.get("en");
@@ -76,8 +70,9 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
         demoUrl: project.demo_url ?? undefined,
       } satisfies PortfolioProject];
     });
+    return projects;
   } catch {
-    return codeManagedProjects;
+    return [];
   }
 }
 

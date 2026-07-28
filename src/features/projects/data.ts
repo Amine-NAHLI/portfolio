@@ -14,14 +14,12 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
   const supabase = createPublicClient();
 
   try {
-    const [projectsResult, translationsResult, relationsResult, skillsResult] = await Promise.all([
+    const [projectsResult, translationsResult] = await Promise.all([
       supabase.from("projects").select("*").order("sort_order", { ascending: true }).order("published_at", { ascending: false }),
       supabase.from("project_translations").select("*").eq("review_status", "validated"),
-      supabase.from("project_skills").select("*"),
-      supabase.from("skills").select("id, name"),
     ] as const);
 
-    if (projectsResult.error || translationsResult.error || relationsResult.error || skillsResult.error) {
+    if (projectsResult.error || translationsResult.error) {
       return [];
     }
 
@@ -32,14 +30,6 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
       translationsByProject.set(translation.project_id, current);
     }
 
-    const skillById = new Map((skillsResult.data ?? []).map((skill) => [skill.id, skill.name]));
-    const skillIdsByProject = new Map<string, string[]>();
-    for (const relation of relationsResult.data ?? []) {
-      const current = skillIdsByProject.get(relation.project_id) ?? [];
-      current.push(relation.skill_id);
-      skillIdsByProject.set(relation.project_id, current);
-    }
-
     const projects = (projectsResult.data ?? []).flatMap((project) => {
       const translations = translationsByProject.get(project.id);
       const french = translations?.get("fr");
@@ -47,10 +37,7 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
       const selected = translations?.get(locale);
       if (!french || !english || !selected || !french.problem || !english.problem || !french.solution || !english.solution) return [];
 
-      const technologies = (skillIdsByProject.get(project.id) ?? []).flatMap((skillId) => {
-        const name = skillById.get(skillId);
-        return name ? [name] : [];
-      });
+      const technologies = Array.isArray(project.technologies) ? project.technologies.filter((t): t is string => typeof t === "string") : [];
       if (technologies.length === 0 && project.primary_language) technologies.push(project.primary_language);
 
       return [{

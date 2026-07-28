@@ -62,18 +62,21 @@ async function querySkills(locale: Locale): Promise<PublicSkillGroup[]> {
   if (!hasSupabasePublicConfig()) return [];
   try {
     const supabase = createPublicClient();
-    const [categoryResult, skillResult, relationResult, projectResult] = await Promise.all([
+    const [categoryResult, skillResult, projectResult] = await Promise.all([
       supabase.from("skill_categories").select("id, slug, name_fr, name_en, description_fr, description_en").order("sort_order"),
       supabase.from("skills").select("id, category_id, group_key, name, level").order("sort_order"),
-      supabase.from("project_skills").select("project_id, skill_id"),
-      supabase.from("projects").select("id, slug"),
+      supabase.from("projects").select("id, slug, technologies"),
     ]);
-    if (categoryResult.error || skillResult.error || relationResult.error || projectResult.error) return [];
-    const projectById = new Map((projectResult.data ?? []).map((project) => [project.id, project.slug]));
+    if (categoryResult.error || skillResult.error || projectResult.error) return [];
+    
     const evidenceBySkill = new Map<string, string[]>();
-    for (const relation of relationResult.data ?? []) {
-      const slug = projectById.get(relation.project_id);
-      if (slug) evidenceBySkill.set(relation.skill_id, [...(evidenceBySkill.get(relation.skill_id) ?? []), slug]);
+    for (const project of projectResult.data ?? []) {
+      const techs = Array.isArray(project.technologies) ? project.technologies.filter((t): t is string => typeof t === "string") : [];
+      for (const skill of skillResult.data ?? []) {
+        if (techs.some((t) => t.toLowerCase() === skill.name.toLowerCase())) {
+          evidenceBySkill.set(skill.id, [...(evidenceBySkill.get(skill.id) ?? []), project.slug]);
+        }
+      }
     }
     const skillsByCategory = new Map<string, PublicSkill[]>();
     for (const skill of skillResult.data ?? []) {

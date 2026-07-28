@@ -44,6 +44,7 @@ export type ProjectRow = Timestamped & {
   published_at: string | null;
   created_by: string | null;
   updated_by: string | null;
+  technologies: string[];
 };
 
 export type ProjectTranslationRow = Timestamped & {
@@ -225,7 +226,6 @@ export type AnalyticsDailyRow = {
 };
 
 type SiteSettingRow = { key: string; value: Json; is_public: boolean; description: string | null; updated_by: string | null; updated_at: string };
-type ProjectSkillRow = { project_id: string; skill_id: string; created_at: string };
 export type TestimonialRow = Timestamped & {
   id: string;
   name: string;
@@ -253,7 +253,6 @@ export type Database = {
       project_translations: TableDefinition<ProjectTranslationRow>;
       skill_categories: TableDefinition<SkillCategoryRow>;
       skills: TableDefinition<SkillRow>;
-      project_skills: TableDefinition<ProjectSkillRow>;
       certifications: TableDefinition<CertificationRow>;
       experiences: TableDefinition<ExperienceRow>;
       education: TableDefinition<EducationRow>;

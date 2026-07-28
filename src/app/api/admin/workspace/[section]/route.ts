@@ -75,19 +75,16 @@ function revalidate(section: Section) {
 
 async function getRecords(db: UntypedClient, section: Section) {
   if (section === "projects") {
-    const [{ data: projects, error }, { data: translations }, { data: relations }, { data: skills }] = await Promise.all([
-      db.from("projects").select("id, github_url, sort_order, created_at").order("sort_order").order("created_at", { ascending: false }),
+    const [{ data: projects, error }, { data: translations }] = await Promise.all([
+      db.from("projects").select("id, github_url, sort_order, created_at, technologies").order("sort_order").order("created_at", { ascending: false }),
       db.from("project_translations").select("project_id, locale, title, summary"),
-      db.from("project_skills").select("project_id, skill_id"),
-      db.from("skills").select("id, name"),
     ]);
     if (error) throw error;
-    const names = new Map((skills ?? []).map((item: { id: string; name: string }) => [item.id, item.name]));
-    return (projects ?? []).map((project: { id: string; github_url: string | null; sort_order: number; created_at: string }) => {
+    return (projects ?? []).map((project: { id: string; github_url: string | null; sort_order: number; created_at: string; technologies: string[] }) => {
       const values = (translations ?? []).filter((item: { project_id: string }) => item.project_id === project.id);
       const fr = values.find((item: { locale: string }) => item.locale === "fr");
       const en = values.find((item: { locale: string }) => item.locale === "en");
-      return { ...project, title: fr?.title ?? en?.title ?? "Sans titre", description_fr: fr?.summary ?? "", description_en: en?.summary ?? "", technologies: (relations ?? []).filter((item: { project_id: string }) => item.project_id === project.id).map((item: { skill_id: string }) => names.get(item.skill_id)).filter(Boolean) };
+      return { ...project, title: fr?.title ?? en?.title ?? "Sans titre", description_fr: fr?.summary ?? "", description_en: en?.summary ?? "", technologies: project.technologies ?? [] };
     });
   }
 
@@ -174,18 +171,10 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   if (sortOrder === null) throw new ValidationError("L’ordre d’affichage doit être un nombre valide.");
   if (!Array.isArray(input.technologies)) throw new ValidationError("Les technologies sont invalides.");
   const technologies = [...new Set(input.technologies.map((value) => text(value, 1, 120)).filter((value): value is string => Boolean(value)))].slice(0, 30);
-  const technologyMatches = await Promise.all(technologies.map(async (technology) => {
-    const { data, error } = await db.from("skills").select("id").ilike("name", technology).limit(1).maybeSingle();
-    if (error) throw error;
-    return { technology, id: data?.id as string | undefined };
-  }));
-  const unknownTechnologies = technologyMatches.filter((item) => !item.id).map((item) => item.technology);
-  if (unknownTechnologies.length) throw new ValidationError(`Ajoutez d’abord ces compétences : ${unknownTechnologies.join(", ")}.`);
-  const technologyIds = technologyMatches.flatMap((item) => item.id ? [item.id] : []);
   const slug = await uniqueSlug(db, "projects", title, id ?? undefined);
   // A project can only become public after both translations have been stored.
   // Create and update it as a draft first, then publish after the upsert below.
-  const projectPayload = { slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured: false, categories: [], updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
+  const projectPayload = { slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured: false, categories: [], technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
   const result = id
     ? await db.from("projects").update(projectPayload).eq("id", id).select("id").single()
     : await db.from("projects").insert(projectPayload).select("id").single();
@@ -220,12 +209,6 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   if (isComplete) {
     const { error: publishError } = await db.from("projects").update({ publication_status: "published", published_at: new Date().toISOString() }).eq("id", projectId);
     if (publishError) throw publishError;
-  }
-  const { error: relationDeleteError } = await db.from("project_skills").delete().eq("project_id", projectId);
-  if (relationDeleteError) throw relationDeleteError;
-  if (technologyIds.length) {
-    const { error } = await db.from("project_skills").insert(technologyIds.map((skillId) => ({ project_id: projectId, skill_id: skillId })));
-    if (error) throw error;
   }
   await audit(context, id ? "update" : "create", "projects", projectId, ["title", "description_fr", "description_en", "github_url", "technologies", "sort_order"]);
   return projectId;

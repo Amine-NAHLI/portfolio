@@ -10,6 +10,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
+import { getHomeCopy } from "@/content/dynamic-copy";
 import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials, getPublicJourney } from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
 import { isLocale, Locale } from "@/i18n/config";
@@ -19,18 +20,21 @@ import TestimonialForm from "@/components/testimonials/TestimonialForm";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const copy = publicCopy[locale].home;
+  const copy = await getHomeCopy(locale);
   return createPageMetadata({ locale, title: copy.eyebrow, description: copy.introduction });
 }
 
 export default async function HomePage({ params }: HomePageProps) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = isLocale(localeParam) ? localeParam : "fr";
   if (!isLocale(locale)) notFound();
 
-  const copy = publicCopy[locale].home;
+  const copy = await getHomeCopy(locale);
   const [projects, skillGroups, certifications, testimonials, journey] = await Promise.all([
     getPublishedProjects(locale),
     getPublicSkillGroups(locale),

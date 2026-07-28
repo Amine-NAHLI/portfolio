@@ -16,6 +16,7 @@ import { getPublishedProjects } from "@/features/projects/data";
 import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
+import TestimonialForm from "@/components/testimonials/TestimonialForm";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 
@@ -188,16 +189,49 @@ export default async function HomePage({ params }: HomePageProps) {
         </Container>
       </section>
 
-      <section className="section-lift py-20 sm:py-24">
+      <section id="certifications" className="section-lift py-20 sm:py-24">
         <Container>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div id="certifications">
-              {displayCertifications.length ? <TechnicalFrame index="07" label={copy.certificationsEyebrow} className="h-full p-7 sm:p-9 flex flex-col"><h2 className="mt-4 text-3xl font-semibold text-text-primary">{copy.certificationsTitle}</h2><ul className="mt-6 divide-y divide-border flex-1">{displayCertifications.map((certification) => <li key={certification.id} className="py-3 first:pt-0 last:pb-0"><p className="font-medium text-text-primary">{certification.name}</p>{certification.issuer ? <p className="mt-1 text-sm text-text-muted">{certification.issuer}</p> : null}</li>)}</ul><Link className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-sm font-mono text-xs font-semibold uppercase tracking-[.07em] text-accent transition-colors hover:text-accent-hover focus-visible:outline-none" href={`/${locale}/certifications`}>{copy.certificationsCta}<ArrowUpRight aria-hidden="true" className="size-4" /></Link></TechnicalFrame> : <PortfolioEmptyState collection="certifications" locale={locale} />}
-            </div>
-            <div id="testimonials">
-              {displayTestimonials.length ? <TechnicalFrame index="08" label={locale === "fr" ? "Recommandations" : "Recommendations"} className="h-full p-7 sm:p-9 flex flex-col"><h2 className="mt-4 text-3xl font-semibold text-text-primary">{locale === "fr" ? "Retours professionnels" : "Professional feedback"}</h2><div className="mt-6 flex-1 space-y-8">{displayTestimonials.map((t) => <div key={t.id}><blockquote className="border-l-2 border-accent pl-5 text-sm leading-relaxed text-text-secondary">“{t.message.length > 150 ? t.message.substring(0, 150) + '...' : t.message}”</blockquote><p className="mt-3 text-sm font-semibold text-text-primary">{t.name}{t.role ? ` — ${t.role}` : ""}</p></div>)}</div><Link className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-sm font-mono text-xs font-semibold uppercase tracking-[.07em] text-accent transition-colors hover:text-accent-hover focus-visible:outline-none" href={`/${locale}/testimonials`}>{locale === "fr" ? "Tous les avis" : "All feedback"}<ArrowUpRight aria-hidden="true" className="size-4" /></Link></TechnicalFrame> : <PortfolioEmptyState collection="testimonials" locale={locale} />}
+          <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
+            <SectionHeading eyebrow={copy.certificationsEyebrow} title={copy.certificationsTitle} description={""} />
+            <ButtonLink href={`/${locale}/certifications`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.certificationsCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
+          </div>
+          {displayCertifications.length ? <div className="grid gap-5 md:grid-cols-3">
+            {displayCertifications.map((certification) => (
+              <TechnicalFrame key={certification.id} index="07" label="Certification" className="p-6">
+                <p className="font-medium text-text-primary text-lg">{certification.name}</p>
+                {certification.issuer ? <p className="mt-2 text-sm text-text-muted">{certification.issuer}</p> : null}
+              </TechnicalFrame>
+            ))}
+          </div> : <PortfolioEmptyState collection="certifications" locale={locale} />}
+        </Container>
+      </section>
+
+      <section id="testimonials" className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+        <Container>
+          <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
+            <SectionHeading eyebrow={locale === "fr" ? "Recommandations" : "Recommendations"} title={locale === "fr" ? "Retours professionnels" : "Professional feedback"} description={""} />
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <TestimonialForm locale={locale as any} inline />
+              <ButtonLink href={`/${locale}/testimonials`} variant="secondary" className="shrink-0 self-start md:self-auto">{locale === "fr" ? "Tous les avis" : "All feedback"}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
             </div>
           </div>
+          {displayTestimonials.length ? <div className="grid gap-6 md:grid-cols-3">
+            {displayTestimonials.map((t) => (
+              <TechnicalFrame key={t.id} index="08" label="Avis" className="p-6 flex flex-col justify-between">
+                <blockquote className="border-l-2 border-accent pl-5 text-sm leading-relaxed text-text-secondary mb-6">
+                  “{t.message.length > 150 ? t.message.substring(0, 150) + '...' : t.message}”
+                </blockquote>
+                <div>
+                  <p className="text-sm font-semibold text-text-primary">{t.name}</p>
+                  {(t.role || t.organization) && (
+                    <p className="mt-1 text-xs text-text-muted">
+                      {t.role}{t.role && t.organization ? ' — ' : ''}{t.organization}
+                    </p>
+                  )}
+                </div>
+              </TechnicalFrame>
+            ))}
+          </div> : <PortfolioEmptyState collection="testimonials" locale={locale} />}
         </Container>
       </section>
 

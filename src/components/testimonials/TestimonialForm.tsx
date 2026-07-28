@@ -5,7 +5,7 @@ import { MessageSquarePlus, X, Send, CheckCircle2 } from "lucide-react";
 import { submitTestimonial } from "@/app/[locale]/testimonials/actions";
 import type { Locale } from "@/i18n/config";
 
-export default function TestimonialForm({ locale }: { locale: Locale }) {
+export default function TestimonialForm({ locale, inline = false }: { locale: Locale; inline?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<{ success?: boolean; error?: string; message?: string } | null>(null);
@@ -29,16 +29,25 @@ export default function TestimonialForm({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* Floating Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-text-on-accent shadow-lg transition-transform hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-      >
-        <MessageSquarePlus className="size-5" />
-        <span className="hidden sm:inline">
-          {locale === "fr" ? "Laisser un avis" : "Leave a review"}
-        </span>
-      </button>
+      {inline ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="button-primary flex w-full sm:w-auto items-center justify-center gap-2"
+        >
+          <MessageSquarePlus className="size-4" />
+          {locale === "fr" ? "Rédiger un avis sur mon profil" : "Write a review about me"}
+        </button>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 left-6 z-40 flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-text-on-accent shadow-lg transition-transform hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <MessageSquarePlus className="size-5" />
+          <span className="hidden sm:inline">
+            {locale === "fr" ? "Laisser un avis" : "Leave a review"}
+          </span>
+        </button>
+      )}
 
       {/* Modal Dialog */}
       {isOpen && (

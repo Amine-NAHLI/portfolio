@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "npm run generate:cv",
+    "generate:cv": "node scripts/generate-cv-pdf.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -25,10 +27,10 @@
     "@supabase/supabase-js": "^2.105.3",
     "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
-    "mermaid": "11.16.0",
     "next": "15.5.20",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.18.0",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {

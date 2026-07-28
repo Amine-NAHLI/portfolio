@@ -1,0 +1,427 @@
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    a.nav-link { position: relative; }
+    a.nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 1px;
+      background-color: #006875;
+      transition: width 0.3s ease, box-shadow 0.3s ease;
+    }
+    a.nav-link:hover::after {
+      width: 100%;
+      box-shadow: 0 0 8px #006875;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary": "#00363d",
+            "on-secondary-fixed": "#001f29",
+            "surface-bright": "#fcfcfc",
+            "surface-dim": "#e2e8f0",
+            "on-primary-fixed": "#001f24",
+            "on-tertiary-container": "#525a64",
+            "tertiary-fixed-dim": "#bfc7d3",
+            "error-container": "#93000a",
+            "secondary-fixed": "#baeaff",
+            "tertiary-fixed": "#dbe3ef",
+            "on-surface-variant": "#40474a",
+            "on-error-container": "#ffdad6",
+            "primary": "#006875",
+            "inverse-primary": "#c3f5ff",
+            "outline-variant": "#c9d1dd",
+            "secondary-fixed-dim": "#7bd2f4",
+            "on-tertiary-fixed-variant": "#404751",
+            "on-tertiary-fixed": "#141c25",
+            "on-error": "#ffffff",
+            "surface-container-high": "#f0f4f8",
+            "surface-variant": "#f1f5f9",
+            "on-background": "#1a1c1e",
+            "inverse-surface": "#2f3133",
+            "surface-tint": "#006875",
+            "secondary": "#3f6371",
+            "surface-container-highest": "#e2e8f0",
+            "on-secondary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "tertiary": "#525f70",
+            "tertiary-container": "#d6e3f7",
+            "primary-container": "#c3f5ff",
+            "on-secondary-fixed-variant": "#004d62",
+            "on-primary-fixed-variant": "#004f58",
+            "surface": "#f5f7f8", /* Architectural Paper / Vellum base */
+            "inverse-on-surface": "#f0f1f3",
+            "primary-fixed-dim": "#006875",
+            "outline": "#70787d",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#9cf0ff",
+            "on-primary-container": "#001f24",
+            "secondary-container": "#d3e5ef",
+            "on-secondary-container": "#001e28",
+            "background": "#f5f7f8",
+            "surface-container": "#f0f4f5",
+            "on-surface": "#1c2026", /* Ink Charcoal */
+            "surface-container-low": "#f8fafb",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-mobile": "20px",
+            "container-max": "1280px",
+            "margin-desktop": "64px",
+            "gutter": "24px",
+            "unit": "4px"
+          },
+          "fontFamily": {
+            "label-md": ["JetBrains Mono"],
+            "headline-lg-mobile": ["Geist"],
+            "label-sm": ["JetBrains Mono"],
+            "body-lg": ["Inter"],
+            "headline-md": ["Geist"],
+            "headline-lg": ["Geist"],
+            "body-md": ["Inter"],
+            "display": ["Geist"]
+          },
+          "fontSize": {
+            "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "500" }],
+            "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+            "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "400" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+            "headline-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "display": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }]
+          }
+        },
+      },
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20">
+<div class="max-w-7xl mx-auto px-lg h-16 flex items-center justify-between">
+<div class="flex items-center gap-md">
+<img alt="Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLsCrlpmaVKCRHTusu4xGVxbJXoSFMH35QYT9MMYuZKjy2P5j_IPFtbi0nsd9X7FPKWoC78KLFbTBeh-WHN9t-cLMqCSmqY4aaOmgA5Gyr73T69En7EuC8998dBIGNJQqPV9954oHxHq8FbdOjfWeqbKE-PUxuvsiruTaBrhmuAgd-kjBCWnUPzrh9zDN_UyIpgC4F3ZOWUS8-_lt69hBQBnDVDrE2pEMqRrreWErd6SGIF5SymcRrxOUy_w"/>
+<span class="font-headline-md text-headline-md text-on-surface tracking-tight uppercase">Arch.Dev</span>
+</div>
+<nav class="hidden lg:flex items-center gap-lg">
+<a aria-current="page" class="nav-link font-label-sm transition-colors uppercase text-primary" data-path="home" href="#">Home</a>
+<a class="nav-link font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors uppercase" data-path="about" href="#">About</a>
+<a class="nav-link font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors uppercase" data-path="projects" href="#">Projects</a>
+<a class="nav-link font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors uppercase" data-path="experience" href="#">Experience</a>
+<a class="nav-link font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors uppercase" data-path="skills" href="#">Skills</a>
+<a class="nav-link font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors uppercase" data-path="certifications" href="#">Certifications</a>
+<a class="nav-link font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors uppercase" data-path="contact" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm">
+<button class="text-label-sm font-label-sm text-on-surface-variant hover:text-primary transition-colors">FR</button>
+<span class="text-outline-variant">|</span>
+<button class="text-label-sm font-label-sm text-on-surface hover:text-primary transition-colors">EN</button>
+</div>
+<button class="p-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">light_mode</span></button>
+<button class="hidden md:block px-lg py-sm bg-primary text-on-error font-label-sm text-label-sm uppercase tracking-widest rounded-none hover:bg-primary/90 transition-all active:scale-[0.98]">Get in Touch</button>
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-sm"><span class="material-symbols-outlined text-on-error text-[18px]">person</span></div>
+</div>
+</div>
+</header>
+<main class="pt-16 min-h-screen">
+<div class="flex flex-col w-full bg-surface text-on-surface">
+<!-- Hero Section -->
+<section class="relative h-[800px] flex flex-col justify-end overflow-hidden px-lg pb-xl -mt-16">
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
+<div class="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-12 gap-gutter">
+<div class="col-span-12 lg:col-span-8">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-[0.3em] mb-md block animate-fade-in">System Architecture // v.2024</span>
+<h1 class="font-display text-display text-on-surface leading-[0.9] mb-lg">
+              ENGINEERING <br/>
+<span class="text-primary">DIGITAL</span> STRUCTURES.
+            </h1>
+<div class="flex items-center gap-xl">
+<p class="font-body-lg text-body-lg max-w-md border-l-2 border-primary pl-lg py-sm text-on-surface-variant">
+                Crafting high-performance technical interfaces where architectural precision meets fluid user experience.
+              </p>
+<div class="hidden md:block h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 flex flex-col justify-end items-end gap-lg">
+<button class="group relative px-xl py-lg bg-on-surface text-surface overflow-hidden transition-all hover:bg-primary hover:text-on-error">
+<span class="relative z-10 font-label-sm text-label-sm uppercase tracking-widest flex items-center gap-sm">
+                Explore Portfolio <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</span>
+</button>
+<div class="flex gap-md">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Editorial Stats Strip -->
+<section class="w-full bg-surface-container-low border-y border-outline-variant/20 py-lg">
+<div class="max-w-7xl mx-auto px-lg flex flex-wrap justify-between items-center gap-lg">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase">Projects Delivered</span>
+<span class="font-display text-headline-lg text-on-surface" id="counter-projects">042</span>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20 hidden md:block"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase">System Uptime</span>
+<span class="font-display text-headline-lg text-on-surface">99.9%</span>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20 hidden md:block"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase">Core Technologies</span>
+<span class="font-display text-headline-lg text-on-surface">12+</span>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20 hidden md:block"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase">Global Latency</span>
+<span class="font-display text-headline-lg text-on-surface">24ms</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Case Studies -->
+<section class="max-w-7xl mx-auto px-lg py-xl w-full">
+<div class="flex items-end justify-between mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface uppercase mb-xs">Selected Works</h2>
+<p class="font-body-md text-body-md max-w-sm text-on-surface-variant">A curation of digital structures built with performance-first methodologies.</p>
+</div>
+<span class="font-label-sm text-label-sm text-primary hidden md:block">VIEW ALL (14)</span>
+</div>
+<div class="grid grid-cols-12 gap-lg h-auto lg:h-[800px]">
+<!-- Main Feature -->
+<div class="col-span-12 lg:col-span-8 group relative overflow-hidden bg-surface-container-low border border-outline-variant/30 rounded-none">
+<div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<img alt="Architecture" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIyucxuBKtN02INB2bmLrKP_Xtdb4QlWLNbkqw8z4f7_gIyZcpeHjsBc7QeghwHIlsyDHFkS2bH5tbkImxgsNdF4mKxPImDbi7FfTTKk0hZbsWXPGeFcKOmUPjx4ZyRUxmPpZuYFM_r-RCbQQzE3S6c0E_xpHkppAyMxIRzO71JYyqOpVTYkX18HYjLDrdMRxKh9bv0Svil50dkfht6kOzjHu_mbngdb18lm1_uIiGmd57bPI3B1YAw-vTeBxWP3cxjtaILEFIKNic"/>
+<div class="absolute bottom-0 left-0 p-xl z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<span class="px-sm py-1 bg-primary text-on-error font-label-sm text-[10px] uppercase tracking-widest mb-md inline-block">Case Study 01</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-sm bg-surface/90 backdrop-blur-sm p-sm inline-block">CYBER-MODULAR OS</h3>
+<p class="font-body-md text-on-surface-variant max-w-xs bg-surface/90 backdrop-blur-sm p-sm">A full-scale design system overhaul for cloud computing infrastructure.</p>
+</div>
+</div>
+<!-- Secondary Features -->
+<div class="col-span-12 lg:col-span-4 grid grid-rows-2 gap-lg">
+<div class="bg-surface-container-lowest border border-outline-variant/30 p-lg flex flex-col justify-between group cursor-pointer hover:border-primary transition-colors shadow-sm">
+<div>
+<div class="flex justify-between items-start mb-lg">
+<span class="material-symbols-outlined text-primary text-xl">database</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant/40">2023</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-sm">NEURAL MESH</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Visualizing distributed data processing in real-time environments.</p>
+</div>
+<div class="h-1 w-0 bg-primary group-hover:w-full transition-all duration-500"></div>
+</div>
+<div class="bg-on-surface p-lg flex flex-col justify-between group cursor-pointer shadow-sm">
+<div class="text-surface">
+<div class="flex justify-between items-start mb-lg">
+<span class="material-symbols-outlined text-primary-container text-xl">architecture</span>
+<span class="font-label-sm text-label-sm text-surface/40">2024</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-sm uppercase tracking-tight">System Core</h4>
+<p class="font-body-md text-surface/80 line-clamp-2">Developing the backbone for next-gen architectural visualization tools.</p>
+</div>
+<div class="flex justify-end">
+<span class="material-symbols-outlined text-surface group-hover:translate-x-2 transition-transform">arrow_outward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Marquee -->
+<div class="w-full bg-surface-container py-sm overflow-hidden whitespace-nowrap border-y border-outline-variant/10">
+<div class="flex animate-[marquee_30s_linear_infinite] gap-xl items-center">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> TypeScript 5.0
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Next.js 14
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Three.js / GLSL
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Rust / WASM
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Tailored UI Systems
+          </span>
+<!-- Duplicate for seamless loop -->
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> TypeScript 5.0
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Next.js 14
+          </span>
+</div>
+</div>
+<!-- Services / Approach -->
+<section class="max-w-7xl mx-auto px-lg py-xl w-full grid grid-cols-12 gap-xl items-start">
+<div class="col-span-12 lg:col-span-4 sticky top-24">
+<h2 class="font-headline-lg text-headline-lg text-on-surface uppercase mb-md">Our <br/>Philosophy.</h2>
+<div class="w-12 h-1 bg-primary mb-lg"></div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">We treat code as a physical material—governed by the laws of logic, structure, and aesthetic balance.</p>
+</div>
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-lg">
+<div class="p-xl bg-surface-container-lowest border border-outline-variant/30 flex gap-xl group hover:shadow-lg hover:border-primary/30 transition-all">
+<span class="font-display text-headline-lg text-outline-variant/30 group-hover:text-primary transition-colors">01</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface uppercase mb-sm">Structural Integrity</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Writing scalable, maintainable architectures that stand the test of evolving technology cycles.</p>
+</div>
+</div>
+<div class="p-xl bg-surface-container-lowest border border-outline-variant/30 flex gap-xl group hover:shadow-lg hover:border-primary/30 transition-all translate-x-0 md:translate-x-4">
+<span class="font-display text-headline-lg text-outline-variant/30 group-hover:text-primary transition-colors">02</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface uppercase mb-sm">Visual Precision</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Sub-pixel accuracy in design implementation, ensuring high-fidelity experiences on every screen.</p>
+</div>
+</div>
+<div class="p-xl bg-surface-container-lowest border border-outline-variant/30 flex gap-xl group hover:shadow-lg hover:border-primary/30 transition-all translate-x-0 md:translate-x-8">
+<span class="font-display text-headline-lg text-outline-variant/30 group-hover:text-primary transition-colors">03</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface uppercase mb-sm">High-Speed Logic</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Optimizing every byte for speed, ensuring that performance is a core feature, not an afterthought.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Global Studio -->
+<section class="w-full h-[500px] relative overflow-hidden bg-surface-container-high border-y border-outline-variant/20">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/p6.png')] opacity-10"></div>
+<div class="absolute inset-0 flex items-center px-lg">
+<div class="max-w-xl bg-surface/90 backdrop-blur-md p-xl border border-outline-variant/30 shadow-2xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface uppercase mb-md">Global Studio</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Operated from the architectural heart of Berlin, serving technical clients globally. Our nodes are distributed, our standards are centralized.</p>
+<div class="flex items-center gap-md">
+<span class="flex items-center gap-xs font-label-sm text-label-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> BERLIN, HQ
+              </span>
+<span class="text-outline-variant">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">UTC +1</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="max-w-7xl mx-auto px-lg py-xl w-full text-center">
+<div class="py-xl border-t border-outline-variant/20">
+<h2 class="font-display text-headline-lg text-on-surface uppercase mb-lg max-w-2xl mx-auto">Ready to build the next infrastructure?</h2>
+<div class="flex flex-col md:flex-row justify-center gap-md">
+<button class="px-xl py-lg bg-primary text-on-error font-label-sm text-label-sm uppercase tracking-widest hover:brightness-110 transition-all">Start Protocol</button>
+<button class="px-xl py-lg border border-on-surface text-on-surface font-label-sm text-label-sm uppercase tracking-widest hover:bg-on-surface hover:text-surface transition-all">Technical Audit</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="bg-surface-container-low border-t border-outline-variant/20 pt-xl pb-lg">
+<div class="max-w-7xl mx-auto px-lg grid grid-cols-1 md:grid-cols-4 gap-xl mb-xl">
+<div class="col-span-1">
+<div class="flex items-center gap-sm mb-md">
+<img alt="Logo" class="h-6 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLsCrlpmaVKCRHTusu4xGVxbJXoSFMH35QYT9MMYuZKjy2P5j_IPFtbi0nsd9X7FPKWoC78KLFbTBeh-WHN9t-cLMqCSmqY4aaOmgA5Gyr73T69En7EuC8998dBIGNJQqPV9954oHxHq8FbdOjfWeqbKE-PUxuvsiruTaBrhmuAgd-kjBCWnUPzrh9zDN_UyIpgC4F3ZOWUS8-_lt69hBQBnDVDrE2pEMqRrreWErd6SGIF5SymcRrxOUy_w"/>
+<span class="font-headline-md text-headline-md text-on-surface uppercase">Arch</span>
+</div>
+<p class="text-on-surface-variant text-body-md font-body-md max-w-xs">Crafting high-performance digital architectural experiences for the modern web.</p>
+</div>
+<div class="flex flex-col gap-sm">
+<h4 class="text-label-sm font-label-sm text-on-surface uppercase tracking-widest">Sitemap</h4>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Projects Portfolio</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Experience Journal</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Technical Stack</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Biography</a>
+</div>
+<div class="flex flex-col gap-sm">
+<h4 class="text-label-sm font-label-sm text-on-surface uppercase tracking-widest">Connect</h4>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">GitHub Repository</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">LinkedIn Profile</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Twitter Technical</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Email Protocol</a>
+</div>
+<div class="flex flex-col items-start md:items-end gap-md">
+<div class="flex items-center gap-sm bg-surface-container rounded-full px-md py-xs border border-outline-variant/20">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">System Status: Optimal</span>
+</div>
+<button class="mt-md group flex items-center gap-sm text-on-surface-variant hover:text-on-surface transition-colors" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Back to top</span>
+<span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform">north</span>
+</button>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-lg pt-lg border-t border-outline-variant/10 flex justify-between items-center">
+<p class="text-on-surface-variant text-label-sm font-label-sm">© 2024 Arch.Dev // ALL RIGHTS RESERVED.</p>
+<div class="flex gap-md">
+<span class="text-[10px] font-label-sm text-outline tracking-widest">EN-US</span>
+<span class="text-[10px] font-label-sm text-outline tracking-widest">UTC+1</span>
+</div>
+</div>
+</footer>
+<style>
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Stats Counter
+      const counter = document.getElementById('counter-projects');
+      let count = 0;
+      const target = 42;
+      const interval = setInterval(() => {
+        if (count < target) {
+          count++;
+          counter.innerText = count.toString().padStart(3, '0');
+        } else {
+          clearInterval(interval);
+        }
+      }, 50);
+
+      // Simple Parallax
+      window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const heroText = document.querySelector('.font-display');
+        if (heroText) {
+          heroText.style.transform = `translateY(${scrolled * 0.1}px)`;
+        }
+      });
+    });
+  </script>
+</body></html>

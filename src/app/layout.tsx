@@ -8,11 +8,16 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swa
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 const themeScript = `try { var theme = localStorage.getItem('portfolio-theme'); if (theme !== 'light' && theme !== 'dark') theme = 'dark'; document.documentElement.dataset.theme = theme; document.documentElement.style.colorScheme = theme; } catch (_) { document.documentElement.dataset.theme = 'dark'; }`;
 
+import { AdminAutoLogout } from "@/components/admin/AdminAutoLogout";
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr" data-theme="dark" suppressHydrationWarning className={`${spaceGrotesk.variable} ${geist.variable} ${jetbrainsMono.variable}`}>
       <head><Script id="theme-preference" strategy="beforeInteractive">{themeScript}</Script></head>
-      <body>{children}</body>
+      <body>
+        <AdminAutoLogout />
+        {children}
+      </body>
     </html>
   );
 }

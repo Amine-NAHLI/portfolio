@@ -8,3 +8,8 @@ export async function signOutAdmin() {
   await supabase.auth.signOut();
   redirect("/admin/login");
 }
+
+export async function silentSignOutAdmin() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+}

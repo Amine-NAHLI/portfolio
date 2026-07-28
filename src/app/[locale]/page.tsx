@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, FileText, MapPin } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
 import ProjectSummaryCard from "@/components/projects/ProjectSummaryCard";
 import ButtonLink from "@/components/ui/ButtonLink";
 import Container from "@/components/ui/Container";
@@ -62,36 +63,68 @@ export default async function HomePage({ params }: HomePageProps) {
         ],
       }} />
 
-      <section className="hero-atelier relative overflow-hidden border-b border-border py-20 sm:py-28 lg:py-32">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-65 grid-bg [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
-        <div aria-hidden="true" className="absolute left-[8%] top-[24%] h-px w-[42%] bg-gradient-to-r from-transparent via-accent/70 to-transparent" />
-        <div aria-hidden="true" className="absolute bottom-[18%] left-[7%] size-2 rounded-full border border-accent bg-bg-page shadow-[0_0_1.5rem_var(--accent)]" />
-        <Container className="editorial-shell relative">
-          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-8">
-            <div className="max-w-5xl lg:col-span-7">
-              <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
-                <span className="system-label">{"// "}{copy.eyebrow}</span>
-                <span aria-hidden="true" className="size-1 rounded-full bg-accent shadow-[0_0_.8rem_var(--accent)]" />
-                <span className="inline-flex items-center gap-1.5"><MapPin aria-hidden="true" className="size-4" />{siteConfig.location[locale]}</span>
+      <section className="relative overflow-hidden border-b border-border bg-bg-page py-20 sm:py-28 lg:py-32">
+        {/* Spotlight Blur Effect */}
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-accent/10 blur-[120px]" />
+        
+        <Container className="relative z-10">
+          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+            {/* Left Column - Text Content */}
+            <div className="flex flex-col justify-center lg:col-span-7">
+              <div className="flex items-center gap-4 text-sm font-semibold tracking-[0.15em] text-accent uppercase">
+                <span className="h-px w-8 bg-accent" />
+                L'ingénieur
               </div>
-              <h1 className="mt-6 max-w-5xl text-balance font-display text-5xl font-semibold leading-[1.02] tracking-[-.055em] text-text-primary sm:text-6xl lg:text-7xl xl:text-[5.4rem]">{copy.title}</h1>
-              <p className="mt-8 max-w-2xl text-pretty text-lg leading-8 text-text-secondary sm:text-xl">{copy.introduction}</p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <ButtonLink href={`/${locale}/projects`}>{copy.primaryCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
-                <ButtonLink href={`/${locale}/journey`} variant="secondary">{copy.secondaryCta}</ButtonLink>
-                <ButtonLink href={siteConfig.links.resume} target="_blank" rel="noreferrer" variant="quiet" data-analytics-event="cv_open"><FileText aria-hidden="true" className="size-4" />{copy.resumeCta}</ButtonLink>
+              
+              <h1 className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]">
+                {siteConfig.name}
+              </h1>
+              
+              <h2 className="mt-6 font-mono text-sm font-semibold uppercase tracking-widest text-accent sm:text-base">
+                {copy.eyebrow}
+              </h2>
+              
+              <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
+                {copy.title}
+              </p>
+              
+              <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
+                {copy.introduction}
+              </p>
+              
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <ButtonLink href={`/${locale}/contact`}>
+                  {publicCopy[locale].contact.contactCta ?? "Contactez-moi"} <ArrowRight aria-hidden="true" className="size-4" />
+                </ButtonLink>
+                <ButtonLink href={siteConfig.links.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
+                  <FileText aria-hidden="true" className="size-4" />
+                  {copy.resumeCta}
+                </ButtonLink>
               </div>
             </div>
-            <div aria-hidden="true" className="relative hidden justify-center lg:col-span-3 lg:flex"><div className="hero-monogram"><span>AN</span></div></div>
-            <aside className="hero-readout hidden self-end lg:col-span-2 lg:block">
-              <p className="system-label text-text-muted">System readout</p>
-              <div className="mt-3">
-                <p className="hero-readout__row"><span>01</span><span>{siteConfig.location[locale]}</span></p>
-                <p className="hero-readout__row"><span>02</span><span>FR · EN</span></p>
-                <p className="hero-readout__row"><span>03</span><span>Portfolio</span></p>
-                <p className="hero-readout__row"><span>04</span><span>2026</span></p>
+
+            {/* Right Column - Photo */}
+            <div className="relative flex justify-center lg:col-span-5 lg:justify-end">
+              <div className="relative aspect-[3/4] w-full max-w-sm overflow-hidden p-3 sm:max-w-md">
+                {/* Frame corners (like in the screenshot) */}
+                <div className="absolute left-0 top-0 size-10 border-l-2 border-t-2 border-accent rounded-tl-xl opacity-80" />
+                <div className="absolute right-0 top-0 size-10 border-r-2 border-t-2 border-accent rounded-tr-xl opacity-80" />
+                <div className="absolute bottom-0 left-0 size-10 border-b-2 border-l-2 border-accent rounded-bl-xl opacity-80" />
+                <div className="absolute bottom-0 right-0 size-10 border-b-2 border-r-2 border-accent rounded-br-xl opacity-80" />
+                
+                {/* Photo container */}
+                <div className="relative h-full w-full overflow-hidden rounded-xl bg-surface-subtle shadow-2xl">
+                  <Image 
+                    src="/nahli.png" 
+                    alt={siteConfig.name} 
+                    fill 
+                    className="object-cover object-top" 
+                    priority 
+                    sizes="(max-width: 768px) 100vw, 30vw"
+                  />
+                </div>
               </div>
-            </aside>
+            </div>
           </div>
         </Container>
       </section>

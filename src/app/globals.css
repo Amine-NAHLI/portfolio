@@ -84,9 +84,7 @@
 
   *, *::before, *::after { box-sizing: border-box; }
   html { min-width: 20rem; overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { min-height: 100vh; overflow-x: clip; background: radial-gradient(72rem 50rem at 7% -14%, var(--ambient-cyan), transparent 61%), radial-gradient(56rem 42rem at 100% 12%, var(--ambient-amber), transparent 64%), linear-gradient(135deg, color-mix(in srgb, var(--bg-page) 96%, var(--surface)), var(--bg-page) 54%, color-mix(in srgb, var(--bg-page) 96%, var(--surface-deep))); color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
-  body::before { position: fixed; z-index: -2; inset: -10%; pointer-events: none; content: ""; opacity: .72; background-image: linear-gradient(rgb(128 147 150 / 7%) 1px, transparent 1px), linear-gradient(90deg, rgb(128 147 150 / 7%) 1px, transparent 1px), linear-gradient(135deg, transparent 49.85%, color-mix(in srgb, var(--accent) 14%, transparent) 50%, transparent 50.15%); background-position: center; background-size: 4rem 4rem, 4rem 4rem, 14rem 14rem; mask-image: linear-gradient(to bottom, black, transparent 76%); animation: grid-drift 36s linear infinite; }
-  body::after { position: fixed; z-index: -1; inset: 0; pointer-events: none; content: ""; opacity: .92; background: radial-gradient(34rem circle at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--accent) 12%, transparent), transparent 72%), radial-gradient(31rem circle at 72% 14%, color-mix(in srgb, var(--amber) 8%, transparent), transparent 72%); animation: ambient-breathe 12s var(--ease-editorial) infinite alternate; }
+  body { min-height: 100vh; overflow-x: clip; background: var(--bg-page); color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
   h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.025em; }
   a, button, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
   button, [role="button"] { cursor: pointer; }
@@ -96,8 +94,7 @@
   dialog::backdrop { background: rgb(8 12 14 / 72%); backdrop-filter: blur(4px); }
   input, textarea, select { width: 100%; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--text-primary); }
   input:focus, textarea:focus, select:focus { border-color: var(--accent); outline: 2px solid color-mix(in srgb, var(--accent) 32%, transparent); outline-offset: 1px; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } body::after { display: none; } }
-  @media (hover: none), (pointer: coarse) { body::after { display: none; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 }
 
 @layer components {

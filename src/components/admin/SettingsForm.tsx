@@ -25,7 +25,7 @@ export function SettingsForm({ currentEmail }: { currentEmail: string }) {
 
       <div className="grid gap-2">
         <label htmlFor="email" className="font-mono text-xs uppercase tracking-widest text-text-secondary">Adresse Email</label>
-        <p className="text-xs text-text-muted mb-2">Laissez vide pour conserver l'email actuel.</p>
+        <p className="text-xs text-text-muted mb-2">Laissez vide pour conserver l&apos;email actuel.</p>
         <input 
           type="email" 
           id="email" 

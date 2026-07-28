@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight, FileText, BriefcaseBusiness, GraduationCap } from "lucide-react";
+import { ArrowRight, FileText, BriefcaseBusiness, GraduationCap } from "lucide-react";
 import ProjectSummaryCard from "@/components/projects/ProjectSummaryCard";
 import ButtonLink from "@/components/ui/ButtonLink";
 import Container from "@/components/ui/Container";
@@ -13,7 +12,7 @@ import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
 import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials, getPublicJourney } from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
-import { isLocale } from "@/i18n/config";
+import { isLocale, Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import TestimonialForm from "@/components/testimonials/TestimonialForm";
@@ -211,7 +210,7 @@ export default async function HomePage({ params }: HomePageProps) {
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
             <SectionHeading eyebrow={locale === "fr" ? "Recommandations" : "Recommendations"} title={locale === "fr" ? "Retours professionnels" : "Professional feedback"} description={""} />
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <TestimonialForm locale={locale as any} inline />
+              <TestimonialForm locale={locale as Locale} inline />
               <ButtonLink href={`/${locale}/testimonials`} variant="secondary" className="shrink-0 self-start md:self-auto">{locale === "fr" ? "Tous les avis" : "All feedback"}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
             </div>
           </div>

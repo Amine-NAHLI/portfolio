@@ -14,7 +14,7 @@ export default async function AdminDashboardPage() {
     context.supabase.from("projects").select("id", { count: "exact", head: true }),
     context.supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "new"),
     context.supabase.from("testimonials").select("id", { count: "exact", head: true }),
-    context.supabase.from("testimonials").select("id", { count: "exact", head: true }).eq("approved", false),
+    context.supabase.from("testimonials").select("id", { count: "exact", head: true }).eq("status", "pending"),
     // Fetch latest 5 messages
     context.supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(5)
   ]);
@@ -109,7 +109,7 @@ export default async function AdminDashboardPage() {
               recentMessages.map((msg) => (
                 <Link key={msg.id} href={`/admin/messages/${msg.id}`} className="flex flex-col gap-1 p-4 bg-surface-subtle hover:bg-surface-raised transition-colors rounded-sm border border-border/50">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-text-primary">{msg.name}</span>
+                    <span className="font-mono text-xs font-bold text-text-primary">{msg.sender_name}</span>
                     <span className="font-mono text-[10px] text-text-secondary">{format(new Date(msg.created_at), "dd MMM yyyy, HH:mm", { locale: fr })}</span>
                   </div>
                   <span className="font-body text-sm text-text-secondary truncate">{msg.subject}</span>

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export async function updateAccountDetails(prevState: any, formData: FormData) {
+export async function updateAccountDetails(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -11,7 +11,7 @@ export async function updateAccountDetails(prevState: any, formData: FormData) {
     return { error: "Veuillez renseigner un email ou un mot de passe à modifier." };
   }
 
-  const updates: any = {};
+  const updates: { email?: string; password?: string } = {};
   if (email) updates.email = email;
   if (password) updates.password = password;
 

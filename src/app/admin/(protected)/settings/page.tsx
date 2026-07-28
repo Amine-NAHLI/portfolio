@@ -21,7 +21,7 @@ export default async function SettingsPage() {
       </div>
 
       <div className="bg-surface rounded-sm border border-border/50 p-6 shadow-sm">
-        <h2 className="font-display text-lg font-semibold text-text-primary mb-6">Informations d'identification</h2>
+        <h2 className="font-display text-lg font-semibold text-text-primary mb-6">Informations d&apos;identification</h2>
         <SettingsForm currentEmail={user?.email || ""} />
       </div>
     </div>

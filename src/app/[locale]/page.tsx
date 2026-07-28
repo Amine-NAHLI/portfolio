@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FileText, BriefcaseBusiness, GraduationCap } from "lucide-react";
 import ProjectSummaryCard from "@/components/projects/ProjectSummaryCard";
 import ButtonLink from "@/components/ui/ButtonLink";
 import Container from "@/components/ui/Container";
@@ -11,7 +11,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
-import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials } from "@/features/portfolio/data";
+import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials, getPublicJourney } from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
 import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
@@ -31,13 +31,18 @@ export default async function HomePage({ params }: HomePageProps) {
   if (!isLocale(locale)) notFound();
 
   const copy = publicCopy[locale].home;
-  const [projects, skillGroups, certifications, testimonials] = await Promise.all([
+  const [projects, skillGroups, certifications, testimonials, journey] = await Promise.all([
     getPublishedProjects(locale),
     getPublicSkillGroups(locale),
     getPublicCertifications(locale),
     getPublicTestimonials(locale),
+    getPublicJourney(locale),
   ]);
-  const featuredProjects = projects.filter((project) => project.featured);
+  const featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
+  const displaySkills = skillGroups.slice(0, 3);
+  const displayCertifications = certifications.slice(0, 3);
+  const displayTestimonials = testimonials.slice(0, 3);
+  const displayJourney = journey.slice(0, 3);
 
   return (
     <>
@@ -63,7 +68,7 @@ export default async function HomePage({ params }: HomePageProps) {
         ],
       }} />
 
-      <section className="relative overflow-hidden border-b border-border bg-bg-page py-20 sm:py-28 lg:py-32">
+      <section id="home" className="relative overflow-hidden border-b border-border bg-bg-page py-20 sm:py-28 lg:py-32">
         {/* Spotlight Blur Effect */}
         <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-accent/10 blur-[120px]" />
         
@@ -138,30 +143,65 @@ export default async function HomePage({ params }: HomePageProps) {
         </div></Container>
       </section>
 
-      <section className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+      <section id="projects" className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
         <Container>
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.projectsEyebrow} title={copy.projectsTitle} description={copy.projectsDescription} /><ButtonLink href={`/${locale}/projects`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allProjects}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
           {featuredProjects.length ? <div className="mt-10 grid gap-5 xl:grid-cols-12">{featuredProjects.map((project, index) => <div key={project.slug} className={index === 0 ? "xl:col-span-7" : "xl:col-span-5"}><ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} index={String(index + 1).padStart(2, "0")} /></div>)}</div> : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
         </Container>
       </section>
 
-      <section className="section-lift py-20 sm:py-24">
+      <section id="journey" className="section-lift py-20 sm:py-24">
         <Container>
-          <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.skillsEyebrow} title={copy.skillsTitle} description={copy.skillsDescription} /><ButtonLink href={`/${locale}/skills`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allSkills}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
-          {skillGroups.length ? <div className="mt-10 grid gap-5 lg:grid-cols-3">{skillGroups.map((group, index) => <TechnicalFrame key={group.id} index={`0${index + 1}`} label="Expertise map" className="p-6"><h3 className="text-xl font-semibold text-text-primary">{group.title}</h3>{group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}<ul className="mt-5 flex flex-wrap gap-2">{group.skills.slice(0, 6).map((skill) => <li key={skill.name} className="border border-border bg-surface-raised px-2 py-1 font-mono text-[.68rem] uppercase tracking-[.06em] text-text-secondary">{skill.name}</li>)}</ul></TechnicalFrame>)}</div> : <PortfolioEmptyState collection="skills" locale={locale} className="mt-10" />}
+          <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
+            <SectionHeading eyebrow={publicCopy[locale].journey.eyebrow} title={publicCopy[locale].journey.title} description={publicCopy[locale].journey.description} />
+            <ButtonLink href={`/${locale}/journey`} variant="secondary" className="shrink-0 self-start md:self-auto">{locale === "fr" ? "Tout le parcours" : "Full journey"}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
+          </div>
+          {displayJourney.length ? <ol className="mt-10 relative mx-auto max-w-4xl before:absolute before:bottom-4 before:left-[1.35rem] before:top-4 before:w-px before:bg-border sm:before:left-[1.6rem]">
+            {displayJourney.map((entry) => {
+              const Icon = entry.type === "experience" ? BriefcaseBusiness : GraduationCap;
+              return (
+                <li key={entry.id} className="relative grid grid-cols-[2.75rem_1fr] gap-5 pb-10 last:pb-0 sm:grid-cols-[3.25rem_1fr] sm:gap-7">
+                  <span className="relative z-10 grid size-11 place-items-center rounded-full border border-border-strong bg-bg-page text-accent sm:size-13">
+                    <Icon aria-hidden="true" className="size-5" />
+                  </span>
+                  <TechnicalFrame index={String(displayJourney.indexOf(entry) + 1).padStart(2, "0")} label={entry.type === "experience" ? publicCopy[locale].journey.experience : publicCopy[locale].journey.education} className="p-6 sm:p-7">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">{entry.type === "experience" ? publicCopy[locale].journey.experience : publicCopy[locale].journey.education}</p>
+                        <h2 className="mt-2 text-xl font-semibold text-text-primary sm:text-2xl">{entry.title}</h2>
+                      </div>
+                      <p className="shrink-0 font-mono text-xs text-text-muted">{entry.eventDate}</p>
+                    </div>
+                    <p className="mt-5 text-sm leading-6 text-text-secondary">{entry.description}</p>
+                  </TechnicalFrame>
+                </li>
+              );
+            })}
+          </ol> : <PortfolioEmptyState collection="journey" locale={locale} className="mt-10" />}
         </Container>
       </section>
 
-      <section className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+      <section id="skills" className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+        <Container>
+          <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.skillsEyebrow} title={copy.skillsTitle} description={copy.skillsDescription} /><ButtonLink href={`/${locale}/skills`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allSkills}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
+          {displaySkills.length ? <div className="mt-10 grid gap-5 lg:grid-cols-3">{displaySkills.map((group, index) => <TechnicalFrame key={group.id} index={`0${index + 1}`} label="Expertise map" className="p-6"><h3 className="text-xl font-semibold text-text-primary">{group.title}</h3>{group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}<ul className="mt-5 flex flex-wrap gap-2">{group.skills.slice(0, 6).map((skill) => <li key={skill.name} className="border border-border bg-surface-raised px-2 py-1 font-mono text-[.68rem] uppercase tracking-[.06em] text-text-secondary">{skill.name}</li>)}</ul></TechnicalFrame>)}</div> : <PortfolioEmptyState collection="skills" locale={locale} className="mt-10" />}
+        </Container>
+      </section>
+
+      <section className="section-lift py-20 sm:py-24">
         <Container>
           <div className="grid gap-6 lg:grid-cols-2">
-            {certifications.length ? <TechnicalFrame index="07" label={copy.certificationsEyebrow} className="p-7 sm:p-9"><h2 className="mt-4 text-3xl font-semibold text-text-primary">{copy.certificationsTitle}</h2><ul className="mt-6 divide-y divide-border">{certifications.slice(0, 3).map((certification) => <li key={certification.id} className="py-3 first:pt-0 last:pb-0"><p className="font-medium text-text-primary">{certification.name}</p>{certification.issuer ? <p className="mt-1 text-sm text-text-muted">{certification.issuer}</p> : null}</li>)}</ul><Link className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-sm font-mono text-xs font-semibold uppercase tracking-[.07em] text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href={`/${locale}/certifications`}>{copy.certificationsCta}<ArrowUpRight aria-hidden="true" className="size-4" /></Link></TechnicalFrame> : <PortfolioEmptyState collection="certifications" locale={locale} />}
-            {testimonials.length ? <TechnicalFrame index="08" label={locale === "fr" ? "Recommandations" : "Recommendations"} className="p-7 sm:p-9"><h2 className="mt-4 text-3xl font-semibold text-text-primary">{locale === "fr" ? "Retours professionnels" : "Professional feedback"}</h2><blockquote className="mt-6 border-l-2 border-accent pl-5 text-lg leading-8 text-text-secondary">“{testimonials[0].message}”</blockquote><p className="mt-5 text-sm font-semibold text-text-primary">{testimonials[0].name}{testimonials[0].role ? ` — ${testimonials[0].role}` : ""}</p>{testimonials[0].organization ? <p className="mt-1 text-sm text-text-muted">{testimonials[0].organization}</p> : null}</TechnicalFrame> : <PortfolioEmptyState collection="testimonials" locale={locale} />}
+            <div id="certifications">
+              {displayCertifications.length ? <TechnicalFrame index="07" label={copy.certificationsEyebrow} className="h-full p-7 sm:p-9 flex flex-col"><h2 className="mt-4 text-3xl font-semibold text-text-primary">{copy.certificationsTitle}</h2><ul className="mt-6 divide-y divide-border flex-1">{displayCertifications.map((certification) => <li key={certification.id} className="py-3 first:pt-0 last:pb-0"><p className="font-medium text-text-primary">{certification.name}</p>{certification.issuer ? <p className="mt-1 text-sm text-text-muted">{certification.issuer}</p> : null}</li>)}</ul><Link className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-sm font-mono text-xs font-semibold uppercase tracking-[.07em] text-accent transition-colors hover:text-accent-hover focus-visible:outline-none" href={`/${locale}/certifications`}>{copy.certificationsCta}<ArrowUpRight aria-hidden="true" className="size-4" /></Link></TechnicalFrame> : <PortfolioEmptyState collection="certifications" locale={locale} />}
+            </div>
+            <div id="testimonials">
+              {displayTestimonials.length ? <TechnicalFrame index="08" label={locale === "fr" ? "Recommandations" : "Recommendations"} className="h-full p-7 sm:p-9 flex flex-col"><h2 className="mt-4 text-3xl font-semibold text-text-primary">{locale === "fr" ? "Retours professionnels" : "Professional feedback"}</h2><div className="mt-6 flex-1 space-y-8">{displayTestimonials.map((t) => <div key={t.id}><blockquote className="border-l-2 border-accent pl-5 text-sm leading-relaxed text-text-secondary">“{t.message.length > 150 ? t.message.substring(0, 150) + '...' : t.message}”</blockquote><p className="mt-3 text-sm font-semibold text-text-primary">{t.name}{t.role ? ` — ${t.role}` : ""}</p></div>)}</div><Link className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-sm font-mono text-xs font-semibold uppercase tracking-[.07em] text-accent transition-colors hover:text-accent-hover focus-visible:outline-none" href={`/${locale}/testimonials`}>{locale === "fr" ? "Tous les avis" : "All feedback"}<ArrowUpRight aria-hidden="true" className="size-4" /></Link></TechnicalFrame> : <PortfolioEmptyState collection="testimonials" locale={locale} />}
+            </div>
           </div>
         </Container>
       </section>
 
-      <section className="section-lift py-20 sm:py-24">
+      <section id="contact" className="section-lift border-t border-border bg-surface-subtle/55 py-20 sm:py-24">
         <Container><TechnicalFrame index="09" label={copy.contactEyebrow} className="relative overflow-hidden px-6 py-12 sm:px-10 lg:px-14 lg:py-16"><div aria-hidden="true" className="absolute -right-16 -top-24 size-72 rounded-full bg-accent/10 blur-3xl" /><div className="relative max-w-3xl"><h2 className="mt-4 text-balance text-3xl font-semibold text-text-primary sm:text-4xl">{copy.contactTitle}</h2><p className="mt-5 max-w-2xl text-pretty leading-7 text-text-secondary">{copy.contactDescription}</p><ButtonLink href={`/${locale}/contact`} className="mt-7">{copy.contactCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div></TechnicalFrame></Container>
       </section>
     </>

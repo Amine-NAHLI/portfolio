@@ -17,8 +17,22 @@ export default function FluidBackground() {
         style={{ animationDelay: '-12s', animationDuration: '25s' }} 
       />
 
+      {/* Motif Grille (Grid) */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06] text-text-primary pointer-events-none" 
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, currentColor 1px, transparent 1px),
+            linear-gradient(to bottom, currentColor 1px, transparent 1px)
+          `,
+          backgroundSize: '4rem 4rem',
+          maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
+        }}
+      />
+
       {/* Texture de grain (cloud/noise overlay) pour le style premium */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.35] mix-blend-overlay">
+      <svg className="absolute inset-0 w-full h-full opacity-[0.35] mix-blend-overlay pointer-events-none">
         <filter id="noiseFilter">
           <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
         </filter>

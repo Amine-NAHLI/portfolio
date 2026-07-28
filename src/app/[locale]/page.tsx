@@ -72,7 +72,13 @@ export default async function HomePage({ params }: HomePageProps) {
         ],
       }} />
 
-      <section id="home" className="relative overflow-hidden border-b border-border bg-bg-page py-20 sm:py-28 lg:py-32">
+      <div className="relative overflow-hidden bg-bg-page">
+        {/* Global ambient background orbs */}
+        <div aria-hidden="true" className="pointer-events-none absolute left-0 top-1/4 -z-10 h-[60rem] w-[60rem] -translate-x-1/2 rounded-full bg-accent/5 blur-[120px]" />
+        <div aria-hidden="true" className="pointer-events-none absolute right-0 top-2/4 -z-10 h-[60rem] w-[60rem] translate-x-1/2 rounded-full bg-accent/5 blur-[120px]" />
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/4 top-3/4 -z-10 h-[60rem] w-[60rem] rounded-full bg-accent/5 blur-[120px]" />
+
+      <section id="home" className="relative z-10 py-24 sm:py-32 lg:py-40">
         {/* Spotlight Blur Effect */}
         <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-accent/10 blur-[120px]" />
         
@@ -138,23 +144,23 @@ export default async function HomePage({ params }: HomePageProps) {
         </Container>
       </section>
 
-      <section className="section-lift py-20 sm:py-24">
+      <section className="relative z-10 py-24 sm:py-32">
         <Container><div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
           <SectionHeading eyebrow={copy.proofEyebrow} title={copy.proofTitle} description={copy.proofDescription} />
-          <dl className="grid border border-border bg-surface/60 sm:grid-cols-3 lg:grid-cols-1">
-            {copy.proofItems.map(([term, description], index) => <div key={term} className="group relative overflow-hidden border-b border-border p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 lg:border-b lg:border-r-0 lg:last:border-b-0"><span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70">{String(index + 1).padStart(2, "0")}</span><dt className="font-mono text-[.68rem] font-semibold uppercase tracking-[.12em] text-text-muted">{term}</dt><dd className="mt-2 text-sm font-medium leading-6 text-text-primary">{description}</dd></div>)}
+          <dl className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
+            {copy.proofItems.map(([term, description], index) => <div key={term} className="group relative overflow-hidden p-5 bg-surface-subtle/50 rounded-xl"><span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70">{String(index + 1).padStart(2, "0")}</span><dt className="font-mono text-[.68rem] font-semibold uppercase tracking-[.12em] text-accent">{term}</dt><dd className="mt-2 text-sm font-medium leading-6 text-text-primary">{description}</dd></div>)}
           </dl>
         </div></Container>
       </section>
 
-      <section id="projects" className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+      <section id="projects" className="relative z-10 py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.projectsEyebrow} title={copy.projectsTitle} description={copy.projectsDescription} /><ButtonLink href={`/${locale}/projects`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allProjects}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
           {featuredProjects.length ? <div className="mt-10 grid gap-5 xl:grid-cols-12">{featuredProjects.map((project, index) => <div key={project.slug} className={index === 0 ? "xl:col-span-7" : "xl:col-span-5"}><ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} index={String(index + 1).padStart(2, "0")} /></div>)}</div> : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
         </Container>
       </section>
 
-      <section id="journey" className="section-lift py-20 sm:py-24">
+      <section id="journey" className="relative z-10 py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
             <SectionHeading eyebrow={publicCopy[locale].journey.eyebrow} title={publicCopy[locale].journey.title} description={publicCopy[locale].journey.description} />
@@ -185,14 +191,14 @@ export default async function HomePage({ params }: HomePageProps) {
         </Container>
       </section>
 
-      <section id="skills" className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+      <section id="skills" className="relative z-10 py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.skillsEyebrow} title={copy.skillsTitle} description={copy.skillsDescription} /><ButtonLink href={`/${locale}/skills`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allSkills}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
           {displaySkills.length ? <div className="mt-10 grid gap-5 lg:grid-cols-3">{displaySkills.map((group, index) => <TechnicalFrame key={group.id} index={`0${index + 1}`} label="Expertise map" className="p-6"><h3 className="text-xl font-semibold text-text-primary">{group.title}</h3>{group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}<ul className="mt-5 flex flex-wrap gap-2">{group.skills.slice(0, 6).map((skill) => <li key={skill.name} className="border border-border bg-surface-raised px-2 py-1 font-mono text-[.68rem] uppercase tracking-[.06em] text-text-secondary">{skill.name}</li>)}</ul></TechnicalFrame>)}</div> : <PortfolioEmptyState collection="skills" locale={locale} className="mt-10" />}
         </Container>
       </section>
 
-      <section id="certifications" className="section-lift py-20 sm:py-24">
+      <section id="certifications" className="relative z-10 py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
             <SectionHeading eyebrow={copy.certificationsEyebrow} title={copy.certificationsTitle} description={""} />
@@ -209,7 +215,7 @@ export default async function HomePage({ params }: HomePageProps) {
         </Container>
       </section>
 
-      <section id="testimonials" className="section-lift border-y border-border bg-surface-subtle/55 py-20 sm:py-24">
+      <section id="testimonials" className="relative z-10 py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
             <SectionHeading eyebrow={locale === "fr" ? "Recommandations" : "Recommendations"} title={locale === "fr" ? "Retours professionnels" : "Professional feedback"} description={""} />
@@ -238,9 +244,10 @@ export default async function HomePage({ params }: HomePageProps) {
         </Container>
       </section>
 
-      <section id="contact" className="section-lift border-t border-border bg-surface-subtle/55 py-20 sm:py-24">
+      <section id="contact" className="relative z-10 py-24 sm:py-32">
         <Container><TechnicalFrame index="09" label={copy.contactEyebrow} className="relative overflow-hidden px-6 py-12 sm:px-10 lg:px-14 lg:py-16"><div aria-hidden="true" className="absolute -right-16 -top-24 size-72 rounded-full bg-accent/10 blur-3xl" /><div className="relative max-w-3xl"><h2 className="mt-4 text-balance text-3xl font-semibold text-text-primary sm:text-4xl">{copy.contactTitle}</h2><p className="mt-5 max-w-2xl text-pretty leading-7 text-text-secondary">{copy.contactDescription}</p><ButtonLink href={`/${locale}/contact`} className="mt-7">{copy.contactCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div></TechnicalFrame></Container>
       </section>
+      </div>
     </>
   );
 }

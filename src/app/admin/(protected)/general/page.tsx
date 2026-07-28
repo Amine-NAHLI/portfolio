@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { saveGeneralInfo } from "./actions";
 import { publicCopy } from "@/content/copy";
+import { GeneralInfoForm } from "./GeneralInfoForm";
 
 export default async function GeneralInfoPage() {
   const supabase = await createClient();
@@ -36,86 +36,18 @@ export default async function GeneralInfoPage() {
   };
 
   return (
-    <div className="p-6 sm:p-10 max-w-5xl mx-auto space-y-10">
-      <div>
-        <h1 className="text-3xl font-display font-semibold">Informations Générales</h1>
-        <p className="text-text-secondary mt-2">Modifiez les textes affichés sur la page d&apos;accueil de votre portfolio.</p>
-      </div>
+    <div className="max-w-6xl">
+      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end border-b border-border pb-6 mb-10">
+        <div className="max-w-3xl">
+          <p className="system-label">{"// Administration"}</p>
+          <h1 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">Infos Générales</h1>
+          <p className="mt-3 text-sm leading-6 text-text-secondary sm:text-base">Gérez les textes affichés sur la page d&apos;accueil de votre portfolio de manière unifiée.</p>
+        </div>
+      </header>
 
-      <div className="grid gap-10 xl:grid-cols-2">
-        {/* French Form */}
-        <section className="bg-surface border border-border p-6 rounded-md">
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-3">
-            <span className="w-8 h-8 rounded bg-accent/10 text-accent flex items-center justify-center text-sm font-bold">FR</span>
-            Version Française
-          </h2>
-          <form action={saveGeneralInfo.bind(null, "fr") as unknown as (payload: FormData) => void} className="space-y-5">
-            <label className="grid gap-2 text-sm font-semibold">
-              Sous-titre (Eyebrow)
-              <input name="eyebrow" defaultValue={currentFr.eyebrow} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Titre principal
-              <textarea name="title" defaultValue={currentFr.title} rows={3} className="px-3 py-2 font-normal bg-bg-page border border-border rounded resize-y" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Introduction
-              <textarea name="introduction" defaultValue={currentFr.introduction} rows={4} className="px-3 py-2 font-normal bg-bg-page border border-border rounded resize-y" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Formation
-              <input name="formation" defaultValue={currentFr.formation} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Expérience actuelle
-              <input name="experience" defaultValue={currentFr.experience} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Langues
-              <input name="languages" defaultValue={currentFr.languages} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <div className="pt-4">
-              <button type="submit" className="button-primary w-full">Sauvegarder (FR)</button>
-            </div>
-          </form>
-        </section>
-
-        {/* English Form */}
-        <section className="bg-surface border border-border p-6 rounded-md">
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-3">
-            <span className="w-8 h-8 rounded bg-accent/10 text-accent flex items-center justify-center text-sm font-bold">EN</span>
-            Version Anglaise
-          </h2>
-          <form action={saveGeneralInfo.bind(null, "en") as unknown as (payload: FormData) => void} className="space-y-5">
-            <label className="grid gap-2 text-sm font-semibold">
-              Sous-titre (Eyebrow)
-              <input name="eyebrow" defaultValue={currentEn.eyebrow} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Titre principal
-              <textarea name="title" defaultValue={currentEn.title} rows={3} className="px-3 py-2 font-normal bg-bg-page border border-border rounded resize-y" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Introduction
-              <textarea name="introduction" defaultValue={currentEn.introduction} rows={4} className="px-3 py-2 font-normal bg-bg-page border border-border rounded resize-y" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Formation
-              <input name="formation" defaultValue={currentEn.formation} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Expérience actuelle
-              <input name="experience" defaultValue={currentEn.experience} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <label className="grid gap-2 text-sm font-semibold">
-              Langues
-              <input name="languages" defaultValue={currentEn.languages} className="min-h-11 px-3 font-normal bg-bg-page border border-border rounded" required />
-            </label>
-            <div className="pt-4">
-              <button type="submit" className="button-primary w-full">Sauvegarder (EN)</button>
-            </div>
-          </form>
-        </section>
+      <div className="grid gap-8 xl:grid-cols-2 items-start">
+        <GeneralInfoForm locale="fr" title="Version Française" defaultValues={currentFr} />
+        <GeneralInfoForm locale="en" title="Version Anglaise" defaultValues={currentEn} />
       </div>
     </div>
   );

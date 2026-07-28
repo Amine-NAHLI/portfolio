@@ -28,6 +28,7 @@ export async function saveGeneralInfo(locale: "fr" | "en", formData: FormData) {
   revalidatePath("/");
   revalidatePath("/fr");
   revalidatePath("/en");
+  revalidatePath("/admin/general");
   
   return { success: true };
 }

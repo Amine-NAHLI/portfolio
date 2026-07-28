@@ -179,8 +179,9 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
   const [review, setReview] = useState<MissingTechnology[] | null>(null);
   const [reviewCategories, setReviewCategories] = useState<SkillCategory[]>(categories);
   const [projectTechnologies, setProjectTechnologies] = useState<string[]>([]);
-  const pdfRef = useRef<HTMLInputElement>(null);
+  const [isCategorizing, setIsCategorizing] = useState(false);
   const [pdf, setPdf] = useState<File | null>(null);
+  const pdfRef = useRef<HTMLInputElement>(null);
   const { dialogRef, close } = useModalDialog(onClose);
   const set = (key: string, value: string | number) => setValues((current) => ({ ...current, [key]: value }));
 
@@ -240,7 +241,42 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
 
     setProjectTechnologies(technologiesForProject);
     setReviewCategories(references.categories);
-    setReview(missing.map((name) => ({ name, action: "add", category: "", newCategory: "", level: "intermediate", sortOrder: 0 })));
+    
+    // Fallback default structure
+    let initialReview: MissingTechnology[] = missing.map((name) => ({ name, action: "add", category: "", newCategory: "", level: "intermediate", sortOrder: 0 }));
+
+    setIsCategorizing(true);
+    try {
+      const res = await fetch("/api/admin/categorize-skills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          technologies: missing, 
+          existingCategories: references.categories.map(c => c.name_fr) 
+        })
+      });
+      if (res.ok) {
+        const data = await res.json() as { skills?: Array<{ name: string, category: string, isNewCategory: boolean, level: "beginner"|"intermediate"|"advanced" }> };
+        if (Array.isArray(data.skills)) {
+          initialReview = initialReview.map(item => {
+            const aiData = data.skills?.find(s => s.name === item.name);
+            if (!aiData) return item;
+            return {
+              ...item,
+              category: aiData.isNewCategory ? "__new__" : aiData.category,
+              newCategory: aiData.isNewCategory ? aiData.category : "",
+              level: aiData.level
+            };
+          });
+        }
+      }
+    } catch (e) {
+      console.error("AI categorization failed", e);
+    } finally {
+      setIsCategorizing(false);
+    }
+
+    setReview(initialReview);
   }
 
   function updateMissingTechnology(name: string, patch: Partial<MissingTechnology>) {
@@ -311,7 +347,7 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
         <div className="flex flex-wrap justify-end gap-3 border-t border-border pt-5 sm:col-span-2">
           {isProjectReview ? <button type="button" className="button-secondary" onClick={() => { setReview(null); setError(null); }}>Retour au projet</button> : null}
           <button type="button" className="button-secondary" onClick={close}>Annuler</button>
-          <button type="submit" className="button-primary" disabled={pending}>{pending ? "Enregistrement…" : isProjectReview ? "Créer les compétences et enregistrer" : "Enregistrer"}</button>
+          <button type="submit" className="button-primary" disabled={pending || isCategorizing}>{pending ? "Enregistrement…" : isCategorizing ? "Analyse IA..." : isProjectReview ? "Créer les compétences et enregistrer" : "Enregistrer"}</button>
         </div>
       </form>
     </dialog>

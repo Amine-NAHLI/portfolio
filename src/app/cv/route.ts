@@ -6,16 +6,14 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const html = await readFile(join(process.cwd(), "CV", "cv.html"), "utf8");
-    return new NextResponse(html, {
+    const pdf = await readFile(join(process.cwd(), "public", "Amine_Nahli_CV.pdf"));
+    return new NextResponse(pdf, {
       headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Content-Disposition": "inline; filename=Amine-Nahli-CV.html",
-        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
-        "Content-Security-Policy": "default-src 'none'; base-uri 'none'; object-src 'none'; script-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'",
-        "Referrer-Policy": "no-referrer",
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "attachment; filename=Amine_Nahli_CV.pdf",
+        "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
-        "X-Robots-Tag": "index, follow",
+        "X-Robots-Tag": "noindex, nofollow",
       },
     });
   } catch {

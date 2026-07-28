@@ -176,10 +176,6 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [translating, setTranslating] = useState<"description_en" | null>(null);
-  const [review, setReview] = useState<MissingTechnology[] | null>(null);
-  const [reviewCategories, setReviewCategories] = useState<SkillCategory[]>(categories);
-  const [projectTechnologies, setProjectTechnologies] = useState<string[]>([]);
-  const [isCategorizing, setIsCategorizing] = useState(false);
   const [pdf, setPdf] = useState<File | null>(null);
   const pdfRef = useRef<HTMLInputElement>(null);
   const { dialogRef, close } = useModalDialog(onClose);
@@ -213,121 +209,18 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
     return result.record.id;
   }
 
-  async function getSkillReferences(): Promise<{ records: SkillRecord[]; categories: SkillCategory[] }> {
-    const result = await api("skills");
-    return {
-      records: Array.isArray(result.records) ? result.records as SkillRecord[] : [],
-      categories: Array.isArray(result.categories) ? result.categories as SkillCategory[] : [],
-    };
-  }
-
-  async function saveProject(technologies: string[]) {
-    const outgoing: RecordValue = { ...values, technologies };
-    await api("projects", { method: record ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record?.id, values: outgoing }) });
-    await onSaved();
-  }
-
-  async function beginProjectReview() {
-    const technologies = parseTechnologies(values.technologies);
-    const references = await getSkillReferences();
-    const existingByKey = new Map(references.records.map((skill) => [technologyKey(skill.name), skill.name]));
-    const missing = technologies.filter((technology) => !existingByKey.has(technologyKey(technology)));
-    const technologiesForProject = technologies.map((technology) => existingByKey.get(technologyKey(technology)) ?? technology);
-
-    if (!missing.length) {
-      await saveProject(technologiesForProject);
-      return;
-    }
-
-    setProjectTechnologies(technologiesForProject);
-    setReviewCategories(references.categories);
-    
-    // Fallback default structure
-    let initialReview: MissingTechnology[] = missing.map((name) => ({ name, action: "add", category: "", newCategory: "", level: "intermediate", sortOrder: 0 }));
-
-    setIsCategorizing(true);
-    try {
-      const res = await fetch("/api/admin/categorize-skills", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          technologies: missing, 
-          existingCategories: references.categories.map(c => c.name_fr) 
-        })
-      });
-      if (res.ok) {
-        const data = await res.json() as { skills?: Array<{ name: string, category: string, isNewCategory: boolean, level: "beginner"|"intermediate"|"advanced" }> };
-        if (Array.isArray(data.skills)) {
-          initialReview = initialReview.map(item => {
-            const aiData = data.skills?.find(s => s.name === item.name);
-            if (!aiData) return item;
-            return {
-              ...item,
-              category: aiData.isNewCategory ? "__new__" : aiData.category,
-              newCategory: aiData.isNewCategory ? aiData.category : "",
-              level: aiData.level
-            };
-          });
-        }
-      }
-    } catch (e) {
-      console.error("AI categorization failed", e);
-    } finally {
-      setIsCategorizing(false);
-    }
-
-    setReview(initialReview);
-  }
-
-  function updateMissingTechnology(name: string, patch: Partial<MissingTechnology>) {
-    setReview((items) => items?.map((item) => item.name === name ? { ...item, ...patch } : item) ?? null);
-  }
-
-  async function finishProjectReview() {
-    if (!review) return;
-    const selected = review.filter((item) => item.action === "add");
-    const invalid = selected.find((item) => (item.category === "__new__" ? !normalizeTechnology(item.newCategory) : !item.category));
-    if (invalid) {
-      setError(`Choisissez une catégorie pour ${invalid.name} avant de continuer.`);
-      return;
-    }
-
-    setPending(true);
-    setError(null);
-    try {
-      for (const item of selected) {
-        const category = item.category === "__new__" ? normalizeTechnology(item.newCategory) : item.category;
-        await api("skills", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ values: { name: item.name, category, level: item.level, sort_order: item.sortOrder } }),
-        });
-      }
-      const ignored = new Set(review.filter((item) => item.action === "ignore").map((item) => technologyKey(item.name)));
-      await saveProject(projectTechnologies.filter((technology) => !ignored.has(technologyKey(technology))));
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Enregistrement impossible.");
-    } finally {
-      setPending(false);
-    }
-  }
-
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (review) {
-      await finishProjectReview();
-      return;
-    }
-
     setPending(true);
     setError(null);
     try {
-      if (section === "projects") {
-        await beginProjectReview();
-        return;
-      }
       const outgoing: RecordValue = { ...values };
-      if (section === "certifications") outgoing.document_media_id = await uploadPdf();
+      if (section === "projects") {
+        outgoing.technologies = parseTechnologies(values.technologies);
+      }
+      if (section === "certifications") {
+        outgoing.document_media_id = await uploadPdf();
+      }
       await api(section, { method: record ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record?.id, values: outgoing }) });
       await onSaved();
     } catch (caught) {
@@ -337,44 +230,18 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
     }
   }
 
-  const isProjectReview = section === "projects" && review !== null;
   return (
     <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); close(); }} className="m-auto max-h-[92vh] w-[min(52rem,calc(100%-2rem))] overflow-y-auto rounded-md border border-border bg-surface-raised p-0 text-text-secondary shadow-2xl">
-      <div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="system-label">{isProjectReview ? "Étape de vérification" : record ? "Modification" : "Nouveau contenu"}</p><h2 className="mt-1 text-xl font-semibold">{isProjectReview ? "Compétences à ajouter" : record ? "Modifier" : "Ajouter"}</h2></div><button type="button" className="grid size-11 place-items-center rounded-sm border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div>
+      <div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="system-label">{record ? "Modification" : "Nouveau contenu"}</p><h2 className="mt-1 text-xl font-semibold">{record ? "Modifier" : "Ajouter"}</h2></div><button type="button" className="grid size-11 place-items-center rounded-sm border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div>
       <form onSubmit={submit} className="grid gap-5 p-5 sm:grid-cols-2 sm:p-7">
-        {isProjectReview ? <MissingSkillReview items={review} categories={reviewCategories} onChange={updateMissingTechnology} /> : <EditorFields section={section} values={values} set={set} categories={categories} translate={translate} translating={translating} pdfRef={pdfRef} pdf={pdf} setPdf={setPdf} />}
+        <EditorFields section={section} values={values} set={set} categories={categories} translate={translate} translating={translating} pdfRef={pdfRef} pdf={pdf} setPdf={setPdf} />
         {error ? <p className="rounded-sm border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:col-span-2" role="alert">{error}</p> : null}
         <div className="flex flex-wrap justify-end gap-3 border-t border-border pt-5 sm:col-span-2">
-          {isProjectReview ? <button type="button" className="button-secondary" onClick={() => { setReview(null); setError(null); }}>Retour au projet</button> : null}
           <button type="button" className="button-secondary" onClick={close}>Annuler</button>
-          <button type="submit" className="button-primary" disabled={pending || isCategorizing}>{pending ? "Enregistrement…" : isCategorizing ? "Analyse IA..." : isProjectReview ? "Créer les compétences et enregistrer" : "Enregistrer"}</button>
+          <button type="submit" className="button-primary" disabled={pending}>{pending ? "Enregistrement…" : "Enregistrer"}</button>
         </div>
       </form>
     </dialog>
-  );
-}
-
-function MissingSkillReview({ items, categories, onChange }: { items: MissingTechnology[]; categories: SkillCategory[]; onChange: (name: string, patch: Partial<MissingTechnology>) => void }) {
-  return (
-    <section className="grid gap-5 sm:col-span-2" aria-labelledby="missing-skills-heading">
-      <div className="border-l-2 border-accent pl-4">
-        <h3 id="missing-skills-heading" className="text-lg font-semibold text-text-primary">Technologies utilisées dans ce projet mais absentes de votre liste de compétences</h3>
-        <p className="mt-2 text-sm leading-6 text-text-secondary">Choisissez les technologies à ajouter et classez-les avant d’enregistrer le projet. Ignorer une technologie la retire uniquement des compétences liées à ce projet.</p>
-      </div>
-      {!categories.length ? <p className="rounded-sm border border-amber/30 bg-amber/10 p-4 text-sm text-text-secondary">Aucune catégorie n’existe encore. Vous pouvez en créer une directement dans cette étape.</p> : null}
-      {items.map((item, index) => {
-        const disabled = item.action === "ignore";
-        return <fieldset key={item.name} className="grid gap-4 border border-border bg-surface p-4 sm:grid-cols-2 sm:p-5">
-          <legend className="sr-only">{item.name}</legend>
-          <div className="sm:col-span-2"><p className="system-label">Technologie {String(index + 1).padStart(2, "0")}</p><h4 className="mt-1 text-lg font-semibold text-text-primary">{item.name}</h4></div>
-          <label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Catégorie *</span><select disabled={disabled} value={item.category} onChange={(event) => onChange(item.name, { category: event.target.value })} className="min-h-11 px-3 font-normal"><option value="">Sélectionnez une catégorie</option>{categories.map((category) => <option key={category.id} value={category.name_fr}>{category.name_fr}</option>)}<option value="__new__">Créer une catégorie…</option></select></label>
-          <label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Niveau *</span><select disabled={disabled} value={item.level} onChange={(event) => onChange(item.name, { level: event.target.value as SkillLevel })} className="min-h-11 px-3 font-normal"><option value="beginner">Débutant</option><option value="intermediate">Intermédiaire</option><option value="advanced">Avancé</option></select></label>
-          {item.category === "__new__" ? <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Nouvelle catégorie *</span><input disabled={disabled} value={item.newCategory} onChange={(event) => onChange(item.name, { newCategory: event.target.value })} className="min-h-11 px-3 font-normal" placeholder="Ex. Développement web" /></label> : null}
-          <label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Ordre d’affichage</span><input disabled={disabled} type="number" min="0" value={item.sortOrder} onChange={(event) => onChange(item.name, { sortOrder: Number(event.target.value) })} className="min-h-11 px-3 font-normal" /></label>
-          <div className="flex flex-wrap items-end gap-2"><button type="button" aria-pressed={item.action === "add"} className={item.action === "add" ? "button-primary px-3 py-2 text-xs" : "button-secondary px-3 py-2 text-xs"} onClick={() => onChange(item.name, { action: "add" })}>Ajouter comme compétence</button><button type="button" aria-pressed={item.action === "ignore"} className={item.action === "ignore" ? "border border-danger bg-danger/10 px-3 py-2 text-xs font-semibold text-danger" : "button-secondary px-3 py-2 text-xs"} onClick={() => onChange(item.name, { action: "ignore" })}>Ignorer</button></div>
-        </fieldset>;
-      })}
-    </section>
   );
 }
 

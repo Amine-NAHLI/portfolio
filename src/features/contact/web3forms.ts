@@ -19,8 +19,8 @@ export async function sendContactNotification(contact: ContactNotification): Pro
     body: JSON.stringify({
       access_key: accessKey,
       subject: `[Portfolio] ${contact.subject}`,
-      from_name: contact.name,
-      replyto: contact.email,
+      name: contact.name,
+      email: contact.email,
       message: html,
     }),
   });

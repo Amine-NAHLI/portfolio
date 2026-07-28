@@ -1,10 +1,9 @@
 import { createHmac } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { sendContactNotification } from "@/features/contact/web3forms";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
 import { validateContactMessage } from "@/features/contact/validation";
-import { getMissingContactNotificationConfiguration, getMissingContactStorageConfiguration } from "@/features/contact/config";
+import { getMissingContactStorageConfiguration } from "@/features/contact/config";
 
 export const runtime = "nodejs";
 
@@ -80,37 +79,8 @@ export async function POST(request: NextRequest) {
     fingerprint_hash: fingerprint,
     user_agent_summary: null,
   }).select("id, created_at").single();
+  
   if (error) return respond("storageError", 500, responseLocale);
-  const missingNotificationConfiguration = getMissingContactNotificationConfiguration(process.env);
-  if (missingNotificationConfiguration.length) {
-    console.error("Contact notification email unavailable: missing server configuration", { missing: missingNotificationConfiguration, messageId: savedMessage?.id });
-    const notificationMessage = locale === "fr"
-      ? "Votre message est enregistré, mais l’e-mail de notification n’a pas pu être envoyé."
-      : "Your message has been saved, but the notification email could not be sent.";
-    return NextResponse.json({ message: notificationMessage, notification: "not_sent" }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
-  }
-  try {
-    await sendContactNotification({
-      id: savedMessage?.id ?? "unknown",
-      createdAt: savedMessage?.created_at ?? new Date().toISOString(),
-      name,
-      email,
-      subject,
-      message,
-      locale,
-    });
-  } catch (notificationError) {
-    console.error("Contact notification email failed", {
-      messageId: savedMessage?.id,
-      error: notificationError instanceof Error ? notificationError.message : String(notificationError),
-    });
-    const notificationMessage = locale === "fr"
-      ? "Votre message est enregistré, mais l’e-mail de notification n’a pas pu être envoyé."
-      : "Your message has been saved, but the email notification could not be sent."
-    return NextResponse.json(
-      { message: notificationMessage, notification: "not_sent" },
-      { status: 201, headers: { "Cache-Control": "private, no-store" } },
-    );
-  }
+
   return respond("saved", 201, locale);
 }

@@ -47,6 +47,22 @@ export function ContactForm({ locale }: { locale: Locale }) {
       const response = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload) });
       const result = await response.json() as { error?: string; message?: string; notification?: "not_sent" };
       if (!response.ok) throw new Error(result.error ?? copy.genericError);
+      
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+      if (accessKey) {
+        await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: `[Portfolio] ${payload.subject}`,
+            name: payload.name,
+            email: payload.email,
+            message: payload.message,
+          }),
+        }).catch((e) => console.error("Web3Forms error:", e));
+      }
+
       formRef.current?.reset();
       startedAt.current = Date.now();
       setSuccess(true);

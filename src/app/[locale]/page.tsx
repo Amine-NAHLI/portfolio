@@ -11,7 +11,7 @@ import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
 import { getHomeCopy } from "@/content/dynamic-copy";
-import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials, getPublicJourney } from "@/features/portfolio/data";
+import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials, getPublicJourney, getPublicContactLinks } from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
 import { isLocale, Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
@@ -37,12 +37,13 @@ export default async function HomePage({ params }: HomePageProps) {
   if (!isLocale(locale)) notFound();
 
   const copy = await getHomeCopy(locale);
-  const [projects, skillGroups, certifications, testimonials, journey] = await Promise.all([
+  const [projects, skillGroups, certifications, testimonials, journey, contactLinks] = await Promise.all([
     getPublishedProjects(locale),
     getPublicSkillGroups(locale),
     getPublicCertifications(locale),
     getPublicTestimonials(locale),
     getPublicJourney(locale),
+    getPublicContactLinks(),
   ]);
   const featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
   const displaySkills = skillGroups.slice(0, 3);
@@ -61,7 +62,7 @@ export default async function HomePage({ params }: HomePageProps) {
             name: siteConfig.name,
             url: new URL(`/${locale}`, getSiteUrl()).toString(),
             homeLocation: siteConfig.location[locale],
-            sameAs: [siteConfig.links.github, siteConfig.links.linkedin, siteConfig.links.tryHackMe],
+            sameAs: [contactLinks.github, contactLinks.linkedin, contactLinks.tryHackMe],
             alumniOf: { "@type": "CollegeOrUniversity", name: "Université Privée de Fès" },
           },
           {
@@ -109,7 +110,7 @@ export default async function HomePage({ params }: HomePageProps) {
                 <ButtonLink href={`/${locale}/contact`}>
                   {copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" />
                 </ButtonLink>
-                <ButtonLink href={siteConfig.links.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
+                <ButtonLink href={contactLinks.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
                   <FileText aria-hidden="true" className="size-4" />
                   {copy.resumeCta}
                 </ButtonLink>

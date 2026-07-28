@@ -9,6 +9,7 @@ import { PrivacyAnalytics } from "@/components/analytics/PrivacyAnalytics";
 import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttributes";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import FluidBackground from "@/components/layout/FluidBackground";
+import { getPublicContactLinks } from "@/features/portfolio/data";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -80,6 +81,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   if (!isLocale(candidate)) notFound();
 
   const dictionary = getDictionary(candidate);
+  const contactLinks = await getPublicContactLinks();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -88,12 +90,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <a href="#main-content" className="skip-link">
         {dictionary.skipToContent}
       </a>
-      <SiteHeader locale={candidate} dictionary={dictionary} />
+      <SiteHeader locale={candidate} dictionary={dictionary} resumeLink={contactLinks.resume} />
       <PrivacyAnalytics locale={candidate} />
       <main id="main-content" className="page-enter flex-1" tabIndex={-1}>
         {children}
       </main>
-      <SiteFooter locale={candidate} dictionary={dictionary} />
+      <SiteFooter locale={candidate} dictionary={dictionary} contactLinks={contactLinks} />
     </div>
   );
 }

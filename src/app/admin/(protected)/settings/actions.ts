@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function updateAccountDetails(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
@@ -26,4 +27,28 @@ export async function updateAccountDetails(prevState: unknown, formData: FormDat
     : "Votre mot de passe a été mis à jour avec succès.";
 
   return { success: true, message };
+}
+
+export async function saveContactLinks(prevState: unknown, formData: FormData) {
+  const supabase = await createClient();
+  const data = {
+    email: formData.get("email")?.toString().trim() || "",
+    github: formData.get("github")?.toString().trim() || "",
+    linkedin: formData.get("linkedin")?.toString().trim() || "",
+  };
+
+  const { error } = await supabase.from("site_settings").upsert(
+    { key: "contact_links", value: data, is_public: true },
+    { onConflict: "key" }
+  );
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidateTag("settings");
+  revalidateTag("portfolio");
+  revalidatePath("/", "layout");
+
+  return { success: true, message: "Les liens de contact ont été mis à jour avec succès." };
 }

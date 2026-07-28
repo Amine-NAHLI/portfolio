@@ -11,10 +11,10 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { getAlternateLocale, type Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 
-type SiteHeaderProps = { locale: Locale; dictionary: Dictionary };
+type SiteHeaderProps = { locale: Locale; dictionary: Dictionary; resumeLink: string };
 type NavigationItem = { label: string; href: string };
 
-export default function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
+export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeaderProps) {
   const pathname = usePathname() ?? `/${locale}`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -48,7 +48,7 @@ export default function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
         <ThemeToggle />
         <Link href={`/${locale}/search`} className="inline-grid size-11 place-items-center rounded-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={dictionary.nav.search}><Search aria-hidden="true" className="size-4" /></Link>
         <Link href={alternatePath} hrefLang={alternateLocale} onClick={rememberLocale} data-analytics-event="language_change" className="inline-flex min-h-11 items-center gap-2 rounded-sm px-3 font-mono text-xs font-semibold uppercase tracking-[.08em] text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={dictionary.switchLanguage}><Languages aria-hidden="true" className="size-4" /><span>{alternateLocale}</span></Link>
-        <Link href={siteConfig.links.resume} target="_blank" rel="noreferrer" data-analytics-event="cv_open" className="hidden min-h-11 items-center gap-1.5 rounded-sm border border-border-strong bg-surface px-4 font-mono text-xs font-semibold uppercase tracking-[.08em] text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex">{dictionary.nav.resume}<ArrowUpRight aria-hidden="true" className="size-4" /></Link>
+        <Link href={resumeLink} target="_blank" rel="noreferrer" data-analytics-event="cv_open" className="hidden min-h-11 items-center gap-1.5 rounded-sm border border-border-strong bg-surface px-4 font-mono text-xs font-semibold uppercase tracking-[.08em] text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex">{dictionary.nav.resume}<ArrowUpRight aria-hidden="true" className="size-4" /></Link>
         <button type="button" className="inline-grid size-11 place-items-center rounded-sm border border-border text-text-primary transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent xl:hidden" aria-label={dictionary.openMenu} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="size-5" /></button>
       </div>
     </Container>
@@ -56,7 +56,7 @@ export default function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
       <div className="flex min-h-full flex-col px-5 py-4 sm:px-8">
         <div className="flex min-h-12 items-center justify-between"><span className="font-mono text-xs font-semibold uppercase tracking-[.12em] text-text-muted">{dictionary.navigationLabel}</span><button type="button" className="inline-grid size-11 place-items-center rounded-sm border border-border text-text-primary hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={dictionary.closeMenu} onClick={closeMenu}><X aria-hidden="true" className="size-5" /></button></div>
         <nav className="mt-10 flex flex-1 flex-col" aria-label={dictionary.navigationLabel}>{navigation.map((item) => { const active = item.href === `/${locale}` ? pathname === item.href : pathname.startsWith(item.href); return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} onClick={closeMenu} className={cn("flex min-h-14 items-center border-b border-border font-display text-xl font-semibold tracking-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent", active ? "text-accent" : "text-text-primary hover:text-accent")}>{item.label}</Link>; })}</nav>
-        <div className="mt-10 grid gap-3 border-t border-border pt-6"><Link href={siteConfig.links.resume} target="_blank" rel="noreferrer" data-analytics-event="cv_open" onClick={closeMenu} className="button-primary">{dictionary.nav.resume}<ArrowUpRight aria-hidden="true" className="size-4" /></Link><Link href={alternatePath} hrefLang={alternateLocale} onClick={() => { rememberLocale(); closeMenu(); }} data-analytics-event="language_change" className="button-secondary"><Languages aria-hidden="true" className="size-4" />{dictionary.alternateLanguageName}</Link></div>
+        <div className="mt-10 grid gap-3 border-t border-border pt-6"><Link href={resumeLink} target="_blank" rel="noreferrer" data-analytics-event="cv_open" onClick={closeMenu} className="button-primary">{dictionary.nav.resume}<ArrowUpRight aria-hidden="true" className="size-4" /></Link><Link href={alternatePath} hrefLang={alternateLocale} onClick={() => { rememberLocale(); closeMenu(); }} data-analytics-event="language_change" className="button-secondary"><Languages aria-hidden="true" className="size-4" />{dictionary.alternateLanguageName}</Link></div>
       </div>
     </dialog>
   </header>;

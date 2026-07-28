@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import type { Locale } from "@/i18n/config";
 import { hasSupabasePublicConfig } from "@/lib/env/supabase";
 import { createPublicClient } from "@/lib/supabase/public";
+import { siteConfig } from "@/config/site";
 
 export type PublicJourneyEntry = {
   id: string;
@@ -146,7 +147,26 @@ const certificatesEn = unstable_cache(() => queryCertificates("en"), ["portfolio
 const testimonialsFr = unstable_cache(() => queryTestimonials("fr"), ["portfolio-testimonials-fr"], { revalidate: 900, tags: ["portfolio"] });
 const testimonialsEn = unstable_cache(() => queryTestimonials("en"), ["portfolio-testimonials-en"], { revalidate: 900, tags: ["portfolio"] });
 
+async function queryContactLinks() {
+  if (!hasSupabasePublicConfig()) return siteConfig.links;
+  try {
+    const { data, error } = await createPublicClient().from("site_settings").select("value").eq("key", "contact_links").single();
+    if (error || !data) return siteConfig.links;
+    const dbLinks = data.value as Record<string, string>;
+    return {
+      ...siteConfig.links,
+      github: dbLinks.github || siteConfig.links.github,
+      linkedin: dbLinks.linkedin || siteConfig.links.linkedin,
+      email: dbLinks.email ? `mailto:${dbLinks.email}` : siteConfig.links.email,
+    };
+  } catch {
+    return siteConfig.links;
+  }
+}
+const contactLinksCache = unstable_cache(() => queryContactLinks(), ["portfolio-contact-links"], { revalidate: 900, tags: ["portfolio", "settings"] });
+
 export const getPublicJourney = (locale: Locale) => locale === "fr" ? journeyFr() : journeyEn();
 export const getPublicSkillGroups = (locale: Locale) => locale === "fr" ? skillsFr() : skillsEn();
 export const getPublicCertifications = (locale: Locale) => locale === "fr" ? certificatesFr() : certificatesEn();
 export const getPublicTestimonials = (locale: Locale) => locale === "fr" ? testimonialsFr() : testimonialsEn();
+export const getPublicContactLinks = () => contactLinksCache();

@@ -1,8 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminContext } from "@/lib/auth/admin";
-import { writeAuditLog } from "@/lib/admin/content-repository";
-import { adminResources } from "@/features/admin/resources";
 import { acceptsSameOriginMutation } from "@/lib/security/request";
 
 export const runtime = "nodejs";
@@ -10,13 +8,7 @@ export const runtime = "nodejs";
 const BUCKET = "portfolio-media";
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const MAX_REQUEST_BYTES = MAX_FILE_BYTES + 256 * 1024;
-const extensions: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/avif": "avif",
-  "application/pdf": "pdf",
-};
+const PDF_MIME_TYPE = "application/pdf";
 
 function fail(message: string, status: number) {
   return NextResponse.json({ error: message }, { status, headers: { "Cache-Control": "private, no-store" } });
@@ -36,14 +28,15 @@ export async function POST(request: NextRequest) {
   catch { return fail("Formulaire invalide.", 400); }
   const file = formData.get("file");
   if (!(file instanceof File)) return fail("Fichier manquant.", 422);
-  const extension = extensions[file.type];
-  if (!extension || file.size <= 0 || file.size > MAX_FILE_BYTES) return fail("Type ou taille de fichier refusé.", 422);
+  if (file.type !== PDF_MIME_TYPE || file.size <= 0 || file.size > MAX_FILE_BYTES) return fail("Type ou taille de fichier refusé.", 422);
+  const signature = new TextDecoder().decode(await file.slice(0, 5).arrayBuffer());
+  if (signature !== "%PDF-") return fail("Le contenu du fichier n’est pas un PDF valide.", 422);
 
   const now = new Date();
-  const storagePath = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, "0")}/${randomUUID()}.${extension}`;
+  const storagePath = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, "0")}/${randomUUID()}.pdf`;
   const bytes = new Uint8Array(await file.arrayBuffer());
   const { error: uploadError } = await context.supabase.storage.from(BUCKET).upload(storagePath, bytes, {
-    contentType: file.type,
+    contentType: PDF_MIME_TYPE,
     cacheControl: "31536000",
     upsert: false,
   });
@@ -53,7 +46,7 @@ export async function POST(request: NextRequest) {
     bucket_id: BUCKET,
     storage_path: storagePath,
     original_name: file.name.slice(0, 255),
-    mime_type: file.type,
+    mime_type: PDF_MIME_TYPE,
     size_bytes: file.size,
     publication_status: "draft",
     created_by: context.userId,
@@ -64,6 +57,12 @@ export async function POST(request: NextRequest) {
     return fail("Les métadonnées du fichier n’ont pas pu être enregistrées.", 500);
   }
 
-  await writeAuditLog(context, "create", adminResources.media, data.id, ["file", "mime_type", "size_bytes"]);
+  await context.supabase.from("audit_logs").insert({
+    actor_id: context.userId,
+    action: "create",
+    entity_type: "media_assets",
+    entity_id: data.id,
+    details: { fields: ["file", "mime_type", "size_bytes"] },
+  });
   return NextResponse.json({ record: data }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
 }

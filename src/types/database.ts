@@ -72,6 +72,7 @@ export type SkillRow = Timestamped & {
   description_fr: string | null;
   description_en: string | null;
   learning_status: "active" | "learning" | "historical";
+  level: "beginner" | "intermediate" | "advanced";
   publication_status: WorkflowStatus;
   sort_order: number;
   last_used_on: string | null;
@@ -101,6 +102,8 @@ export type CertificationRow = Timestamped & {
   verification_url: string | null;
   badge_media_id: string | null;
   document_media_id: string | null;
+  description_fr: string | null;
+  description_en: string | null;
   skills: string[];
   sort_order: number;
 };
@@ -151,42 +154,6 @@ export type TimelineEntryRow = Timestamped & {
   related_entity_id: string | null;
   publication_status: WorkflowStatus;
   sort_order: number;
-};
-
-export type NowEntryRow = Timestamped & {
-  id: string;
-  title_fr: string;
-  title_en: string;
-  content_fr: string;
-  content_en: string;
-  entry_kind: "project" | "learning" | "objective" | "activity";
-  effective_on: string;
-  publication_status: WorkflowStatus;
-  sort_order: number;
-};
-
-export type BlogPostRow = Timestamped & {
-  id: string;
-  slug: string;
-  category_id: string | null;
-  publication_status: WorkflowStatus;
-  featured: boolean;
-  cover_media_id: string | null;
-  published_at: string | null;
-  created_by: string | null;
-  updated_by: string | null;
-};
-
-export type BlogPostTranslationRow = Timestamped & {
-  id: string;
-  blog_post_id: string;
-  locale: "fr" | "en";
-  title: string;
-  excerpt: string;
-  markdown: string;
-  seo_title: string | null;
-  seo_description: string | null;
-  review_status: "draft" | "review_required" | "validated";
 };
 
 export type ContactMessageRow = {
@@ -257,11 +224,8 @@ export type AnalyticsDailyRow = {
   updated_at: string;
 };
 
-type NamedRow = { id: string; slug: string; name: string; created_at: string };
-type CategoryRow = Timestamped & { id: string; slug: string; name_fr: string; name_en: string };
 type SiteSettingRow = { key: string; value: Json; is_public: boolean; description: string | null; updated_by: string | null; updated_at: string };
 type ProjectSkillRow = { project_id: string; skill_id: string; created_at: string };
-type BlogPostTagRow = { blog_post_id: string; tag_id: string; created_at: string };
 export type TestimonialRow = Timestamped & {
   id: string;
   name: string;
@@ -274,7 +238,7 @@ export type TestimonialRow = Timestamped & {
   message: string;
   rating: number;
   locale: "fr" | "en";
-  status: "pending" | "confirmed" | "rejected";
+  status: "pending" | "approved" | "rejected";
   consent_to_publish: boolean;
   fingerprint_hash: string | null;
   moderated_by: string | null;
@@ -294,12 +258,6 @@ export type Database = {
       experiences: TableDefinition<ExperienceRow>;
       education: TableDefinition<EducationRow>;
       timeline_entries: TableDefinition<TimelineEntryRow>;
-      now_entries: TableDefinition<NowEntryRow>;
-      categories: TableDefinition<CategoryRow>;
-      tags: TableDefinition<NamedRow>;
-      blog_posts: TableDefinition<BlogPostRow>;
-      blog_post_translations: TableDefinition<BlogPostTranslationRow>;
-      blog_post_tags: TableDefinition<BlogPostTagRow>;
       contact_messages: TableDefinition<ContactMessageRow>;
       media_assets: TableDefinition<MediaAssetRow>;
       site_settings: TableDefinition<SiteSettingRow>;

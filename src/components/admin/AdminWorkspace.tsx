@@ -1,0 +1,370 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { Check, Eye, FileUp, Pencil, Plus, Trash2, X } from "lucide-react";
+
+export type AdminWorkspaceSection = "projects" | "journey" | "skills" | "certifications" | "testimonials" | "messages";
+type RecordValue = Record<string, unknown>;
+type SkillLevel = "beginner" | "intermediate" | "advanced";
+type SkillCategory = { id: string; name_fr: string };
+type SkillRecord = { id: string; name: string; category: string; level: SkillLevel; sort_order: number };
+type MissingTechnology = { name: string; action: "add" | "ignore"; category: string; newCategory: string; level: SkillLevel; sortOrder: number };
+
+const labels: Record<AdminWorkspaceSection, { title: string; description: string; create?: string }> = {
+  projects: { title: "Projets", description: "Créez et modifiez les projets, leurs deux descriptions et leurs technologies au même endroit.", create: "Ajouter un projet" },
+  journey: { title: "Parcours", description: "Gérez les expériences et les formations dans un seul parcours.", create: "Ajouter au parcours" },
+  skills: { title: "Compétences", description: "Gérez les compétences et leurs catégories sans page séparée.", create: "Ajouter une compétence" },
+  certifications: { title: "Certifications", description: "Ajoutez les certifications et leur PDF directement dans ce formulaire.", create: "Ajouter une certification" },
+  testimonials: { title: "Avis", description: "Consultez puis modérez les avis reçus.", create: undefined },
+  messages: { title: "Messages", description: "Consultez les messages envoyés depuis le formulaire Contact.", create: undefined },
+};
+
+function emptyValues(section: AdminWorkspaceSection): RecordValue {
+  if (section === "projects") return { title: "", description_fr: "", description_en: "", github_url: "", technologies: "", sort_order: 0 };
+  if (section === "journey") return { kind: "experience", title_fr: "", title_en: "", organization: "", summary_fr: "", summary_en: "", started_on: "", ended_on: "", sort_order: 0 };
+  if (section === "skills") return { name: "", category: "", level: "intermediate", sort_order: 0 };
+  if (section === "certifications") return { title: "", issuer: "", issued_on: "", description_fr: "", description_en: "", document_media_id: "" };
+  return {};
+}
+
+function fromRecord(section: AdminWorkspaceSection, record: RecordValue): RecordValue {
+  if (section === "projects") return { ...emptyValues(section), ...record, technologies: Array.isArray(record.technologies) ? record.technologies.join(", ") : "" };
+  return { ...emptyValues(section), ...record };
+}
+
+function normalizeTechnology(value: string) {
+  return value.normalize("NFKC").replace(/\s+/g, " ").trim();
+}
+
+function technologyKey(value: string) {
+  return normalizeTechnology(value).toLocaleLowerCase();
+}
+
+function parseTechnologies(value: unknown): string[] {
+  const technologies: string[] = [];
+  const keys = new Set<string>();
+  for (const item of String(value ?? "").split(/[;,\n]+/)) {
+    const name = normalizeTechnology(item);
+    const key = technologyKey(name);
+    if (name && !keys.has(key)) {
+      technologies.push(name);
+      keys.add(key);
+    }
+  }
+  return technologies;
+}
+
+function useModalDialog(onClose: () => void) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (!dialog.open) dialog.showModal();
+    const handleClose = () => onCloseRef.current();
+    dialog.addEventListener("close", handleClose);
+    return () => {
+      dialog.removeEventListener("close", handleClose);
+      if (dialog.open) dialog.close();
+    };
+  }, []);
+
+  return { dialogRef, close: () => dialogRef.current?.close() };
+}
+
+async function api(section: AdminWorkspaceSection, init?: RequestInit) {
+  const response = await fetch(`/api/admin/workspace/${section}`, { headers: { Accept: "application/json", ...(init?.headers ?? {}) }, ...init });
+  const result = await response.json() as RecordValue;
+  if (!response.ok) throw new Error(typeof result.error === "string" ? result.error : "Opération impossible.");
+  return result;
+}
+
+export function AdminWorkspace({ section }: { section: AdminWorkspaceSection }) {
+  const [records, setRecords] = useState<RecordValue[]>([]);
+  const [categories, setCategories] = useState<SkillCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [editor, setEditor] = useState<RecordValue | "new" | null>(null);
+  const [detail, setDetail] = useState<RecordValue | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await api(section);
+      if (section === "skills") {
+        setRecords(Array.isArray(result.records) ? result.records as RecordValue[] : []);
+        setCategories(Array.isArray(result.categories) ? result.categories as SkillCategory[] : []);
+      } else {
+        setRecords(Array.isArray(result) ? result as RecordValue[] : []);
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Les données ne peuvent pas être chargées.");
+    } finally {
+      setLoading(false);
+    }
+  }, [section]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  async function remove(record: RecordValue) {
+    if (typeof record.id !== "string" || !window.confirm("Supprimer définitivement cet élément ?")) return;
+    try {
+      await api(section, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record.id }) });
+      setDetail(null);
+      await load();
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Suppression impossible."); }
+  }
+
+  async function moderate(record: RecordValue, status: "approved" | "rejected") {
+    if (typeof record.id !== "string") return;
+    try {
+      await api("testimonials", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record.id, values: { status } }) });
+      await load();
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Modération impossible."); }
+  }
+
+  async function view(record: RecordValue) {
+    setDetail(record);
+    if (section !== "messages" || typeof record.id !== "string" || record.status !== "new") return;
+    try {
+      await api("messages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record.id, values: {} }) });
+      await load();
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Message impossible à marquer comme lu."); }
+  }
+
+  const meta = labels[section];
+  return (
+    <div>
+      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+        <div className="max-w-3xl border-b border-border pb-6"><p className="system-label">{"// Administration"}</p><h1 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">{meta.title}</h1><p className="mt-3 text-sm leading-6 text-text-secondary sm:text-base">{meta.description}</p></div>
+        {meta.create ? <button className="button-primary shrink-0" type="button" onClick={() => setEditor("new")}><Plus aria-hidden="true" className="size-4" />{meta.create}</button> : null}
+      </header>
+      {error ? <p className="mt-6 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger" role="alert">{error}</p> : null}
+      {loading ? <p className="mt-8 text-sm text-text-muted">Chargement…</p> : <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />}
+      {editor && section !== "testimonials" && section !== "messages" ? <WorkspaceEditor section={section} record={editor === "new" ? null : editor} categories={categories} onClose={() => setEditor(null)} onSaved={async () => { setEditor(null); await load(); }} /> : null}
+      {detail ? <DetailDialog section={section} record={detail} onClose={() => setDetail(null)} /> : null}
+    </div>
+  );
+}
+
+function WorkspaceTable({ section, records, onEdit, onView, onDelete, onModerate }: { section: AdminWorkspaceSection; records: RecordValue[]; onEdit: (record: RecordValue) => void; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void }) {
+  if (!records.length) return <div className="mt-8 border border-dashed border-border bg-surface/60 p-10 text-center text-sm text-text-muted">Aucun contenu pour le moment. Utilisez l’action d’ajout pour commencer.</div>;
+  const headers = section === "projects" ? ["Titre", "GitHub", "Technologies", "Ordre"]
+    : section === "journey" ? ["Type", "Titre", "Organisation", "Début"]
+      : section === "skills" ? ["Nom", "Catégorie", "Niveau", "Ordre"]
+        : section === "certifications" ? ["Titre", "Organisme", "Date", "PDF"]
+          : section === "testimonials" ? ["Nom", "Rôle", "Date", "Statut"]
+            : ["Nom", "E-mail", "Sujet", "Date", "État"];
+  return <div className="mt-8 overflow-x-auto border border-border"><table className="w-full min-w-[46rem] text-left text-sm"><thead className="bg-surface-subtle font-mono text-[.68rem] uppercase tracking-wider text-text-muted"><tr>{headers.map((header) => <th key={header} className="border-b border-border px-4 py-3 font-semibold">{header}</th>)}<th className="border-b border-border px-4 py-3 text-right font-semibold">Actions</th></tr></thead><tbody className="divide-y divide-border bg-surface">{records.map((record) => <tr key={String(record.id)} className="align-top transition-colors hover:bg-surface-raised/50"><Cells section={section} record={record} /><td className="px-4 py-3"><div className="flex justify-end gap-2"><button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onView(record)} aria-label="Voir le détail"><Eye className="size-4" /></button>{["projects", "journey", "skills", "certifications"].includes(section) ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onEdit(record)} aria-label="Modifier"><Pencil className="size-4" /></button> : null}{section === "testimonials" ? <><button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-success hover:border-success hover:text-success" onClick={() => onModerate(record, "approved")} aria-label="Approuver"><Check className="size-4" /></button><button type="button" className="button-secondary px-3 text-xs" onClick={() => onModerate(record, "rejected")}>Rejeter</button></> : null}{section !== "messages" ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-danger text-danger" onClick={() => onDelete(record)} aria-label="Supprimer"><Trash2 className="size-4" /></button> : null}</div></td></tr>)}</tbody></table></div>;
+}
+
+function Cells({ section, record }: { section: AdminWorkspaceSection; record: RecordValue }) {
+  const cell = (value: unknown) => <td className="max-w-64 px-4 py-3 text-text-secondary"><span className="line-clamp-3">{Array.isArray(value) ? value.join(", ") : String(value || "—")}</span></td>;
+  if (section === "projects") return <>{cell(record.title)}{cell(record.github_url)}{cell(record.technologies)}{cell(record.sort_order)}</>;
+  if (section === "journey") return <>{cell(record.kind === "experience" ? "Expérience" : "Formation")}{cell(record.title_fr)}{cell(record.organization)}{cell(record.started_on)}</>;
+  if (section === "skills") return <>{cell(record.name)}{cell(record.category)}{cell({ beginner: "Débutant", intermediate: "Intermédiaire", advanced: "Avancé" }[String(record.level)] ?? record.level)}{cell(record.sort_order)}</>;
+  if (section === "certifications") return <>{cell(record.name_fr)}{cell(record.issuer)}{cell(record.issued_on)}{cell(record.document_media_id ? "Ajouté" : "—")}</>;
+  if (section === "testimonials") return <>{cell(`${record.first_name ?? ""} ${record.last_name ?? ""}`.trim())}{cell(record.job_title ?? record.organization)}{cell(formatDate(record.created_at))}{cell(record.status)}</>;
+  return <>{cell(record.sender_name)}{cell(record.sender_email)}{cell(record.subject)}{cell(formatDate(record.created_at))}{cell(record.status === "new" ? "Non lu" : "Lu")}</>;
+}
+
+function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; record: RecordValue | null; categories: SkillCategory[]; onClose: () => void; onSaved: () => Promise<void> }) {
+  const [values, setValues] = useState<RecordValue>(() => record ? fromRecord(section, record) : emptyValues(section));
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [translating, setTranslating] = useState<"description_en" | null>(null);
+  const [review, setReview] = useState<MissingTechnology[] | null>(null);
+  const [reviewCategories, setReviewCategories] = useState<SkillCategory[]>(categories);
+  const [projectTechnologies, setProjectTechnologies] = useState<string[]>([]);
+  const pdfRef = useRef<HTMLInputElement>(null);
+  const [pdf, setPdf] = useState<File | null>(null);
+  const { dialogRef, close } = useModalDialog(onClose);
+  const set = (key: string, value: string | number) => setValues((current) => ({ ...current, [key]: value }));
+
+  async function translate() {
+    const source = typeof values.description_fr === "string" ? values.description_fr : "";
+    if (!source.trim()) { setError("Saisissez d’abord la description française."); return; }
+    setTranslating("description_en");
+    setError(null);
+    try {
+      const result = await fetch("/api/admin/translate", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ text: source }) });
+      const body = await result.json() as { translation?: string; error?: string };
+      if (!result.ok || !body.translation) throw new Error(body.error ?? "Traduction impossible.");
+      set("description_en", body.translation);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Traduction impossible.");
+    } finally {
+      setTranslating(null);
+    }
+  }
+
+  async function uploadPdf() {
+    if (!pdf) return typeof values.document_media_id === "string" ? values.document_media_id : "";
+    if (pdf.type !== "application/pdf" || pdf.size <= 0 || pdf.size > 5 * 1024 * 1024) throw new Error("Le fichier doit être un PDF de 5 Mo maximum.");
+    const body = new FormData();
+    body.set("file", pdf);
+    const response = await fetch("/api/admin/media", { method: "POST", headers: { Accept: "application/json" }, body });
+    const result = await response.json() as { record?: { id?: string }; error?: string };
+    if (!response.ok || !result.record?.id) throw new Error(result.error ?? "Téléversement du PDF impossible.");
+    return result.record.id;
+  }
+
+  async function getSkillReferences(): Promise<{ records: SkillRecord[]; categories: SkillCategory[] }> {
+    const result = await api("skills");
+    return {
+      records: Array.isArray(result.records) ? result.records as SkillRecord[] : [],
+      categories: Array.isArray(result.categories) ? result.categories as SkillCategory[] : [],
+    };
+  }
+
+  async function saveProject(technologies: string[]) {
+    const outgoing: RecordValue = { ...values, technologies };
+    await api("projects", { method: record ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record?.id, values: outgoing }) });
+    await onSaved();
+  }
+
+  async function beginProjectReview() {
+    const technologies = parseTechnologies(values.technologies);
+    const references = await getSkillReferences();
+    const existingByKey = new Map(references.records.map((skill) => [technologyKey(skill.name), skill.name]));
+    const missing = technologies.filter((technology) => !existingByKey.has(technologyKey(technology)));
+    const technologiesForProject = technologies.map((technology) => existingByKey.get(technologyKey(technology)) ?? technology);
+
+    if (!missing.length) {
+      await saveProject(technologiesForProject);
+      return;
+    }
+
+    setProjectTechnologies(technologiesForProject);
+    setReviewCategories(references.categories);
+    setReview(missing.map((name) => ({ name, action: "add", category: "", newCategory: "", level: "intermediate", sortOrder: 0 })));
+  }
+
+  function updateMissingTechnology(name: string, patch: Partial<MissingTechnology>) {
+    setReview((items) => items?.map((item) => item.name === name ? { ...item, ...patch } : item) ?? null);
+  }
+
+  async function finishProjectReview() {
+    if (!review) return;
+    const selected = review.filter((item) => item.action === "add");
+    const invalid = selected.find((item) => (item.category === "__new__" ? !normalizeTechnology(item.newCategory) : !item.category));
+    if (invalid) {
+      setError(`Choisissez une catégorie pour ${invalid.name} avant de continuer.`);
+      return;
+    }
+
+    setPending(true);
+    setError(null);
+    try {
+      for (const item of selected) {
+        const category = item.category === "__new__" ? normalizeTechnology(item.newCategory) : item.category;
+        await api("skills", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ values: { name: item.name, category, level: item.level, sort_order: item.sortOrder } }),
+        });
+      }
+      const ignored = new Set(review.filter((item) => item.action === "ignore").map((item) => technologyKey(item.name)));
+      await saveProject(projectTechnologies.filter((technology) => !ignored.has(technologyKey(technology))));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Enregistrement impossible.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (review) {
+      await finishProjectReview();
+      return;
+    }
+
+    setPending(true);
+    setError(null);
+    try {
+      if (section === "projects") {
+        await beginProjectReview();
+        return;
+      }
+      const outgoing: RecordValue = { ...values };
+      if (section === "certifications") outgoing.document_media_id = await uploadPdf();
+      await api(section, { method: record ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record?.id, values: outgoing }) });
+      await onSaved();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Enregistrement impossible.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  const isProjectReview = section === "projects" && review !== null;
+  return (
+    <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); close(); }} className="m-auto max-h-[92vh] w-[min(52rem,calc(100%-2rem))] overflow-y-auto rounded-md border border-border bg-surface-raised p-0 text-text-secondary shadow-2xl">
+      <div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="system-label">{isProjectReview ? "Étape de vérification" : record ? "Modification" : "Nouveau contenu"}</p><h2 className="mt-1 text-xl font-semibold">{isProjectReview ? "Compétences à ajouter" : record ? "Modifier" : "Ajouter"}</h2></div><button type="button" className="grid size-11 place-items-center rounded-sm border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div>
+      <form onSubmit={submit} className="grid gap-5 p-5 sm:grid-cols-2 sm:p-7">
+        {isProjectReview ? <MissingSkillReview items={review} categories={reviewCategories} onChange={updateMissingTechnology} /> : <EditorFields section={section} values={values} set={set} categories={categories} translate={translate} translating={translating} pdfRef={pdfRef} pdf={pdf} setPdf={setPdf} />}
+        {error ? <p className="rounded-sm border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:col-span-2" role="alert">{error}</p> : null}
+        <div className="flex flex-wrap justify-end gap-3 border-t border-border pt-5 sm:col-span-2">
+          {isProjectReview ? <button type="button" className="button-secondary" onClick={() => { setReview(null); setError(null); }}>Retour au projet</button> : null}
+          <button type="button" className="button-secondary" onClick={close}>Annuler</button>
+          <button type="submit" className="button-primary" disabled={pending}>{pending ? "Enregistrement…" : isProjectReview ? "Créer les compétences et enregistrer" : "Enregistrer"}</button>
+        </div>
+      </form>
+    </dialog>
+  );
+}
+
+function MissingSkillReview({ items, categories, onChange }: { items: MissingTechnology[]; categories: SkillCategory[]; onChange: (name: string, patch: Partial<MissingTechnology>) => void }) {
+  return (
+    <section className="grid gap-5 sm:col-span-2" aria-labelledby="missing-skills-heading">
+      <div className="border-l-2 border-accent pl-4">
+        <h3 id="missing-skills-heading" className="text-lg font-semibold text-text-primary">Technologies utilisées dans ce projet mais absentes de votre liste de compétences</h3>
+        <p className="mt-2 text-sm leading-6 text-text-secondary">Choisissez les technologies à ajouter et classez-les avant d’enregistrer le projet. Ignorer une technologie la retire uniquement des compétences liées à ce projet.</p>
+      </div>
+      {!categories.length ? <p className="rounded-sm border border-amber/30 bg-amber/10 p-4 text-sm text-text-secondary">Aucune catégorie n’existe encore. Vous pouvez en créer une directement dans cette étape.</p> : null}
+      {items.map((item, index) => {
+        const disabled = item.action === "ignore";
+        return <fieldset key={item.name} className="grid gap-4 border border-border bg-surface p-4 sm:grid-cols-2 sm:p-5">
+          <legend className="sr-only">{item.name}</legend>
+          <div className="sm:col-span-2"><p className="system-label">Technologie {String(index + 1).padStart(2, "0")}</p><h4 className="mt-1 text-lg font-semibold text-text-primary">{item.name}</h4></div>
+          <label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Catégorie *</span><select disabled={disabled} value={item.category} onChange={(event) => onChange(item.name, { category: event.target.value })} className="min-h-11 px-3 font-normal"><option value="">Sélectionnez une catégorie</option>{categories.map((category) => <option key={category.id} value={category.name_fr}>{category.name_fr}</option>)}<option value="__new__">Créer une catégorie…</option></select></label>
+          <label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Niveau *</span><select disabled={disabled} value={item.level} onChange={(event) => onChange(item.name, { level: event.target.value as SkillLevel })} className="min-h-11 px-3 font-normal"><option value="beginner">Débutant</option><option value="intermediate">Intermédiaire</option><option value="advanced">Avancé</option></select></label>
+          {item.category === "__new__" ? <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Nouvelle catégorie *</span><input disabled={disabled} value={item.newCategory} onChange={(event) => onChange(item.name, { newCategory: event.target.value })} className="min-h-11 px-3 font-normal" placeholder="Ex. Développement web" /></label> : null}
+          <label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Ordre d’affichage</span><input disabled={disabled} type="number" min="0" value={item.sortOrder} onChange={(event) => onChange(item.name, { sortOrder: Number(event.target.value) })} className="min-h-11 px-3 font-normal" /></label>
+          <div className="flex flex-wrap items-end gap-2"><button type="button" aria-pressed={item.action === "add"} className={item.action === "add" ? "button-primary px-3 py-2 text-xs" : "button-secondary px-3 py-2 text-xs"} onClick={() => onChange(item.name, { action: "add" })}>Ajouter comme compétence</button><button type="button" aria-pressed={item.action === "ignore"} className={item.action === "ignore" ? "border border-danger bg-danger/10 px-3 py-2 text-xs font-semibold text-danger" : "button-secondary px-3 py-2 text-xs"} onClick={() => onChange(item.name, { action: "ignore" })}>Ignorer</button></div>
+        </fieldset>;
+      })}
+    </section>
+  );
+}
+
+function EditorFields({ section, values, set, categories, translate, translating, pdfRef, pdf, setPdf }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; categories: SkillCategory[]; translate: () => Promise<void>; translating: "description_en" | null; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void }) {
+  const field = (name: string, label: string, type: "text" | "date" | "number" = "text", wide = false, required = true) => <label className={`grid gap-2 text-sm font-semibold text-text-primary ${wide ? "sm:col-span-2" : ""}`}><span>{label}{required ? <span className="text-danger"> *</span> : null}</span><input required={required} type={type} value={String(values[name] ?? "")} onChange={(event) => set(name, type === "number" ? Number(event.target.value) : event.target.value)} className="min-h-11 px-3 font-normal" /></label>;
+  const textarea = (name: string, label: string, translatable = false, required = true) => <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span className="flex flex-wrap items-center justify-between gap-3">{label}{translatable ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void translate()} disabled={Boolean(translating)}>{translating ? "Traduction…" : "Traduire en anglais avec Groq"}</button> : null}</span><textarea required={required} value={String(values[name] ?? "")} onChange={(event) => set(name, event.target.value)} rows={5} className="resize-y px-3 py-2 font-normal" /></label>;
+  if (section === "projects") return <>{field("title", "Titre", "text", true)}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("technologies", "Technologies (séparées par des virgules, des points-virgules ou des lignes)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}</>;
+  if (section === "journey") return <><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Type *</span><select value={String(values.kind)} onChange={(event) => set("kind", event.target.value)} className="min-h-11 px-3 font-normal"><option value="experience">Expérience</option><option value="education">Formation</option></select></label>{field("organization", values.kind === "education" ? "Établissement" : "Organisation")}{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{textarea("summary_fr", "Description FR")}{textarea("summary_en", "Description EN")}{field("started_on", "Date de début", "date")}
+  <div className="grid gap-2 text-sm font-semibold text-text-primary">
+    <span>Date de fin prévue ou effective</span>
+    <input type="date" value={String(values.ended_on ?? "")} onChange={(event) => set("ended_on", event.target.value)} className="min-h-11 px-3 font-normal" />
+    <span className="text-xs font-normal text-text-muted">Si la date est vide ou dans le futur, le parcours s’affiche « En cours ». Il passera automatiquement à la date de fin une fois atteinte.</span>
+  </div>
+  {field("sort_order", "Ordre d’affichage", "number")}</>;
+  if (section === "skills") return <><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Nom *</span><input required value={String(values.name ?? "")} onChange={(event) => set("name", event.target.value)} className="min-h-11 px-3 font-normal" /></label><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Catégorie *</span><input required list="skill-categories" value={String(values.category ?? "")} onChange={(event) => set("category", event.target.value)} className="min-h-11 px-3 font-normal" /><datalist id="skill-categories">{categories.map((category) => <option key={category.id} value={category.name_fr} />)}</datalist><span className="text-xs font-normal text-text-muted">Saisissez un nouveau nom pour créer la catégorie directement.</span></label><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Niveau *</span><select value={String(values.level)} onChange={(event) => set("level", event.target.value)} className="min-h-11 px-3 font-normal"><option value="beginner">Débutant</option><option value="intermediate">Intermédiaire</option><option value="advanced">Avancé</option></select></label>{field("sort_order", "Ordre d’affichage", "number")}</>;
+  return <>{field("title", "Titre", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
+}
+
+function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSection; record: RecordValue; onClose: () => void }) {
+  const { dialogRef, close } = useModalDialog(onClose);
+  const entries: Array<[string, unknown]> = section === "messages" ? [["Nom", record.sender_name], ["E-mail", record.sender_email], ["Sujet", record.subject], ["Message", record.message], ["Date", formatDate(record.created_at)], ["État", record.status === "new" ? "Non lu" : "Lu"]] : [["Nom", `${record.first_name ?? ""} ${record.last_name ?? ""}`.trim()], ["Rôle", record.job_title], ["Organisation", record.organization], ["Note", record.rating], ["Langue", record.locale], ["Statut", record.status], ["Avis", record.message], ["Date", formatDate(record.created_at)]];
+  return <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); close(); }} className="m-auto w-[min(42rem,calc(100%-2rem))] rounded-2xl border border-border bg-surface-raised p-0 text-text-secondary shadow-2xl"><div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="eyebrow">Détail</p><h2 className="mt-1 text-xl font-semibold">{section === "messages" ? "Message reçu" : "Avis reçu"}</h2></div><button type="button" className="grid size-11 place-items-center rounded-lg border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div><dl className="grid gap-5 p-5 sm:p-7">{entries.map(([label, value]) => <div key={label}><dt className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</dt><dd className="mt-1 whitespace-pre-wrap text-sm leading-6 text-text-primary">{String(value || "—")}</dd></div>)}</dl></dialog>;
+}
+
+function formatDate(value: unknown) {
+  if (typeof value !== "string") return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(date);
+}

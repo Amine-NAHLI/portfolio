@@ -1,7 +1,8 @@
 import "server-only";
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { getSupabasePublicConfig, getSupabaseServiceRoleKey } from "@/lib/env/supabase";
+import { getSupabasePublicConfig } from "@/lib/env/supabase";
+import { getSupabaseServiceRoleKey } from "@/lib/env/supabase-server";
 import type { Database } from "@/types/database";
 
 export function createAdminClient() {
@@ -16,4 +17,3 @@ export function createAdminClient() {
     },
   });
 }
-

@@ -7,8 +7,7 @@ select ok(
     select 1
     from unnest(array[
       'admin_users', 'projects', 'project_translations', 'skill_categories', 'skills', 'project_skills',
-      'certifications', 'experiences', 'education', 'timeline_entries', 'now_entries',
-      'categories', 'tags', 'blog_posts', 'blog_post_translations', 'blog_post_tags',
+      'certifications', 'experiences', 'education', 'timeline_entries',
       'contact_messages', 'media_assets', 'site_settings', 'ai_jobs', 'audit_logs',
       'testimonials', 'analytics_daily'
     ]) as expected(table_name)
@@ -42,15 +41,15 @@ insert into public.testimonials (
   name, first_name, last_name, job_title, message, status, consent_to_publish
 )
 values
-  ('Visible Person', 'Visible', 'Person', 'Encadrant', repeat('A', 40), 'confirmed', true),
+  ('Visible Person', 'Visible', 'Person', 'Encadrant', repeat('A', 40), 'approved', true),
   ('Pending Person', 'Pending', 'Person', 'Professeur', repeat('B', 40), 'pending', true),
-  ('No Consent', 'No', 'Consent', 'Collègue', repeat('C', 40), 'confirmed', false);
+  ('No Consent', 'No', 'Consent', 'Collègue', repeat('C', 40), 'approved', false);
 
 set local role anon;
 select is(
   (select array_agg(name order by name) from public.testimonials),
   array['Visible Person']::text[],
-  'anonymous users only read confirmed recommendations with publication consent'
+  'anonymous users only read approved recommendations with publication consent'
 );
 reset role;
 

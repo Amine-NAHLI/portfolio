@@ -7,17 +7,19 @@ const publicationGuards = await readFile(new URL("../supabase/migrations/003_edi
 const analytics = await readFile(new URL("../supabase/migrations/004_contact_and_private_analytics.sql", import.meta.url), "utf8");
 const caseStudies = await readFile(new URL("../supabase/migrations/005_project_case_study_completeness.sql", import.meta.url), "utf8");
 const adminWorkflows = await readFile(new URL("../supabase/migrations/20260720235949_admin_content_workflows.sql", import.meta.url), "utf8");
+const retiredContent = await readFile(new URL("../supabase/migrations/20260722154712_remove_blog_now_harden_content.sql", import.meta.url), "utf8");
+const adminWorkspace = await readFile(new URL("../supabase/migrations/20260722170000_admin_workspace_fields.sql", import.meta.url), "utf8");
+const rlsMigrations = [foundation, adminWorkflows, retiredContent].join("\n");
 
 const exposedTables = [
   "admin_users", "projects", "project_translations", "skills", "project_skills", "certifications", "experiences", "education",
-  "timeline_entries", "now_entries", "categories", "tags", "blog_posts", "blog_post_translations", "blog_post_tags",
-  "contact_messages", "media_assets", "site_settings", "ai_jobs", "audit_logs", "testimonials",
+  "timeline_entries", "skill_categories", "contact_messages", "media_assets", "site_settings", "ai_jobs", "audit_logs", "testimonials",
 ];
 
 describe("Supabase security migrations", () => {
   for (const table of exposedTables) {
     it(`enables RLS on ${table}`, () => {
-      assert.match(foundation, new RegExp(`alter table public\\.${table} enable row level security`, "i"));
+      assert.match(rlsMigrations, new RegExp(`alter table public\\.${table} enable row level security`, "i"));
     });
   }
 
@@ -30,9 +32,17 @@ describe("Supabase security migrations", () => {
     assert.match(foundation, /revoke all on public\.testimonials from anon, authenticated/i);
   });
 
-  it("only exposes confirmed and consented recommendations", () => {
-    assert.match(adminWorkflows, /testimonials_public_read[\s\S]*?status = 'confirmed'[\s\S]*?consent_to_publish = true/i);
+  it("only exposes approved and consented recommendations", () => {
+    assert.match(adminWorkspace, /testimonials_public_read[\s\S]*?status = 'approved'[\s\S]*?consent_to_publish = true/i);
     assert.match(adminWorkflows, /revoke insert, update, delete on public\.testimonials from anon/i);
+  });
+
+  it("uses the approved testimonial vocabulary and stores the requested Admin fields", () => {
+    assert.match(adminWorkspace, /set status = 'approved'[\s\S]*?where status = 'confirmed'/i);
+    assert.match(adminWorkspace, /check \(status in \('pending', 'approved', 'rejected'\)\)/i);
+    assert.match(adminWorkspace, /add column if not exists level/i);
+    assert.match(adminWorkspace, /add column if not exists description_fr/i);
+    assert.match(adminWorkspace, /add column if not exists description_en/i);
   });
 
   it("protects skill categories with published-only and admin policies", () => {
@@ -43,6 +53,12 @@ describe("Supabase security migrations", () => {
 
   it("links certificate documents without cascading certificate deletion", () => {
     assert.match(adminWorkflows, /certifications_document_media_id_fkey[\s\S]*?on delete set null/i);
+  });
+
+  it("removes retired Blog and Now tables and keeps certificate PDFs private", () => {
+    assert.match(retiredContent, /drop table if exists public\.blog_posts cascade/i);
+    assert.match(retiredContent, /drop table if exists public\.now_entries cascade/i);
+    assert.match(retiredContent, /mime_type <> 'application\/pdf'/i);
   });
 
   it("requires validated French and English translations at database level", () => {

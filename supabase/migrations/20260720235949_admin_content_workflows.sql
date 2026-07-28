@@ -70,6 +70,11 @@ alter table public.testimonials
   add column if not exists moderated_at timestamptz,
   add column if not exists updated_at timestamptz not null default now();
 
+-- Older installations only accepted `approved`; allow the target status before
+-- backfilling legacy rows so the update remains valid on an existing project.
+alter table public.testimonials
+  drop constraint if exists testimonials_status_check;
+
 update public.testimonials
 set
   first_name = coalesce(nullif(btrim(first_name), ''), nullif(split_part(btrim(name), ' ', 1), ''), 'Non renseigné'),

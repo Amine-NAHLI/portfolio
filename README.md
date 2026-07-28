@@ -1,93 +1,84 @@
-# Portfolio d'Amine Nahli
+# Portfolio & CMS Headless — Amine Nahli
 
-Portfolio bilingue (français/anglais), administrable et orienté recrutement. Le projet présente uniquement des informations vérifiables issues du CV officiel ou validées depuis l'administration.
+Un portfolio bilingue (français/anglais) performant, administrable et orienté recrutement. Développé avec une approche Jamstack moderne, il inclut son propre CMS sur-mesure (Dashboard Admin) pour gérer les projets, compétences, certifications et témoignages.
 
-## Fonctionnalités
+![Architecture Globale](./docs/Architecture%20Globale.png)
 
-- site public bilingue avec projets, études de cas, parcours, compétences, certifications, blog, recherche et contact ;
-- interface d'administration protégée par Supabase Auth et une liste blanche en base ;
-- workflow éditorial brouillon → relecture → validation → publication ;
-- analyse factuelle de dépôts GitHub, sans publication automatique et sans API d'IA payante ;
-- formulaire de contact stocké dans Supabase, avec protections CSRF, anti-spam et limitation de débit ;
-- analytics internes optionnels, agrégés et sans cookie ni identifiant visiteur ;
-- SEO technique, données structurées, sitemap, robots et images sociales ;
-- en-têtes de sécurité, RLS, validation serveur et stockage privé des médias ;
-- tests natifs et pgTAP, parcours Playwright, Axe WCAG 2.2 AA, budgets Lighthouse, smoke tests de production et CI GitHub Actions.
+## ✨ Fonctionnalités Clés
 
-## Stack
+- **Site public bilingue** : Projets, parcours professionnel, compétences, certifications, et témoignages.
+- **Interface d'administration (CMS)** : Protégée par Supabase Auth avec liste blanche. Permet le CRUD complet de tous les contenus.
+- **Workflow Éditorial** : Brouillon → Relecture → Validation bilingue → Publication.
+- **Analyse GitHub Intégrée** : Récupération factuelle des données de dépôts (technologies, métriques) sans IA générative payante.
+- **Formulaire de Contact Sécurisé** : Anti-spam, limitation de débit (rate-limiting) côté serveur, notification par e-mail (Web3Forms) et stockage DB.
+- **Qualité & Accessibilité** : SEO technique complet (Données structurées, Sitemap, OpenGraph), scores Lighthouse 100%, conforme WCAG 2.2 AA.
+- **Dégradation Contrôlée** : Le site public reste fonctionnel même si la base de données ou les API tierces sont indisponibles.
 
-- Next.js 15.5 (App Router), React 19 et TypeScript strict ;
-- Tailwind CSS 4 ;
-- Supabase Free : PostgreSQL, Auth et Storage ;
-- Mermaid chargé à la demande pour les diagrammes du blog ;
-- Node.js 22, Playwright, Axe, Lighthouse et Supabase CLI pour la qualité locale et la CI.
+## 🛠️ Stack Technique
 
-Le projet n'emploie aucune API payante, aucun essai temporaire et aucune facturation à l'usage. Les fonctionnalités externes restent désactivables et le site public fonctionne sans Supabase.
+L'architecture s'appuie exclusivement sur des technologies modernes, performantes et hébergées **sans frais** (Free Tiers).
 
-## Installation locale
+- **Frontend** : Next.js 15 (App Router), React 19, TypeScript
+- **Styling** : Tailwind CSS 4, Framer Motion (Animations), Glassmorphism
+- **Backend & Base de données** : Supabase (PostgreSQL, Auth, Storage & RLS)
+- **Déploiement** : Vercel (SSG / ISR / Serverless Functions)
+- **Outils Qualité** : ESLint, Playwright (E2E), Axe (A11y), pgTAP (Tests DB)
 
-Prérequis minimal : Node.js 22 et npm. Docker est requis uniquement pour valider les migrations et RLS localement.
+👉 **Découvrir l'architecture complète : [Documentation Architecture](./docs/ARCHITECTURE.md)**
+
+## 🚀 Installation Locale
+
+Prérequis : Node.js 22 et npm.
 
 ```bash
+# 1. Installer les dépendances
 npm ci
-Copy-Item .env.example .env.local
+
+# 2. Configurer les variables d'environnement
+cp .env.example .env.local
+
+# 3. Lancer le serveur de développement
 npm run dev
 ```
 
-Ouvrir `http://localhost:3000` ; `/` redirige vers `/fr`.
+L'application sera accessible sur `http://localhost:3000` (redirige vers `/fr` par défaut).
 
-## Variables d'environnement
+## ⚙️ Configuration (.env.local)
 
-Copier `.env.example` puis renseigner uniquement les variables nécessaires :
+Renseignez les variables nécessaires selon le besoin (voir `docs/DEPLOYMENT.md` pour le détail) :
 
-| Variable | Portée | Requise |
+| Variable | Portée | Description |
 |---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | URL canonique | Oui en production |
-| `NEXT_PUBLIC_SUPABASE_URL` | Endpoint public Supabase | Pour le contenu dynamique |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Clé publique protégée par RLS | Pour le contenu dynamique |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Compatibilité temporaire | Non |
-| `SUPABASE_SERVICE_ROLE_KEY` | Serveur uniquement | Admin, contact et analytics |
-| `GITHUB_TOKEN` | Serveur uniquement | Non ; augmente seulement la limite GitHub |
-| `CONTACT_FINGERPRINT_SECRET` | Secret HMAC d'au moins 32 octets | Contact en production |
-| `NEXT_PUBLIC_ANALYTICS_ENABLED` | `true` pour les compteurs agrégés | Non, défaut `false` |
+| `NEXT_PUBLIC_SITE_URL` | Publique | URL canonique en production |
+| `NEXT_PUBLIC_SUPABASE_URL` | Publique | Endpoint Supabase (Requis pour le CMS) |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publique | Clé anonyme Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Serveur | Clé Admin (Contact, Analytics, Mutations) |
+| `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | Publique | Clé pour l'envoi d'e-mails de contact |
+| `CONTACT_FINGERPRINT_SECRET` | Serveur | Secret HMAC anti-spam |
 
-Ne jamais préfixer une clé privilégiée par `NEXT_PUBLIC_`. Les valeurs réelles ne doivent jamais être commitées.
+*Note: Le site public fonctionne grâce à un contenu factuel statique de repli si Supabase n'est pas configuré.*
 
-## Base de données
+## 📚 Documentation Détaillée
 
-Appliquer les migrations de `supabase/migrations` dans l'ordre numérique à un projet Supabase Free vide ou compatible. Créer ensuite l'utilisateur Auth administrateur et ajouter son UUID dans `public.admin_users`. Toutes les tables exposées utilisent RLS ; aucun contenu n'est public avant validation bilingue. La configuration `supabase/config.toml` sert exclusivement à la pile locale et refuse les inscriptions publiques.
+Consultez les fichiers du dossier `docs/` pour approfondir des aspects spécifiques du projet :
 
-Le formulaire de contact et les analytics nécessitent la clé `service_role` côté serveur. Le site public conserve ses contenus factuels statiques si Supabase n'est pas configuré.
+- 🏗️ **[Architecture & Flux de données](./docs/ARCHITECTURE.md)** (avec diagrammes)
+- 🔒 **[Sécurité & RLS](./docs/SECURITY.md)**
+- 🧪 **[Stratégie de Tests](./docs/TESTING.md)**
+- 🚀 **[Déploiement & CI/CD](./docs/DEPLOYMENT.md)**
+- 💰 **[Stratégie Zéro Coût (Free Tier)](./docs/FREE_TIER.md)**
 
-## Commandes
+## 📜 Commandes Utiles
 
 ```bash
-npm run type-check     # TypeScript strict
-npm run lint           # ESLint sans avertissement
-npm test               # tests unitaires et de sécurité
-npm run test:coverage  # seuils de couverture
-npm run build          # build de production
-npm run start          # serveur de production local
-npm run test:smoke     # à lancer contre le serveur démarré
-npm run test:links     # vérifie les liens internes du serveur démarré
-npm run test:e2e       # parcours, clavier, responsive et Axe WCAG 2.2 AA
-npm run test:lighthouse # budgets Performance, A11y, Bonnes pratiques et SEO
-npm run test:db        # tests pgTAP sur Supabase local démarré
-npm run test:db:lint   # lint des schémas PostgreSQL locaux
-npm run check          # type-check + lint + tests + build
+npm run type-check     # Vérification TypeScript stricte
+npm run lint           # ESLint
+npm test               # Tests unitaires et sécurité
+npm run build          # Build de production optimisé
+npm run start          # Lancer le serveur de production (après le build)
+npm run test:e2e       # Tests end-to-end (Playwright) et Accessibilité (Axe)
 ```
 
-## Documentation
+## ⚖️ Licence
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Sécurité](docs/SECURITY.md)
-- [Tests](docs/TESTING.md)
-- [Déploiement](docs/DEPLOYMENT.md)
-- [Contraintes de coût nul](docs/FREE_TIER.md)
-- [Contenus à compléter](docs/CONTENT_CHECKLIST.md)
-
-Le CV public est servi depuis `CV/cv.html`, qui constitue la source officielle conservée dans le dépôt. Les anciens rapports `AUDIT.md` et `NAV_DIAGNOSIS.md` décrivent l'état antérieur à la refonte et sont archivés à titre de traçabilité.
-
-## Licence
-
-MIT — voir [LICENSE](LICENSE).
+Ce projet est sous licence MIT — voir le fichier [LICENSE](LICENSE) pour plus de détails.

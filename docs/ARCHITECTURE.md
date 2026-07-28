@@ -1,52 +1,81 @@
-# Architecture
+# Architecture Technique
 
-## Principes
+Ce document détaille l'architecture globale, la structure du code frontend, l'infrastructure de base de données, les flux de données et la stratégie de déploiement du portfolio. 
 
-Le dépôt suit l'App Router de Next.js. Le rendu serveur reste le choix par défaut ; les composants client sont limités aux interactions (formulaires, filtres, recherche et analytics). Les accès privilégiés ne quittent jamais le serveur.
+---
+
+## 1. Vue d'Ensemble Globale
+
+L'application repose sur une architecture moderne de type **Jamstack + Backend-as-a-Service**. Elle sépare strictement le rendu frontend, géré par Next.js (Vercel), de la logique de données et de l'authentification (Supabase). Des services tiers sont utilisés de manière découplée pour les fonctionnalités spécifiques (emailing, intelligence artificielle, assets statiques).
+
+![Architecture Globale](./Architecture%20Globale.png)
+
+### Principes
+- **App Router de Next.js** : Le rendu serveur (SSR/SSG) est privilégié. Les composants clients sont strictement limités aux interactions (animations, formulaires).
+- **Accès Sécurisé** : Toute logique d'accès privilégié (admin) s'exécute côté serveur. Les clés d'API (Supabase Service Role, Groq API) ne sont jamais exposées au client.
+- **Performances** : Le contenu public est généré de manière statique au build (SSG) ou via des revalidations asynchrones (ISR), assurant un LCP optimal.
+
+---
+
+## 2. Architecture Frontend (Couches)
+
+Le dépôt suit une organisation en couches inspirée de la *Clean Architecture* adaptée au framework Next.js.
+
+![Architecture Frontend](./Architecture%20Frontend.png)
 
 ```text
 src/
-├── app/                    routes, layouts, métadonnées et API
-│   ├── [locale]/           site public fr/en
-│   ├── admin/              authentification et CMS protégé
-│   └── api/                mutations serveur validées
-├── components/             composants visuels par domaine
-├── config/                 configuration stable du site
-├── content/                contenu public factuel de repli
-├── features/               logique métier testable
-├── i18n/                   locales et dictionnaires
-├── lib/                    intégrations et frontières serveur
-└── types/                  contrats TypeScript et base
+├── app/                    Couche 1 : Routes, Layouts, Middleware et Endpoints API
+│   ├── [locale]/           Site public (Pages SSG/ISR)
+│   ├── admin/              CMS et tableau de bord protégés
+│   └── api/                Mutations côté serveur (Contact, Admin)
+├── components/             Couche 2 : Composants UI réutilisables (par domaine)
+├── features/               Couche 3 : Logique métier indépendante de l'UI (requêtes, validations)
+├── lib/                    Couche 4 : Infrastructure (Supabase, Auth, Sécurité)
+├── i18n/                   Couche 5 : Dictionnaires et gestion multilingue
+├── config/                 Couche 5 : Configuration constante du site
+└── types/                  Couche 5 : Contrats TypeScript globaux
 ```
 
-## Frontières
+### Frontières strictes
+- `src/app/[locale]` orchestre la donnée et l'UI, sans contenir la logique métier d'accès.
+- `src/features` encapsule les appels de données et les règles métier (pas de code React).
+- `src/lib/supabase` distingue explicitement les instances de clients pour le navigateur, le serveur public, et l'admin.
 
-- `src/app/[locale]` orchestre le rendu et ne contient pas de logique d'accès privilégié.
-- `src/features` contient la validation et les transformations indépendantes de React.
-- `src/lib/supabase` sépare explicitement clients navigateur, serveur, public et admin.
-- `src/lib/admin` centralise le repository éditorial et la journalisation.
-- `src/app/api/admin` applique successivement session, allowlist, validation et opération.
-- `src/content` garantit un portfolio utilisable sans service externe ; aucune valeur manquante n'est inventée.
+---
 
-## Données et publication
+## 3. Modèle de Données (Supabase PostgreSQL)
 
-Supabase est la source des contenus éditoriaux publiés. Les tables parent portent un statut de publication ; les traductions FR et EN ont leur propre statut de relecture. Les gardes SQL empêchent une publication incomplète. Les politiques RLS n'exposent aux visiteurs que les contenus publiés et leurs traductions validées.
+Toutes les données dynamiques sont gérées via Supabase. Les tables sont protégées par des politiques RLS (*Row Level Security*) strictes.
 
-Les trois études de cas officielles restent gérées dans le code tant que le réglage public `projects.source` n'a pas la valeur JSON `"cms"`. Ce basculement explicite évite de publier une collection CMS incomplète. Après migration et validation des deux langues, créer ce réglage dans l'administration pour faire du CMS l'unique source publique des projets.
+![Architecture Base de Données](./Architecture%20Base%20de%20Donn%C3%A9es.png)
 
-La chaîne GitHub est volontairement semi-automatique : URL officielle → faits API → inférences distinguées → corrections humaines → brouillon privé → validation → publication. Le fournisseur IA par défaut est manuel et interchangeable ; aucun contenu généré n'est publié automatiquement.
+### Publication et Visibilité
+Supabase est la source exclusive des contenus dynamiques (projets, compétences, témoignages).
+- Seuls les contenus portant le statut `published` ou `approved` sont visibles par le visiteur.
+- L'administration (via Supabase Auth) nécessite une autorisation figurant sur une liste blanche côté serveur.
+- Le formulaire de contact insère les messages dans `messages` via le rôle serveur (la table n'est pas ouverte en insertion publique via RLS).
 
-## Dégradation contrôlée
+---
 
-- sans Supabase : contenu factuel statique, blog vide explicite, admin et soumissions indisponibles ;
-- sans token GitHub : analyse publique avec quota anonyme ;
-- analytics désactivés : aucune requête de mesure et aucun impact fonctionnel ;
-- notification e-mail absente : les messages restent consultables dans l'administration.
+## 4. Flux de Données et Séquences
 
-## Décisions structurantes
+Le diagramme ci-dessous illustre le parcours de l'information pour 3 flux critiques :
+1. **La visite publique** : Le client lit le HTML servi par le cache Edge de Vercel. Les données Supabase sont requêtées lors de la génération.
+2. **L'administration** : Toute modification transite par une API Route sécurisée avant d'impacter Supabase.
+3. **Le formulaire de contact** : Soumission asynchrone → Validation Serveur → Envoi d'Email via Web3Forms → Stockage DB.
 
-- un seul thème sombre cohérent pour limiter la complexité et garantir les contrastes ;
-- aucun framework d'état global : l'état est local, dérivé de l'URL ou côté serveur ;
-- aucun parseur Markdown tiers : sous-ensemble sûr, sans HTML brut ;
-- aucune dépendance d'animation : transitions CSS et respect de `prefers-reduced-motion` ;
-- aucun service d'analytics tiers : compteurs journaliers internes sans identifiant visiteur.
+![Flux de Données](./Flux%20de%20Donn%C3%A9es.png)
+
+---
+
+## 5. Stratégie de Déploiement
+
+Le déploiement est conçu pour fonctionner sans friction et avec un coût nul, en exploitant les offres gratuites de Vercel et Supabase.
+
+![Architecture de Déploiement](./Architecture%20de%20D%C3%A9ploiement.png)
+
+### Dégradation Contrôlée (Résilience)
+- **Sans Supabase** : Le site public replie élégamment vers le contenu statique du dossier `src/content`. Le portfolio ne crashe pas.
+- **Sans Web3Forms** : L'API de contact enregistre le message en base de données. L'admin peut le lire plus tard.
+- **Sans quota API** : L'analyse GitHub ou l'IA de traduction (Groq) gère gracieusement la limite de requêtes avec des états de chargement adaptés.

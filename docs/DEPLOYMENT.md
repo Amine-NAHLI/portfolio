@@ -1,5 +1,7 @@
 # Déploiement à coût nul
 
+![Architecture de Déploiement](./Architecture%20de%20D%C3%A9ploiement.png)
+
 ## Préproduction
 
 1. créer un projet Supabase dans une organisation **Free**, sans carte bancaire et sans essai ;

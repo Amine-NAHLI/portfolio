@@ -17,17 +17,15 @@ export default function FluidBackground() {
         style={{ animationDelay: '-12s', animationDuration: '25s' }} 
       />
 
-      {/* Motif Grille (Grid) */}
+      {/* Motif Points (Dot Pattern) */}
       <div 
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06] text-text-primary pointer-events-none" 
+        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.08] pointer-events-none" 
         style={{
-          backgroundImage: `
-            linear-gradient(to right, currentColor 1px, transparent 1px),
-            linear-gradient(to bottom, currentColor 1px, transparent 1px)
-          `,
-          backgroundSize: '4rem 4rem',
-          maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
+          backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
+          backgroundSize: '2rem 2rem',
+          maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
+          color: 'var(--text-primary)',
         }}
       />
 

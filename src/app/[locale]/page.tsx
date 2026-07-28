@@ -94,7 +94,7 @@ export default async function HomePage({ params }: HomePageProps) {
               
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <ButtonLink href={`/${locale}/contact`}>
-                  {publicCopy[locale].contact.contactCta ?? "Contactez-moi"} <ArrowRight aria-hidden="true" className="size-4" />
+                  {copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" />
                 </ButtonLink>
                 <ButtonLink href={siteConfig.links.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
                   <FileText aria-hidden="true" className="size-4" />

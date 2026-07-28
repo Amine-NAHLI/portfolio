@@ -24,7 +24,6 @@ export function PrivacyAnalytics({ locale }: { locale: Locale }) {
     if (!enabled || !pathname || navigator.doNotTrack === "1") return;
     trackAnalyticsEvent("page_view", locale, pathname);
     if (/^\/(fr|en)\/projects\/[^/]+$/.test(pathname)) trackAnalyticsEvent("project_view", locale, pathname);
-    if (/^\/(fr|en)\/blog\/[^/]+$/.test(pathname)) trackAnalyticsEvent("article_view", locale, pathname);
   }, [locale, pathname]);
 
   useEffect(() => {

@@ -174,7 +174,7 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   const slug = await uniqueSlug(db, "projects", title, id ?? undefined);
   // A project can only become public after both translations have been stored.
   // Create and update it as a draft first, then publish after the upsert below.
-  const projectPayload = { slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured: false, categories: [], technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
+  const projectPayload = { title, slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured: false, categories: [], technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
   const result = id
     ? await db.from("projects").update(projectPayload).eq("id", id).select("id").single()
     : await db.from("projects").insert(projectPayload).select("id").single();
@@ -483,7 +483,7 @@ export async function GET(_: NextRequest, routeContext: { params: Promise<{ sect
     return NextResponse.json(await getRecords(client(context), section), { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Admin workspace loading failed", { section, error: error instanceof Error ? error.message : String(error) });
-    return fail("Les données ne peuvent pas être chargées.", 500);
+    return fail(error instanceof Error ? error.message : "Les données ne peuvent pas être chargées.", 500);
   }
 }
 
@@ -505,7 +505,7 @@ async function mutate(request: NextRequest, routeContext: { params: Promise<{ se
     return NextResponse.json({ success: true }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Admin workspace mutation failed", { section, mode, error: error instanceof Error ? error.message : String(error) });
-    return fail(error instanceof ValidationError ? error.message : "L’opération n’a pas pu être enregistrée.", error instanceof ValidationError ? 422 : 500);
+    return fail(error instanceof Error ? error.message : "L’opération n’a pas pu être enregistrée.", error instanceof ValidationError ? 422 : 500);
   }
 }
 

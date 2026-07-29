@@ -102,16 +102,21 @@ export async function getProjectGallery(slug: string) {
       .eq('project_id', project.id)
       .order('sort_order', { ascending: true });
     
-    if (error) return [];
-    return data.map(item => {
-      const storagePath = (item.media_assets as any)?.storage_path;
-      const { data: publicUrlData } = supabase.storage.from('portfolio-media').getPublicUrl(storagePath);
+    if (error || !data) return [];
+
+    interface MediaAssets { storage_path: string; alt_fr?: string | null; alt_en?: string | null; }
+    interface ProjectMediaItem { media_id: string; media_assets: MediaAssets | MediaAssets[] | null; }
+
+    return (data as unknown as ProjectMediaItem[]).map(item => {
+      const assets = Array.isArray(item.media_assets) ? item.media_assets[0] : item.media_assets;
+      const storagePath = assets?.storage_path;
+      const { data: publicUrlData } = supabase.storage.from('portfolio-media').getPublicUrl(storagePath || "");
       return {
         mediaId: item.media_id,
         storagePath,
         url: publicUrlData.publicUrl,
-        altFr: (item.media_assets as any)?.alt_fr,
-        altEn: (item.media_assets as any)?.alt_en
+        altFr: assets?.alt_fr ?? null,
+        altEn: assets?.alt_en ?? null
       };
     }).filter(item => item.storagePath);
   } catch {

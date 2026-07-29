@@ -7,7 +7,7 @@ export const siteConfig = {
   },
   links: {
     github: "https://github.com/Amine-NAHLI",
-    linkedin: "https://linkedin.com/in/AmineNAHLI",
+    linkedin: "https://www.linkedin.com/in/amine-nahli-48b2a734b/",
     tryHackMe: "https://tryhackme.com/p/nahliAmine",
     email: "mailto:nahli-ami@upf.ac.ma",
     resume: "/cv",

@@ -45,7 +45,10 @@ export default async function HomePage({ params }: HomePageProps) {
     getPublicJourney(locale),
     getPublicContactLinks(),
   ]);
-  const featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
+  let featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
+  if (featuredProjects.length === 0) {
+    featuredProjects = projects.slice(0, 3);
+  }
   const displaySkills = skillGroups.slice(0, 3);
   const displayCertifications = certifications.slice(0, 3);
   const displayTestimonials = testimonials.slice(0, 3);

@@ -66,49 +66,62 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <Container className="grid gap-14 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-20">
           <div className="space-y-14">
-            <section aria-labelledby="problem-heading">
-              <p className="eyebrow">01</p>
-              <h2 id="problem-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.problem}</h2>
-              <p className="mt-5 text-base leading-8 text-text-secondary">{project.problem[locale]}</p>
-            </section>
-            <section aria-labelledby="objectives-heading">
-              <p className="eyebrow">02</p>
-              <h2 id="objectives-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.objectives}</h2>
-              <ul className="mt-6 grid gap-3">
-                {project.objectives.map((objective) => (
-                  <li key={objective[locale]} className="flex gap-3 text-base leading-7 text-text-secondary">
-                    <CheckCircle2 aria-hidden="true" className="mt-1 size-4 shrink-0 text-accent" />{objective[locale]}
-                  </li>
-                ))}
-              </ul>
-            </section>
-            <section aria-labelledby="solution-heading">
-              <p className="eyebrow">03</p>
-              <h2 id="solution-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.solution}</h2>
-              <p className="mt-5 text-base leading-8 text-text-secondary">{project.solution[locale]}</p>
-            </section>
-            <section aria-labelledby="architecture-heading">
-              <p className="eyebrow">04</p>
-              <h2 id="architecture-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.architecture}</h2>
-              <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-                {project.architecture.map((item) => (
-                  <li key={item[locale]} className="flex gap-3 border border-border bg-surface p-4 text-sm leading-6 text-text-secondary">
-                    <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />{item[locale]}
-                  </li>
-                ))}
-              </ul>
-            </section>
-            <section aria-labelledby="results-heading">
-              <p className="eyebrow">05</p>
-              <h2 id="results-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.documentedResults}</h2>
-              <ul className="mt-6 space-y-3">
-                {project.results.map((result) => (
-                  <li key={result[locale]} className="flex gap-3 text-base leading-7 text-text-secondary">
-                    <span aria-hidden="true" className="mt-3 size-1.5 shrink-0 rounded-full bg-accent" />{result[locale]}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {project.problem[locale] !== project.summary[locale] ? (
+              <>
+                <section aria-labelledby="problem-heading">
+                  <p className="eyebrow">01</p>
+                  <h2 id="problem-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.problem}</h2>
+                  <p className="mt-5 text-base leading-8 text-text-secondary">{project.problem[locale]}</p>
+                </section>
+                <section aria-labelledby="objectives-heading">
+                  <p className="eyebrow">02</p>
+                  <h2 id="objectives-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.objectives}</h2>
+                  <ul className="mt-6 grid gap-3">
+                    {project.objectives.map((objective) => (
+                      <li key={objective[locale]} className="flex gap-3 text-base leading-7 text-text-secondary">
+                        <CheckCircle2 aria-hidden="true" className="mt-1 size-4 shrink-0 text-accent" />{objective[locale]}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+                <section aria-labelledby="solution-heading">
+                  <p className="eyebrow">03</p>
+                  <h2 id="solution-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.solution}</h2>
+                  <p className="mt-5 text-base leading-8 text-text-secondary">{project.solution[locale]}</p>
+                </section>
+                <section aria-labelledby="architecture-heading">
+                  <p className="eyebrow">04</p>
+                  <h2 id="architecture-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.architecture}</h2>
+                  <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                    {project.architecture.map((item) => (
+                      <li key={item[locale]} className="flex gap-3 border border-border bg-surface p-4 text-sm leading-6 text-text-secondary">
+                        <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />{item[locale]}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+                <section aria-labelledby="results-heading">
+                  <p className="eyebrow">05</p>
+                  <h2 id="results-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.documentedResults}</h2>
+                  <ul className="mt-6 space-y-3">
+                    {project.results.map((result) => (
+                      <li key={result[locale]} className="flex gap-3 text-base leading-7 text-text-secondary">
+                        <span aria-hidden="true" className="mt-3 size-1.5 shrink-0 rounded-full bg-accent" />{result[locale]}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              </>
+            ) : (
+              <section aria-labelledby="description-heading">
+                <h2 id="description-heading" className="text-3xl font-semibold text-text-primary">
+                  {locale === "fr" ? "Description" : "Description"}
+                </h2>
+                <p className="mt-5 whitespace-pre-wrap text-base leading-8 text-text-secondary">
+                  {project.summary[locale]}
+                </p>
+              </section>
+            )}
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">

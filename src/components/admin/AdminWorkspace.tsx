@@ -282,8 +282,37 @@ function EditorFields({ section, values, set, categories, translate, translating
 
 function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSection; record: RecordValue; onClose: () => void }) {
   const { dialogRef, close } = useModalDialog(onClose);
-  const entries: Array<[string, unknown]> = section === "messages" ? [["Nom", record.sender_name], ["E-mail", record.sender_email], ["Sujet", record.subject], ["Message", record.message], ["Date", formatDate(record.created_at)], ["État", record.status === "new" ? "Non lu" : "Lu"]] : [["Nom", `${record.first_name ?? ""} ${record.last_name ?? ""}`.trim()], ["Rôle", record.job_title], ["Organisation", record.organization], ["Note", record.rating], ["Langue", record.locale], ["Statut", record.status], ["Avis", record.message], ["Date", formatDate(record.created_at)]];
-  return <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); close(); }} className="m-auto w-[min(42rem,calc(100%-2rem))] rounded-2xl border border-border bg-surface-raised p-0 text-text-secondary shadow-2xl"><div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="eyebrow">Détail</p><h2 className="mt-1 text-xl font-semibold">{section === "messages" ? "Message reçu" : "Avis reçu"}</h2></div><button type="button" className="grid size-11 place-items-center rounded-lg border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div><dl className="grid gap-5 p-5 sm:p-7">{entries.map(([label, value]) => <div key={label}><dt className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</dt><dd className="mt-1 whitespace-pre-wrap text-sm leading-6 text-text-primary">{String(value || "—")}</dd></div>)}</dl></dialog>;
+  let title = "Détail";
+  let entries: Array<[string, unknown]> = [];
+
+  switch (section) {
+    case "messages":
+      title = "Message reçu";
+      entries = [["Nom", record.sender_name], ["E-mail", record.sender_email], ["Sujet", record.subject], ["Message", record.message], ["Date", formatDate(record.created_at)], ["État", record.status === "new" ? "Non lu" : "Lu"]];
+      break;
+    case "testimonials":
+      title = "Avis reçu";
+      entries = [["Nom", `${record.first_name ?? ""} ${record.last_name ?? ""}`.trim()], ["Rôle", record.job_title], ["Organisation", record.organization], ["Note", record.rating], ["Langue", record.locale], ["Statut", record.status], ["Avis", record.message], ["Date", formatDate(record.created_at)]];
+      break;
+    case "projects":
+      title = "Projet";
+      entries = [["Titre", record.title], ["GitHub", record.github_url], ["Technologies", Array.isArray(record.technologies) ? record.technologies.join(", ") : record.technologies], ["Statut", record.publication_status], ["Date", formatDate(record.created_at)]];
+      break;
+    case "journey":
+      title = "Parcours";
+      entries = [["Titre FR", record.title_fr], ["Titre EN", record.title_en], ["Organisation", record.organization], ["Type", record.kind === "experience" ? "Expérience" : "Formation"]];
+      break;
+    case "skills":
+      title = "Compétence";
+      entries = [["Nom", record.name], ["Catégorie", record.category], ["Niveau", record.level]];
+      break;
+    case "certifications":
+      title = "Certification";
+      entries = [["Titre", record.title], ["Organisme", record.issuer], ["Date", formatDate(record.issued_on)]];
+      break;
+  }
+
+  return <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); close(); }} className="m-auto w-[min(42rem,calc(100%-2rem))] rounded-2xl border border-border bg-surface-raised p-0 text-text-secondary shadow-2xl"><div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="eyebrow">Détail</p><h2 className="mt-1 text-xl font-semibold">{title}</h2></div><button type="button" className="grid size-11 place-items-center rounded-lg border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div><dl className="grid gap-5 p-5 sm:p-7">{entries.map(([label, value]) => <div key={label}><dt className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</dt><dd className="mt-1 whitespace-pre-wrap text-sm leading-6 text-text-primary">{String(value || "—")}</dd></div>)}</dl></dialog>;
 }
 
 function formatDate(value: unknown) {

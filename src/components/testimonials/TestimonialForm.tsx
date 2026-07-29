@@ -16,13 +16,17 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
     formData.append("locale", locale);
 
     startTransition(async () => {
-      const response = await submitTestimonial(null, formData);
-      setResult(response);
-      if (response.success) {
-        setTimeout(() => {
-          setIsOpen(false);
-          setResult(null);
-        }, 3000);
+      try {
+        const response = await submitTestimonial(null, formData);
+        setResult(response);
+        if (response.success) {
+          setTimeout(() => {
+            setIsOpen(false);
+            setResult(null);
+          }, 3000);
+        }
+      } catch (error) {
+        setResult({ success: false, error: "Une erreur s'est produite lors de la connexion au serveur." });
       }
     });
   };

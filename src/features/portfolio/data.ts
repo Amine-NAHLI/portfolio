@@ -35,7 +35,7 @@ async function queryJourney(locale: Locale): Promise<PublicJourneyEntry[]> {
     ];
     
     rawEntries.sort((a, b) => {
-      const dateCompare = String(b.started_on).localeCompare(String(a.started_on));
+      const dateCompare = String(a.started_on).localeCompare(String(b.started_on));
       if (dateCompare !== 0) return dateCompare;
       return a.sort_order - b.sort_order;
     });

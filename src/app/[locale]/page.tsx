@@ -181,7 +181,7 @@ export default async function HomePage({ params }: HomePageProps) {
                     <span className="relative z-10 grid size-11 place-items-center rounded-full border border-border-strong bg-bg-page text-accent sm:size-13">
                       <Icon aria-hidden="true" className="size-5" />
                     </span>
-                    <TechnicalFrame index={String(displayJourney.indexOf(entry) + 1).padStart(2, "0")} label={entry.type === "experience" ? publicCopy[locale].journey.experience : publicCopy[locale].journey.education} className="p-6 sm:p-7">
+                    <TechnicalFrame index={String(journey.indexOf(entry) + 1).padStart(2, "0")} label={entry.type === "experience" ? publicCopy[locale].journey.experience : publicCopy[locale].journey.education} className="p-6 sm:p-7">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">{entry.type === "experience" ? publicCopy[locale].journey.experience : publicCopy[locale].journey.education}</p>

@@ -96,7 +96,7 @@ export const publicCopy = {
       currentProject: "Contexte actuel",
       currentWork: "Travail en cours",
       objective: "Fil conducteur",
-      updated: "Dernière mise à jour : juillet 2026",
+      updated: "Dernière mise à jour de ce contenu",
       source: "Source : CV officiel, version actuellement fournie avec ce portfolio.",
     },
     contact: {
@@ -213,7 +213,7 @@ export const publicCopy = {
       currentProject: "Current context",
       currentWork: "Work in progress",
       objective: "Guiding direction",
-      updated: "Last updated: July 2026",
+      updated: "Last updated on this content",
       source: "Source: the official resume currently supplied with this portfolio.",
     },
     contact: {

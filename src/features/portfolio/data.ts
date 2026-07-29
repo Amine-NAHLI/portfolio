@@ -45,16 +45,17 @@ async function queryJourney(locale: Locale): Promise<PublicJourneyEntry[]> {
       type: entry.type,
       title: locale === "fr" ? entry.title_fr : entry.title_en,
       description: locale === "fr" ? (entry.summary_fr ?? "") : (entry.summary_en ?? ""),
-      eventDate: formatJourneyDate(entry.started_on, entry.ended_on),
+      eventDate: formatJourneyDate(entry.started_on, entry.ended_on, locale),
     }));
   } catch { return []; }
 }
 
-function formatJourneyDate(startedOn: string, endedOn: string | null) {
+function formatJourneyDate(startedOn: string, endedOn: string | null, locale: Locale) {
   const startYear = startedOn.split("-")[0];
-  if (!endedOn) return `${startYear} — En cours`;
+  const presentText = locale === "en" ? "Present" : "En cours";
+  if (!endedOn) return `${startYear} — ${presentText}`;
   const isFuture = new Date(endedOn) > new Date();
-  if (isFuture) return `${startYear} — En cours`;
+  if (isFuture) return `${startYear} — ${presentText}`;
   const endYear = endedOn.split("-")[0];
   return startYear === endYear ? startYear : `${startYear} — ${endYear}`;
 }

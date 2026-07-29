@@ -111,7 +111,7 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
     if (error) return [];
     
     return (data ?? []).map((certificate) => {
-      // @ts-ignore - Supabase types don't perfectly infer the join if it's a 1:1 or 1:N
+      // @ts-expect-error - Supabase types don't perfectly infer the join if it's a 1:1 or 1:N
       const mimeType = certificate.media_assets?.mime_type || (Array.isArray(certificate.media_assets) ? certificate.media_assets[0]?.mime_type : null) || null;
       return { 
         id: certificate.id, 

@@ -7,7 +7,7 @@ const complete = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: "public-key",
   SUPABASE_SERVICE_ROLE_KEY: "server-only-key",
   CONTACT_FINGERPRINT_SECRET: "a".repeat(32),
-  RESEND_API_KEY: "resend-key",
+  WEB3FORMS_ACCESS_KEY: "web3forms-key",
 };
 
 test("contact storage configuration names missing variables without exposing values", () => {
@@ -16,7 +16,7 @@ test("contact storage configuration names missing variables without exposing val
   assert.deepEqual(getMissingContactStorageConfiguration({ ...complete, CONTACT_FINGERPRINT_SECRET: "short" }), ["CONTACT_FINGERPRINT_SECRET"]);
 });
 
-test("Resend is optional for contact persistence and reported by name", () => {
-  assert.deepEqual(getMissingContactNotificationConfiguration({ ...complete, RESEND_API_KEY: undefined }), ["RESEND_API_KEY"]);
+test("Web3Forms is optional for contact persistence and reported by name", () => {
+  assert.deepEqual(getMissingContactNotificationConfiguration({ ...complete, WEB3FORMS_ACCESS_KEY: undefined }), ["WEB3FORMS_ACCESS_KEY"]);
   assert.deepEqual(getMissingContactNotificationConfiguration(complete), []);
 });

@@ -33,7 +33,7 @@ export function ContactLinksForm({
 
       <div className="grid gap-2">
         <label htmlFor="contact_email" className="font-mono text-xs uppercase tracking-widest text-text-secondary">Email de contact</label>
-        <p className="text-xs text-text-muted mb-2">L'adresse email affichée sur le site.</p>
+        <p className="text-xs text-text-muted mb-2">L&apos;adresse email affichée sur le site.</p>
         <input 
           type="email" 
           id="contact_email" 
@@ -45,7 +45,7 @@ export function ContactLinksForm({
 
       <div className="grid gap-2">
         <label htmlFor="github" className="font-mono text-xs uppercase tracking-widest text-text-secondary">Lien GitHub</label>
-        <p className="text-xs text-text-muted mb-2">L'URL complète de votre profil GitHub.</p>
+        <p className="text-xs text-text-muted mb-2">L&apos;URL complète de votre profil GitHub.</p>
         <input 
           type="url" 
           id="github" 
@@ -57,7 +57,7 @@ export function ContactLinksForm({
 
       <div className="grid gap-2">
         <label htmlFor="linkedin" className="font-mono text-xs uppercase tracking-widest text-text-secondary">Lien LinkedIn</label>
-        <p className="text-xs text-text-muted mb-2">L'URL complète de votre profil LinkedIn.</p>
+        <p className="text-xs text-text-muted mb-2">L&apos;URL complète de votre profil LinkedIn.</p>
         <input 
           type="url" 
           id="linkedin" 

@@ -5,7 +5,6 @@ import { Check, Eye, FileUp, Pencil, Plus, Trash2, X } from "lucide-react";
 
 export type AdminWorkspaceSection = "projects" | "journey" | "skills" | "certifications" | "testimonials" | "messages";
 type RecordValue = Record<string, unknown>;
-type SkillLevel = "beginner" | "intermediate" | "advanced";
 type SkillCategory = { id: string; name_fr: string };
 
 

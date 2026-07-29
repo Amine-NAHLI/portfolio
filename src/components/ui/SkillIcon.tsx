@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -61,7 +62,6 @@ export default function SkillIcon({ name, className = "" }: { name: string; clas
     ? `https://cdn.simpleicons.org/${slug}/white` 
     : `https://cdn.simpleicons.org/${slug}`;
 
-  // eslint-disable-next-line @next/next/no-img-element
   return (
     <img 
       src={finalUrl} 

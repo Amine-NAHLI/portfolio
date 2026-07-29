@@ -6,12 +6,13 @@ import Container from "@/components/ui/Container";
 import JsonLd from "@/components/ui/JsonLd";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { projectCategoryLabels, publicCopy } from "@/content/copy";
-import { getPublishedProject } from "@/features/projects/data";
+import { getPublishedProject, getProjectGallery } from "@/features/projects/data";
 import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { getSiteUrl } from "@/config/site";
 import { notFound } from "next/navigation";
 import SkillIcon from "@/components/ui/SkillIcon";
+import ProjectGallery from "@/components/ui/ProjectGallery";
 
 type ProjectPageProps = { params: Promise<{ locale: string; slug: string }> };
 
@@ -28,6 +29,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   if (!isLocale(locale)) notFound();
   const project = await getPublishedProject(locale, slug);
   if (!project) notFound();
+  const gallery = await getProjectGallery(slug);
   const copy = publicCopy[locale].projects;
 
   return (
@@ -57,6 +59,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-text-secondary">{project.summary[locale]}</p>
           </Container>
         </header>
+
+        <Container className="pt-14 sm:pt-20">
+          <ProjectGallery images={gallery} locale={locale} />
+        </Container>
 
         <Container className="grid gap-14 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-20">
           <div className="space-y-14">

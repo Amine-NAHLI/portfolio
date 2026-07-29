@@ -34,6 +34,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
           {locale === "fr" ? "Votre avis compte" : "Your feedback matters"}
         </h3>
         <button
+          type="button"
           onClick={() => setIsOpen(false)}
           className="rounded-sm text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
@@ -142,17 +143,18 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
   return (
     <>
       {inline ? (
-        <div className="flex w-full flex-col items-center justify-center">
-          {!isOpen ? (
-            <button
-              onClick={() => setIsOpen(true)}
-              className="button-primary flex w-full sm:w-auto items-center justify-center gap-2"
-            >
-              <MessageSquarePlus className="size-4" />
-              {locale === "fr" ? "Rédiger un avis sur mon profil" : "Write a review about me"}
-            </button>
-          ) : (
-            <div className="w-full flex justify-center animate-in slide-in-from-top-4 fade-in duration-300">
+        <div className="relative flex flex-col">
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="button-primary flex w-full sm:w-auto items-center justify-center gap-2"
+          >
+            <MessageSquarePlus className="size-4" />
+            {locale === "fr" ? "Rédiger un avis sur mon profil" : "Write a review about me"}
+          </button>
+          
+          {isOpen && (
+            <div className="absolute top-full left-0 md:right-0 md:left-auto mt-2 z-50 origin-top animate-in slide-in-from-top-2 fade-in duration-200">
               {formContent}
             </div>
           )}
@@ -160,7 +162,8 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
       ) : (
         <>
           <button
-            onClick={() => setIsOpen(true)}
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
             className="fixed bottom-6 left-6 z-40 flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-text-on-accent shadow-lg transition-transform hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <MessageSquarePlus className="size-5" />
@@ -170,11 +173,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
           </button>
 
           {isOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-              <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-                onClick={() => setIsOpen(false)}
-              />
+            <div className="fixed bottom-24 left-6 z-50 origin-bottom-left animate-in slide-in-from-bottom-4 fade-in duration-200 shadow-2xl">
               {formContent}
             </div>
           )}

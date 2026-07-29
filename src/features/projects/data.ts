@@ -88,3 +88,34 @@ export async function getPublishedProject(locale: Locale, slug: string): Promise
   const projects = await getPublishedProjects(locale);
   return projects.find((project) => project.slug === slug) ?? null;
 }
+
+export async function getProjectGallery(slug: string) {
+  if (!hasSupabasePublicConfig()) return [];
+  const supabase = createPublicClient();
+  try {
+    const { data: project } = await supabase.from('projects').select('id').eq('slug', slug).single();
+    if (!project) return [];
+
+    const { data, error } = await supabase
+      .from('project_media')
+      .select('media_id, media_assets(storage_path, alt_fr, alt_en)')
+      .eq('project_id', project.id)
+      .order('sort_order', { ascending: true });
+    
+    if (error) return [];
+    return data.map(item => {
+      const storagePath = (item.media_assets as any)?.storage_path;
+      const { data: publicUrlData } = supabase.storage.from('portfolio-media').getPublicUrl(storagePath);
+      return {
+        mediaId: item.media_id,
+        storagePath,
+        url: publicUrlData.publicUrl,
+        altFr: (item.media_assets as any)?.alt_fr,
+        altEn: (item.media_assets as any)?.alt_en
+      };
+    }).filter(item => item.storagePath);
+  } catch {
+    return [];
+  }
+}
+

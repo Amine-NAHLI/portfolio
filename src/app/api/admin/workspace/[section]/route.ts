@@ -210,7 +210,18 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
     const { error: publishError } = await db.from("projects").update({ publication_status: "published", published_at: new Date().toISOString() }).eq("id", projectId);
     if (publishError) throw publishError;
   }
-  await audit(context, id ? "update" : "create", "projects", projectId, ["title", "description_fr", "description_en", "github_url", "technologies", "sort_order"]);
+  
+  if (Array.isArray(input.new_gallery_media_ids) && input.new_gallery_media_ids.length > 0) {
+    const mediaRows = input.new_gallery_media_ids.map((mediaId, index) => ({
+      project_id: projectId,
+      media_id: mediaId,
+      sort_order: index
+    }));
+    const { error: mediaError } = await db.from("project_media").upsert(mediaRows, { onConflict: "project_id,media_id" });
+    if (mediaError) throw mediaError;
+  }
+  
+  await audit(context, id ? "update" : "create", "projects", projectId, ["title", "description_fr", "description_en", "github_url", "technologies", "sort_order", "gallery"]);
   return projectId;
 }
 

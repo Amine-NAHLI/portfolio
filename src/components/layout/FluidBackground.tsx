@@ -19,12 +19,12 @@ export default function FluidBackground() {
 
       {/* Motif Points (Dot Pattern) */}
       <div 
-        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.08] pointer-events-none" 
+        className="absolute inset-0 opacity-[0.1] dark:opacity-[0.15] pointer-events-none" 
         style={{
           backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
-          backgroundSize: '2rem 2rem',
-          maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
+          backgroundSize: '1.5rem 1.5rem',
+          maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 100%)',
           color: 'var(--text-primary)',
         }}
       />

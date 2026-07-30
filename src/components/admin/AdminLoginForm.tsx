@@ -57,6 +57,7 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
       const verification = await fetch("/api/admin/session", {
         method: "GET",
         cache: "no-store",
+        credentials: "same-origin",
         headers: { Accept: "application/json" },
       });
 
@@ -101,6 +102,8 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
               onChange={(event) => setEmail(event.target.value)}
               autoComplete="username"
               inputMode="email"
+              autoCapitalize="none"
+              autoCorrect="off"
               required
               disabled={!configured || submitting}
               className="min-h-12 pl-10 pr-4 text-sm disabled:opacity-60"
@@ -118,6 +121,8 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
               required
               disabled={!configured || submitting}
               className="min-h-12 pl-10 pr-4 text-sm disabled:opacity-60"

@@ -132,7 +132,7 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
   } catch { return []; }
 }
 
-async function queryTestimonials(locale: Locale): Promise<PublicTestimonial[]> {
+async function queryTestimonials(_locale: Locale): Promise<PublicTestimonial[]> {
   if (!hasSupabasePublicConfig()) return [];
   try {
     const { data, error } = await createPublicClient().from("testimonials").select("id, first_name, last_name, job_title, organization, message, rating, locale, featured").eq("status", "approved").order("featured", { ascending: false }).order("created_at", { ascending: false });

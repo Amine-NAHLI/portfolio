@@ -3,7 +3,7 @@ import { getSiteUrl } from "@/config/site";
 import { locales } from "@/i18n/config";
 import { getPublishedProjects } from "@/features/projects/data";
 
-const publicPaths = ["", "/projects", "/journey", "/skills", "/certifications", "/contact", "/search"];
+const publicPaths = ["", "/projects", "/journey", "/certifications", "/contact", "/search"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl();

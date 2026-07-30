@@ -3,14 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderKanban, Milestone, Wrench, Award, MessageSquare, Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText } from "lucide-react";
 import { signOutAdmin } from "@/app/admin/(protected)/actions";
 
 const navigation = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/projects", label: "Projets", icon: FolderKanban },
   { href: "/admin/journey", label: "Parcours", icon: Milestone },
-  { href: "/admin/skills", label: "Compétences", icon: Wrench },
   { href: "/admin/certifications", label: "Certifications", icon: Award },
   { href: "/admin/testimonials", label: "Avis", icon: MessageSquare },
   { href: "/admin/messages", label: "Messages", icon: Inbox },

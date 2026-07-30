@@ -3,7 +3,7 @@ import { AdminWorkspace, type AdminWorkspaceSection } from "@/components/admin/A
 import { requireAdminPage } from "@/lib/auth/admin";
 
 type AdminResourcePageProps = { params: Promise<{ resource: string }> };
-const sections = ["projects", "journey", "skills", "certifications", "testimonials", "messages"] as const;
+const sections = ["projects", "journey", "certifications", "testimonials", "messages"] as const;
 function isSection(value: string): value is AdminWorkspaceSection { return (sections as readonly string[]).includes(value); }
 
 export const dynamicParams = false;

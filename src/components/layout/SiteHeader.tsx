@@ -23,7 +23,6 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
     { label: dictionary.nav.home, href: `/${locale}#home` }, 
     { label: dictionary.nav.projects, href: `/${locale}#projects` },
     { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
-    { label: dictionary.nav.skills, href: `/${locale}#skills` },
     { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
     { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
     { label: dictionary.nav.contact, href: `/${locale}#contact` },

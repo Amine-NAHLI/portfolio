@@ -11,14 +11,13 @@ import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
 import { getHomeCopy } from "@/content/dynamic-copy";
-import { getPublicCertifications, getPublicSkillGroups, getPublicTestimonials, getPublicJourney, getPublicContactLinks } from "@/features/portfolio/data";
+import { getPublicCertifications, getPublicTestimonials, getPublicJourney, getPublicContactLinks } from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
 import { isLocale, Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import TestimonialForm from "@/components/testimonials/TestimonialForm";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { cn } from "@/lib/utils";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 
@@ -37,9 +36,8 @@ export default async function HomePage({ params }: HomePageProps) {
   if (!isLocale(locale)) notFound();
 
   const copy = await getHomeCopy(locale);
-  const [projects, skillGroups, certifications, testimonials, journey, contactLinks] = await Promise.all([
+  const [projects, certifications, testimonials, journey, contactLinks] = await Promise.all([
     getPublishedProjects(locale),
-    getPublicSkillGroups(locale),
     getPublicCertifications(locale),
     getPublicTestimonials(locale),
     getPublicJourney(locale),
@@ -47,8 +45,6 @@ export default async function HomePage({ params }: HomePageProps) {
   ]);
   let featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
   if (featuredProjects.length === 0) featuredProjects = projects.slice(0, 3);
-
-  const displaySkills = skillGroups.slice(0, 3);
 
   let displayCertifications = certifications.filter((c) => c.featured).slice(0, 3);
   if (displayCertifications.length === 0) displayCertifications = certifications.slice(0, 3);
@@ -205,14 +201,6 @@ export default async function HomePage({ params }: HomePageProps) {
         </Container>
       </section>
 
-      <section id="skills" className="relative z-10 py-16 sm:py-24">
-        <Container>
-          <ScrollReveal yOffset={40}>
-            <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.skillsEyebrow} title={copy.skillsTitle} description={copy.skillsDescription} /><ButtonLink href={`/${locale}/skills`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allSkills}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
-            {displaySkills.length ? <div className="mt-10 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-min">{displaySkills.map((group, index) => <TechnicalFrame key={group.id} index={`0${index + 1}`} label="Expertise map" className={cn("p-6 flex flex-col h-full justify-between", index === 0 ? "md:col-span-2 md:row-span-2 lg:col-span-2" : "md:col-span-1")}><div className="mb-5"><h3 className="text-xl font-semibold text-text-primary">{group.title}</h3>{group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}</div><ul className="flex flex-wrap gap-2">{group.skills.slice(0, index === 0 ? 12 : 6).map((skill) => <li key={skill.name} className="border border-border bg-surface-raised px-2 py-1 font-mono text-[.68rem] uppercase tracking-[.06em] text-text-secondary">{skill.name}</li>)}</ul></TechnicalFrame>)}</div> : <PortfolioEmptyState collection="skills" locale={locale} className="mt-10" />}
-          </ScrollReveal>
-        </Container>
-      </section>
 
       <section id="certifications" className="relative z-10 py-16 sm:py-24">
         <Container>

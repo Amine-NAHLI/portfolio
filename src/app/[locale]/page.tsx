@@ -46,12 +46,15 @@ export default async function HomePage({ params }: HomePageProps) {
     getPublicContactLinks(),
   ]);
   let featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
-  if (featuredProjects.length === 0) {
-    featuredProjects = projects.slice(0, 3);
-  }
+  if (featuredProjects.length === 0) featuredProjects = projects.slice(0, 3);
+
   const displaySkills = skillGroups.slice(0, 3);
-  const displayCertifications = certifications.slice(0, 3);
-  const displayTestimonials = testimonials.slice(0, 3);
+
+  let displayCertifications = certifications.filter((c) => c.featured).slice(0, 3);
+  if (displayCertifications.length === 0) displayCertifications = certifications.slice(0, 3);
+
+  let displayTestimonials = testimonials.filter((t) => t.featured).slice(0, 3);
+  if (displayTestimonials.length === 0) displayTestimonials = testimonials.slice(0, 3);
   const displayJourney = journey.slice(0, 3);
 
   return (

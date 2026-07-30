@@ -19,6 +19,25 @@ const customSlugs: Record<string, string> = {
   "gcp": "googlecloud",
   "postgres": "postgresql",
   "react.js": "react",
+  "js": "javascript",
+  "ts": "typescript",
+  "postgresql": "postgresql",
+  "my sql": "mysql",
+  "sql server": "microsoftsqlserver",
+  "c": "c",
+  "c sharp": "csharp",
+  ".net": "dotnet",
+  "dotnet": "dotnet",
+  "go": "go",
+  "golang": "go",
+  "spring": "spring",
+  "spring boot": "springboot",
+  "kubernetes": "kubernetes",
+  "k8s": "kubernetes",
+  "django": "django",
+  "laravel": "laravel",
+  "express.js": "express",
+  "expressjs": "express"
 };
 
 // Logos qui sont noirs ou très sombres par défaut et invisibles sur fond sombre

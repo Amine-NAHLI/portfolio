@@ -76,7 +76,7 @@ function revalidate(section: Section) {
 async function getRecords(db: UntypedClient, section: Section) {
   if (section === "projects") {
     const [{ data: projects, error }, { data: translations }] = await Promise.all([
-      db.from("projects").select("id, github_url, sort_order, created_at, technologies").order("sort_order").order("created_at", { ascending: false }),
+      db.from("projects").select("id, github_url, sort_order, created_at, technologies, featured").order("sort_order").order("created_at", { ascending: false }),
       db.from("project_translations").select("project_id, locale, title, summary"),
     ]);
     if (error) throw error;
@@ -112,13 +112,13 @@ async function getRecords(db: UntypedClient, section: Section) {
   }
 
   if (section === "certifications") {
-    const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, document_media_id, created_at").order("issued_on", { ascending: false });
+    const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, document_media_id, created_at, featured").order("issued_on", { ascending: false });
     if (error) throw error;
     return data ?? [];
   }
 
   if (section === "testimonials") {
-    const { data, error } = await db.from("testimonials").select("id, first_name, last_name, job_title, organization, message, rating, locale, status, consent_to_publish, created_at").order("created_at", { ascending: false });
+    const { data, error } = await db.from("testimonials").select("id, first_name, last_name, job_title, organization, message, rating, locale, status, consent_to_publish, created_at, featured").order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
   }
@@ -172,9 +172,10 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   if (!Array.isArray(input.technologies)) throw new ValidationError("Les technologies sont invalides.");
   const technologies = [...new Set(input.technologies.map((value) => text(value, 1, 120)).filter((value): value is string => Boolean(value)))].slice(0, 30);
   const slug = await uniqueSlug(db, "projects", title, id ?? undefined);
+  const featured = Boolean(input.featured);
   // A project can only become public after both translations have been stored.
   // Create and update it as a draft first, then publish after the upsert below.
-  const projectPayload = { title, slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured: false, categories: [], technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
+  const projectPayload = { title, slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured, categories: [], technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
   const result = id
     ? await db.from("projects").update(projectPayload).eq("id", id).select("id").single()
     : await db.from("projects").insert(projectPayload).select("id").single();
@@ -185,10 +186,11 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
    { project_id: projectId, locale: "en", title, summary: descriptionEn, problem: descriptionEn, solution: descriptionEn, objectives: [descriptionEn], architecture: ["To be completed"], results: ["To be completed"], review_status: "validated" },
  ];
   */
-  const isComplete = Boolean(descriptionEn);
+  const isComplete = true; // Automatically mark as validated so they show up on the portfolio
+  const descriptionEnVal = descriptionEn ?? descriptionFr;
   const translationRows = [
-    { project_id: projectId, locale: "fr", title, summary: descriptionFr, problem: descriptionFr, solution: descriptionFr, objectives: [descriptionFr], architecture: [descriptionFr], results: [descriptionFr], review_status: isComplete ? "validated" : "draft" },
-    { project_id: projectId, locale: "en", title, summary: descriptionEn ?? "", problem: descriptionEn, solution: descriptionEn, objectives: descriptionEn ? [descriptionEn] : [], architecture: descriptionEn ? [descriptionEn] : [], results: descriptionEn ? [descriptionEn] : [], review_status: isComplete ? "validated" : "draft" },
+    { project_id: projectId, locale: "fr", title, summary: descriptionFr, problem: descriptionFr, solution: descriptionFr, objectives: [descriptionFr], architecture: [descriptionFr], results: [descriptionFr], review_status: "validated" },
+    { project_id: projectId, locale: "en", title, summary: descriptionEnVal, problem: descriptionEnVal, solution: descriptionEnVal, objectives: [descriptionEnVal], architecture: [descriptionEnVal], results: [descriptionEnVal], review_status: "validated" },
   ];
   const { error: translationError } = await db.from("project_translations").upsert(translationRows, { onConflict: "project_id,locale" });
   if (translationError) throw translationError;
@@ -313,7 +315,8 @@ async function saveCertification(db: UntypedClient, context: AdminContext, id: s
     if (publishError) throw publishError;
   }
   const slug = await uniqueSlug(db, "certifications", title, id ?? undefined);
-  const payload = { slug, name_fr: title, name_en: title, issuer, issued_on: issuedOn, description_fr: descriptionFr, description_en: descriptionEn, document_media_id: documentMediaId, credential_status: "completed", publication_status: "published", skills: [], sort_order: 0 };
+  const featured = Boolean(input.featured);
+  const payload = { slug, name_fr: title, name_en: title, issuer, issued_on: issuedOn, description_fr: descriptionFr, description_en: descriptionEn, document_media_id: documentMediaId, credential_status: "completed", publication_status: "published", skills: [], sort_order: 0, featured };
   const result = id ? await db.from("certifications").update(payload).eq("id", id).select("id").single() : await db.from("certifications").insert(payload).select("id").single();
   if (result.error || !result.data) {
     if (documentMediaId && documentMediaId !== previousDocumentMediaId) {
@@ -353,6 +356,14 @@ async function updateRecord(context: AdminContext, section: Section, id: string,
   if (section === "skills") return saveSkill(db, context, id, input);
   if (section === "certifications") return saveCertification(db, context, id, input);
   if (section === "testimonials") {
+    if (input.action === "toggle_featured") {
+      const featured = Boolean(input.featured);
+      const { error } = await db.from("testimonials").update({ featured }).eq("id", id);
+      if (error) throw error;
+      await audit(context, "update", "testimonials", id, ["featured"]);
+      return id;
+    }
+    
     const status = input.status === "pending" || input.status === "approved" || input.status === "rejected" ? input.status : null;
     if (!status) throw new Error("Statut d’avis invalide.");
     

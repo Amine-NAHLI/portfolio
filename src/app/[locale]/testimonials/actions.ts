@@ -23,9 +23,12 @@ export async function submitTestimonial(prevState: unknown, formData: FormData) 
   const supabase = createAdminClient();
 
   const { error } = await supabase.from("testimonials").insert({
+    name: `${firstName} ${lastName}`.trim(),
     first_name: firstName,
     last_name: lastName,
+    role: role || null,
     job_title: role || null,
+    company: company || null,
     organization: company || null,
     message: message,
     rating: rating,

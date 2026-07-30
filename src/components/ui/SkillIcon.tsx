@@ -3,41 +3,39 @@
 
 import { useState } from "react";
 
-// Mappage spécial pour les technos communes dont le nom diffère du slug de Simple Icons
+// Mappage spécial pour les technos communes dont le nom diffère du slug attendu par skillicons.dev
 const customSlugs: Record<string, string> = {
-  "next.js": "nextdotjs",
-  "node.js": "nodedotjs",
-  "vue.js": "vuedotjs",
-  "c#": "csharp",
-  "c++": "cplusplus",
-  "html5": "html5",
-  "css3": "css3",
-  "tailwind css": "tailwindcss",
-  "tailwind": "tailwindcss",
+  "next.js": "nextjs",
+  "next": "nextjs",
+  "node.js": "nodejs",
+  "node": "nodejs",
+  "vue.js": "vue",
+  "c#": "cs",
+  "c++": "cpp",
+  "html5": "html",
+  "css3": "css",
+  "tailwind css": "tailwind",
+  "tailwindcss": "tailwind",
   "react native": "react",
-  "aws": "amazonaws",
-  "gcp": "googlecloud",
-  "postgres": "postgresql",
+  "postgres": "postgres",
+  "postgresql": "postgres",
   "react.js": "react",
-  "js": "javascript",
-  "ts": "typescript",
-  "postgresql": "postgresql",
+  "js": "js",
+  "javascript": "js",
+  "ts": "ts",
+  "typescript": "ts",
   "my sql": "mysql",
-  "sql server": "microsoftsqlserver",
-  "c": "c",
-  "c sharp": "csharp",
+  "sql server": "azure", // SQL server typically maps to azure/database icon
+  "c sharp": "cs",
   ".net": "dotnet",
-  "dotnet": "dotnet",
-  "go": "go",
   "golang": "go",
-  "spring": "spring",
-  "spring boot": "springboot",
-  "kubernetes": "kubernetes",
+  "spring boot": "spring",
   "k8s": "kubernetes",
-  "django": "django",
-  "laravel": "laravel",
   "express.js": "express",
-  "expressjs": "express"
+  "expressjs": "express",
+  "amazon web services": "aws",
+  "google cloud": "gcp",
+  "google cloud platform": "gcp"
 };
 
 // Logos qui sont noirs ou très sombres par défaut et invisibles sur fond sombre
@@ -77,9 +75,9 @@ export default function SkillIcon({ name, className = "" }: { name: string; clas
     );
   }
 
-  const finalUrl = forceWhiteLogos.includes(slug) 
-    ? `https://cdn.simpleicons.org/${slug}/white` 
-    : `https://cdn.simpleicons.org/${slug}`;
+  // Use skillicons.dev for a modern, colorful look. We pass the slug.
+  // Skillicons uses specific short names, but handles many standard ones well.
+  const finalUrl = `https://skillicons.dev/icons?i=${slug}`;
 
   return (
     <img 

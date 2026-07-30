@@ -17,6 +17,7 @@ export type PortfolioProject = {
   technologies: string[];
   categories: ProjectCategory[];
   featured: boolean;
+  coverImage?: string;
   githubUrl?: string;
   demoUrl?: string;
 };

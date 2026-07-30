@@ -56,13 +56,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </div>
             <h1 className="mt-6 text-balance font-display text-5xl font-semibold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">{project.title}</h1>
             <p className="mt-4 text-xl font-medium text-accent sm:text-2xl">{project.subtitle[locale]}</p>
-            <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-text-secondary">{project.summary[locale]}</p>
+            
+            {gallery && gallery.length > 0 && (
+              <div className="mt-12 rounded-xl border border-border/50 bg-surface/30 p-2 shadow-2xl backdrop-blur-sm sm:p-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="overflow-hidden rounded-lg">
+                  <ProjectGallery images={gallery} locale={locale} />
+                </div>
+              </div>
+            )}
+
+            <p className="mt-12 max-w-3xl text-pretty text-lg leading-8 text-text-secondary">{project.summary[locale]}</p>
           </Container>
         </header>
-
-        <Container className="pt-14 sm:pt-20">
-          <ProjectGallery images={gallery} locale={locale} />
-        </Container>
 
         <Container className="grid gap-14 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-20">
           <div className="space-y-14">

@@ -16,7 +16,12 @@ type ProjectSummaryCardProps = {
 
 export default function ProjectSummaryCard({ project, locale, cta, index }: ProjectSummaryCardProps) {
   return (
-    <TechnicalFrame as="article" index={index} label="Project record" className="group flex h-full flex-col p-6 hover:-translate-y-0.5 sm:p-7">
+    <TechnicalFrame as="article" index={index} label="Project record" className="group flex h-full flex-col p-6 sm:p-7 hover:-translate-y-0.5 transition-transform">
+      {project.coverImage ? (
+        <div className="relative mb-6 -mx-2 -mt-2 aspect-video overflow-hidden rounded-sm border border-border">
+          <img src={project.coverImage} alt={project.title} className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         {project.categories.map((category) => (
           <Badge key={category}>{projectCategoryLabels[category][locale]}</Badge>
@@ -29,8 +34,8 @@ export default function ProjectSummaryCard({ project, locale, cta, index }: Proj
       </div>
       <ul className="mt-6 flex flex-wrap gap-3" aria-label={publicCopy[locale].projects.technologies}>
         {project.technologies.slice(0, 4).map((technology) => (
-          <li key={technology} className="flex items-center gap-1.5 font-mono text-xs text-text-muted">
-            <SkillIcon name={technology} className="text-[14px]" />
+          <li key={technology} className="flex items-center gap-1.5 font-mono text-xs font-semibold text-text-secondary">
+            <SkillIcon name={technology} className="text-[16px]" />
             <span>{technology}</span>
           </li>
         ))}

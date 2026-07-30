@@ -158,7 +158,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
           </button>
           
           {isOpen && (
-            <div className="absolute top-full left-0 md:right-0 md:left-auto mt-2 z-50 origin-top animate-in slide-in-from-top-2 fade-in duration-200">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-page/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
               {formContent}
             </div>
           )}

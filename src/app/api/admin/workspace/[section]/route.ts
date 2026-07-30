@@ -445,7 +445,7 @@ async function updateRecord(context: AdminContext, section: Section, id: string,
 
 async function deleteRecord(context: AdminContext, section: Section, id: string) {
   const db = client(context);
-  const table = section === "projects" ? "projects" : section === "skills" ? "skills" : section === "certifications" ? "certifications" : section === "testimonials" ? "testimonials" : section === "journey" ? null : null;
+  const table = section === "projects" ? "projects" : section === "skills" ? "skills" : section === "certifications" ? "certifications" : section === "testimonials" ? "testimonials" : section === "journey" ? null : section === "messages" ? "contact_messages" : null;
   if (!table && section !== "journey") throw new Error("Suppression indisponible pour cette section.");
   if (section === "journey") {
     const [{ data: experience }, { data: education }] = await Promise.all([db.from("experiences").select("id").eq("id", id).maybeSingle(), db.from("education").select("id").eq("id", id).maybeSingle()]);

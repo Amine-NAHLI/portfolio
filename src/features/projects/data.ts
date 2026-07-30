@@ -14,9 +14,10 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
   const supabase = createPublicClient();
 
   try {
-    const [projectsResult, translationsResult] = await Promise.all([
+    const [projectsResult, translationsResult, mediaResult] = await Promise.all([
       supabase.from("projects").select("*").order("sort_order", { ascending: true }).order("published_at", { ascending: false }),
       supabase.from("project_translations").select("*").eq("review_status", "validated"),
+      supabase.from("project_media").select("project_id, sort_order, media_assets(storage_path)").order("sort_order", { ascending: true }),
     ] as const);
 
     if (projectsResult.error || translationsResult.error) {
@@ -28,6 +29,17 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
       const current = translationsByProject.get(translation.project_id) ?? new Map();
       current.set(translation.locale, translation);
       translationsByProject.set(translation.project_id, current);
+    }
+    
+    const mediaByProject = new Map<string, string>();
+    for (const media of mediaResult.data ?? []) {
+      if (!mediaByProject.has(media.project_id)) {
+        const assets = Array.isArray(media.media_assets) ? media.media_assets[0] : media.media_assets;
+        if (assets?.storage_path) {
+          const { data: publicUrlData } = supabase.storage.from("portfolio-media").getPublicUrl(assets.storage_path);
+          mediaByProject.set(media.project_id, publicUrlData.publicUrl);
+        }
+      }
     }
 
     const projects = (projectsResult.data ?? []).flatMap((project) => {
@@ -53,6 +65,7 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
         technologies,
         categories: project.categories.filter(isProjectCategory),
         featured: project.featured,
+        coverImage: mediaByProject.get(project.id),
         githubUrl: project.github_url ?? undefined,
         demoUrl: project.demo_url ?? undefined,
       } satisfies PortfolioProject];

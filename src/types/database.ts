@@ -107,6 +107,7 @@ export type CertificationRow = Timestamped & {
   description_en: string | null;
   skills: string[];
   sort_order: number;
+  featured: boolean;
 };
 
 export type ExperienceRow = Timestamped & {
@@ -243,6 +244,7 @@ export type TestimonialRow = Timestamped & {
   fingerprint_hash: string | null;
   moderated_by: string | null;
   moderated_at: string | null;
+  featured: boolean;
 };
 
 export type Database = {

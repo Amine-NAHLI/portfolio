@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { Check, Eye, FileUp, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, Eye, FileUp, Pencil, Plus, Trash2, X, Star } from "lucide-react";
 
 export type AdminWorkspaceSection = "projects" | "journey" | "skills" | "certifications" | "testimonials" | "messages";
 type RecordValue = Record<string, unknown>;
@@ -124,6 +124,14 @@ export function AdminWorkspace({ section }: { section: AdminWorkspaceSection }) 
     } catch (caught) { setError(caught instanceof Error ? caught.message : "Modération impossible."); }
   }
 
+  async function toggleFeatured(record: RecordValue) {
+    if (typeof record.id !== "string") return;
+    try {
+      await api("testimonials", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: record.id, values: { action: "toggle_featured", featured: !record.featured } }) });
+      await load();
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Mise en avant impossible."); }
+  }
+
   async function view(record: RecordValue) {
     setDetail(record);
     if (section !== "messages" || typeof record.id !== "string" || record.status !== "new") return;
@@ -141,14 +149,14 @@ export function AdminWorkspace({ section }: { section: AdminWorkspaceSection }) 
         {meta.create ? <button className="button-primary shrink-0" type="button" onClick={() => setEditor("new")}><Plus aria-hidden="true" className="size-4" />{meta.create}</button> : null}
       </header>
       {error ? <p className="mt-6 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger" role="alert">{error}</p> : null}
-      {loading ? <p className="mt-8 text-sm text-text-muted">Chargement…</p> : section === "testimonials" ? <TestimonialsWorkspace records={records} onView={view} onDelete={remove} onModerate={moderate} /> : <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />}
+      {loading ? <p className="mt-8 text-sm text-text-muted">Chargement…</p> : section === "testimonials" ? <TestimonialsWorkspace records={records} onView={view} onDelete={remove} onModerate={moderate} onToggleFeatured={toggleFeatured} /> : <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />}
       {editor && section !== "testimonials" && section !== "messages" ? <WorkspaceEditor section={section} record={editor === "new" ? null : editor} categories={categories} onClose={() => setEditor(null)} onSaved={async () => { setEditor(null); await load(); }} /> : null}
       {detail ? <DetailDialog section={section} record={detail} onClose={() => setDetail(null)} /> : null}
     </div>
   );
 }
 
-function WorkspaceTable({ section, records, onEdit, onView, onDelete, onModerate }: { section: AdminWorkspaceSection; records: RecordValue[]; onEdit: (record: RecordValue) => void; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void }) {
+function WorkspaceTable({ section, records, onEdit, onView, onDelete, onModerate, onToggleFeatured }: { section: AdminWorkspaceSection; records: RecordValue[]; onEdit: (record: RecordValue) => void; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void; onToggleFeatured?: (record: RecordValue) => void }) {
   if (!records.length) return <div className="mt-8 border border-dashed border-border bg-surface/60 p-10 text-center text-sm text-text-muted">Aucun contenu pour le moment. Utilisez l’action d’ajout pour commencer.</div>;
   const headers = section === "projects" ? ["Titre", "GitHub", "Technologies", "Ordre"]
     : section === "journey" ? ["Type", "Titre", "Organisation", "Début"]
@@ -156,7 +164,7 @@ function WorkspaceTable({ section, records, onEdit, onView, onDelete, onModerate
         : section === "certifications" ? ["Titre", "Organisme", "Date", "PDF"]
           : section === "testimonials" ? ["Nom", "Rôle", "Date", "Statut"]
             : ["Nom", "E-mail", "Sujet", "Date", "État"];
-  return <div className="mt-8 overflow-x-auto border border-border"><table className="w-full min-w-[46rem] text-left text-sm"><thead className="bg-surface-subtle font-mono text-[.68rem] uppercase tracking-wider text-text-muted"><tr>{headers.map((header) => <th key={header} className="border-b border-border px-4 py-3 font-semibold">{header}</th>)}<th className="border-b border-border px-4 py-3 text-right font-semibold">Actions</th></tr></thead><tbody className="divide-y divide-border bg-surface">{records.map((record) => <tr key={String(record.id)} className="align-top transition-colors hover:bg-surface-raised/50"><Cells section={section} record={record} /><td className="px-4 py-3"><div className="flex justify-end gap-2"><button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onView(record)} aria-label="Voir le détail"><Eye className="size-4" /></button>{["projects", "journey", "skills", "certifications"].includes(section) ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onEdit(record)} aria-label="Modifier"><Pencil className="size-4" /></button> : null}{section === "testimonials" ? <><button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-success hover:border-success hover:text-success" onClick={() => onModerate(record, "approved")} aria-label="Approuver"><Check className="size-4" /></button><button type="button" className="button-secondary px-3 text-xs" onClick={() => onModerate(record, "rejected")}>Rejeter</button></> : null}{section !== "messages" ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-danger text-danger" onClick={() => onDelete(record)} aria-label="Supprimer"><Trash2 className="size-4" /></button> : null}</div></td></tr>)}</tbody></table></div>;
+  return <div className="mt-8 overflow-x-auto border border-border"><table className="w-full min-w-[46rem] text-left text-sm"><thead className="bg-surface-subtle font-mono text-[.68rem] uppercase tracking-wider text-text-muted"><tr>{headers.map((header) => <th key={header} className="border-b border-border px-4 py-3 font-semibold">{header}</th>)}<th className="border-b border-border px-4 py-3 text-right font-semibold">Actions</th></tr></thead><tbody className="divide-y divide-border bg-surface">{records.map((record) => <tr key={String(record.id)} className="align-top transition-colors hover:bg-surface-raised/50"><Cells section={section} record={record} /><td className="px-4 py-3"><div className="flex justify-end gap-2"><button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onView(record)} aria-label="Voir le détail"><Eye className="size-4" /></button>{["projects", "journey", "skills", "certifications"].includes(section) ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onEdit(record)} aria-label="Modifier"><Pencil className="size-4" /></button> : null}{section === "testimonials" ? <>{record.status === "approved" ? <button type="button" className={`grid size-10 place-items-center rounded-sm border border-border ${record.featured ? "text-amber-500 hover:border-amber-500" : "text-text-secondary hover:border-amber-500 hover:text-amber-500"}`} onClick={() => onToggleFeatured?.(record)} aria-label={record.featured ? "Ne plus mettre en avant" : "Mettre en avant"}><Star className="size-4" fill={record.featured ? "currentColor" : "none"} /></button> : null}<button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-success hover:border-success hover:text-success" onClick={() => onModerate(record, "approved")} aria-label="Approuver"><Check className="size-4" /></button><button type="button" className="button-secondary px-3 text-xs" onClick={() => onModerate(record, "rejected")}>Rejeter</button></> : null}{section !== "messages" ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-danger text-danger" onClick={() => onDelete(record)} aria-label="Supprimer"><Trash2 className="size-4" /></button> : null}</div></td></tr>)}</tbody></table></div>;
 }
 
 function Cells({ section, record }: { section: AdminWorkspaceSection; record: RecordValue }) {
@@ -267,8 +275,9 @@ function WorkspaceEditor({ section, record, categories, onClose, onSaved }: { se
 
 function EditorFields({ section, values, set, categories, translate, translating, pdfRef, pdf, setPdf, galleryRef, galleryFiles, setGalleryFiles }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; categories: SkillCategory[]; translate: () => Promise<void>; translating: "description_en" | null; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void; galleryRef?: React.RefObject<HTMLInputElement | null>; galleryFiles?: File[]; setGalleryFiles?: (files: File[]) => void }) {
   const field = (name: string, label: string, type: "text" | "date" | "number" = "text", wide = false, required = true) => <label className={`grid gap-2 text-sm font-semibold text-text-primary ${wide ? "sm:col-span-2" : ""}`}><span>{label}{required ? <span className="text-danger"> *</span> : null}</span><input required={required} type={type} value={String(values[name] ?? "")} onChange={(event) => set(name, type === "number" ? Number(event.target.value) : event.target.value)} className="min-h-11 px-3 font-normal" /></label>;
+  const checkbox = (name: string, label: string) => <label className="flex items-center gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><input type="checkbox" checked={Boolean(values[name])} onChange={(event) => set(name, event.target.checked ? 1 : 0)} className="size-4 rounded-sm border-border text-accent focus:ring-accent" />{label}</label>;
   const textarea = (name: string, label: string, translatable = false, required = true) => <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span className="flex flex-wrap items-center justify-between gap-3">{label}{translatable ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void translate()} disabled={Boolean(translating)}>{translating ? "Traduction…" : "Traduire en anglais avec Groq"}</button> : null}</span><textarea required={required} value={String(values[name] ?? "")} onChange={(event) => set(name, event.target.value)} rows={5} className="resize-y px-3 py-2 font-normal" /></label>;
-  if (section === "projects") return <>{field("title", "Titre", "text", true)}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("technologies", "Technologies (séparées par des virgules, des points-virgules ou des lignes)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Galerie d&apos;images</span><input ref={galleryRef} type="file" multiple accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => setGalleryFiles?.(Array.from(event.target.files ?? []))} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => galleryRef?.current?.click()}><FileUp className="size-4" />{galleryFiles?.length ? `${galleryFiles.length} image(s) sélectionnée(s)` : "Ajouter des images"}</button><span className="text-xs font-normal text-text-muted">Ces images seront ajoutées à la galerie du projet (5 Mo max par image).</span></div></>;
+  if (section === "projects") return <>{field("title", "Titre", "text", true)}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("technologies", "Technologies (séparées par des virgules, des points-virgules ou des lignes)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Galerie d&apos;images</span><input ref={galleryRef} type="file" multiple accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => setGalleryFiles?.(Array.from(event.target.files ?? []))} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => galleryRef?.current?.click()}><FileUp className="size-4" />{galleryFiles?.length ? `${galleryFiles.length} image(s) sélectionnée(s)` : "Ajouter des images"}</button><span className="text-xs font-normal text-text-muted">Ces images seront ajoutées à la galerie du projet (5 Mo max par image).</span></div></>;
   if (section === "journey") return <><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Type *</span><select value={String(values.kind)} onChange={(event) => set("kind", event.target.value)} className="min-h-11 px-3 font-normal"><option value="experience">Expérience</option><option value="education">Formation</option></select></label>{field("organization", values.kind === "education" ? "Établissement" : "Organisation")}{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{textarea("summary_fr", "Description FR")}{textarea("summary_en", "Description EN")}{field("started_on", "Date de début", "date")}
   <div className="grid gap-2 text-sm font-semibold text-text-primary">
     <span>Date de fin prévue ou effective</span>
@@ -277,7 +286,7 @@ function EditorFields({ section, values, set, categories, translate, translating
   </div>
   {field("sort_order", "Ordre d’affichage", "number")}</>;
   if (section === "skills") return <><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Nom *</span><input required value={String(values.name ?? "")} onChange={(event) => set("name", event.target.value)} className="min-h-11 px-3 font-normal" /></label><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Catégorie *</span><input required list="skill-categories" value={String(values.category ?? "")} onChange={(event) => set("category", event.target.value)} className="min-h-11 px-3 font-normal" /><datalist id="skill-categories">{categories.map((category) => <option key={category.id} value={category.name_fr} />)}</datalist><span className="text-xs font-normal text-text-muted">Saisissez un nouveau nom pour créer la catégorie directement.</span></label><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Niveau *</span><select value={String(values.level)} onChange={(event) => set("level", event.target.value)} className="min-h-11 px-3 font-normal"><option value="beginner">Débutant</option><option value="intermediate">Intermédiaire</option><option value="advanced">Avancé</option></select></label>{field("sort_order", "Ordre d’affichage", "number")}</>;
-  return <>{field("title", "Titre", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
+  return <>{field("title", "Titre", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
 }
 
 function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSection; record: RecordValue; onClose: () => void }) {
@@ -321,7 +330,7 @@ function formatDate(value: unknown) {
   return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
-function TestimonialsWorkspace({ records, onView, onDelete, onModerate }: { records: RecordValue[]; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void }) {
+function TestimonialsWorkspace({ records, onView, onDelete, onModerate, onToggleFeatured }: { records: RecordValue[]; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void; onToggleFeatured: (record: RecordValue) => void }) {
   const pending = records.filter((r) => r.status === "pending" || r.status === "new");
   const approvedFr = records.filter((r) => r.status === "approved" && r.locale === "fr");
   const approvedEn = records.filter((r) => r.status === "approved" && r.locale === "en");
@@ -332,23 +341,23 @@ function TestimonialsWorkspace({ records, onView, onDelete, onModerate }: { reco
       <section>
         <h3 className="font-display text-xl font-semibold text-text-primary">En attente ({pending.length})</h3>
         <p className="mt-1 text-sm text-text-secondary">Les nouveaux avis qui attendent votre modération. En les approuvant, ils seront automatiquement traduits.</p>
-        <WorkspaceTable section="testimonials" records={pending} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+        <WorkspaceTable section="testimonials" records={pending} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
       </section>
       <section>
         <h3 className="font-display text-xl font-semibold text-text-primary">Français ({approvedFr.length})</h3>
         <p className="mt-1 text-sm text-text-secondary">Les avis approuvés publiés sur la version française du site.</p>
-        <WorkspaceTable section="testimonials" records={approvedFr} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+        <WorkspaceTable section="testimonials" records={approvedFr} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
       </section>
       <section>
         <h3 className="font-display text-xl font-semibold text-text-primary">Anglais ({approvedEn.length})</h3>
         <p className="mt-1 text-sm text-text-secondary">Les avis approuvés publiés sur la version anglaise du site.</p>
-        <WorkspaceTable section="testimonials" records={approvedEn} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+        <WorkspaceTable section="testimonials" records={approvedEn} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
       </section>
       {rejected.length > 0 && (
         <section>
           <h3 className="font-display text-xl font-semibold text-text-primary">Rejetés ({rejected.length})</h3>
           <p className="mt-1 text-sm text-text-secondary">Les avis que vous avez refusés.</p>
-          <WorkspaceTable section="testimonials" records={rejected} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} />
+          <WorkspaceTable section="testimonials" records={rejected} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
         </section>
       )}
     </div>

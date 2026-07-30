@@ -16,8 +16,8 @@ export type PublicJourneyEntry = {
 
 export type PublicSkill = { name: string; level: "beginner" | "intermediate" | "advanced"; evidence: string[] };
 export type PublicSkillGroup = { id: string; title: string; description: string | null; skills: PublicSkill[] };
-export type PublicCertification = { id: string; name: string; description: string | null; issuer: string | null; status: "completed" | "in_progress" | "expired"; skills: string[]; issuedOn: string | null; verificationUrl: string | null; hasDocument: boolean; documentMimeType: string | null };
-export type PublicTestimonial = { id: string; name: string; role: string | null; organization: string | null; message: string; rating: number; locale: "fr" | "en" };
+export type PublicCertification = { id: string; name: string; description: string | null; issuer: string | null; status: "completed" | "in_progress" | "expired"; skills: string[]; issuedOn: string | null; verificationUrl: string | null; hasDocument: boolean; documentMimeType: string | null; featured: boolean };
+export type PublicTestimonial = { id: string; name: string; role: string | null; organization: string | null; message: string; rating: number; locale: "fr" | "en"; featured: boolean };
 
 async function queryJourney(locale: Locale): Promise<PublicJourneyEntry[]> {
   if (!hasSupabasePublicConfig()) return [];
@@ -106,7 +106,8 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
   try {
     const { data, error } = await createPublicClient()
       .from("certifications")
-      .select("id, name_fr, name_en, description_fr, description_en, issuer, credential_status, skills, issued_on, verification_url, document_media_id, media_assets ( mime_type )")
+      .select("id, name_fr, name_en, description_fr, description_en, issuer, credential_status, skills, issued_on, verification_url, document_media_id, media_assets ( mime_type ), featured")
+      .order("featured", { ascending: false })
       .order("sort_order")
       .order("issued_on", { ascending: false });
     if (error) return [];
@@ -124,7 +125,8 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
         issuedOn: certificate.issued_on, 
         verificationUrl: certificate.verification_url, 
         hasDocument: Boolean(certificate.document_media_id),
-        documentMimeType: mimeType
+        documentMimeType: mimeType,
+        featured: certificate.featured
       };
     });
   } catch { return []; }
@@ -133,9 +135,9 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
 async function queryTestimonials(locale: Locale): Promise<PublicTestimonial[]> {
   if (!hasSupabasePublicConfig()) return [];
   try {
-    const { data, error } = await createPublicClient().from("testimonials").select("id, first_name, last_name, job_title, organization, message, rating, locale").eq("locale", locale).order("created_at", { ascending: false });
+    const { data, error } = await createPublicClient().from("testimonials").select("id, first_name, last_name, job_title, organization, message, rating, locale, featured").eq("locale", locale).order("featured", { ascending: false }).order("created_at", { ascending: false });
     if (error) return [];
-    return (data ?? []).map((testimonial) => ({ id: testimonial.id, name: `${testimonial.first_name} ${testimonial.last_name}`.trim(), role: testimonial.job_title, organization: testimonial.organization, message: testimonial.message, rating: testimonial.rating, locale: testimonial.locale }));
+    return (data ?? []).map((testimonial) => ({ id: testimonial.id, name: `${testimonial.first_name} ${testimonial.last_name}`.trim(), role: testimonial.job_title, organization: testimonial.organization, message: testimonial.message, rating: testimonial.rating, locale: testimonial.locale, featured: testimonial.featured }));
   } catch { return []; }
 }
 

@@ -38,8 +38,6 @@ const customSlugs: Record<string, string> = {
   "google cloud platform": "gcp"
 };
 
-// Logos qui sont noirs ou très sombres par défaut et invisibles sur fond sombre
-const forceWhiteLogos = ["nextdotjs", "vercel", "github", "express", "prisma", "socketdotio", "flask", "shadcnui", "expo"];
 
 export default function SkillIcon({ name, className = "" }: { name: string; className?: string }) {
   const [error, setError] = useState(false);

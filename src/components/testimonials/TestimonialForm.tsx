@@ -25,7 +25,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
             setResult(null);
           }, 3000);
         }
-      } catch (error) {
+      } catch {
         setResult({ success: false, error: "Une erreur s'est produite lors de la connexion au serveur." });
       }
     });
@@ -158,7 +158,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
           </button>
           
           {isOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-page/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
               {formContent}
             </div>
           )}

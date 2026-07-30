@@ -19,6 +19,7 @@ export default function ProjectSummaryCard({ project, locale, cta, index }: Proj
     <TechnicalFrame as="article" index={index} label="Project record" className="group flex h-full flex-col p-6 sm:p-7 hover:-translate-y-0.5 transition-transform">
       {project.coverImage ? (
         <div className="relative mb-6 -mx-2 -mt-2 aspect-video overflow-hidden rounded-sm border border-border">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={project.coverImage} alt={project.title} className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
         </div>
       ) : null}
@@ -34,8 +35,8 @@ export default function ProjectSummaryCard({ project, locale, cta, index }: Proj
       </div>
       <ul className="mt-6 flex flex-wrap gap-3" aria-label={publicCopy[locale].projects.technologies}>
         {project.technologies.slice(0, 4).map((technology) => (
-          <li key={technology} className="flex items-center gap-1.5 font-mono text-xs font-semibold text-text-secondary">
-            <SkillIcon name={technology} className="text-[16px]" />
+          <li key={technology} className="flex items-center gap-2 font-mono text-sm font-semibold text-text-secondary">
+            <SkillIcon name={technology} className="text-[24px]" />
             <span>{technology}</span>
           </li>
         ))}

@@ -32,7 +32,9 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
     }
     
     const mediaByProject = new Map<string, string>();
-    for (const media of mediaResult.data ?? []) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const typedMediaData = mediaResult.data as any[] ?? [];
+    for (const media of typedMediaData) {
       if (!mediaByProject.has(media.project_id)) {
         const assets = Array.isArray(media.media_assets) ? media.media_assets[0] : media.media_assets;
         if (assets?.storage_path) {

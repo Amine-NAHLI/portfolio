@@ -319,8 +319,7 @@ function formatDate(value: unknown) {
 
 function TestimonialsWorkspace({ records, onView, onDelete, onModerate, onToggleFeatured }: { records: RecordValue[]; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void; onToggleFeatured: (record: RecordValue) => void }) {
   const pending = records.filter((r) => r.status === "pending" || r.status === "new");
-  const approvedFr = records.filter((r) => r.status === "approved" && r.locale === "fr");
-  const approvedEn = records.filter((r) => r.status === "approved" && r.locale === "en");
+  const approved = records.filter((r) => r.status === "approved");
   const rejected = records.filter((r) => r.status === "rejected");
 
   return (
@@ -331,14 +330,9 @@ function TestimonialsWorkspace({ records, onView, onDelete, onModerate, onToggle
         <WorkspaceTable section="testimonials" records={pending} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
       </section>
       <section>
-        <h3 className="font-display text-xl font-semibold text-text-primary">Français ({approvedFr.length})</h3>
-        <p className="mt-1 text-sm text-text-secondary">Les avis approuvés publiés sur la version française du site.</p>
-        <WorkspaceTable section="testimonials" records={approvedFr} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
-      </section>
-      <section>
-        <h3 className="font-display text-xl font-semibold text-text-primary">Anglais ({approvedEn.length})</h3>
-        <p className="mt-1 text-sm text-text-secondary">Les avis approuvés publiés sur la version anglaise du site.</p>
-        <WorkspaceTable section="testimonials" records={approvedEn} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
+        <h3 className="font-display text-xl font-semibold text-text-primary">Approuvés ({approved.length})</h3>
+        <p className="mt-1 text-sm text-text-secondary">Tous les avis approuvés et publiés sur le site (français et anglais).</p>
+        <WorkspaceTable section="testimonials" records={approved} onEdit={() => {}} onView={onView} onDelete={onDelete} onModerate={onModerate} onToggleFeatured={onToggleFeatured} />
       </section>
       {rejected.length > 0 && (
         <section>

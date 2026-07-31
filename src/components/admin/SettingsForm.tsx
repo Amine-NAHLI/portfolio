@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
-import { Save, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useActionState, useState } from "react";
+import { Save, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { updateAccountDetails } from "@/app/admin/(protected)/settings/actions";
 
 export function SettingsForm({ currentEmail }: { currentEmail: string }) {
   const [state, formAction, isPending] = useActionState(updateAccountDetails, null);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <form action={formAction} className="grid gap-6">
@@ -38,13 +39,23 @@ export function SettingsForm({ currentEmail }: { currentEmail: string }) {
       <div className="grid gap-2">
         <label htmlFor="password" className="font-mono text-xs uppercase tracking-widest text-text-secondary">Nouveau Mot de passe</label>
         <p className="text-xs text-text-muted mb-2">Laissez vide pour conserver le mot de passe actuel. Minimum 6 caractères.</p>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          minLength={6}
-          className="w-full bg-surface-subtle border border-border/50 rounded-sm px-4 py-2 font-body text-sm text-text-primary focus:outline-none focus:border-accent transition-colors"
-        />
+        <div className="relative">
+          <input 
+            type={showPassword ? "text" : "password"} 
+            id="password" 
+            name="password" 
+            minLength={6}
+            className="w-full bg-surface-subtle border border-border/50 rounded-sm px-4 py-2 pr-10 font-body text-sm text-text-primary focus:outline-none focus:border-accent transition-colors"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted hover:text-text-primary focus:outline-none"
+            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
       </div>
 
       <div className="pt-4 border-t border-border/50">

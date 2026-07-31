@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { MessageSquarePlus, X, Send, CheckCircle2 } from "lucide-react";
 import { submitTestimonial } from "@/app/[locale]/testimonials/actions";
 import type { Locale } from "@/i18n/config";
@@ -9,6 +10,11 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<{ success?: boolean; error?: string; message?: string } | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -157,10 +163,11 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
             {locale === "fr" ? "Rédiger un avis sur mon profil" : "Write a review about me"}
           </button>
           
-          {isOpen && (
+          {isOpen && mounted && createPortal(
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
               {formContent}
-            </div>
+            </div>,
+            document.body
           )}
         </div>
       ) : (
@@ -176,10 +183,11 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
             </span>
           </button>
 
-          {isOpen && (
+          {isOpen && mounted && createPortal(
             <div className="fixed bottom-24 left-6 z-50 origin-bottom-left animate-in slide-in-from-bottom-4 fade-in duration-200 shadow-2xl">
               {formContent}
-            </div>
+            </div>,
+            document.body
           )}
         </>
       )}

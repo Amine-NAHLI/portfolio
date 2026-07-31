@@ -74,19 +74,31 @@ function revalidate(section: Section) {
 }
 
 async function getRecords(db: UntypedClient, section: Section) {
-  if (section === "projects") {
-    const [{ data: projects, error }, { data: translations }] = await Promise.all([
-      db.from("projects").select("id, github_url, sort_order, created_at, technologies, featured").order("sort_order").order("created_at", { ascending: false }),
-      db.from("project_translations").select("project_id, locale, title, summary"),
-    ]);
-    if (error) throw error;
-    return (projects ?? []).map((project: { id: string; github_url: string | null; sort_order: number; created_at: string; technologies: string[] }) => {
-      const values = (translations ?? []).filter((item: { project_id: string }) => item.project_id === project.id);
-      const fr = values.find((item: { locale: string }) => item.locale === "fr");
-      const en = values.find((item: { locale: string }) => item.locale === "en");
-      return { ...project, title: fr?.title ?? en?.title ?? "Sans titre", description_fr: fr?.summary ?? "", description_en: en?.summary ?? "", technologies: project.technologies ?? [] };
-    });
-  }
+    if (section === "projects") {
+      const [{ data: projects, error }, { data: translations }] = await Promise.all([
+        db.from("projects").select("id, github_url, demo_url, categories, sort_order, created_at, technologies, featured").order("sort_order").order("created_at", { ascending: false }),
+        db.from("project_translations").select("*"),
+      ]);
+      if (error) throw error;
+      return (projects ?? []).map((project: { id: string; github_url: string | null; demo_url: string | null; categories: string[]; sort_order: number; created_at: string; technologies: string[] }) => {
+        const values = (translations ?? []).filter((item: { project_id: string }) => item.project_id === project.id);
+        const fr = values.find((item: { locale: string }) => item.locale === "fr");
+        const en = values.find((item: { locale: string }) => item.locale === "en");
+        return { 
+          ...project, 
+          title: fr?.title ?? en?.title ?? "Sans titre", 
+          subtitle_fr: fr?.subtitle ?? "", subtitle_en: en?.subtitle ?? "",
+          description_fr: fr?.summary ?? "", description_en: en?.summary ?? "", 
+          problem_fr: fr?.problem ?? "", problem_en: en?.problem ?? "",
+          objectives_fr: Array.isArray(fr?.objectives) ? fr.objectives.join("\n") : "", objectives_en: Array.isArray(en?.objectives) ? en.objectives.join("\n") : "",
+          solution_fr: fr?.solution ?? "", solution_en: en?.solution ?? "",
+          architecture_fr: Array.isArray(fr?.architecture) ? fr.architecture.join("\n") : "", architecture_en: Array.isArray(en?.architecture) ? en.architecture.join("\n") : "",
+          results_fr: Array.isArray(fr?.results) ? fr.results.join("\n") : "", results_en: Array.isArray(en?.results) ? en.results.join("\n") : "",
+          categories: Array.isArray(project.categories) ? project.categories.join(", ") : "",
+          technologies: project.technologies ?? [] 
+        };
+      });
+    }
 
   if (section === "journey") {
     const [{ data: experiences, error: experienceError }, { data: education, error: educationError }] = await Promise.all([
@@ -160,7 +172,23 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   const title = text(input.title, 1, 180);
   const descriptionFr = text(input.description_fr, 1, 1_200);
   const descriptionEn = nullableText(input.description_en, 1_200);
+  
+  const subtitleFr = nullableText(input.subtitle_fr, 300);
+  const subtitleEn = nullableText(input.subtitle_en, 300);
+  const problemFr = nullableText(input.problem_fr, 2_000);
+  const problemEn = nullableText(input.problem_en, 2_000);
+  const solutionFr = nullableText(input.solution_fr, 2_000);
+  const solutionEn = nullableText(input.solution_en, 2_000);
+  
+  const objectivesFr = typeof input.objectives_fr === "string" ? input.objectives_fr.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const objectivesEn = typeof input.objectives_en === "string" ? input.objectives_en.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const architectureFr = typeof input.architecture_fr === "string" ? input.architecture_fr.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const architectureEn = typeof input.architecture_en === "string" ? input.architecture_en.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const resultsFr = typeof input.results_fr === "string" ? input.results_fr.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const resultsEn = typeof input.results_en === "string" ? input.results_en.split('\n').map(s => s.trim()).filter(Boolean) : [];
+
   const githubUrl = nullableText(input.github_url, 500);
+  const demoUrl = nullableText(input.demo_url, 500);
   const sortOrder = number(input.sort_order);
   if (!title) throw new ValidationError("Le titre est obligatoire.");
   if (!descriptionFr) throw new ValidationError("La description française est obligatoire.");
@@ -173,9 +201,12 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   const technologies = [...new Set(input.technologies.map((value) => text(value, 1, 120)).filter((value): value is string => Boolean(value)))].slice(0, 30);
   const slug = await uniqueSlug(db, "projects", title, id ?? undefined);
   const featured = Boolean(input.featured);
+  
+  const categories = typeof input.categories === "string" ? input.categories.split(',').map(s => s.trim()).filter(Boolean) : [];
+  
   // A project can only become public after both translations have been stored.
   // Create and update it as a draft first, then publish after the upsert below.
-  const projectPayload = { title, slug, github_url: githubUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured, categories: [], technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
+  const projectPayload = { title, slug, github_url: githubUrl, demo_url: demoUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured, categories, technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
   const result = id
     ? await db.from("projects").update(projectPayload).eq("id", id).select("id").single()
     : await db.from("projects").insert(projectPayload).select("id").single();
@@ -189,8 +220,8 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   const isComplete = true; // Automatically mark as validated so they show up on the portfolio
   const descriptionEnVal = descriptionEn ?? descriptionFr;
   const translationRows = [
-    { project_id: projectId, locale: "fr", title, summary: descriptionFr, problem: descriptionFr, solution: descriptionFr, objectives: [descriptionFr], architecture: [descriptionFr], results: [descriptionFr], review_status: "validated" },
-    { project_id: projectId, locale: "en", title, summary: descriptionEnVal, problem: descriptionEnVal, solution: descriptionEnVal, objectives: [descriptionEnVal], architecture: [descriptionEnVal], results: [descriptionEnVal], review_status: "validated" },
+    { project_id: projectId, locale: "fr", title, subtitle: subtitleFr, summary: descriptionFr, problem: problemFr || descriptionFr, solution: solutionFr || descriptionFr, objectives: objectivesFr.length > 0 ? objectivesFr : [descriptionFr], architecture: architectureFr.length > 0 ? architectureFr : [descriptionFr], results: resultsFr.length > 0 ? resultsFr : [descriptionFr], review_status: "validated" },
+    { project_id: projectId, locale: "en", title, subtitle: subtitleEn, summary: descriptionEnVal, problem: problemEn || descriptionEnVal, solution: solutionEn || descriptionEnVal, objectives: objectivesEn.length > 0 ? objectivesEn : [descriptionEnVal], architecture: architectureEn.length > 0 ? architectureEn : [descriptionEnVal], results: resultsEn.length > 0 ? resultsEn : [descriptionEnVal], review_status: "validated" },
   ];
   const { error: translationError } = await db.from("project_translations").upsert(translationRows, { onConflict: "project_id,locale" });
   if (translationError) throw translationError;

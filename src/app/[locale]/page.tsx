@@ -19,7 +19,6 @@ import { isLocale, Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import TestimonialForm from "@/components/testimonials/TestimonialForm";
-import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 

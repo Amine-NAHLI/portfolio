@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { SkillIcon } from "@/components/skills/SkillIcon";
+import SkillIcon from "@/components/ui/SkillIcon";
 import { cn } from "@/lib/utils";
 
 type TechCoreProps = {
@@ -80,7 +80,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
                         className={cn("animate-orbit-counter pointer-events-auto", isReverse && "animate-orbit-counter-reverse")}
                         style={{ animationDuration: `${speed}s` }}
                       >
-                        <SkillIcon name={tech} size={32} className="rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] ring-1 ring-border-strong/50 group-hover:ring-accent group-hover:shadow-[0_0_20px_rgba(var(--color-accent-rgb),0.5)] transition-all duration-300" />
+                        <SkillIcon name={tech} className="rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] ring-1 ring-border-strong/50 group-hover:ring-accent group-hover:shadow-[0_0_20px_rgba(var(--color-accent-rgb),0.5)] transition-all duration-300" />
                       </div>
                     </div>
                   );

@@ -5,7 +5,7 @@ import { Check, Eye, FileUp, Pencil, Plus, Trash2, X, Star } from "lucide-react"
 
 export type AdminWorkspaceSection = "projects" | "journey" | "certifications" | "testimonials" | "messages";
 type RecordValue = Record<string, unknown>;
-type SkillCategory = { id: string; name_fr: string };
+
 
 
 const labels: Record<AdminWorkspaceSection, { title: string; description: string; create?: string }> = {
@@ -17,7 +17,7 @@ const labels: Record<AdminWorkspaceSection, { title: string; description: string
 };
 
 function emptyValues(section: AdminWorkspaceSection): RecordValue {
-  if (section === "projects") return { title: "", description_fr: "", description_en: "", github_url: "", technologies: "", sort_order: 0 };
+  if (section === "projects") return { title: "", subtitle_fr: "", subtitle_en: "", description_fr: "", description_en: "", problem_fr: "", problem_en: "", solution_fr: "", solution_en: "", objectives_fr: "", objectives_en: "", architecture_fr: "", architecture_en: "", results_fr: "", results_en: "", github_url: "", demo_url: "", categories: "", technologies: "", sort_order: 0, featured: 0 };
   if (section === "journey") return { kind: "experience", title_fr: "", title_en: "", organization: "", summary_fr: "", summary_en: "", started_on: "", ended_on: "", sort_order: 0 };
   if (section === "certifications") return { title: "", issuer: "", issued_on: "", description_fr: "", description_en: "", document_media_id: "" };
   return {};
@@ -182,15 +182,35 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
   const set = (key: string, value: string | number) => setValues((current) => ({ ...current, [key]: value }));
 
   async function translate() {
-    const source = typeof values.description_fr === "string" ? values.description_fr : "";
-    if (!source.trim()) { setError("Saisissez d’abord la description française."); return; }
-    setTranslating("description_en");
     setError(null);
     try {
-      const result = await fetch("/api/admin/translate", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ text: source }) });
-      const body = await result.json() as { translation?: string; error?: string };
-      if (!result.ok || !body.translation) throw new Error(body.error ?? "Traduction impossible.");
-      set("description_en", body.translation);
+      const frKeys = Object.keys(values).filter(k => k.endsWith("_fr") && typeof values[k] === "string" && (values[k] as string).trim() !== "");
+      if (frKeys.length === 0) {
+        setError("Saisissez d'abord du texte en français.");
+        return;
+      }
+      
+      for (const frKey of frKeys) {
+        const enKey = frKey.replace("_fr", "_en");
+        const source = (values[frKey] as string).trim();
+        
+        // Optionally skip if English field already has content, but usually we want to force translate if user clicks the button.
+        setTranslating(enKey as any);
+        
+        const result = await fetch("/api/admin/translate", { 
+          method: "POST", 
+          headers: { "Content-Type": "application/json", Accept: "application/json" }, 
+          body: JSON.stringify({ text: source }) 
+        });
+        
+        const body = await result.json() as { translation?: string; error?: string };
+        if (!result.ok || !body.translation) {
+          console.error(`Traduction échouée pour ${frKey}:`, body.error);
+          continue; // Continue to the next field even if one fails
+        }
+        
+        set(enKey, body.translation);
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Traduction impossible.");
     } finally {
@@ -268,8 +288,8 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
 function EditorFields({ section, values, set, translate, translating, pdfRef, pdf, setPdf, galleryRef, galleryFiles, setGalleryFiles }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; translate: () => Promise<void>; translating: "description_en" | null; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void; galleryRef?: React.RefObject<HTMLInputElement | null>; galleryFiles?: File[]; setGalleryFiles?: (files: File[]) => void }) {
   const field = (name: string, label: string, type: "text" | "date" | "number" = "text", wide = false, required = true) => <label className={`grid gap-2 text-sm font-semibold text-text-primary ${wide ? "sm:col-span-2" : ""}`}><span>{label}{required ? <span className="text-danger"> *</span> : null}</span><input required={required} type={type} value={String(values[name] ?? "")} onChange={(event) => set(name, type === "number" ? Number(event.target.value) : event.target.value)} className="min-h-11 px-3 font-normal" /></label>;
   const checkbox = (name: string, label: string) => <label className="flex items-center gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><input type="checkbox" checked={Boolean(values[name])} onChange={(event) => set(name, event.target.checked ? 1 : 0)} className="size-4 rounded-sm border-border text-accent focus:ring-accent" />{label}</label>;
-  const textarea = (name: string, label: string, translatable = false, required = true) => <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span className="flex flex-wrap items-center justify-between gap-3">{label}{translatable ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void translate()} disabled={Boolean(translating)}>{translating ? "Traduction…" : "Traduire en anglais avec Groq"}</button> : null}</span><textarea required={required} value={String(values[name] ?? "")} onChange={(event) => set(name, event.target.value)} rows={5} className="resize-y px-3 py-2 font-normal" /></label>;
-  if (section === "projects") return <>{field("title", "Titre", "text", true)}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("technologies", "Technologies (séparées par des virgules, des points-virgules ou des lignes)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Galerie d&apos;images</span><input ref={galleryRef} type="file" multiple accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => setGalleryFiles?.(Array.from(event.target.files ?? []))} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => galleryRef?.current?.click()}><FileUp className="size-4" />{galleryFiles?.length ? `${galleryFiles.length} image(s) sélectionnée(s)` : "Ajouter des images"}</button><span className="text-xs font-normal text-text-muted">Ces images seront ajoutées à la galerie du projet (5 Mo max par image).</span></div></>;
+  const textarea = (name: string, label: string, translatable = false, required = true) => <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span className="flex flex-wrap items-center justify-between gap-3">{label}{translatable ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void translate()} disabled={Boolean(translating)}>{translating ? "Traduction en cours…" : "Traduire TOUT en anglais avec Groq"}</button> : null}</span><textarea required={required} value={String(values[name] ?? "")} onChange={(event) => set(name, event.target.value)} rows={5} className="resize-y px-3 py-2 font-normal" /></label>;
+  if (section === "projects") return <>{field("title", "Titre", "text", true)}{field("subtitle_fr", "Sous-titre FR", "text", true, false)}{field("subtitle_en", "Sous-titre EN", "text", true, false)}{textarea("description_fr", "Résumé court FR", true)}{textarea("description_en", "Résumé court EN", false, false)}{textarea("problem_fr", "Le Problème FR", false, false)}{textarea("problem_en", "Le Problème EN", false, false)}{textarea("objectives_fr", "Objectifs FR (un par ligne)", false, false)}{textarea("objectives_en", "Objectifs EN (un par ligne)", false, false)}{textarea("solution_fr", "La Solution FR", false, false)}{textarea("solution_en", "La Solution EN", false, false)}{textarea("architecture_fr", "Architecture FR (une par ligne)", false, false)}{textarea("architecture_en", "Architecture EN (une par ligne)", false, false)}{textarea("results_fr", "Résultats FR (un par ligne)", false, false)}{textarea("results_en", "Résultats EN (un par ligne)", false, false)}{field("categories", "Catégories (software, cybersecurity, artificial-intelligence, embedded - séparées par des virgules)", "text", true, false)}{field("technologies", "Technologies (séparées par des virgules)", "text", true, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("demo_url", "Lien Démo (URL)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Galerie d&apos;images</span><input ref={galleryRef} type="file" multiple accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => setGalleryFiles?.(Array.from(event.target.files ?? []))} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => galleryRef?.current?.click()}><FileUp className="size-4" />{galleryFiles?.length ? `${galleryFiles.length} image(s) sélectionnée(s)` : "Ajouter des images"}</button><span className="text-xs font-normal text-text-muted">Ces images seront ajoutées à la galerie du projet (5 Mo max par image).</span></div></>;
   if (section === "journey") return <><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Type *</span><select value={String(values.kind)} onChange={(event) => set("kind", event.target.value)} className="min-h-11 px-3 font-normal"><option value="experience">Expérience</option><option value="education">Formation</option></select></label>{field("organization", values.kind === "education" ? "Établissement" : "Organisation")}{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{textarea("summary_fr", "Description FR")}{textarea("summary_en", "Description EN")}{field("started_on", "Date de début", "date")}
   <div className="grid gap-2 text-sm font-semibold text-text-primary">
     <span>Date de fin prévue ou effective</span>

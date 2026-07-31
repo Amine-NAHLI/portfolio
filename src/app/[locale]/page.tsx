@@ -6,8 +6,10 @@ import ButtonLink from "@/components/ui/ButtonLink";
 import Container from "@/components/ui/Container";
 import JsonLd from "@/components/ui/JsonLd";
 import PortfolioEmptyState from "@/components/ui/PortfolioEmptyState";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
+import { TechCore } from "@/components/ui/TechCore";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
 import { getHomeCopy } from "@/content/dynamic-copy";
@@ -45,6 +47,8 @@ export default async function HomePage({ params }: HomePageProps) {
   ]);
   let featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
   if (featuredProjects.length === 0) featuredProjects = projects.slice(0, 3);
+
+  const allTechnologies = Array.from(new Set(projects.flatMap((p) => p.technologies || []))).filter(Boolean);
 
   let displayCertifications = certifications.filter((c) => c.featured).slice(0, 3);
   if (displayCertifications.length === 0) displayCertifications = certifications.slice(0, 3);
@@ -158,6 +162,25 @@ export default async function HomePage({ params }: HomePageProps) {
           </ScrollReveal>
         </Container>
       </section>
+
+      {allTechnologies.length > 0 && (
+        <section id="expertise" className="relative z-10 py-16 sm:py-24 overflow-hidden">
+          <Container>
+            <ScrollReveal yOffset={40}>
+              <div className="flex flex-col items-center justify-center text-center mb-12">
+                <p className="eyebrow">{locale === "fr" ? "Mon Expertise" : "My Expertise"}</p>
+                <h2 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">
+                  {locale === "fr" ? "La Singularité Technique" : "The Technical Singularity"}
+                </h2>
+                <p className="mt-3 max-w-xl text-text-secondary">
+                  {locale === "fr" ? "Toutes les technologies que je maîtrise, unifiées en un seul écosystème dynamique." : "All the technologies I master, unified into a single dynamic ecosystem."}
+                </p>
+              </div>
+              <TechCore technologies={allTechnologies} className="mt-8" />
+            </ScrollReveal>
+          </Container>
+        </section>
+      )}
 
       <section id="projects" className="relative z-10 py-16 sm:py-24">
         <Container>

@@ -51,7 +51,7 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
       if (error) throw new Error("AUTH_FAILED");
 
       const verification = await fetch("/api/admin/session", {
@@ -68,8 +68,8 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
 
       router.replace("/admin/dashboard");
       router.refresh();
-    } catch {
-      setErrorMessage(labels.error);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : labels.error);
       setSubmitting(false);
     }
   }

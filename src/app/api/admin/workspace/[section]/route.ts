@@ -315,6 +315,10 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
     }));
     const { error: mediaError } = await db.from("project_media").upsert(mediaRows, { onConflict: "project_id,media_id" });
     if (mediaError) throw mediaError;
+
+    for (const mediaId of input.new_gallery_media_ids) {
+      await db.from("media_assets").update({ publication_status: "published" }).eq("id", mediaId);
+    }
   }
   
   await audit(context, id ? "update" : "create", "projects", projectId, ["title", "description_fr", "description_en", "github_url", "technologies", "sort_order", "gallery"]);
@@ -608,9 +612,10 @@ async function mutate(request: NextRequest, routeContext: { params: Promise<{ se
     else return fail("Requête invalide.", 422);
     revalidate(section);
     return NextResponse.json({ success: true }, { headers: { "Cache-Control": "private, no-store" } });
-  } catch (error) {
-    console.error("Admin workspace mutation failed", { section, mode, error: error instanceof Error ? error.message : JSON.stringify(error) });
-    return fail(error instanceof Error ? error.message : "Erreur inattendue.", 500);
+  } catch (error: any) {
+    const msg = error?.message || (typeof error === 'string' ? error : JSON.stringify(error));
+    console.error("Admin workspace mutation failed", { section, mode, error: msg });
+    return fail(msg || "Erreur inattendue.", 500);
   }
 }
 

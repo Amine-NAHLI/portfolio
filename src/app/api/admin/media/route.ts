@@ -28,15 +28,21 @@ export async function POST(request: NextRequest) {
   catch { return fail("Formulaire invalide.", 400); }
   const file = formData.get("file");
   if (!(file instanceof File)) return fail("Fichier manquant.", 422);
-  if (file.type !== PDF_MIME_TYPE || file.size <= 0 || file.size > MAX_FILE_BYTES) return fail("Type ou taille de fichier refusé.", 422);
-  const signature = new TextDecoder().decode(await file.slice(0, 5).arrayBuffer());
-  if (signature !== "%PDF-") return fail("Le contenu du fichier n’est pas un PDF valide.", 422);
+  const isPDF = file.type === "application/pdf";
+  const isImage = file.type.startsWith("image/");
+  if ((!isPDF && !isImage) || file.size <= 0 || file.size > MAX_FILE_BYTES) return fail("Type ou taille de fichier refusé.", 422);
+  
+  if (isPDF) {
+    const signature = new TextDecoder().decode(await file.slice(0, 5).arrayBuffer());
+    if (signature !== "%PDF-") return fail("Le contenu du fichier n’est pas un PDF valide.", 422);
+  }
 
   const now = new Date();
-  const storagePath = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, "0")}/${randomUUID()}.pdf`;
+  const extension = file.name.split('.').pop()?.toLowerCase() || (isPDF ? "pdf" : "png");
+  const storagePath = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, "0")}/${randomUUID()}.${extension}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
   const { error: uploadError } = await context.supabase.storage.from(BUCKET).upload(storagePath, bytes, {
-    contentType: PDF_MIME_TYPE,
+    contentType: file.type,
     cacheControl: "31536000",
     upsert: false,
   });
@@ -46,7 +52,7 @@ export async function POST(request: NextRequest) {
     bucket_id: BUCKET,
     storage_path: storagePath,
     original_name: file.name.slice(0, 255),
-    mime_type: PDF_MIME_TYPE,
+    mime_type: file.type,
     size_bytes: file.size,
     publication_status: "draft",
     created_by: context.userId,

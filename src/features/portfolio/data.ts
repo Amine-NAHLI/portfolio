@@ -106,7 +106,7 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
   try {
     const { data, error } = await createPublicClient()
       .from("certifications")
-      .select("id, name_fr, name_en, description_fr, description_en, issuer, credential_status, skills, issued_on, verification_url, document_media_id, media_assets ( mime_type ), featured")
+      .select("id, name_fr, name_en, description_fr, description_en, issuer, credential_status, skills, issued_on, verification_url, document_media_id, media_assets!document_media_id ( mime_type ), featured")
       .order("featured", { ascending: false })
       .order("sort_order")
       .order("issued_on", { ascending: false });

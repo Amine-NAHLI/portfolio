@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText, RefreshCw } from "lucide-react";
 import { signOutAdmin } from "@/app/admin/(protected)/actions";
 
 const navigation = [
@@ -20,6 +20,16 @@ const navigation = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  async function syncPortfolio() {
+    setSyncing(true);
+    try {
+      await fetch("/api/admin/sync", { method: "POST" });
+    } finally {
+      setTimeout(() => setSyncing(false), 500); // Visual feedback
+    }
+  }
 
   const sidebarContent = (
     <>
@@ -62,11 +72,15 @@ export function AdminSidebar() {
         </div>
         
         <div className="grid gap-2">
-          <Link href="/fr" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 rounded border border-border text-xs text-text-secondary hover:text-text-primary hover:border-accent transition-colors">
+          <button onClick={syncPortfolio} disabled={syncing} className="flex justify-center items-center gap-2 px-4 py-2 rounded bg-accent/10 border border-accent/20 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors w-full disabled:opacity-50">
+            <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} /> 
+            {syncing ? "Synchronisation..." : "Synchroniser"}
+          </button>
+          <Link href="/fr" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 px-4 py-2 rounded border border-border text-xs text-text-secondary hover:text-text-primary hover:border-accent transition-colors">
             <ExternalLink className="size-3.5" /> Voir le site
           </Link>
           <form action={signOutAdmin}>
-            <button className="flex items-center gap-2 px-4 py-2 rounded border border-border text-xs text-text-secondary hover:text-danger hover:border-danger transition-colors w-full" type="submit">
+            <button className="flex items-center justify-center gap-2 px-4 py-2 rounded border border-border text-xs text-text-secondary hover:text-danger hover:border-danger transition-colors w-full" type="submit">
               <LogOut className="size-3.5" /> Se déconnecter
             </button>
           </form>

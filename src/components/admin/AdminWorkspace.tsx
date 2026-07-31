@@ -173,7 +173,7 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
   const [values, setValues] = useState<RecordValue>(() => record ? fromRecord(section, record) : emptyValues(section));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [translating, setTranslating] = useState<"description_en" | null>(null);
+  const [translating, setTranslating] = useState<string | null>(null);
   const [pdf, setPdf] = useState<File | null>(null);
   const pdfRef = useRef<HTMLInputElement>(null);
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
@@ -195,7 +195,7 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
         const source = (values[frKey] as string).trim();
         
         // Optionally skip if English field already has content, but usually we want to force translate if user clicks the button.
-        setTranslating(enKey as any);
+        setTranslating(enKey);
         
         const result = await fetch("/api/admin/translate", { 
           method: "POST", 
@@ -285,7 +285,7 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
   );
 }
 
-function EditorFields({ section, values, set, translate, translating, pdfRef, pdf, setPdf, galleryRef, galleryFiles, setGalleryFiles }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; translate: () => Promise<void>; translating: "description_en" | null; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void; galleryRef?: React.RefObject<HTMLInputElement | null>; galleryFiles?: File[]; setGalleryFiles?: (files: File[]) => void }) {
+function EditorFields({ section, values, set, translate, translating, pdfRef, pdf, setPdf, galleryRef, galleryFiles, setGalleryFiles }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; translate: () => Promise<void>; translating: string | null; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void; galleryRef?: React.RefObject<HTMLInputElement | null>; galleryFiles?: File[]; setGalleryFiles?: (files: File[]) => void }) {
   const field = (name: string, label: string, type: "text" | "date" | "number" = "text", wide = false, required = true) => <label className={`grid gap-2 text-sm font-semibold text-text-primary ${wide ? "sm:col-span-2" : ""}`}><span>{label}{required ? <span className="text-danger"> *</span> : null}</span><input required={required} type={type} value={String(values[name] ?? "")} onChange={(event) => set(name, type === "number" ? Number(event.target.value) : event.target.value)} className="min-h-11 px-3 font-normal" /></label>;
   const checkbox = (name: string, label: string) => <label className="flex items-center gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><input type="checkbox" checked={Boolean(values[name])} onChange={(event) => set(name, event.target.checked ? 1 : 0)} className="size-4 rounded-sm border-border text-accent focus:ring-accent" />{label}</label>;
   const textarea = (name: string, label: string, translatable = false, required = true) => <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span className="flex flex-wrap items-center justify-between gap-3">{label}{translatable ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void translate()} disabled={Boolean(translating)}>{translating ? "Traduction en cours…" : "Traduire TOUT en anglais avec Groq"}</button> : null}</span><textarea required={required} value={String(values[name] ?? "")} onChange={(event) => set(name, event.target.value)} rows={5} className="resize-y px-3 py-2 font-normal" /></label>;

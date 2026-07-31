@@ -173,7 +173,7 @@ async function getRecords(db: UntypedClient, section: Section) {
   if (section === "certifications") {
     const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, document_media_id, created_at, featured").order("issued_on", { ascending: false });
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []).map((item: any) => ({ ...item, title: item.name_fr }));
   }
 
   if (section === "testimonials") {

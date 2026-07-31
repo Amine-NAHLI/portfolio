@@ -31,20 +31,20 @@ export function TechCore({ technologies, className }: TechCoreProps) {
   const ringSpeeds = [25, 35, 50]; // in seconds for a full orbit
 
   return (
-    <div className={cn("relative flex h-[500px] sm:h-[600px] w-full max-w-4xl mx-auto items-center justify-center overflow-hidden", className)}>
-      
-      {/* Background glow for the core */}
-      <div className="absolute inset-0 bg-accent/5 rounded-full blur-[100px] pointer-events-none scale-75" />
+    <div className={cn("relative flex h-[350px] sm:h-[500px] md:h-[600px] w-full max-w-4xl mx-auto items-center justify-center overflow-hidden", className)}>
+      <div className="absolute inset-0 flex items-center justify-center scale-[0.6] sm:scale-[0.8] md:scale-100 origin-center">
+        {/* Background glow for the core */}
+        <div className="absolute inset-0 bg-accent/5 rounded-full blur-[100px] pointer-events-none scale-75" />
 
-      {/* The Core (Singularity) */}
-      <div className="relative z-10 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-surface-raised shadow-[0_0_80px_rgba(var(--color-accent-rgb),0.3)] border border-accent/30 backdrop-blur-xl">
-        {/* Core pulsing animation */}
-        <div className="absolute inset-0 rounded-full bg-accent/20 animate-ping opacity-20" style={{ animationDuration: '3s' }} />
-        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-accent/40 to-transparent animate-spin-slow opacity-50" style={{ animationPlayState: isHovered ? 'paused' : 'running' }} />
-        <span className="relative z-20 font-display text-xl sm:text-2xl font-bold tracking-wider text-text-primary">
-          <span className="bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent">AN</span>
-        </span>
-      </div>
+        {/* The Core (Singularity) */}
+        <div className="relative z-10 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-surface-raised shadow-[0_0_80px_rgba(var(--color-accent-rgb),0.3)] border border-accent/30 backdrop-blur-xl">
+          {/* Core pulsing animation */}
+          <div className="absolute inset-0 rounded-full bg-accent/20 animate-ping opacity-20" style={{ animationDuration: '3s' }} />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-accent/40 to-transparent animate-spin-slow opacity-50" style={{ animationPlayState: isHovered ? 'paused' : 'running' }} />
+          <span className="relative z-20 font-display text-xl sm:text-2xl font-bold tracking-wider text-text-primary">
+            <span className="bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent">AN</span>
+          </span>
+        </div>
 
       {/* Orbits */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -103,6 +103,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

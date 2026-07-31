@@ -54,11 +54,14 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 className="pointer-events-none h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
-              <div className="grid h-full place-items-center text-text-muted bg-surface">
-                <div className="flex flex-col items-center gap-2">
-                  <FileText className="size-16 opacity-40 group-hover:opacity-60 transition-opacity" />
-                  <span className="font-mono text-xs uppercase tracking-widest opacity-60">PDF Document</span>
-                </div>
+              <div className="relative h-full w-full overflow-hidden bg-white">
+                <iframe
+                  src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  className="pointer-events-none absolute inset-0 h-full w-full border-0"
+                  tabIndex={-1}
+                  title={`Preview of ${certification.name}`}
+                />
+                <div className="absolute inset-0 z-10" aria-hidden="true" />
               </div>
             )
           ) : (

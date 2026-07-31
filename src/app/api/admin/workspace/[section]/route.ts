@@ -609,8 +609,8 @@ async function mutate(request: NextRequest, routeContext: { params: Promise<{ se
     revalidate(section);
     return NextResponse.json({ success: true }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
-    console.error("Admin workspace mutation failed", { section, mode, error: error instanceof Error ? error.message : String(error) });
-    return fail(error instanceof Error ? error.message : "L’opération n’a pas pu être enregistrée.", error instanceof ValidationError ? 422 : 500);
+    console.error("Admin workspace mutation failed", { section, mode, error: error instanceof Error ? error.message : JSON.stringify(error) });
+    return fail(error instanceof Error ? error.message : "Erreur inattendue.", 500);
   }
 }
 

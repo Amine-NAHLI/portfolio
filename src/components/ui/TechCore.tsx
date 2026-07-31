@@ -75,7 +75,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
                   return (
                     <div
                       key={tech}
-                      className="absolute left-1/2 top-1/2 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+                      className="absolute inset-0 m-auto flex items-center justify-center w-0 h-0 hover:z-[100]"
                       style={{
                         transform: `rotate(${angle}deg) translateX(${radius}px) rotate(-${angle}deg)`,
                       }}
@@ -89,9 +89,9 @@ export function TechCore({ technologies, className }: TechCoreProps) {
                           animationPlayState: isHovered ? 'paused' : 'running',
                         }}
                       >
-                        <div className="relative flex items-center justify-center group/icon hover:scale-150 transition-transform duration-300 hover:z-30">
-                          <SkillIcon name={tech} className="text-[40px] sm:text-5xl rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] ring-1 ring-border-strong/50 group-hover/icon:ring-accent group-hover/icon:shadow-[0_0_30px_rgba(var(--color-accent-rgb),0.8)] transition-all duration-300" />
-                          <div className="absolute -top-12 opacity-0 group-hover/icon:opacity-100 transition-opacity whitespace-nowrap bg-surface-raised text-text-primary px-3 py-1.5 rounded-md shadow-lg text-sm font-semibold pointer-events-none border border-border">
+                        <div className="relative flex items-center justify-center group/icon hover:scale-150 transition-transform duration-300 z-10 hover:z-[100]">
+                          <SkillIcon name={tech} className="text-[40px] sm:text-5xl rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] ring-1 ring-border-strong/50 group-hover/icon:ring-accent group-hover/icon:shadow-[0_0_30px_rgba(var(--color-accent-rgb),0.8)] transition-all duration-300 relative z-10" />
+                          <div className="absolute -top-12 opacity-0 group-hover/icon:opacity-100 transition-opacity whitespace-nowrap bg-bg-page text-text-primary px-4 py-2 rounded-lg shadow-2xl text-sm font-bold pointer-events-none border border-border-strong z-[100]">
                             {tech}
                           </div>
                         </div>

@@ -29,11 +29,11 @@ export default function ProjectGallery({ images, locale }: ProjectGalleryProps) 
   return (
     <>
       <div className="group relative w-full overflow-hidden rounded-2xl border border-border bg-surface-subtle shadow-lg">
-        <div className="aspect-[16/9] w-full bg-surface-deep relative">
+        <div className="aspect-[16/9] w-full bg-surface-deep relative p-6 sm:p-10 md:p-16 flex items-center justify-center">
           <img 
             src={images[selectedIndex].url} 
             alt={locale === "fr" ? images[selectedIndex].altFr ?? "" : images[selectedIndex].altEn ?? ""} 
-            className="w-full h-full object-cover sm:object-contain cursor-pointer"
+            className="w-full h-full object-contain cursor-pointer"
             onClick={() => setLightboxOpen(true)}
           />
         </div>

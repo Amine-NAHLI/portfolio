@@ -173,7 +173,7 @@ async function getRecords(db: UntypedClient, section: Section) {
   if (section === "certifications") {
     const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, document_media_id, created_at, featured").order("issued_on", { ascending: false });
     if (error) throw error;
-    return (data ?? []).map((item: any) => ({ ...item, title: item.name_fr }));
+    return (data ?? []).map((item: Record<string, unknown>) => ({ ...item, title: item.name_fr }));
   }
 
   if (section === "testimonials") {
@@ -612,8 +612,8 @@ async function mutate(request: NextRequest, routeContext: { params: Promise<{ se
     else return fail("Requête invalide.", 422);
     revalidate(section);
     return NextResponse.json({ success: true }, { headers: { "Cache-Control": "private, no-store" } });
-  } catch (error: any) {
-    const msg = error?.message || (typeof error === 'string' ? error : JSON.stringify(error));
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : (error && typeof error === "object" && "message" in error ? String(error.message) : (typeof error === 'string' ? error : JSON.stringify(error)));
     console.error("Admin workspace mutation failed", { section, mode, error: msg });
     return fail(msg || "Erreur inattendue.", 500);
   }

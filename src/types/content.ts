@@ -15,6 +15,7 @@ export type PortfolioProject = {
   architecture: LocalizedText[];
   results: LocalizedText[];
   technologies: string[];
+  coreTechnologies?: string[];
   categories: ProjectCategory[];
   featured: boolean;
   coverImage?: string;

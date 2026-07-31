@@ -24,6 +24,53 @@ function client(context: AdminContext): UntypedClient {
   return context.supabase as unknown as UntypedClient;
 }
 
+async function filterCoreTechnologies(technologies: string[]): Promise<string[]> {
+  if (!technologies.length) return [];
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return technologies; // fallback to all if no key
+
+  const systemPrompt = `You are a technical expert.
+I will give you a list of technologies. You must filter this list.
+Keep ONLY programming languages, major frameworks, and main dev tools (e.g., Python, React, Tailwind CSS, Docker, SQLite).
+Remove ALL specific libraries, modules, and minor packages (e.g., pandas, numpy, scikit-learn, psutil, joblib, random forest).
+
+Output strict JSON:
+{
+  "core": ["kept_tech1", "kept_tech2"]
+}`;
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        temperature: 0,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Technologies: ${JSON.stringify(technologies)}` },
+        ],
+      }),
+      signal: AbortSignal.timeout(15_000),
+    });
+
+    if (response.ok) {
+      const payload = await response.json();
+      const content = payload.choices?.[0]?.message?.content;
+      if (content) {
+        const result = JSON.parse(content);
+        if (Array.isArray(result.core)) {
+          return result.core;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Groq core tech filtering failed:", error);
+  }
+  return technologies; // fallback
+}
+
 function text(value: unknown, min = 0, max = 5_000): string | null {
   if (typeof value !== "string") return null;
   const result = value.replace(/[\u0000-\u001F\u007F]/g, " ").trim();
@@ -199,6 +246,8 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   if (sortOrder === null) throw new ValidationError("L’ordre d’affichage doit être un nombre valide.");
   if (!Array.isArray(input.technologies)) throw new ValidationError("Les technologies sont invalides.");
   const technologies = [...new Set(input.technologies.map((value) => text(value, 1, 120)).filter((value): value is string => Boolean(value)))].slice(0, 30);
+  const coreTechnologies = await filterCoreTechnologies(technologies);
+  
   const slug = await uniqueSlug(db, "projects", title, id ?? undefined);
   const featured = Boolean(input.featured);
   
@@ -206,7 +255,21 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   
   // A project can only become public after both translations have been stored.
   // Create and update it as a draft first, then publish after the upsert below.
-  const projectPayload = { title, slug, github_url: githubUrl, demo_url: demoUrl, sort_order: sortOrder, source_kind: "personal", publication_status: "draft", featured, categories, technologies, updated_by: context.userId, ...(id ? {} : { created_by: context.userId, published_at: null }) };
+  const projectPayload = { 
+    title, 
+    slug, 
+    github_url: githubUrl, 
+    demo_url: demoUrl, 
+    sort_order: sortOrder, 
+    source_kind: "personal", 
+    publication_status: "draft", 
+    featured, 
+    categories, 
+    technologies,
+    core_technologies: coreTechnologies,
+    updated_by: context.userId, 
+    ...(id ? {} : { created_by: context.userId, published_at: null }) 
+  };
   const result = id
     ? await db.from("projects").update(projectPayload).eq("id", id).select("id").single()
     : await db.from("projects").insert(projectPayload).select("id").single();

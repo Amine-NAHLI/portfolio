@@ -64,7 +64,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
               }}
             >
               <div 
-                className={cn("w-full h-full animate-orbit pointer-events-auto", isReverse && "animate-orbit-reverse")}
+                className={cn("w-full h-full animate-orbit pointer-events-none", isReverse && "animate-orbit-reverse")}
                 style={{
                   animationDuration: `${speed}s`,
                   animationPlayState: isHovered ? 'paused' : 'running',
@@ -75,7 +75,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
                   return (
                     <div
                       key={tech}
-                      className="absolute left-1/2 top-1/2 flex items-center justify-center -translate-x-1/2 -translate-y-1/2"
+                      className="absolute left-1/2 top-1/2 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                       style={{
                         transform: `rotate(${angle}deg) translateX(${radius}px) rotate(-${angle}deg)`,
                       }}

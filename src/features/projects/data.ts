@@ -65,6 +65,7 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
         architecture: localizeArray(french.architecture, english.architecture),
         results: localizeArray(french.results, english.results),
         technologies,
+        coreTechnologies: Array.isArray(project.core_technologies) && project.core_technologies.length > 0 ? project.core_technologies : technologies,
         categories: project.categories.filter(isProjectCategory),
         featured: project.featured,
         coverImage: mediaByProject.get(project.id),

@@ -45,6 +45,7 @@ export type ProjectRow = Timestamped & {
   created_by: string | null;
   updated_by: string | null;
   technologies: string[];
+  core_technologies: string[];
 };
 
 export type ProjectTranslationRow = Timestamped & {

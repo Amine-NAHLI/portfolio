@@ -30,12 +30,21 @@ export default function ProjectGallery({ images, locale }: ProjectGalleryProps) 
     <>
       <div className="group relative w-full overflow-hidden rounded-2xl border border-border bg-surface-subtle shadow-lg">
         <div className="aspect-[16/9] w-full bg-surface-deep relative p-6 sm:p-10 md:p-16 flex items-center justify-center">
-          <img 
-            src={images[selectedIndex].url} 
-            alt={locale === "fr" ? images[selectedIndex].altFr ?? "" : images[selectedIndex].altEn ?? ""} 
-            className="w-full h-full object-contain cursor-pointer"
-            onClick={() => setLightboxOpen(true)}
-          />
+          <div className="relative w-full h-full">
+            {images.map((img, idx) => (
+              <img 
+                key={img.mediaId}
+                src={img.url} 
+                alt={locale === "fr" ? img.altFr ?? "" : img.altEn ?? ""} 
+                className={cn(
+                  "absolute inset-0 w-full h-full object-contain cursor-pointer transition-opacity duration-300",
+                  idx === selectedIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                )}
+                onClick={() => setLightboxOpen(true)}
+                loading={idx === 0 ? "eager" : "lazy"}
+              />
+            ))}
+          </div>
         </div>
         
         {images.length > 1 && (

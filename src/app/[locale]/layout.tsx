@@ -9,6 +9,7 @@ import { PrivacyAnalytics } from "@/components/analytics/PrivacyAnalytics";
 import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttributes";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { getPublicContactLinks } from "@/features/portfolio/data";
+import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -83,17 +84,19 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const contactLinks = await getPublicContactLinks();
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <LocaleDocumentAttributes locale={candidate} />
-      <a href="#main-content" className="skip-link">
-        {dictionary.skipToContent}
-      </a>
-      <SiteHeader locale={candidate} dictionary={dictionary} resumeLink={contactLinks.resume} />
-      <PrivacyAnalytics locale={candidate} />
-      <main id="main-content" className="page-enter flex-1" tabIndex={-1}>
-        {children}
-      </main>
-      <SiteFooter locale={candidate} dictionary={dictionary} contactLinks={contactLinks} />
-    </div>
+    <PageLoadWrapper>
+      <div className="flex min-h-screen flex-col">
+        <LocaleDocumentAttributes locale={candidate} />
+        <a href="#main-content" className="skip-link">
+          {dictionary.skipToContent}
+        </a>
+        <SiteHeader locale={candidate} dictionary={dictionary} resumeLink={contactLinks.resume} />
+        <PrivacyAnalytics locale={candidate} />
+        <main id="main-content" className="page-enter flex-1" tabIndex={-1}>
+          {children}
+        </main>
+        <SiteFooter locale={candidate} dictionary={dictionary} contactLinks={contactLinks} />
+      </div>
+    </PageLoadWrapper>
   );
 }

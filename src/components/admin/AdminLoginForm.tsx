@@ -54,10 +54,14 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
       if (error) throw new Error("AUTH_FAILED");
 
+      // Give mobile browsers (especially WebKit) a moment to write the cookies
+      // before sending the fetch request.
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       const verification = await fetch("/api/admin/session", {
         method: "GET",
         cache: "no-store",
-        credentials: "same-origin",
+        credentials: "include",
         headers: { Accept: "application/json" },
       });
 

@@ -61,29 +61,14 @@ export default function SkillIcon({ name, className = "" }: { name: string; clas
   const firstLetter = name.charAt(0).toUpperCase();
   const colors = getColors(name);
 
-  if (error) {
-    return (
-      <div 
-        className={`flex shrink-0 items-center justify-center rounded-full font-sans font-bold leading-none ${className}`}
-        style={{ backgroundColor: colors.bg, color: colors.text, width: '1em', height: '1em', fontSize: '1em' }}
-        title={name}
-      >
-        <span style={{ transform: 'scale(0.65)' }}>{firstLetter}</span>
-      </div>
-    );
-  }
-
-  // Use skillicons.dev for a modern, colorful look. We pass the slug.
-  // Skillicons uses specific short names, but handles many standard ones well.
-  const finalUrl = `https://skillicons.dev/icons?i=${slug}`;
+  // Use our internal smart proxy API which handles fallbacks perfectly.
+  const finalUrl = `/api/icon/${slug}`;
 
   return (
     <img 
       src={finalUrl} 
       alt={name}
-      title={name}
       className={`shrink-0 object-contain ${className}`}
-      onError={() => setError(true)}
       style={{ width: '1em', height: '1em', display: 'inline-block' }}
     />
   );

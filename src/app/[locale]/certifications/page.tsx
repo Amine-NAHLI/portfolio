@@ -52,7 +52,8 @@ export default async function CertificationsPage({ params }: CertificationsPageP
                   issuedOn: certification.issuedOn,
                   verificationUrl: certification.verificationUrl,
                   hasDocument: certification.hasDocument,
-                  documentMimeType: certification.documentMimeType
+                  documentMimeType: certification.documentMimeType,
+                  description: certification.description
                 }} 
                 locale={locale} 
                 copy={copy} 

@@ -7,6 +7,7 @@ import { Award, Calendar, Download, ArrowUpRight, FileText, X } from "lucide-rea
 type Certification = {
   id: string;
   name: string;
+  description?: string | null;
   issuer: string | null;
   issuedOn: string | null;
   verificationUrl: string | null;
@@ -102,6 +103,11 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             {certification.issuer && (
               <p className="mt-2 text-lg text-accent font-medium">
                 {certification.issuer}
+              </p>
+            )}
+            {certification.description && (
+              <p className="mt-4 text-sm leading-relaxed text-text-secondary">
+                {certification.description}
               </p>
             )}
           </div>

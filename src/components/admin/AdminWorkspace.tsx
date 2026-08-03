@@ -174,6 +174,7 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [translating, setTranslating] = useState<string | null>(null);
+  const [generatingCategories, setGeneratingCategories] = useState(false);
   const [pdf, setPdf] = useState<File | null>(null);
   const pdfRef = useRef<HTMLInputElement>(null);
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
@@ -215,6 +216,41 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
       setError(caught instanceof Error ? caught.message : "Traduction impossible.");
     } finally {
       setTranslating(null);
+    }
+  }
+
+  async function generateCategories() {
+    setError(null);
+    setGeneratingCategories(true);
+    try {
+      const sourceData = {
+        title: values.title,
+        description: values.description_fr || values.description_en,
+        technologies: values.technologies,
+      };
+      
+      const sourceText = Object.values(sourceData).filter(Boolean).join("\n");
+      if (!sourceText.trim()) {
+        setError("Remplissez d'abord le titre ou la description du projet.");
+        return;
+      }
+      
+      const result = await fetch("/api/admin/generate-categories", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json", Accept: "application/json" }, 
+        body: JSON.stringify({ text: sourceText }) 
+      });
+      
+      const body = await result.json() as { categories?: string; error?: string };
+      if (!result.ok || !body.categories) {
+        throw new Error(body.error ?? "Erreur lors de la génération.");
+      }
+      
+      set("categories", body.categories);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Génération impossible.");
+    } finally {
+      setGeneratingCategories(false);
     }
   }
 
@@ -274,7 +310,7 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
     <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); close(); }} className="m-auto max-h-[92vh] w-[min(52rem,calc(100%-2rem))] overflow-y-auto rounded-md border border-border bg-surface-raised p-0 text-text-secondary shadow-2xl">
       <div className="flex items-start justify-between gap-5 border-b border-border px-5 py-4 sm:px-7"><div><p className="system-label">{record ? "Modification" : "Nouveau contenu"}</p><h2 className="mt-1 text-xl font-semibold">{record ? "Modifier" : "Ajouter"}</h2></div><button type="button" className="grid size-11 place-items-center rounded-sm border border-border" onClick={close} aria-label="Fermer"><X className="size-5" /></button></div>
       <form onSubmit={submit} className="grid gap-5 p-5 sm:grid-cols-2 sm:p-7">
-        <EditorFields section={section} values={values} set={set} translate={translate} translating={translating} pdfRef={pdfRef} pdf={pdf} setPdf={setPdf} galleryRef={galleryRef} galleryFiles={galleryFiles} setGalleryFiles={setGalleryFiles} />
+        <EditorFields section={section} values={values} set={set} translate={translate} translating={translating} generateCategories={generateCategories} generatingCategories={generatingCategories} pdfRef={pdfRef} pdf={pdf} setPdf={setPdf} galleryRef={galleryRef} galleryFiles={galleryFiles} setGalleryFiles={setGalleryFiles} />
         {error ? <p className="rounded-sm border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:col-span-2" role="alert">{error}</p> : null}
         <div className="flex flex-wrap justify-end gap-3 border-t border-border pt-5 sm:col-span-2">
           <button type="button" className="button-secondary" onClick={close}>Annuler</button>
@@ -285,11 +321,11 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
   );
 }
 
-function EditorFields({ section, values, set, translate, translating, pdfRef, pdf, setPdf, galleryRef, galleryFiles, setGalleryFiles }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; translate: () => Promise<void>; translating: string | null; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void; galleryRef?: React.RefObject<HTMLInputElement | null>; galleryFiles?: File[]; setGalleryFiles?: (files: File[]) => void }) {
-  const field = (name: string, label: string, type: "text" | "date" | "number" = "text", wide = false, required = true) => <label className={`grid gap-2 text-sm font-semibold text-text-primary ${wide ? "sm:col-span-2" : ""}`}><span>{label}{required ? <span className="text-danger"> *</span> : null}</span><input required={required} type={type} value={String(values[name] ?? "")} onChange={(event) => set(name, type === "number" ? Number(event.target.value) : event.target.value)} className="min-h-11 px-3 font-normal" /></label>;
+function EditorFields({ section, values, set, translate, translating, generateCategories, generatingCategories, pdfRef, pdf, setPdf, galleryRef, galleryFiles, setGalleryFiles }: { section: Exclude<AdminWorkspaceSection, "testimonials" | "messages">; values: RecordValue; set: (key: string, value: string | number) => void; translate: () => Promise<void>; translating: string | null; generateCategories?: () => Promise<void>; generatingCategories?: boolean; pdfRef: React.RefObject<HTMLInputElement | null>; pdf: File | null; setPdf: (file: File | null) => void; galleryRef?: React.RefObject<HTMLInputElement | null>; galleryFiles?: File[]; setGalleryFiles?: (files: File[]) => void }) {
+  const field = (name: string, label: string, type: "text" | "date" | "number" = "text", wide = false, required = true, generatable = false) => <label className={`grid gap-2 text-sm font-semibold text-text-primary ${wide ? "sm:col-span-2" : ""}`}><span className="flex flex-wrap items-center justify-between gap-3">{label}{required ? <span className="text-danger"> *</span> : null}{generatable && generateCategories ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void generateCategories()} disabled={generatingCategories}>{generatingCategories ? "Génération en cours…" : "Générer avec Groq"}</button> : null}</span><input required={required} type={type} value={String(values[name] ?? "")} onChange={(event) => set(name, type === "number" ? Number(event.target.value) : event.target.value)} className="min-h-11 px-3 font-normal" /></label>;
   const checkbox = (name: string, label: string) => <label className="flex items-center gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><input type="checkbox" checked={Boolean(values[name])} onChange={(event) => set(name, event.target.checked ? 1 : 0)} className="size-4 rounded-sm border-border text-accent focus:ring-accent" />{label}</label>;
   const textarea = (name: string, label: string, translatable = false, required = true) => <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span className="flex flex-wrap items-center justify-between gap-3">{label}{translatable ? <button className="button-secondary px-3 py-2 text-xs" type="button" onClick={() => void translate()} disabled={Boolean(translating)}>{translating ? "Traduction en cours…" : "Traduire TOUT en anglais avec Groq"}</button> : null}</span><textarea required={required} value={String(values[name] ?? "")} onChange={(event) => set(name, event.target.value)} rows={5} className="resize-y px-3 py-2 font-normal" /></label>;
-  if (section === "projects") return <>{field("title", "Titre", "text", true)}{field("subtitle_fr", "Sous-titre FR", "text", true, false)}{field("subtitle_en", "Sous-titre EN", "text", true, false)}{textarea("description_fr", "Résumé court FR", true)}{textarea("description_en", "Résumé court EN", false, false)}{textarea("problem_fr", "Le Problème FR", false, false)}{textarea("problem_en", "Le Problème EN", false, false)}{textarea("objectives_fr", "Objectifs FR (un par ligne)", false, false)}{textarea("objectives_en", "Objectifs EN (un par ligne)", false, false)}{textarea("solution_fr", "La Solution FR", false, false)}{textarea("solution_en", "La Solution EN", false, false)}{textarea("architecture_fr", "Architecture FR (une par ligne)", false, false)}{textarea("architecture_en", "Architecture EN (une par ligne)", false, false)}{textarea("results_fr", "Résultats FR (un par ligne)", false, false)}{textarea("results_en", "Résultats EN (un par ligne)", false, false)}{field("categories", "Catégories (software, cybersecurity, artificial-intelligence, embedded - séparées par des virgules)", "text", true, false)}{field("technologies", "Technologies (séparées par des virgules)", "text", true, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("demo_url", "Lien Démo (URL)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Galerie d&apos;images</span><input ref={galleryRef} type="file" multiple accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => setGalleryFiles?.(Array.from(event.target.files ?? []))} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => galleryRef?.current?.click()}><FileUp className="size-4" />{galleryFiles?.length ? `${galleryFiles.length} image(s) sélectionnée(s)` : "Ajouter des images"}</button><span className="text-xs font-normal text-text-muted">Ces images seront ajoutées à la galerie du projet (5 Mo max par image).</span></div></>;
+  if (section === "projects") return <>{field("title", "Titre", "text", true)}{field("subtitle_fr", "Sous-titre FR", "text", true, false)}{field("subtitle_en", "Sous-titre EN", "text", true, false)}{textarea("description_fr", "Résumé court FR", true)}{textarea("description_en", "Résumé court EN", false, false)}{textarea("problem_fr", "Le Problème FR", false, false)}{textarea("problem_en", "Le Problème EN", false, false)}{textarea("objectives_fr", "Objectifs FR (un par ligne)", false, false)}{textarea("objectives_en", "Objectifs EN (un par ligne)", false, false)}{textarea("solution_fr", "La Solution FR", false, false)}{textarea("solution_en", "La Solution EN", false, false)}{textarea("architecture_fr", "Architecture FR (une par ligne)", false, false)}{textarea("architecture_en", "Architecture EN (une par ligne)", false, false)}{textarea("results_fr", "Résultats FR (un par ligne)", false, false)}{textarea("results_en", "Résultats EN (un par ligne)", false, false)}{field("categories", "Catégories (software, cybersecurity, artificial-intelligence, embedded - séparées par des virgules)", "text", true, false, true)}{field("technologies", "Technologies (séparées par des virgules)", "text", true, false)}{field("github_url", "Lien GitHub", "text", true, false)}{field("demo_url", "Lien Démo (URL)", "text", true, false)}{field("sort_order", "Ordre d’affichage", "number")}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Galerie d&apos;images</span><input ref={galleryRef} type="file" multiple accept="image/*" onChange={(event: ChangeEvent<HTMLInputElement>) => setGalleryFiles?.(Array.from(event.target.files ?? []))} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => galleryRef?.current?.click()}><FileUp className="size-4" />{galleryFiles?.length ? `${galleryFiles.length} image(s) sélectionnée(s)` : "Ajouter des images"}</button><span className="text-xs font-normal text-text-muted">Ces images seront ajoutées à la galerie du projet (5 Mo max par image).</span></div></>;
   if (section === "journey") return <><label className="grid gap-2 text-sm font-semibold text-text-primary"><span>Type *</span><select value={String(values.kind)} onChange={(event) => set("kind", event.target.value)} className="min-h-11 px-3 font-normal"><option value="experience">Expérience</option><option value="education">Formation</option></select></label>{field("organization", values.kind === "education" ? "Établissement" : "Organisation")}{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{textarea("summary_fr", "Description FR")}{textarea("summary_en", "Description EN")}{field("started_on", "Date de début", "date")}
   <div className="grid gap-2 text-sm font-semibold text-text-primary">
     <span>Date de fin prévue ou effective</span>

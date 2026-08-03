@@ -39,10 +39,10 @@ export default function LanguageGraph({ languages, locale }: LanguageGraphProps)
   });
 
   return (
-    <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 p-8">
+    <div className="flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-12 w-full">
       {/* SVG Donut Chart */}
-      <div className="relative w-72 h-72 shrink-0">
-        <svg width="100%" height="100%" viewBox="0 0 300 300" className="-rotate-90 drop-shadow-2xl">
+      <div className="relative w-56 h-56 sm:w-64 sm:h-64 shrink-0">
+        <svg width="100%" height="100%" viewBox="0 0 300 300" className="-rotate-90 drop-shadow-xl">
           {/* Background circle */}
           <circle
             cx="150"
@@ -79,7 +79,7 @@ export default function LanguageGraph({ languages, locale }: LanguageGraphProps)
           <span className="text-3xl font-display font-bold text-text-primary">
             {displayLanguages.length}
           </span>
-          <span className="text-xs font-mono text-text-muted uppercase tracking-widest mt-1">
+          <span className="text-[10px] font-mono text-text-muted uppercase tracking-widest mt-1">
             {locale === "fr" ? "Langages" : "Languages"}
           </span>
         </div>
@@ -91,20 +91,20 @@ export default function LanguageGraph({ languages, locale }: LanguageGraphProps)
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8 }}
-        className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4"
+        className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-sm"
       >
         {displayLanguages.map((lang) => (
           <div key={lang.name} className="flex items-center justify-between group">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 overflow-hidden">
               <span 
-                className="w-4 h-4 rounded-full shadow-lg group-hover:scale-125 transition-transform" 
+                className="w-3 h-3 rounded-full shrink-0 shadow-lg group-hover:scale-125 transition-transform" 
                 style={{ backgroundColor: lang.color, boxShadow: `0 0 10px ${lang.color}40` }} 
               />
-              <span className="font-mono text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+              <span className="font-mono text-xs font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
                 {lang.name}
               </span>
             </div>
-            <span className="text-sm font-mono text-text-muted">
+            <span className="text-xs font-mono text-text-muted ml-2">
               {lang.percentage.toFixed(1)}%
             </span>
           </div>

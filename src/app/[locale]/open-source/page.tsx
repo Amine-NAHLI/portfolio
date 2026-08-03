@@ -8,6 +8,7 @@ import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { fetchGitHubData } from "@/lib/github";
 import { isLocale, type Locale } from "@/i18n/config";
 import LanguageGraph from "@/components/github/LanguageGraph";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 type OpenSourcePageProps = { params: Promise<{ locale: string }> };
 
@@ -73,89 +74,111 @@ export default async function OpenSourcePage({ params }: OpenSourcePageProps) {
         </a>
       </PageIntro>
 
-      <Container className="mt-12 sm:mt-16 pb-24">
-        {/* Global Stats */}
+      <Container className="mt-8 sm:mt-12 pb-24">
         <ScrollReveal>
-          <div className="mb-16">
-            <h2 className="text-xl font-semibold font-display tracking-tight text-text-primary mb-6 flex items-center gap-2">
-              <GitCommit className="size-5 text-accent" />
-              {t.stats}
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2">
-              <TechnicalFrame index="01" label={t.contributions} className="p-8">
-                <p className="text-5xl font-bold text-text-primary mb-2">{stats.totalContributions}</p>
-                <p className="text-sm font-mono text-accent uppercase tracking-widest">Commits, PRs & Issues</p>
-              </TechnicalFrame>
-              <TechnicalFrame index="02" label={t.repos} className="p-8">
-                <p className="text-5xl font-bold text-text-primary mb-2">{stats.totalRepositories}</p>
-                <p className="text-sm font-mono text-accent uppercase tracking-widest">Projets Partagés</p>
-              </TechnicalFrame>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 auto-rows-[minmax(180px,auto)]">
+            
+            {/* Bento Box 1: Commits (Span 1) */}
+            <div className="group relative flex flex-col justify-center overflow-hidden rounded-[2rem] border border-border/50 bg-surface-subtle/40 p-8 backdrop-blur-xl transition-all hover:bg-surface-subtle/60 hover:border-accent/40 shadow-sm hover:shadow-[0_0_40px_-10px_rgba(var(--color-accent-rgb),0.15)]">
+              <div className="absolute -top-12 -right-12 size-32 bg-accent/20 blur-[50px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <GitCommit className="size-6 text-text-muted mb-4 group-hover:text-accent transition-colors" />
+              <p className="text-5xl font-display font-bold text-text-primary mb-1">
+                <AnimatedCounter value={stats.totalContributions} />
+              </p>
+              <p className="text-xs font-mono text-text-secondary uppercase tracking-widest">{t.contributions}</p>
             </div>
-          </div>
-        </ScrollReveal>
 
-        {/* Languages */}
-        <ScrollReveal yOffset={40}>
-          <div className="mb-16">
-            <h2 className="text-xl font-semibold font-display tracking-tight text-text-primary mb-6 flex items-center gap-2">
-              <Code2 className="size-5 text-accent" />
-              {t.languages}
-            </h2>
-            <div className="bg-surface-subtle border border-border/50 rounded-2xl overflow-hidden backdrop-blur-md">
-              <LanguageGraph languages={stats.languages} locale={locale as Locale} />
+            {/* Bento Box 2: Repos (Span 1) */}
+            <div className="group relative flex flex-col justify-center overflow-hidden rounded-[2rem] border border-border/50 bg-surface-subtle/40 p-8 backdrop-blur-xl transition-all hover:bg-surface-subtle/60 hover:border-accent/40 shadow-sm hover:shadow-[0_0_40px_-10px_rgba(var(--color-accent-rgb),0.15)]">
+              <div className="absolute -bottom-12 -left-12 size-32 bg-accent/20 blur-[50px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <BookMarked className="size-6 text-text-muted mb-4 group-hover:text-accent transition-colors" />
+              <p className="text-5xl font-display font-bold text-text-primary mb-1">
+                <AnimatedCounter value={stats.totalRepositories} />
+              </p>
+              <p className="text-xs font-mono text-text-secondary uppercase tracking-widest">{t.repos}</p>
             </div>
-          </div>
-        </ScrollReveal>
 
-        {/* Recent Activity */}
-        <ScrollReveal yOffset={40}>
-          <div>
-            <h2 className="text-xl font-semibold font-display tracking-tight text-text-primary mb-6 flex items-center gap-2">
-              <FolderGit2 className="size-5 text-accent" />
-              {t.recent}
-            </h2>
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {activity.recentRepositories.map((repo) => (
+            {/* Bento Box 3: Languages (Span 2) */}
+            <div className="col-span-1 md:col-span-2 group relative flex flex-col justify-center overflow-hidden rounded-[2rem] border border-border/50 bg-surface-subtle/40 p-6 backdrop-blur-xl transition-all hover:bg-surface-subtle/60 hover:border-accent/40 shadow-sm">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-48 bg-accent/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="flex items-center gap-2 mb-4">
+                <Code2 className="size-5 text-accent" />
+                <h2 className="text-sm font-semibold font-display tracking-wide text-text-primary uppercase">{t.languages}</h2>
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <LanguageGraph languages={stats.languages} locale={locale as Locale} />
+              </div>
+            </div>
+
+            {/* Bento Boxes 4+: Recent Repositories */}
+            <div className="md:col-span-4 mt-8">
+              <div className="mb-6">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-semibold font-display tracking-tight text-text-primary flex items-center gap-2">
+                    <FolderGit2 className="size-5 text-accent" />
+                    {t.recent}
+                  </h2>
+                  <div className="flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-2 py-0.5" title={locale === "fr" ? "Synchronisation en temps réel" : "Real-time sync"}>
+                    <span className="relative flex size-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
+                      <span className="relative inline-flex size-1.5 rounded-full bg-green-500"></span>
+                    </span>
+                    <span className="text-[9px] font-mono font-bold text-green-500 uppercase tracking-widest">Live API</span>
+                  </div>
+                </div>
+                <p className="mt-2 text-sm text-text-secondary">
+                  {locale === "fr" 
+                    ? "Connecté en temps réel à mon compte GitHub. Cette grille s'actualise automatiquement avec mes derniers commits." 
+                    : "Connected in real-time to my GitHub account. This grid automatically updates with my latest commits."}
+                </p>
+              </div>
+            </div>
+
+            {activity.recentRepositories.map((repo, idx) => {
+              // Feature the first repo by making it span 2 columns on large screens if desired, but 1 col keeps grid consistent
+              const isFeatured = idx === 0;
+              return (
                 <a 
                   key={repo.name} 
                   href={repo.url} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border/50 bg-surface-subtle/50 p-6 transition-all hover:bg-surface-subtle hover:border-accent/40"
+                  className={`group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-border/50 bg-surface-subtle/40 p-6 backdrop-blur-xl transition-all hover:bg-surface-subtle/60 hover:-translate-y-1 hover:border-accent/40 shadow-sm hover:shadow-xl ${isFeatured ? 'md:col-span-2' : 'col-span-1'}`}
                 >
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  
                   <div>
                     <div className="flex items-start justify-between mb-4">
-                      <BookMarked className="size-5 text-text-muted group-hover:text-accent transition-colors" />
+                      <FolderGit2 className="size-5 text-text-muted group-hover:text-accent transition-colors" />
+                      <span className="text-[10px] font-mono text-text-muted">
+                        {new Date(repo.pushedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </span>
                     </div>
-                    <h3 className="text-lg font-semibold text-text-primary group-hover:text-accent transition-colors">
+                    <h3 className="text-lg font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
                       {repo.name}
                     </h3>
-                    <p className="mt-2 text-sm text-text-secondary line-clamp-3">
+                    <p className="mt-2 text-sm text-text-secondary line-clamp-2">
                       {repo.description || (locale === "fr" ? "Aucune description fournie." : "No description provided.")}
                     </p>
                   </div>
-                  <div className="mt-6 flex items-center justify-between text-xs font-mono">
-                    <div className="flex items-center gap-1.5">
-                      {repo.primaryLanguage ? (
-                        <>
-                          <span 
-                            className="size-2.5 rounded-full" 
-                            style={{ backgroundColor: repo.primaryLanguage.color }} 
-                          />
-                          <span className="text-text-primary">{repo.primaryLanguage.name}</span>
-                        </>
-                      ) : (
-                        <span className="text-text-muted">Unknown</span>
-                      )}
-                    </div>
-                    <span className="text-text-muted">
-                      {new Date(repo.pushedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </span>
+                  
+                  <div className="mt-6 flex items-center gap-1.5 text-xs font-mono">
+                    {repo.primaryLanguage ? (
+                      <>
+                        <span 
+                          className="size-2.5 rounded-full shadow-sm" 
+                          style={{ backgroundColor: repo.primaryLanguage.color }} 
+                        />
+                        <span className="text-text-primary truncate">{repo.primaryLanguage.name}</span>
+                      </>
+                    ) : (
+                      <span className="text-text-muted truncate">Unknown</span>
+                    )}
                   </div>
                 </a>
-              ))}
-            </div>
+              );
+            })}
+            
           </div>
         </ScrollReveal>
       </Container>

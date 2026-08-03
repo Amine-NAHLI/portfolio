@@ -4,28 +4,44 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   const { slug } = await params;
   
   try {
-    const res = await fetch(`https://skillicons.dev/icons?i=${slug}`);
-    
-    if (res.ok) {
-      const text = await res.text();
-      
-      // skillicons.dev returns an SVG with <g>undefined</g> (with potential whitespace) when the icon doesn't exist
-      if (/>\s*undefined\s*</.test(text) || text.includes("undefined")) {
-        return generateFallbackSvg(slug);
+    // 1. Try skillicons.dev first
+    const skillRes = await fetch(`https://skillicons.dev/icons?i=${slug}`);
+    if (skillRes.ok) {
+      const text = await skillRes.text();
+      // skillicons.dev returns an SVG with <g>undefined</g> when the icon doesn't exist
+      if (!/>\s*undefined\s*</.test(text) && !text.includes("undefined")) {
+        return createSvgResponse(text);
       }
-      
-      return new NextResponse(text, {
-        headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=31536000, immutable"
-        }
-      });
+    }
+
+    // 2. Try SimpleIcons (over 2500 brands)
+    const simpleRes = await fetch(`https://cdn.simpleicons.org/${slug}`);
+    if (simpleRes.ok) {
+      const text = await simpleRes.text();
+      // SimpleIcons might return plain SVG. We can just return it.
+      return createSvgResponse(text);
+    }
+
+    // 3. Try Devicon as a last external resort
+    const deviconRes = await fetch(`https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${slug}/${slug}-original.svg`);
+    if (deviconRes.ok) {
+      const text = await deviconRes.text();
+      return createSvgResponse(text);
     }
   } catch (error) {
     console.error(`Error fetching icon ${slug}:`, error);
   }
   
   return generateFallbackSvg(slug);
+}
+
+function createSvgResponse(svg: string) {
+  return new NextResponse(svg, {
+    headers: {
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  });
 }
 
 function generateFallbackSvg(name: string) {

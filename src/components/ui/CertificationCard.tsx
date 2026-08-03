@@ -2,7 +2,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Award, Calendar, Download, ArrowUpRight, X } from "lucide-react";
+import { Award, Calendar, Download, ArrowUpRight, X, LoaderCircle } from "lucide-react";
 
 type Certification = {
   id: string;
@@ -27,6 +27,7 @@ type CertificationCardProps = {
 export default function CertificationCard({ certification, locale, copy }: CertificationCardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -43,21 +44,31 @@ export default function CertificationCard({ certification, locale, copy }: Certi
       <button 
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex flex-col text-left overflow-hidden rounded-2xl border border-border bg-surface-raised transition-all hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full"
+        className="group relative flex flex-col text-left overflow-hidden rounded-[2rem] border border-border/50 bg-surface transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_40px_-15px_rgba(var(--color-accent-rgb),0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full aspect-[4/3]"
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-border bg-surface-subtle">
+        {/* Loading Skeleton */}
+        {!isLoaded && certification.hasDocument && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised animate-pulse">
+            <LoaderCircle className="size-8 animate-spin text-text-muted/50" />
+          </div>
+        )}
+
+        {/* Full Bleed Background Image */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden bg-bg-page">
           {certification.hasDocument ? (
             certification.documentMimeType?.startsWith("image/") ? (
               <img
                 src={`/api/certifications/${certification.id}/document`}
                 alt={`Preview of ${certification.name}`}
-                className="pointer-events-none h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                onLoad={() => setIsLoaded(true)}
+                className={`pointer-events-none h-full w-full object-cover transition-all duration-700 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             ) : (
               <div className="relative h-full w-full overflow-hidden bg-white">
                 <iframe
                   src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                  className="pointer-events-none absolute inset-0 h-full w-full border-0"
+                  onLoad={() => setIsLoaded(true)}
+                  className={`pointer-events-none absolute inset-0 h-full w-full border-0 transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                   tabIndex={-1}
                   title={`Preview of ${certification.name}`}
                 />
@@ -65,17 +76,28 @@ export default function CertificationCard({ certification, locale, copy }: Certi
               </div>
             )
           ) : (
-            <div className="grid h-full place-items-center text-text-muted">
-              <Award className="size-16 opacity-20 group-hover:opacity-40 transition-opacity" />
+            <div className="grid h-full place-items-center bg-surface-raised text-text-muted">
+              <Award className="size-24 opacity-10 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-surface-raised/90 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </div>
         
-        <div className="flex flex-1 flex-col p-6 w-full">
-          <h2 className="text-lg font-semibold leading-snug text-text-primary line-clamp-2">
+        {/* Glassmorphic Overlay for Text */}
+        <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end p-6 sm:p-8 pt-24 bg-gradient-to-t from-bg-page via-bg-page/90 to-transparent backdrop-blur-[2px] translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+          <div className="flex items-center gap-1.5 mb-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 delay-100">
+             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent">
+               {locale === "fr" ? "Ouvrir" : "Open"}
+             </span>
+             <ArrowUpRight className="size-3.5 text-accent" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-display font-bold leading-tight text-text-primary drop-shadow-sm line-clamp-2">
             {certification.name}
           </h2>
+          {certification.issuer && (
+            <p className="mt-2 text-sm font-mono text-text-secondary truncate drop-shadow-sm">
+              {certification.issuer}
+            </p>
+          )}
         </div>
       </button>
 

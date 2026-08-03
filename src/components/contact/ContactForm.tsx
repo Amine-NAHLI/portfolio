@@ -76,24 +76,56 @@ export function ContactForm({ locale }: { locale: Locale }) {
   }
 
   return (
-    <section aria-labelledby="contact-form-title" className="technical-frame p-6 sm:p-8">
-      <p className="system-label">{"// Secure channel"}</p>
-      <h2 id="contact-form-title" className="text-2xl font-semibold">{copy.title}</h2>
-      <p className="mt-2 text-sm leading-6 text-text-secondary">{copy.description}</p>
-      <form ref={formRef} onSubmit={submit} className="mt-6 grid gap-5 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-text-primary">{copy.name}<input name="name" autoComplete="name" required minLength={2} maxLength={100} className="min-h-12 px-4 font-normal" /></label>
-        <label className="grid gap-2 text-sm font-semibold text-text-primary">{copy.email}<input name="email" type="email" inputMode="email" autoComplete="email" required minLength={5} maxLength={254} className="min-h-12 px-4 font-normal" /></label>
-        <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2">{copy.subject}<input name="subject" required minLength={3} maxLength={160} className="min-h-12 px-4 font-normal" /></label>
-        <label className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2">{copy.message}<textarea name="message" required minLength={20} maxLength={5000} rows={7} className="resize-y px-4 py-3 font-normal" /></label>
-        <label className="absolute -left-[10000px] top-auto size-px overflow-hidden" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
-        <div className="sm:col-span-2">
-          {error ? <p className="mb-4 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger" role="alert">{error}</p> : null}
-          {success ? <p className="mb-4 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 p-4 text-sm text-success" role="status"><CheckCircle2 aria-hidden="true" className="size-5" />{copy.success}</p> : null}
-          {notice ? <p className="mb-4 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning" role="status">{notice}</p> : null}
-          <button type="submit" className="button-primary w-full sm:w-auto" disabled={submitting}>{submitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin motion-reduce:animate-none" /> : <Send aria-hidden="true" className="size-4" />}{submitting ? copy.sending : copy.submit}</button>
-          <p className="mt-4 max-w-2xl text-xs leading-5 text-text-muted">{copy.privacy}</p>
-        </div>
-      </form>
+    <section aria-labelledby="contact-form-title" className="p-8 sm:p-10 rounded-[2.5rem] bg-surface-subtle/30 border border-border/30 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
+      <div className="relative z-10">
+        <p className="font-mono text-[10px] text-accent uppercase tracking-[0.2em] mb-3">{"// Secure channel"}</p>
+        <h2 id="contact-form-title" className="text-3xl font-display font-bold text-text-primary mb-2">{copy.title}</h2>
+        <p className="text-sm leading-relaxed text-text-secondary mb-10 max-w-md">{copy.description}</p>
+        
+        <form ref={formRef} onSubmit={submit} className="grid gap-x-8 gap-y-10 sm:grid-cols-2">
+          
+          <div className="relative group">
+            <label className="block text-xs font-mono font-semibold text-text-secondary uppercase tracking-widest mb-2 transition-colors group-focus-within:text-accent">{copy.name}</label>
+            <input name="name" autoComplete="name" required minLength={2} maxLength={100} className="w-full bg-transparent border-0 border-b-2 border-border/40 pb-3 text-base text-text-primary focus:ring-0 focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted/30" placeholder="John Doe" />
+          </div>
+
+          <div className="relative group">
+            <label className="block text-xs font-mono font-semibold text-text-secondary uppercase tracking-widest mb-2 transition-colors group-focus-within:text-accent">{copy.email}</label>
+            <input name="email" type="email" inputMode="email" autoComplete="email" required minLength={5} maxLength={254} className="w-full bg-transparent border-0 border-b-2 border-border/40 pb-3 text-base text-text-primary focus:ring-0 focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted/30" placeholder="john@example.com" />
+          </div>
+
+          <div className="relative group sm:col-span-2">
+            <label className="block text-xs font-mono font-semibold text-text-secondary uppercase tracking-widest mb-2 transition-colors group-focus-within:text-accent">{copy.subject}</label>
+            <input name="subject" required minLength={3} maxLength={160} className="w-full bg-transparent border-0 border-b-2 border-border/40 pb-3 text-base text-text-primary focus:ring-0 focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted/30" placeholder="Let's build something together" />
+          </div>
+
+          <div className="relative group sm:col-span-2">
+            <label className="block text-xs font-mono font-semibold text-text-secondary uppercase tracking-widest mb-2 transition-colors group-focus-within:text-accent">{copy.message}</label>
+            <textarea name="message" required minLength={20} maxLength={5000} rows={5} className="w-full resize-y bg-transparent border-0 border-b-2 border-border/40 pb-3 text-base text-text-primary focus:ring-0 focus:border-accent focus:outline-none transition-colors placeholder:text-text-muted/30" placeholder="Tell me about your project..." />
+          </div>
+
+          <label className="absolute -left-[10000px] top-auto size-px overflow-hidden" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
+          
+          <div className="sm:col-span-2 mt-4">
+            {error ? <p className="mb-6 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger" role="alert">{error}</p> : null}
+            {success ? <p className="mb-6 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 p-4 text-sm text-success" role="status"><CheckCircle2 aria-hidden="true" className="size-5" />{copy.success}</p> : null}
+            {notice ? <p className="mb-6 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning" role="status">{notice}</p> : null}
+            
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <button type="submit" className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-accent px-8 py-4 font-mono text-sm font-semibold text-bg-page transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--color-accent-rgb),0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 disabled:pointer-events-none" disabled={submitting}>
+                <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300 ease-out" />
+                <span className="relative z-10 flex items-center gap-2">
+                  {submitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <Send aria-hidden="true" className="size-4" />}
+                  {submitting ? copy.sending : copy.submit}
+                </span>
+              </button>
+              
+              <p className="max-w-[250px] text-[10px] uppercase tracking-wider text-text-muted/60 text-right leading-relaxed">{copy.privacy}</p>
+            </div>
+          </div>
+        </form>
+      </div>
     </section>
   );
 }

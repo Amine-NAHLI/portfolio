@@ -52,7 +52,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <ArrowLeft aria-hidden="true" className="size-4" />{copy.back}
             </Link>
             <div className="mt-8 flex flex-wrap gap-2">
-              {project.categories.map((category) => <Badge key={category}>{projectCategoryLabels[category][locale]}</Badge>)}
+              {project.categories.map((category) => {
+                const label = projectCategoryLabels[category]?.[locale] || category;
+                return <Badge key={category}>{label}</Badge>;
+              })}
             </div>
             <h1 className="mt-6 text-balance font-display text-5xl font-semibold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">{project.title}</h1>
             <p className="mt-4 text-xl font-medium text-accent sm:text-2xl">{project.subtitle[locale]}</p>

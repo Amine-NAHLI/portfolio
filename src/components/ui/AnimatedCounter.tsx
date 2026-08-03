@@ -23,7 +23,7 @@ export default function AnimatedCounter({
     stiffness: 100,
     duration: duration * 1000,
   });
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "0px" });
 
   useEffect(() => {
     if (isInView) {
@@ -41,5 +41,8 @@ export default function AnimatedCounter({
     });
   }, [springValue]);
 
-  return <span ref={ref} className={className} />;
+  // Render the initial value so it's never completely empty
+  const initialDisplayValue = direction === "down" ? value : 0;
+
+  return <span ref={ref} className={className}>{initialDisplayValue}</span>;
 }

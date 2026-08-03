@@ -46,8 +46,8 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         onClick={() => setOpen(true)}
         className="group relative flex flex-col text-left overflow-hidden rounded-[2rem] border border-border/50 bg-surface transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_40px_-15px_rgba(var(--color-accent-rgb),0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full aspect-[4/3]"
       >
-        {/* Loading Skeleton */}
-        {!isLoaded && certification.hasDocument && (
+        {/* Loading Skeleton (Only for images, iframes show their own loading state) */}
+        {!isLoaded && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised animate-pulse">
             <LoaderCircle className="size-8 animate-spin text-text-muted/50" />
           </div>
@@ -60,6 +60,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
               <img
                 src={`/api/certifications/${certification.id}/document`}
                 alt={`Preview of ${certification.name}`}
+                loading="lazy"
                 onLoad={() => setIsLoaded(true)}
                 className={`pointer-events-none h-full w-full object-cover transition-all duration-700 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
@@ -67,8 +68,8 @@ export default function CertificationCard({ certification, locale, copy }: Certi
               <div className="relative h-full w-full overflow-hidden bg-white">
                 <iframe
                   src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                  onLoad={() => setIsLoaded(true)}
-                  className={`pointer-events-none absolute inset-0 h-full w-full border-0 transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  loading="lazy"
+                  className="pointer-events-none absolute inset-0 h-full w-full border-0 transition-transform duration-700 group-hover:scale-105"
                   tabIndex={-1}
                   title={`Preview of ${certification.name}`}
                 />

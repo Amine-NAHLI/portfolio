@@ -23,11 +23,11 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
   const alternateLocale = getAlternateLocale(locale);
   const navigation = useMemo<NavigationItem[]>(() => [
     { label: dictionary.nav.home, href: `/${locale}` }, 
-    { label: dictionary.nav.projects, href: `/${locale}/projects` },
-    { label: dictionary.nav.journey, href: `/${locale}/journey` }, 
-    { label: dictionary.nav.certifications, href: `/${locale}/certifications` }, 
-    { label: dictionary.nav.testimonials, href: `/${locale}/testimonials` },
-    { label: dictionary.nav.contact, href: `/${locale}/contact` },
+    { label: dictionary.nav.projects, href: `/${locale}#projects` },
+    { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
+    { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
+    { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
+    { label: dictionary.nav.contact, href: `/${locale}#contact` },
   ], [dictionary, locale]);
   
   const alternatePath = useMemo(() => { 

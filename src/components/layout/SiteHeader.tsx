@@ -24,8 +24,8 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
   const alternateLocale = getAlternateLocale(locale);
   const navigation = useMemo<NavigationItem[]>(() => [
     { label: dictionary.nav.home, href: `/${locale}` }, 
+    { label: dictionary.nav.openSource, href: `/${locale}#github-activity` },
     { label: dictionary.nav.projects, href: `/${locale}#projects` },
-    { label: dictionary.nav.openSource, href: `/${locale}/open-source` },
     { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
     { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
     { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
@@ -48,7 +48,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
   useEffect(() => {
     if (pathname !== `/${locale}`) return;
 
-    const sectionIds = ["home", "projects", "journey", "certifications", "testimonials", "contact"];
+    const sectionIds = ["home", "github-activity", "projects", "journey", "certifications", "testimonials", "contact"];
 
     const handleScroll = () => {
       const sectionElements = sectionIds.map(id => document.getElementById(id)).filter(Boolean);

@@ -308,12 +308,15 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   }
   
   if (Array.isArray(input.new_gallery_media_ids) && input.new_gallery_media_ids.length > 0) {
+    const { error: deleteError } = await db.from("project_media").delete().eq("project_id", projectId);
+    if (deleteError) throw deleteError;
+
     const mediaRows = input.new_gallery_media_ids.map((mediaId, index) => ({
       project_id: projectId,
       media_id: mediaId,
       sort_order: index
     }));
-    const { error: mediaError } = await db.from("project_media").upsert(mediaRows, { onConflict: "project_id,media_id" });
+    const { error: mediaError } = await db.from("project_media").insert(mediaRows);
     if (mediaError) throw mediaError;
 
     for (const mediaId of input.new_gallery_media_ids) {

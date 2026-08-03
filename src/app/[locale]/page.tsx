@@ -21,6 +21,8 @@ import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import TestimonialForm from "@/components/testimonials/TestimonialForm";
 import GitHubPreviewSection from "@/components/github/GitHubPreviewSection";
+import CertificationCard from "@/components/ui/CertificationCard";
+import TestimonialMarquee from "@/components/ui/TestimonialMarquee";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 
@@ -196,7 +198,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.projectsEyebrow} title={copy.projectsTitle} description={copy.projectsDescription} /><ButtonLink href={`/${locale}/projects`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allProjects}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
-            {featuredProjects.length ? <div className="mt-10 grid gap-5 xl:grid-cols-12">{featuredProjects.map((project, index) => <div key={project.slug} className={index === 0 ? "xl:col-span-7" : "xl:col-span-5"}><ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} index={String(index + 1).padStart(2, "0")} /></div>)}</div> : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
+            {featuredProjects.length ? <div className="mt-10 grid gap-5 xl:grid-cols-12">{featuredProjects.map((project, index) => <div key={project.slug} className={index === 0 ? "xl:col-span-7" : "xl:col-span-5"}><ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} /></div>)}</div> : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
           </ScrollReveal>
         </Container>
       </section>
@@ -242,19 +244,33 @@ export default async function HomePage({ params }: HomePageProps) {
               <SectionHeading eyebrow={copy.certificationsEyebrow} title={copy.certificationsTitle} description={""} />
               <ButtonLink href={`/${locale}/certifications`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.certificationsCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
             </div>
-            {displayCertifications.length ? <div className="grid gap-5 md:grid-cols-3">
-              {displayCertifications.map((certification) => (
-                <TechnicalFrame key={certification.id} index="07" label="Certification" className="p-6">
-                  <p className="font-medium text-text-primary text-lg">{certification.name}</p>
-                  {certification.issuer ? <p className="mt-2 text-sm text-text-muted">{certification.issuer}</p> : null}
-                </TechnicalFrame>
-              ))}
-            </div> : <PortfolioEmptyState collection="certifications" locale={locale} />}
+            {displayCertifications.length ? (
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 no-scrollbar">
+                {displayCertifications.map((certification) => (
+                  <div key={certification.id} className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[30vw] shrink-0 snap-start">
+                    <CertificationCard 
+                      certification={{
+                        id: certification.id,
+                        name: certification.name,
+                        issuer: certification.issuer,
+                        issuedOn: certification.issuedOn,
+                        verificationUrl: certification.verificationUrl,
+                        hasDocument: certification.hasDocument,
+                        documentMimeType: certification.documentMimeType,
+                        description: certification.description
+                      }} 
+                      locale={locale} 
+                      copy={publicCopy[locale].certifications} 
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : <PortfolioEmptyState collection="certifications" locale={locale} />}
           </ScrollReveal>
         </Container>
       </section>
 
-      <section id="testimonials" className="relative z-10 py-16 sm:py-24">
+      <section id="testimonials" className="relative z-10 py-16 sm:py-24 overflow-hidden">
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
@@ -264,25 +280,18 @@ export default async function HomePage({ params }: HomePageProps) {
                 <ButtonLink href={`/${locale}/testimonials`} variant="secondary" className="shrink-0 self-start md:self-auto">{locale === "fr" ? "Tous les avis" : "All feedback"}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
               </div>
             </div>
-            {displayTestimonials.length ? <div className="grid gap-6 md:grid-cols-3">
-              {displayTestimonials.map((t) => (
-                <TechnicalFrame key={t.id} index="08" label="Avis" className="p-6 flex flex-col justify-between">
-                  <blockquote className="border-l-2 border-accent pl-5 text-sm leading-relaxed text-text-secondary mb-6">
-                    “{t.message.length > 150 ? t.message.substring(0, 150) + '...' : t.message}”
-                  </blockquote>
-                  <div>
-                    <p className="text-sm font-semibold text-text-primary">{t.name}</p>
-                    {(t.role || t.organization) && (
-                      <p className="mt-1 text-xs text-text-muted">
-                        {t.role}{t.role && t.organization ? ' — ' : ''}{t.organization}
-                      </p>
-                    )}
-                  </div>
-                </TechnicalFrame>
-              ))}
-            </div> : <PortfolioEmptyState collection="testimonials" locale={locale} />}
           </ScrollReveal>
         </Container>
+        
+        <ScrollReveal yOffset={40}>
+          {displayTestimonials.length ? (
+            <TestimonialMarquee testimonials={displayTestimonials} />
+          ) : (
+            <Container>
+              <PortfolioEmptyState collection="testimonials" locale={locale} />
+            </Container>
+          )}
+        </ScrollReveal>
       </section>
 
       <section id="contact" className="relative z-10 py-16 sm:py-24">

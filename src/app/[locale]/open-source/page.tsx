@@ -4,7 +4,7 @@ import { BookMarked, GitCommit, Code2, FolderGit2 } from "lucide-react";
 import Container from "@/components/ui/Container";
 import PageIntro from "@/components/ui/PageIntro";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import TechnicalFrame from "@/components/ui/TechnicalFrame";
+
 import { fetchGitHubData } from "@/lib/github";
 import { isLocale, type Locale } from "@/i18n/config";
 import LanguageGraph from "@/components/github/LanguageGraph";

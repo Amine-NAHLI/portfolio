@@ -190,6 +190,12 @@
 .animate-orbit-counter { animation: orbit-reverse linear infinite; }
 .animate-orbit-counter-reverse { animation: orbit linear infinite; }
 
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 1rem)); }
+}
+.animate-marquee { animation: marquee 40s linear infinite; }
+
 .animate-fluid-blob {
   animation: fluid-blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }

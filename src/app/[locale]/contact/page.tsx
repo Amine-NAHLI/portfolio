@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import Container from "@/components/ui/Container";
-import PageIntro from "@/components/ui/PageIntro";
 import { publicCopy } from "@/content/copy";
 import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Badge from "@/components/ui/Badge";
-import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import { projectCategoryLabels, publicCopy } from "@/content/copy";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject, ProjectCategory } from "@/types/content";
@@ -13,10 +12,9 @@ type ProjectSummaryCardProps = {
   project: PortfolioProject;
   locale: Locale;
   cta: string;
-  index?: string;
 };
 
-export default function ProjectSummaryCard({ project, locale, cta, index }: ProjectSummaryCardProps) {
+export default function ProjectSummaryCard({ project, locale, cta }: ProjectSummaryCardProps) {
   return (
     <TiltCard className="h-full">
       <article className="group relative flex h-full flex-col bg-bg-page/60 backdrop-blur-xl border border-border rounded-2xl overflow-hidden transition-all duration-500 hover:border-accent/40 shadow-xl hover:shadow-[0_0_30px_-10px_rgba(var(--color-accent-rgb),0.2)]">

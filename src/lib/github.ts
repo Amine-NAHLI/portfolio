@@ -87,7 +87,7 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
     const { data, errors } = await response.json();
 
     if (errors) {
-      throw new Error(`GitHub GraphQL error: ${errors.map((e: any) => e.message).join(", ")}`);
+      throw new Error(`GitHub GraphQL error: ${errors.map((e: { message: string }) => e.message).join(", ")}`);
     }
 
     const user = data.user;
@@ -101,8 +101,8 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
     const languageStats: Record<string, { size: number; color: string }> = {};
     let totalSize = 0;
 
-    user.repositories.nodes.forEach((repo: any) => {
-      repo.languages.edges.forEach((edge: any) => {
+    user.repositories.nodes.forEach((repo: { languages: { edges: { size: number; node: { name: string; color: string } }[] } }) => {
+      repo.languages.edges.forEach((edge: { size: number; node: { name: string; color: string } }) => {
         const { size, node: { name, color } } = edge;
         if (!languageStats[name]) {
           languageStats[name] = { size: 0, color };
@@ -123,7 +123,7 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
     const topLanguage = languages.length > 0 ? languages[0] : null;
 
     // --- Process Activity ---
-    const recentRepositories = user.repositories.nodes.slice(0, 6).map((repo: any) => ({
+    const recentRepositories = user.repositories.nodes.slice(0, 6).map((repo: { name: string; description: string | null; url: string; pushedAt: string; primaryLanguage: { name: string; color: string } | null; stargazerCount: number }) => ({
       name: repo.name,
       description: repo.description,
       url: repo.url,

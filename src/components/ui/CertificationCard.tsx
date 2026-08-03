@@ -2,7 +2,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Award, Calendar, Download, ArrowUpRight, FileText, X } from "lucide-react";
+import { Award, Calendar, Download, ArrowUpRight, X } from "lucide-react";
 
 type Certification = {
   id: string;

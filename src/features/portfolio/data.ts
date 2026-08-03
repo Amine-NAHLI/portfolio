@@ -132,7 +132,7 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
   } catch { return []; }
 }
 
-async function queryTestimonials(_locale: Locale): Promise<PublicTestimonial[]> {
+async function queryTestimonials(): Promise<PublicTestimonial[]> {
   if (!hasSupabasePublicConfig()) return [];
   try {
     const { data, error } = await createPublicClient().from("testimonials").select("id, first_name, last_name, job_title, organization, message, rating, locale, featured").eq("status", "approved").order("featured", { ascending: false }).order("created_at", { ascending: false });
@@ -147,8 +147,8 @@ const skillsFr = unstable_cache(() => querySkills("fr"), ["portfolio-skills-fr"]
 const skillsEn = unstable_cache(() => querySkills("en"), ["portfolio-skills-en"], { revalidate: 900, tags: ["portfolio"] });
 const certificatesFr = unstable_cache(() => queryCertificates("fr"), ["portfolio-certificates-fr"], { revalidate: 900, tags: ["portfolio"] });
 const certificatesEn = unstable_cache(() => queryCertificates("en"), ["portfolio-certificates-en"], { revalidate: 900, tags: ["portfolio"] });
-const testimonialsFr = unstable_cache(() => queryTestimonials("fr"), ["portfolio-testimonials-fr"], { revalidate: 900, tags: ["portfolio"] });
-const testimonialsEn = unstable_cache(() => queryTestimonials("en"), ["portfolio-testimonials-en"], { revalidate: 900, tags: ["portfolio"] });
+const testimonialsFr = unstable_cache(() => queryTestimonials(), ["portfolio-testimonials-fr"], { revalidate: 900, tags: ["portfolio"] });
+const testimonialsEn = unstable_cache(() => queryTestimonials(), ["portfolio-testimonials-en"], { revalidate: 900, tags: ["portfolio"] });
 
 async function queryContactLinks() {
   if (!hasSupabasePublicConfig()) return siteConfig.links;

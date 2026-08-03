@@ -25,6 +25,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
     { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
     { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
     { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
+    { label: dictionary.nav.openSource, href: `/${locale}/open-source` },
     { label: dictionary.nav.contact, href: `/${locale}#contact` },
   ], [dictionary, locale]);
   const alternatePath = useMemo(() => { const segments = pathname.split("/"); segments[1] = alternateLocale; return segments.join("/") || `/${alternateLocale}`; }, [alternateLocale, pathname]);

@@ -1,9 +1,9 @@
-import { ArrowRight, Terminal, GitCommit, FolderGit2, Code2 } from "lucide-react";
+import { ArrowRight, Terminal } from "lucide-react";
 import ButtonLink from "@/components/ui/ButtonLink";
 import Container from "@/components/ui/Container";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
-import TechnicalFrame from "@/components/ui/TechnicalFrame";
+import GitHubStatsCards from "./GitHubStatsCards";
 import { fetchGitHubData } from "@/lib/github";
 import { Locale } from "@/i18n/config";
 
@@ -27,9 +27,6 @@ export default async function GitHubPreviewSection({ locale }: GitHubPreviewSect
     description: locale === "fr" 
       ? "Un aperçu de mon engagement quotidien dans le code et la communauté open source."
       : "A glimpse into my daily engagement with code and the open source community.",
-    contributions: locale === "fr" ? "Contributions (1 an)" : "Contributions (1 yr)",
-    repositories: locale === "fr" ? "Dépôts Publics" : "Public Repositories",
-    topLanguage: locale === "fr" ? "Langage Principal" : "Top Language",
     cta: locale === "fr" ? "Voir toute mon activité" : "View all activity",
   };
 
@@ -46,62 +43,7 @@ export default async function GitHubPreviewSection({ locale }: GitHubPreviewSect
             </ButtonLink>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-3">
-            {/* Contributions */}
-            <TechnicalFrame index="01" label={t.contributions} className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-                  <GitCommit className="size-6" />
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold text-text-primary">
-                    {stats.totalContributions}
-                  </p>
-                  <p className="text-sm text-text-muted mt-1">{locale === "fr" ? "commits & PRs" : "commits & PRs"}</p>
-                </div>
-              </div>
-            </TechnicalFrame>
-
-            {/* Repositories */}
-            <TechnicalFrame index="02" label={t.repositories} className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-                  <FolderGit2 className="size-6" />
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold text-text-primary">
-                    {stats.totalRepositories}
-                  </p>
-                  <p className="text-sm text-text-muted mt-1">{locale === "fr" ? "projets partagés" : "shared projects"}</p>
-                </div>
-              </div>
-            </TechnicalFrame>
-
-            {/* Top Language */}
-            <TechnicalFrame index="03" label={t.topLanguage} className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-                  <Code2 className="size-6" />
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold text-text-primary">
-                    {stats.topLanguage?.name || "N/A"}
-                  </p>
-                  {stats.topLanguage && (
-                    <div className="flex items-center gap-2 mt-1">
-                      <div 
-                        className="size-2.5 rounded-full" 
-                        style={{ backgroundColor: stats.topLanguage.color }}
-                      />
-                      <p className="text-sm text-text-muted">
-                        {stats.topLanguage.percentage.toFixed(1)}% {locale === "fr" ? "du code" : "of code"}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </TechnicalFrame>
-          </div>
+          <GitHubStatsCards stats={stats} locale={locale} />
         </ScrollReveal>
       </Container>
     </section>

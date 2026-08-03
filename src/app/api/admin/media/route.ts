@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 const BUCKET = "portfolio-media";
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const MAX_REQUEST_BYTES = MAX_FILE_BYTES + 256 * 1024;
-const PDF_MIME_TYPE = "application/pdf";
+
 
 function fail(message: string, status: number) {
   return NextResponse.json({ error: message }, { status, headers: { "Cache-Control": "private, no-store" } });

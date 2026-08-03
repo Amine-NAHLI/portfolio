@@ -13,7 +13,7 @@ type ProjectExplorerProps = {
   projects: PortfolioProject[];
 };
 
-type CategoryFilter = "all" | ProjectCategory;
+type CategoryFilter = string;
 type SortMode = "featured" | "alphabetical";
 
 export default function ProjectExplorer({ locale, projects }: ProjectExplorerProps) {
@@ -73,13 +73,18 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
           {copy.categoryLabel}
           <select
             value={category}
-            onChange={(event) => setCategory(event.target.value as CategoryFilter)}
+            onChange={(event) => setCategory(event.target.value)}
             className="min-h-12 px-3 text-sm"
           >
             <option value="all">{copy.allCategories}</option>
-            {(Object.keys(projectCategoryLabels) as ProjectCategory[]).map((value) => (
-              <option key={value} value={value}>{projectCategoryLabels[value][locale]}</option>
-            ))}
+            {Array.from(new Set(projects.flatMap((p) => p.categories))).map((value) => {
+              const label = projectCategoryLabels[value as ProjectCategory]?.[locale] || value;
+              return (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              );
+            })}
           </select>
         </label>
 

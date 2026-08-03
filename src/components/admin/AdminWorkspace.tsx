@@ -226,6 +226,10 @@ function WorkspaceEditor({ section, record, onClose, onSaved }: { section: Exclu
       const sourceData = {
         title: values.title,
         description: values.description_fr || values.description_en,
+        problem: values.problem_fr || values.problem_en,
+        solution: values.solution_fr || values.solution_en,
+        objectives: values.objectives_fr || values.objectives_en,
+        architecture: values.architecture_fr || values.architecture_en,
         technologies: values.technologies,
       };
       

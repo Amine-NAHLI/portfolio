@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         model: "llama-3.3-70b-versatile",
         temperature: 0,
         messages: [
-          { role: "system", content: "You are an expert technical categorizer. Given the following project details, provide an appropriate comma-separated list of general, high-level technical categories that best describe it. Use broad categories such as 'ai', 'cyber', 'dev mobile', 'dev web', 'software', 'embedded', etc. Do NOT include specific frameworks (like React, Node), languages, databases, or overly detailed sub-categories. Return ONLY the comma-separated list, and nothing else. No explanation, no quotes." },
+          { role: "system", content: "You are an expert technical categorizer. The user will provide a detailed project context, including its title, description, problem, solution, architecture, objectives, and technologies used. You MUST analyze all this information in detail to deeply understand the nature of the project. Based on this thorough analysis, provide an appropriate comma-separated list of general, high-level technical categories that best describe it. Use broad categories such as 'ai', 'cyber', 'dev mobile', 'dev web', 'software', 'embedded', 'data science', etc. Do NOT include specific frameworks (like React, Node), languages, databases, or overly detailed sub-categories. Return ONLY the comma-separated list, and nothing else. No explanation, no quotes." },
           { role: "user", content: source },
         ],
       }),

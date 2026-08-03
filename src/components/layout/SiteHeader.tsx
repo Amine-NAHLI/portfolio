@@ -20,14 +20,15 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
   const pathname = usePathname() ?? `/${locale}`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState("");
   const alternateLocale = getAlternateLocale(locale);
   const navigation = useMemo<NavigationItem[]>(() => [
     { label: dictionary.nav.home, href: `/${locale}` }, 
     { label: dictionary.nav.projects, href: `/${locale}#projects` },
+    { label: dictionary.nav.openSource, href: `/${locale}/open-source` },
     { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
     { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
     { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
-    { label: dictionary.nav.openSource, href: `/${locale}/open-source` },
     { label: dictionary.nav.contact, href: `/${locale}#contact` },
   ], [dictionary, locale]);
   
@@ -43,6 +44,46 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
     if (menuOpen && !dialog.open) dialog.showModal(); 
     else if (!menuOpen && dialog.open) dialog.close(); 
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (pathname !== `/${locale}`) return;
+
+    const sectionIds = ["home", "projects", "journey", "certifications", "testimonials", "contact"];
+
+    const handleScroll = () => {
+      const sectionElements = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+      let current = "";
+      const triggerPoint = window.innerHeight * 0.4; // 40% from top
+      
+      for (const section of sectionElements) {
+        if (!section) continue;
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= triggerPoint) {
+          current = `#${section.id}`;
+        }
+      }
+      
+      if (window.scrollY < 50) current = "";
+      setActiveHash(current);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check on mount
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname, locale]);
+
+  const checkActive = (href: string) => {
+    if (href === `/${locale}`) {
+      return pathname === href && (!activeHash || activeHash === "#home");
+    }
+    if (href.includes("#")) {
+      return pathname === `/${locale}` && activeHash === `#${href.split("#")[1]}`;
+    }
+    return pathname.startsWith(href);
+  };
 
   function closeMenu() { setMenuOpen(false); }
   function rememberLocale() { 
@@ -65,7 +106,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label={dictionary.navigationLabel}>
             {navigation.map((item) => {
-              const active = item.href === `/${locale}` ? pathname === item.href : pathname.startsWith(item.href);
+              const active = checkActive(item.href);
               const LinkComponent = item.href.includes("#") ? "a" : Link;
               return (
                 <LinkComponent 
@@ -126,7 +167,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
           </div>
           <nav className="mt-10 flex flex-1 flex-col" aria-label={dictionary.navigationLabel}>
             {navigation.map((item) => { 
-              const active = item.href === `/${locale}` ? pathname === item.href : pathname.startsWith(item.href); 
+              const active = checkActive(item.href); 
               const LinkComponent = item.href.includes("#") ? "a" : Link; 
               return (
                 <LinkComponent key={item.href} href={item.href} aria-current={active ? "page" : undefined} onClick={closeMenu} className={cn("flex min-h-14 items-center border-b border-border font-display text-xl font-semibold tracking-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent", active ? "text-accent" : "text-text-primary hover:text-accent")}>

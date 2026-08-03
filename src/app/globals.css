@@ -150,13 +150,26 @@
   .article-code, .article-mermaid, .article-table { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }.article-code figcaption, .article-mermaid > figcaption { border-bottom: 1px solid var(--border); padding: .65rem 1rem; color: var(--text-muted); font-family: var(--font-mono), ui-monospace, monospace; font-size: .72rem; text-transform: uppercase; }.article-code pre { overflow-x: auto; background: var(--surface-deep); padding: 1.25rem; color: var(--text-primary); font-family: var(--font-mono), ui-monospace, monospace; font-size: .875rem; line-height: 1.7; }.article-mermaid-canvas { display: grid; min-height: 8rem; place-items: center; overflow-x: auto; padding: 1.25rem; }.article-mermaid-canvas img { width: 100%; min-width: 28rem; max-width: 100%; height: auto; }.article-table { overflow-x: auto; }.article-table table { width: 100%; min-width: 32rem; border-collapse: collapse; font-size: .9rem; }.article-table th, .article-table td { border-bottom: 1px solid var(--border); padding: .75rem 1rem; text-align: start; }.article-table th { background: var(--surface-raised); color: var(--text-primary); }
 }
 
-@layer utilities { .text-balance { text-wrap: balance; }.text-pretty { text-wrap: pretty; }.no-scrollbar { scrollbar-width: none; }.no-scrollbar::-webkit-scrollbar { display: none; }.preserve-3d { transform-style: preserve-3d; }.font-display { font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; }.font-system { font-family: var(--font-mono), ui-monospace, monospace; } }
+@layer utilities { .text-balance { text-wrap: balance; }.text-pretty { text-wrap: pretty; }.no-scrollbar { scrollbar-width: none; }.no-scrollbar::-webkit-scrollbar { display: none; }.preserve-3d { transform-style: preserve-3d; }.font-display { font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; }.font-system { font-family: var(--font-mono), ui-monospace, monospace; } .animate-noise-drift { animation: noise-drift 8s steps(10) infinite; } }
 
 @keyframes ambient-breathe { from { opacity: .55; } to { opacity: 1; } }
 @keyframes grid-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-2rem, -1.25rem, 0); } }
 @keyframes orbital-float { from { transform: translate3d(0, -50%, 0) scale(.98); } to { transform: translate3d(-1.5rem, calc(-50% - 1rem), 0) scale(1.04); } }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
+@keyframes noise-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  10% { transform: translate3d(-5%, -10%, 0); }
+  20% { transform: translate3d(-15%, 5%, 0); }
+  30% { transform: translate3d(7%, -25%, 0); }
+  40% { transform: translate3d(-5%, 25%, 0); }
+  50% { transform: translate3d(-15%, 10%, 0); }
+  60% { transform: translate3d(15%, 0%, 0); }
+  70% { transform: translate3d(0%, 15%, 0); }
+  80% { transform: translate3d(3%, 35%, 0); }
+  90% { transform: translate3d(-10%, 10%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
 @keyframes fluid-blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }

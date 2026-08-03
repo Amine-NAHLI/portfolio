@@ -10,6 +10,8 @@ import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttribut
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { getPublicContactLinks } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
+import CustomCursor from "@/components/ui/CustomCursor";
+import NoiseOverlay from "@/components/ui/NoiseOverlay";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -85,6 +87,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <PageLoadWrapper>
+      <CustomCursor />
+      <NoiseOverlay />
       <div className="flex min-h-screen flex-col">
         <LocaleDocumentAttributes locale={candidate} />
         <a href="#main-content" className="skip-link">
@@ -92,7 +96,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         </a>
         <SiteHeader locale={candidate} dictionary={dictionary} resumeLink={contactLinks.resume} />
         <PrivacyAnalytics locale={candidate} />
-        <main id="main-content" className="page-enter flex-1" tabIndex={-1}>
+        <main id="main-content" className="flex-1" tabIndex={-1}>
           {children}
         </main>
         <SiteFooter locale={candidate} dictionary={dictionary} contactLinks={contactLinks} />

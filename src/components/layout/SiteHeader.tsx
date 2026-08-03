@@ -20,13 +20,13 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
   const [menuOpen, setMenuOpen] = useState(false);
   const alternateLocale = getAlternateLocale(locale);
   const navigation = useMemo<NavigationItem[]>(() => [
-    { label: dictionary.nav.home, href: `/${locale}#home` }, 
-    { label: dictionary.nav.projects, href: `/${locale}#projects` },
-    { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
-    { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
-    { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
+    { label: dictionary.nav.home, href: `/${locale}` }, 
     { label: dictionary.nav.openSource, href: `/${locale}/open-source` },
-    { label: dictionary.nav.contact, href: `/${locale}#contact` },
+    { label: dictionary.nav.projects, href: `/${locale}/projects` },
+    { label: dictionary.nav.journey, href: `/${locale}/journey` }, 
+    { label: dictionary.nav.certifications, href: `/${locale}/certifications` }, 
+    { label: dictionary.nav.testimonials, href: `/${locale}/testimonials` },
+    { label: dictionary.nav.contact, href: `/${locale}/contact` },
   ], [dictionary, locale]);
   const alternatePath = useMemo(() => { const segments = pathname.split("/"); segments[1] = alternateLocale; return segments.join("/") || `/${alternateLocale}`; }, [alternateLocale, pathname]);
 

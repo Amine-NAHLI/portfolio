@@ -9,6 +9,7 @@ import PortfolioEmptyState from "@/components/ui/PortfolioEmptyState";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
+import TextReveal from "@/components/ui/TextReveal";
 import { TechCore } from "@/components/ui/TechCore";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
@@ -96,13 +97,19 @@ export default async function HomePage({ params }: HomePageProps) {
                 L&apos;ingénieur
               </div>
               
-              <h1 className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]">
-                {siteConfig.name}
-              </h1>
+              <TextReveal 
+                as="h1"
+                text={siteConfig.name}
+                className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
+                delay={0.1}
+              />
               
-              <h2 className="mt-6 font-mono text-sm font-semibold uppercase tracking-widest text-accent sm:text-base">
-                {copy.eyebrow}
-              </h2>
+              <TextReveal
+                as="h2"
+                text={copy.eyebrow}
+                className="mt-6 font-mono text-sm font-semibold uppercase tracking-widest text-accent sm:text-base"
+                delay={0.3}
+              />
               
               <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
                 {copy.title}

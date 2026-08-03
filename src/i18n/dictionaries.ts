@@ -21,7 +21,7 @@ const dictionaries = {
       search: "Recherche",
       resume: "CV",
       testimonials: "Avis",
-      openSource: "Open Source",
+      openSource: "Contributions",
     },
     footer: {
       navigation: "Navigation",
@@ -60,7 +60,7 @@ const dictionaries = {
       search: "Search",
       resume: "Resume",
       testimonials: "Reviews",
-      openSource: "Open Source",
+      openSource: "Contributions",
     },
     footer: {
       navigation: "Navigation",

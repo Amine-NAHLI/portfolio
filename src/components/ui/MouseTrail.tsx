@@ -106,7 +106,7 @@ export default function MouseTrail() {
   return (
     <canvas 
       ref={canvasRef} 
-      className="pointer-events-none fixed inset-0 z-40 mix-blend-screen opacity-70"
+      className="pointer-events-none fixed inset-0 z-40 mix-blend-multiply dark:mix-blend-screen opacity-70"
     />
   );
 }

@@ -10,7 +10,8 @@ type TechCoreProps = {
 };
 
 export function TechCore({ technologies, className }: TechCoreProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [activeTech, setActiveTech] = useState<string | null>(null);
+  const isHovered = activeTech !== null;
 
   // Pre-calculate orbits to distribute the technologies
   // We'll put them on 3 different orbital rings
@@ -75,12 +76,15 @@ export function TechCore({ technologies, className }: TechCoreProps) {
                   return (
                     <div
                       key={tech}
-                      className="absolute inset-0 m-auto flex items-center justify-center w-0 h-0 hover:z-[100]"
+                      className={cn("absolute inset-0 m-auto flex items-center justify-center w-0 h-0", activeTech === tech ? "z-[100]" : "hover:z-[100]")}
                       style={{
                         transform: `rotate(${angle}deg) translateX(${radius}px) rotate(-${angle}deg)`,
                       }}
-                      onMouseEnter={() => setIsHovered(true)}
-                      onMouseLeave={() => setIsHovered(false)}
+                      onMouseEnter={() => setActiveTech(tech)}
+                      onMouseLeave={() => setActiveTech(null)}
+                      onTouchStart={() => setActiveTech(tech)}
+                      onTouchEnd={() => setActiveTech(null)}
+                      onTouchCancel={() => setActiveTech(null)}
                     >
                       <div 
                         className={cn("animate-orbit-counter pointer-events-auto", isReverse && "animate-orbit-counter-reverse")}
@@ -89,9 +93,9 @@ export function TechCore({ technologies, className }: TechCoreProps) {
                           animationPlayState: isHovered ? 'paused' : 'running',
                         }}
                       >
-                        <div className="relative flex items-center justify-center group/icon hover:scale-150 transition-transform duration-300 z-10 hover:z-[100]">
-                          <SkillIcon name={tech} className="text-[40px] sm:text-5xl rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] ring-1 ring-border-strong/50 group-hover/icon:ring-accent group-hover/icon:shadow-[0_0_30px_rgba(var(--color-accent-rgb),0.8)] transition-all duration-300 relative z-10" />
-                          <div className="absolute -top-12 opacity-0 group-hover/icon:opacity-100 transition-opacity whitespace-nowrap bg-bg-page text-text-primary px-4 py-2 rounded-lg shadow-2xl text-sm font-bold pointer-events-none border border-border-strong z-[100]">
+                        <div className={cn("relative flex items-center justify-center transition-transform duration-300 z-10", activeTech === tech ? "scale-150 z-[100]" : "scale-100 hover:z-[100]")}>
+                          <SkillIcon name={tech} className={cn("text-[40px] sm:text-5xl rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all duration-300 relative z-10", activeTech === tech ? "ring-2 ring-accent shadow-[0_0_30px_rgba(56,189,248,0.8)]" : "ring-1 ring-border-strong/50")} />
+                          <div className={cn("absolute -top-14 transition-opacity whitespace-nowrap px-4 py-2 rounded-lg text-sm font-black pointer-events-none z-[100] border-2", activeTech === tech ? "opacity-100 bg-accent text-bg-page border-accent-light shadow-[0_0_20px_rgba(56,189,248,0.6)]" : "opacity-0 bg-bg-page text-text-primary border-border-strong shadow-2xl")}>
                             {tech}
                           </div>
                         </div>

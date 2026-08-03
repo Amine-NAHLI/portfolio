@@ -38,36 +38,40 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
   };
 
   const formContent = (
-    <div className={`relative w-full max-w-lg overflow-hidden rounded-md border border-border bg-surface ${inline ? 'shadow-md' : 'shadow-2xl'} animate-in zoom-in-95`}>
-      <div className="flex items-center justify-between border-b border-border bg-surface-raised px-6 py-4">
-        <h3 className="font-display text-xl font-semibold text-text-primary">
+    <div className="relative w-full max-w-xl overflow-hidden rounded-[2rem] border border-border/50 bg-surface/95 backdrop-blur-xl shadow-[0_0_50px_-12px_rgba(var(--color-accent-rgb),0.15)] animate-in zoom-in-95 duration-300">
+      <div className="flex items-center justify-between border-b border-border/40 bg-surface-subtle/60 px-8 py-6">
+        <h3 className="font-display text-xl sm:text-2xl font-semibold text-text-primary">
           {locale === "fr" ? "Votre avis compte" : "Your feedback matters"}
         </h3>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="rounded-sm text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="rounded-full p-2.5 bg-surface-raised/50 text-text-secondary transition-all hover:bg-surface-raised hover:text-text-primary hover:scale-110 focus-visible:outline-none"
         >
           <X className="size-5" />
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-8">
         {result?.success ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in">
-            <CheckCircle2 className="size-16 text-success mb-4" />
-            <p className="text-lg font-medium text-text-primary">{result.message}</p>
+          <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in zoom-in">
+            <div className="rounded-full bg-success/10 p-4 mb-5">
+              <CheckCircle2 className="size-16 text-success" />
+            </div>
+            <p className="text-xl font-medium text-text-primary">{result.message}</p>
+            <p className="text-sm text-text-secondary mt-2">Merci pour votre contribution !</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-5 text-left">
+          <form onSubmit={handleSubmit} className="grid gap-6 text-left">
             {result?.error && (
-              <div className="rounded-sm border border-danger/50 bg-danger/10 px-4 py-3 text-sm text-danger">
+              <div className="rounded-xl border border-danger/50 bg-danger/10 px-5 py-4 text-sm text-danger flex items-center gap-3">
+                <span className="size-2 rounded-full bg-danger animate-pulse" />
                 {result.error}
               </div>
             )}
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="grid gap-2">
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-2.5">
                 <label htmlFor="firstName" className="font-mono text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                   {locale === "fr" ? "Prénom *" : "First Name *"}
                 </label>
@@ -76,10 +80,10 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
                   id="firstName"
                   name="firstName"
                   required
-                  className="rounded-sm border border-border bg-surface-deep px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
+                  className="rounded-xl border border-border/60 bg-surface-deep/50 px-4 py-3 text-sm text-text-primary transition-colors focus:border-accent focus:bg-surface-deep focus:outline-none focus:ring-1 focus:ring-accent/50"
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid gap-2.5">
                 <label htmlFor="lastName" className="font-mono text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                   {locale === "fr" ? "Nom *" : "Last Name *"}
                 </label>
@@ -88,13 +92,13 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
                   id="lastName"
                   name="lastName"
                   required
-                  className="rounded-sm border border-border bg-surface-deep px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
+                  className="rounded-xl border border-border/60 bg-surface-deep/50 px-4 py-3 text-sm text-text-primary transition-colors focus:border-accent focus:bg-surface-deep focus:outline-none focus:ring-1 focus:ring-accent/50"
                 />
               </div>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="grid gap-2">
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-2.5">
                 <label htmlFor="role" className="font-mono text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                   {locale === "fr" ? "Rôle / Profession" : "Role / Profession"}
                 </label>
@@ -102,11 +106,11 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
                   type="text"
                   id="role"
                   name="role"
-                  placeholder={locale === "fr" ? "ex: Professeur, Développeur..." : "e.g. Professor, Developer..."}
-                  className="rounded-sm border border-border bg-surface-deep px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
+                  placeholder={locale === "fr" ? "ex: Développeur..." : "e.g. Developer..."}
+                  className="rounded-xl border border-border/60 bg-surface-deep/50 px-4 py-3 text-sm text-text-primary transition-colors focus:border-accent focus:bg-surface-deep focus:outline-none focus:ring-1 focus:ring-accent/50"
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid gap-2.5">
                 <label htmlFor="company" className="font-mono text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                   {locale === "fr" ? "Entreprise / École" : "Company / School"}
                 </label>
@@ -114,12 +118,12 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
                   type="text"
                   id="company"
                   name="company"
-                  className="rounded-sm border border-border bg-surface-deep px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
+                  className="rounded-xl border border-border/60 bg-surface-deep/50 px-4 py-3 text-sm text-text-primary transition-colors focus:border-accent focus:bg-surface-deep focus:outline-none focus:ring-1 focus:ring-accent/50"
                 />
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-2.5">
               <label htmlFor="message" className="font-mono text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                 {locale === "fr" ? "Votre avis *" : "Your Review *"}
               </label>
@@ -128,19 +132,19 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
                 name="message"
                 required
                 rows={4}
-                className="resize-none rounded-sm border border-border bg-surface-deep px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
+                className="resize-none rounded-xl border border-border/60 bg-surface-deep/50 px-4 py-3 text-sm text-text-primary transition-colors focus:border-accent focus:bg-surface-deep focus:outline-none focus:ring-1 focus:ring-accent/50"
               />
             </div>
 
             <button
               type="submit"
               disabled={isPending}
-              className="button-primary mt-2 flex w-full items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="button-primary mt-4 flex w-full items-center justify-center gap-3 py-4 text-sm rounded-xl disabled:opacity-70 disabled:cursor-not-allowed group"
             >
               {isPending ? (
-                <span className="size-4 animate-spin rounded-full border-2 border-text-on-accent border-r-transparent" />
+                <span className="size-5 animate-spin rounded-full border-2 border-text-on-accent border-r-transparent" />
               ) : (
-                <Send className="size-4" />
+                <Send className="size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               )}
               {locale === "fr" ? "Envoyer l'avis" : "Submit Review"}
             </button>
@@ -149,6 +153,14 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
       </div>
     </div>
   );
+
+  const portalContainer = isOpen && mounted ? createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-page/60 p-4 sm:p-6 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent pointer-events-none" />
+      {formContent}
+    </div>,
+    document.body
+  ) : null;
 
   return (
     <>
@@ -162,13 +174,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
             <MessageSquarePlus className="size-4" />
             {locale === "fr" ? "Rédiger un avis sur mon profil" : "Write a review about me"}
           </button>
-          
-          {isOpen && mounted && createPortal(
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-              {formContent}
-            </div>,
-            document.body
-          )}
+          {portalContainer}
         </div>
       ) : (
         <>
@@ -182,13 +188,7 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
               {locale === "fr" ? "Laisser un avis" : "Leave a review"}
             </span>
           </button>
-
-          {isOpen && mounted && createPortal(
-            <div className="fixed bottom-24 left-6 z-50 origin-bottom-left animate-in slide-in-from-bottom-4 fade-in duration-200 shadow-2xl">
-              {formContent}
-            </div>,
-            document.body
-          )}
+          {portalContainer}
         </>
       )}
     </>

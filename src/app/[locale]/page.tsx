@@ -55,10 +55,15 @@ export default async function HomePage({ params }: HomePageProps) {
 
   let displayCertifications = certifications.filter((c) => c.featured);
   if (displayCertifications.length === 0) displayCertifications = certifications;
+  displayCertifications = displayCertifications.slice(0, 3);
 
   let displayTestimonials = testimonials.filter((t) => t.featured);
   if (displayTestimonials.length === 0) displayTestimonials = testimonials;
   const displayJourney = journey;
+
+  const overviewDescription = locale === "fr" 
+    ? "Voici un aperçu de mon profil. Cliquez sur le bouton pour tout explorer." 
+    : "Here is an overview of my profile. Click the button to explore everything.";
 
   return (
     <>
@@ -197,7 +202,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <section id="projects" className="relative z-10 py-16 sm:py-24">
         <Container>
           <ScrollReveal yOffset={40}>
-            <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.projectsEyebrow} title={copy.projectsTitle} description={copy.projectsDescription} /><ButtonLink href={`/${locale}/projects`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allProjects}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
+            <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.projectsEyebrow} title={copy.projectsTitle} description={overviewDescription} /><ButtonLink href={`/${locale}/projects`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allProjects}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
             {featuredProjects.length ? <div className="mt-10 grid gap-5 xl:grid-cols-12">{featuredProjects.map((project, index) => <div key={project.slug} className={index === 0 ? "xl:col-span-7" : "xl:col-span-5"}><ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} /></div>)}</div> : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
           </ScrollReveal>
         </Container>
@@ -207,7 +212,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
-              <SectionHeading eyebrow={publicCopy[locale].journey.eyebrow} title={publicCopy[locale].journey.title} description={publicCopy[locale].journey.description} />
+              <SectionHeading eyebrow={publicCopy[locale].journey.eyebrow} title={publicCopy[locale].journey.title} description={overviewDescription} />
               <ButtonLink href={`/${locale}/journey`} variant="secondary" className="shrink-0 self-start md:self-auto">{locale === "fr" ? "Tout le parcours" : "Full journey"}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
             </div>
             {displayJourney.length ? <ol className="mt-10 relative mx-auto max-w-4xl before:absolute before:bottom-4 before:left-[1.35rem] before:top-4 before:w-px before:bg-border sm:before:left-[1.6rem]">
@@ -241,7 +246,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
-              <SectionHeading eyebrow={copy.certificationsEyebrow} title={copy.certificationsTitle} description={""} />
+              <SectionHeading eyebrow={copy.certificationsEyebrow} title={copy.certificationsTitle} description={overviewDescription} />
               <ButtonLink href={`/${locale}/certifications`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.certificationsCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
             </div>
             {displayCertifications.length ? (
@@ -274,7 +279,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
-              <SectionHeading eyebrow={locale === "fr" ? "Recommandations" : "Recommendations"} title={locale === "fr" ? "Retours professionnels" : "Professional feedback"} description={""} />
+              <SectionHeading eyebrow={locale === "fr" ? "Recommandations" : "Recommendations"} title={locale === "fr" ? "Retours professionnels" : "Professional feedback"} description={overviewDescription} />
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <TestimonialForm locale={locale as Locale} inline />
                 <ButtonLink href={`/${locale}/testimonials`} variant="secondary" className="shrink-0 self-start md:self-auto">{locale === "fr" ? "Tous les avis" : "All feedback"}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>

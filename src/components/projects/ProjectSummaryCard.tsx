@@ -6,6 +6,7 @@ import { projectCategoryLabels, publicCopy } from "@/content/copy";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
 import SkillIcon from "@/components/ui/SkillIcon";
+import TiltCard from "@/components/ui/TiltCard";
 
 type ProjectSummaryCardProps = {
   project: PortfolioProject;
@@ -16,7 +17,8 @@ type ProjectSummaryCardProps = {
 
 export default function ProjectSummaryCard({ project, locale, cta, index }: ProjectSummaryCardProps) {
   return (
-    <TechnicalFrame as="article" index={index} label="Project record" className="group flex h-full flex-col p-6 sm:p-7 hover:-translate-y-0.5 transition-transform">
+    <TiltCard className="h-full">
+      <TechnicalFrame as="article" index={index} label="Project record" className="group flex h-full flex-col p-6 sm:p-7 transition-colors hover:border-accent/50 bg-bg-page/50 backdrop-blur-md">
       {project.coverImage ? (
         <div className="relative mb-6 -mx-2 -mt-2 aspect-video overflow-hidden rounded-sm border border-border">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -48,6 +50,7 @@ export default function ProjectSummaryCard({ project, locale, cta, index }: Proj
         {cta}
         <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </Link>
-    </TechnicalFrame>
+      </TechnicalFrame>
+    </TiltCard>
   );
 }

@@ -13,6 +13,7 @@ import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
 import CustomCursor from "@/components/ui/CustomCursor";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import Spotlight from "@/components/ui/Spotlight";
+import MouseTrail from "@/components/ui/MouseTrail";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -89,6 +90,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <PageLoadWrapper>
       <CustomCursor />
+      <MouseTrail />
       <NoiseOverlay />
       <Spotlight />
       <div className="flex min-h-screen flex-col">

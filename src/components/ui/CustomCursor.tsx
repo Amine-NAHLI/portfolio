@@ -21,13 +21,22 @@ export default function CustomCursor() {
   useEffect(() => {
     setIsMounted(true);
     
-    // Disable custom cursor on mobile/touch devices
-    if (window.matchMedia("(pointer: coarse)").matches) return;
+    setIsMounted(true);
 
-    const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
+    const moveCursor = (clientX: number, clientY: number) => {
+      cursorX.set(clientX);
+      cursorY.set(clientY);
       if (!isVisible) setIsVisible(true);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      moveCursor(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        moveCursor(e.touches[0].clientX, e.touches[0].clientY);
+      }
     };
 
     const handleMouseOver = (e: MouseEvent) => {
@@ -47,20 +56,26 @@ export default function CustomCursor() {
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
 
-    window.addEventListener("mousemove", moveCursor);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("mouseover", handleMouseOver);
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("touchend", handleMouseLeave);
+    document.addEventListener("touchstart", handleMouseEnter, { passive: true });
 
     return () => {
-      window.removeEventListener("mousemove", moveCursor);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("touchend", handleMouseLeave);
+      document.removeEventListener("touchstart", handleMouseEnter);
     };
   }, [cursorX, cursorY, isVisible, pathname]);
 
-  if (!isMounted || (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches)) {
+  if (!isMounted) {
     return null;
   }
 

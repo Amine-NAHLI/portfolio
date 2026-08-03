@@ -9,8 +9,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     if (res.ok) {
       const text = await res.text();
       
-      // skillicons.dev returns an SVG with <g>undefined</g> when the icon doesn't exist
-      if (text.includes(">undefined<")) {
+      // skillicons.dev returns an SVG with <g>undefined</g> (with potential whitespace) when the icon doesn't exist
+      if (/>\s*undefined\s*</.test(text) || text.includes("undefined")) {
         return generateFallbackSvg(slug);
       }
       

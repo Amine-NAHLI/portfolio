@@ -12,6 +12,7 @@ import { getPublicContactLinks } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
 import CustomCursor from "@/components/ui/CustomCursor";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
+import Spotlight from "@/components/ui/Spotlight";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -89,6 +90,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <PageLoadWrapper>
       <CustomCursor />
       <NoiseOverlay />
+      <Spotlight />
       <div className="flex min-h-screen flex-col">
         <LocaleDocumentAttributes locale={candidate} />
         <a href="#main-content" className="skip-link">

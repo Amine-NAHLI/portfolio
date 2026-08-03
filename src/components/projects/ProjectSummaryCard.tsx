@@ -7,7 +7,6 @@ import type { Locale } from "@/i18n/config";
 import type { PortfolioProject, ProjectCategory } from "@/types/content";
 import SkillIcon from "@/components/ui/SkillIcon";
 import TiltCard from "@/components/ui/TiltCard";
-import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import Magnetic from "@/components/ui/Magnetic";
 
 type ProjectSummaryCardProps = {
@@ -25,7 +24,7 @@ export default function ProjectSummaryCard({ project, locale, cta, index }: Proj
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
           <div className="absolute -inset-x-20 -top-20 h-40 bg-accent/20 blur-[100px] rounded-full" />
         </div>
-        <NoiseOverlay opacity={0.03} />
+
         
         {project.coverImage ? (
           <div className="relative z-10 mb-6 -mx-2 -mt-2 aspect-video overflow-hidden rounded-sm border border-border shadow-2xl">

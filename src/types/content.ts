@@ -2,7 +2,7 @@ import type { Locale } from "@/i18n/config";
 
 export type LocalizedText = Record<Locale, string>;
 
-export type ProjectCategory = "software" | "cybersecurity" | "artificial-intelligence" | "embedded";
+export type ProjectCategory = string;
 
 export type PortfolioProject = {
   slug: string;
@@ -16,7 +16,7 @@ export type PortfolioProject = {
   results: LocalizedText[];
   technologies: string[];
   coreTechnologies?: string[];
-  categories: ProjectCategory[];
+  categories: string[];
   featured: boolean;
   coverImage?: string;
   githubUrl?: string;

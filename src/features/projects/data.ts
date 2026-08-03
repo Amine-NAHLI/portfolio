@@ -5,9 +5,7 @@ import { hasSupabasePublicConfig } from "@/lib/env/supabase";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Locale } from "@/i18n/config";
 import type { Json } from "@/types/database";
-import type { PortfolioProject, ProjectCategory } from "@/types/content";
-
-const allowedCategories = new Set<ProjectCategory>(["software", "cybersecurity", "artificial-intelligence", "embedded"]);
+import type { PortfolioProject } from "@/types/content";
 
 async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[]> {
   if (!hasSupabasePublicConfig()) return [];
@@ -66,7 +64,7 @@ async function queryPublishedProjects(locale: Locale): Promise<PortfolioProject[
         results: localizeArray(french.results, english.results),
         technologies,
         coreTechnologies: Array.isArray(project.core_technologies) && project.core_technologies.length > 0 ? project.core_technologies : technologies,
-        categories: project.categories.filter(isProjectCategory),
+        categories: project.categories,
         featured: project.featured,
         coverImage: mediaByProject.get(project.id),
         githubUrl: project.github_url ?? undefined,
@@ -89,9 +87,7 @@ function toStringArray(value: Json): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0) : [];
 }
 
-function isProjectCategory(value: string): value is ProjectCategory {
-  return allowedCategories.has(value as ProjectCategory);
-}
+
 
 const getFrenchProjects = unstable_cache(() => queryPublishedProjects("fr"), ["published-projects-fr"], { revalidate: 900, tags: ["projects"] });
 const getEnglishProjects = unstable_cache(() => queryPublishedProjects("en"), ["published-projects-en"], { revalidate: 900, tags: ["projects"] });

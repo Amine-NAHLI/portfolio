@@ -19,6 +19,7 @@ import { isLocale, Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import TestimonialForm from "@/components/testimonials/TestimonialForm";
+import GitHubPreviewSection from "@/components/github/GitHubPreviewSection";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 
@@ -180,6 +181,9 @@ export default async function HomePage({ params }: HomePageProps) {
           </Container>
         </section>
       )}
+
+      {/* GitHub Preview */}
+      <GitHubPreviewSection locale={locale as Locale} />
 
       <section id="projects" className="relative z-10 py-16 sm:py-24">
         <Container>

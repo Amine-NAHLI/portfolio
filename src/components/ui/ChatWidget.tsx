@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Send, Bot, User } from "lucide-react";
+import { Sparkles, X, Send, Bot, User, Loader2 } from "lucide-react";
 
 type Message = {
   id: string;
@@ -13,6 +13,7 @@ type Message = {
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initial greeting message
@@ -31,30 +32,109 @@ export default function ChatWidget() {
     }
   }, [messages, isOpen]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isLoading) return;
+
+    const userMessageContent = inputValue.trim();
+    setInputValue("");
 
     // Add user message
     const newUserMsg: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: inputValue.trim(),
+      content: userMessageContent,
     };
-    setMessages((prev) => [...prev, newUserMsg]);
-    setInputValue("");
+    
+    // Create new array with all previous messages + the new user message
+    const newMessagesList = [...messages, newUserMsg];
+    setMessages(newMessagesList);
+    setIsLoading(true);
 
-    // Simulate AI response (since this is just the frontend phase)
-    setTimeout(() => {
+    try {
+      // Send the entire conversation history (excluding init message if we want to save tokens, but keeping it is fine)
+      const apiMessages = newMessagesList
+        .filter(m => m.id !== "init") // Optionally filter out init greeting
+        .map(m => ({
+          role: m.role === "ai" ? "assistant" : "user",
+          content: m.content
+        }));
+
+      // Fallback for current locale (can be passed dynamically if needed)
+      const locale = typeof window !== "undefined" && window.location.pathname.startsWith("/en") ? "en" : "fr";
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiMessages, locale }),
+      });
+
+      if (!res.ok) throw new Error("API error");
+
+      const data = await res.json();
+      
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: "ai",
-          content: "L'API backend n'est pas encore connectée, mais je serai bientôt prêt à répondre à toutes vos questions !",
+          content: data.reply || "Une erreur est survenue.",
         },
       ]);
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "ai",
+          content: "Désolé, je rencontre des difficultés techniques.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Helper to render markdown links as buttons
+  const renderMessageContent = (content: string) => {
+    const parts = [];
+    const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        // Splitting by \n to preserve basic line breaks
+        const textSegment = content.substring(lastIndex, match.index);
+        const lines = textSegment.split('\n');
+        lines.forEach((line, i) => {
+          parts.push(<span key={`${lastIndex}-${i}`}>{line}</span>);
+          if (i < lines.length - 1) parts.push(<br key={`br-${lastIndex}-${i}`} />);
+        });
+      }
+      parts.push(
+        <a
+          key={match.index}
+          href={match[2]}
+          className="mt-3 flex w-fit items-center justify-center rounded-lg bg-accent/10 px-4 py-2 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-accent-foreground border border-accent/20"
+        >
+          {match[1]}
+        </a>
+      );
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < content.length) {
+      const textSegment = content.substring(lastIndex);
+      const lines = textSegment.split('\n');
+      lines.forEach((line, i) => {
+        parts.push(<span key={`end-${i}`}>{line}</span>);
+        if (i < lines.length - 1) parts.push(<br key={`brend-${i}`} />);
+      });
+    }
+
+    return parts;
   };
 
   return (
@@ -72,7 +152,6 @@ export default function ChatWidget() {
               <div className="flex items-center gap-3">
                 <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 border border-accent/30 text-accent">
                   <Bot className="h-5 w-5" />
-                  {/* Glowing online indicator */}
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-surface shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
                 </div>
                 <div>
@@ -108,16 +187,28 @@ export default function ChatWidget() {
                       {msg.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                     </div>
                     <div
-                      className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                         msg.role === "user"
                           ? "rounded-br-sm bg-accent text-accent-foreground"
                           : "rounded-bl-sm bg-surface-raised text-text-secondary border border-white/5"
                       }`}
                     >
-                      {msg.content}
+                      {renderMessageContent(msg.content)}
                     </div>
                   </div>
                 ))}
+                
+                {/* Typing Indicator */}
+                {isLoading && (
+                  <div className="flex items-end gap-2 flex-row">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent">
+                      <Bot className="h-4 w-4" />
+                    </div>
+                    <div className="flex h-10 w-16 items-center justify-center rounded-2xl rounded-bl-sm bg-surface-raised border border-white/5">
+                      <Loader2 className="h-5 w-5 animate-spin text-accent" />
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
             </div>
@@ -133,11 +224,12 @@ export default function ChatWidget() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Posez votre question..."
-                  className="w-full rounded-full border border-border/50 bg-bg-page/50 py-3 pl-5 pr-12 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  disabled={isLoading}
+                  className="w-full rounded-full border border-border/50 bg-bg-page/50 py-3 pl-5 pr-12 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
                 />
                 <button
                   type="submit"
-                  disabled={!inputValue.trim()}
+                  disabled={!inputValue.trim() || isLoading}
                   className="absolute right-2 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 >
                   <Send className="h-4 w-4 -ml-0.5" />

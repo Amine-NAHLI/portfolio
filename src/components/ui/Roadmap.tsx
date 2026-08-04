@@ -15,9 +15,10 @@ export type RoadmapEntry = {
 type RoadmapProps = {
   entries: RoadmapEntry[];
   labels: { experience: string; education: string };
+  variant?: "default" | "minimal";
 };
 
-export default function Roadmap({ entries, labels }: RoadmapProps) {
+export default function Roadmap({ entries, labels, variant = "default" }: RoadmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Track scrolling through the container to animate the central line
@@ -72,9 +73,11 @@ export default function Roadmap({ entries, labels }: RoadmapProps) {
                 <span className="text-sm font-medium text-text-muted mb-4 uppercase tracking-widest">
                   {entry.type === "experience" ? labels.experience : labels.education}
                 </span>
-                <p className="text-sm leading-relaxed text-text-secondary">
-                  {entry.description}
-                </p>
+                {variant !== "minimal" && (
+                  <p className="text-sm leading-relaxed text-text-secondary">
+                    {entry.description}
+                  </p>
+                )}
               </div>
 
               {/* Desktop Layout: Alternating sides */}
@@ -86,9 +89,11 @@ export default function Roadmap({ entries, labels }: RoadmapProps) {
                     <span className="text-sm font-medium text-text-muted mb-4 uppercase tracking-widest">
                       {entry.type === "experience" ? labels.experience : labels.education}
                     </span>
-                    <p className="text-sm leading-relaxed text-text-secondary text-right">
-                      {entry.description}
-                    </p>
+                    {variant !== "minimal" && (
+                      <p className="text-sm leading-relaxed text-text-secondary text-right">
+                        {entry.description}
+                      </p>
+                    )}
                   </>
                 ) : (
                   <span className="text-sm font-semibold uppercase tracking-widest text-accent mt-1">
@@ -105,9 +110,11 @@ export default function Roadmap({ entries, labels }: RoadmapProps) {
                     <span className="text-sm font-medium text-text-muted mb-4 uppercase tracking-widest">
                       {entry.type === "experience" ? labels.experience : labels.education}
                     </span>
-                    <p className="text-sm leading-relaxed text-text-secondary text-left">
-                      {entry.description}
-                    </p>
+                    {variant !== "minimal" && (
+                      <p className="text-sm leading-relaxed text-text-secondary text-left">
+                        {entry.description}
+                      </p>
+                    )}
                   </>
                 ) : (
                   <span className="text-sm font-semibold uppercase tracking-widest text-accent mt-1">

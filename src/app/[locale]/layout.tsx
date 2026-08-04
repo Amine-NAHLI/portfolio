@@ -14,6 +14,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import Spotlight from "@/components/ui/Spotlight";
 import MouseTrail from "@/components/ui/MouseTrail";
+import ChatWidget from "@/components/ui/ChatWidget";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -104,6 +105,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           {children}
         </main>
         <SiteFooter locale={candidate} dictionary={dictionary} contactLinks={contactLinks} />
+        <ChatWidget />
       </div>
     </PageLoadWrapper>
   );

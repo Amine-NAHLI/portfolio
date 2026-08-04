@@ -32,7 +32,7 @@ export default function TestimonialMarquee({ testimonials }: { testimonials: Tes
 
         <div className="flex flex-wrap items-center justify-center gap-8 px-4">
 
-          {testimonials.map((t, index) => (
+          {testimonials.map((t) => (
 
             <TestimonialCard key={t.id} t={t} />
 

@@ -3,6 +3,7 @@ import { getAdminContext } from "@/lib/auth/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function fail(message: string, status: number) {
   return NextResponse.json({ error: message }, { status, headers: { "Cache-Control": "private, no-store" } });

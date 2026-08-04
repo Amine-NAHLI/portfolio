@@ -23,17 +23,17 @@
     "check": "npm run type-check && npm run lint && npm test && npm run build"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.10.2",
+    "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.105.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "framer-motion": "^12.43.0",
     "lenis": "^1.3.25",
-    "lucide-react": "^1.14.0",
-    "next": "15.5.20",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.5.0"
+    "lucide-react": "^1.28.0",
+    "next": "16.2.12",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

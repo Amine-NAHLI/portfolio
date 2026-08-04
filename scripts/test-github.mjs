@@ -3,7 +3,7 @@ import { resolve } from "path";
 // Load environment variables from .env.local
 try {
   process.loadEnvFile(resolve(process.cwd(), ".env.local"));
-} catch (e) {
+} catch (error) {
   // Fallback if file doesn't exist
 }
 

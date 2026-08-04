@@ -9,27 +9,42 @@ class Particle {
   speedX: number;
   speedY: number;
   life: number;
-  color: string;
 
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
-    this.size = Math.random() * 2 + 0.5;
-    this.speedX = Math.random() * 2 - 1;
-    this.speedY = Math.random() * 2 - 1;
+    // Larger size for a soft cloud effect
+    this.size = Math.random() * 25 + 20;
+    // Slower drift
+    this.speedX = Math.random() * 1.5 - 0.75;
+    this.speedY = Math.random() * 1.5 - 0.75;
     this.life = 1;
-    this.color = `rgba(56, 189, 248, ${this.life})`;
   }
 
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
-    this.life -= 0.02; // Fade out speed
-    this.color = `rgba(56, 189, 248, ${this.life})`;
+    // Smoke expands as it ages
+    this.size += 0.3;
+    // Fade out
+    this.life -= 0.012;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.color;
+    if (this.life <= 0) return;
+
+    // Create a soft radial gradient to simulate a glowing cloud/smoke
+    const gradient = ctx.createRadialGradient(
+      this.x, this.y, 0,
+      this.x, this.y, this.size
+    );
+    
+    // Accent color: #3b82f6 or #38bdf8 (light blue/cyan)
+    gradient.addColorStop(0, `rgba(56, 189, 248, ${this.life * 0.4})`);
+    gradient.addColorStop(0.5, `rgba(56, 189, 248, ${this.life * 0.1})`);
+    gradient.addColorStop(1, `rgba(56, 189, 248, 0)`);
+    
+    ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
@@ -106,7 +121,7 @@ export default function MouseTrail() {
   return (
     <canvas 
       ref={canvasRef} 
-      className="pointer-events-none fixed inset-0 z-40 mix-blend-multiply dark:mix-blend-screen opacity-70"
+      className="pointer-events-none fixed inset-0 z-40 mix-blend-screen opacity-100"
     />
   );
 }

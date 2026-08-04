@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { ArrowRight, FileText } from "lucide-react";
 import ProjectSummaryCard from "@/components/projects/ProjectSummaryCard";
 import ButtonLink from "@/components/ui/ButtonLink";
@@ -24,6 +23,7 @@ import TestimonialForm from "@/components/testimonials/TestimonialForm";
 import GitHubPreviewSection from "@/components/github/GitHubPreviewSection";
 import CertificationCard from "@/components/ui/CertificationCard";
 import TestimonialMarquee from "@/components/ui/TestimonialMarquee";
+import HeroImageParallax from "@/components/ui/HeroImageParallax";
 
 type HomePageProps = { params: Promise<{ locale: string }> };
 
@@ -140,25 +140,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
             {/* Right Column - Photo */}
             <div className="relative flex justify-center lg:col-span-5 lg:justify-end">
-              <div className="relative aspect-[3/4] w-full max-w-sm overflow-hidden p-3 sm:max-w-md">
-                {/* Frame corners (like in the screenshot) */}
-                <div className="absolute left-0 top-0 size-10 border-l-2 border-t-2 border-accent rounded-tl-xl opacity-80" />
-                <div className="absolute right-0 top-0 size-10 border-r-2 border-t-2 border-accent rounded-tr-xl opacity-80" />
-                <div className="absolute bottom-0 left-0 size-10 border-b-2 border-l-2 border-accent rounded-bl-xl opacity-80" />
-                <div className="absolute bottom-0 right-0 size-10 border-b-2 border-r-2 border-accent rounded-br-xl opacity-80" />
-                
-                {/* Photo container */}
-                <div className="relative h-full w-full overflow-hidden rounded-xl bg-surface-subtle shadow-2xl">
-                  <Image 
-                    src="/nahli.png" 
-                    alt={siteConfig.name} 
-                    fill 
-                    className="object-cover object-top" 
-                    priority 
-                    sizes="(max-width: 768px) 100vw, 30vw"
-                  />
-                </div>
-              </div>
+              <HeroImageParallax name={siteConfig.name} />
             </div>
           </div>
           </ScrollReveal>

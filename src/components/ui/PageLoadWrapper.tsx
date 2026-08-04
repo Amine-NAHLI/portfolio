@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { GlobalLoader } from "./GlobalLoader";
+import { AnimatePresence } from "framer-motion";
 
 export function PageLoadWrapper({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,16 +24,15 @@ export function PageLoadWrapper({ children }: { children: React.ReactNode }) {
       const allLoaded = images.every(img => img.complete);
       
       if (allLoaded && document.readyState === "complete") {
-        // Add a small delay for smooth transition
+        // Wait for the simulated progress to hit 100% in GlobalLoader (approx 800ms)
         timeoutId = setTimeout(() => {
           if (!isCancelled) setIsLoading(false);
-        }, 400);
+        }, 1200);
       } else {
         timeoutId = setTimeout(checkReady, 100);
       }
     };
 
-    // Start checking
     checkReady();
 
     return () => {
@@ -43,13 +43,9 @@ export function PageLoadWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div 
-        className={`fixed inset-0 z-[99999] transition-opacity duration-700 pointer-events-none ${
-          isLoading ? "opacity-100 bg-bg-page" : "opacity-0"
-        }`}
-      >
-        {isLoading && <div className="pointer-events-auto h-full w-full"><GlobalLoader /></div>}
-      </div>
+      <AnimatePresence mode="wait">
+        {isLoading && <GlobalLoader key="global-loader" />}
+      </AnimatePresence>
       {children}
     </>
   );

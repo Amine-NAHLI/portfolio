@@ -1,59 +1,150 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
-export function GlobalLoader() {
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+function getRandomChar() {
+  return CHARS[Math.floor(Math.random() * CHARS.length)];
+}
+
+function scrambleText(text: string, progress: number): string {
+  // progress is 0 to 1
+  const revealedLength = Math.floor(text.length * progress);
+  let result = "";
+  for (let i = 0; i < text.length; i++) {
+    if (i < revealedLength) {
+      result += text[i];
+    } else {
+      result += getRandomChar();
+    }
+  }
+  return result;
+}
+
+export function GlobalLoader({ onComplete }: { onComplete?: () => void }) {
   const [progress, setProgress] = useState(0);
+  const [currentText, setCurrentText] = useState("");
+  
+  // Scramble text effect
+  const [targetText, setTargetText] = useState("INITIALIZING SYSTEM...");
+  const [textProgress, setTextProgress] = useState(0);
 
   useEffect(() => {
-    // Simulate a loading progress that slows down as it gets closer to 100%
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 99) return p;
-        const remaining = 100 - p;
-        const jump = Math.max(1, Math.random() * (remaining / 5));
-        return Math.min(99, p + jump);
-      });
-    }, 150);
+    // Determine target text based on global progress
+    if (progress < 40) {
+      setTargetText("INITIALIZING SYSTEM...");
+    } else if (progress < 80) {
+      setTargetText("BYPASSING SECURITY...");
+    } else {
+      setTargetText("ACCESS GRANTED.");
+    }
+  }, [progress]);
 
-    return () => clearInterval(interval);
+  // Scrambling interval
+  useEffect(() => {
+    const scrambleInterval = setInterval(() => {
+      if (textProgress < 1) {
+        setTextProgress(p => Math.min(1, p + 0.05));
+      }
+      setCurrentText(scrambleText(targetText, textProgress));
+    }, 50);
+
+    return () => clearInterval(scrambleInterval);
+  }, [targetText, textProgress]);
+
+  // Reset text progress when target changes
+  useEffect(() => {
+    setTextProgress(0);
+  }, [targetText]);
+
+  useEffect(() => {
+    let animationFrameId: number;
+
+    const checkRealProgress = () => {
+      const images = Array.from(document.images);
+      const totalImages = images.length;
+      const loadedImages = images.filter((img) => img.complete).length;
+      
+      let baseProgress = 0;
+      if (document.readyState === "interactive") baseProgress = 20;
+      if (document.readyState === "complete") baseProgress = 60;
+      
+      const imageProgress = totalImages === 0 ? 40 : (loadedImages / totalImages) * 40;
+      
+      let finalProgress = baseProgress + imageProgress;
+      
+      if (document.readyState === "complete" && loadedImages === totalImages) {
+        finalProgress = 100;
+      }
+      
+      // Smoothly animate towards finalProgress
+      setProgress(current => {
+        const next = current + (finalProgress - current) * 0.1;
+        
+        // If we are super close to 100%, snap to 100%
+        if (finalProgress === 100 && next > 99) {
+          return 100;
+        }
+        return next;
+      });
+
+      if (finalProgress < 100) {
+        animationFrameId = requestAnimationFrame(checkRealProgress);
+      } else {
+        // Just wait
+      }
+    };
+
+    // Sometimes events fire fast or already fired
+    checkRealProgress();
+
+    // Fallback interval just in case requestAnimationFrame gets stuck
+    const fallbackInterval = setInterval(checkRealProgress, 100);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearInterval(fallbackInterval);
+    };
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-bg-page bg-[image:var(--bg-gradient)] bg-cover bg-fixed backdrop-blur-md">
-      {/* Brand / Logo */}
-      <div className="mb-16 flex items-center gap-1">
-        <span className="font-display text-4xl sm:text-5xl font-bold text-text-primary tracking-tighter">
-          amine<span className="text-accent">nahli</span>
-          <span className="text-accent align-top text-2xl font-black">↗</span>
-        </span>
-      </div>
+    <motion.div
+      className="fixed inset-0 z-[99999] pointer-events-none flex flex-col items-center justify-center bg-bg-page"
+      initial={{ opacity: 1 }}
+      exit={{ 
+        opacity: 0, 
+        scale: 1.05,
+        filter: "blur(10px)",
+        transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } 
+      }}
+    >
+      <div className="font-mono flex flex-col items-center gap-6">
+        {/* Hacker text decoding */}
+        <div 
+          className={`text-xl sm:text-2xl font-bold tracking-widest transition-colors duration-300 ${
+            progress >= 99 ? "text-accent" : "text-white/70"
+          }`}
+          style={{ textShadow: progress >= 99 ? "0 0 15px var(--color-accent)" : "none" }}
+        >
+          {"> " + currentText}
+          <span className="animate-pulse ml-1">_</span>
+        </div>
 
-      {/* Progress Bar Container */}
-      <div className="relative w-64 sm:w-80 h-1 bg-surface-raised rounded-full overflow-hidden mb-6">
-        {/* Animated Bar */}
-        <div
-          className="absolute top-0 left-0 h-full bg-accent transition-all duration-300 ease-out shadow-[0_0_15px_var(--color-accent)]"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+        {/* Minimalist Progress Bar */}
+        <div className="w-64 h-[2px] bg-white/10 relative overflow-hidden">
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-accent"
+            style={{ width: `${progress}%` }}
+            transition={{ ease: "linear", duration: 0.1 }}
+          />
+        </div>
 
-      {/* Status Text */}
-      <div className="flex flex-col items-center gap-2 mb-10">
-        <span className="font-mono text-sm text-text-primary font-bold">
-          {Math.floor(progress)}%
-        </span>
-        <span className="font-body text-xs text-text-secondary">
-          Processing data...
-        </span>
+        <div className="text-sm font-mono text-accent/50 tracking-[0.2em]">
+          {Math.min(100, Math.floor(progress))}%
+        </div>
       </div>
-
-      {/* Spinner */}
-      <div className="relative flex items-center justify-center w-12 h-12">
-        <div className="absolute inset-0 rounded-full border border-accent/20"></div>
-        <Loader2 className="size-6 text-accent animate-spin stroke-[1.5px]" />
-      </div>
-    </div>
+    </motion.div>
   );
 }

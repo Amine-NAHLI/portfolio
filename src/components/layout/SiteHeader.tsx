@@ -96,10 +96,10 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
     <>
       {/* Floating Pill Navbar */}
       <header className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[95%] max-w-[65rem]">
-        <div className="flex h-14 items-center justify-between gap-3 rounded-[2rem] border border-border/50 bg-bg-page/70 px-2 backdrop-blur-2xl shadow-2xl">
+        <div className="flex h-14 items-center justify-between gap-2 rounded-[2.5rem] border border-border/50 bg-bg-page/70 p-2 backdrop-blur-2xl shadow-2xl">
           
           <Magnetic intensity={0.2}>
-            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ml-1" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
+            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
               <span className="font-display text-xs font-bold text-accent transition-transform duration-200 group-hover:-rotate-12">AN</span>
             </Link>
           </Magnetic>
@@ -133,7 +133,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
             })}
           </nav>
 
-          <div className="flex items-center gap-1.5 mr-1">
+          <div className="flex items-center gap-1.5">
             <Magnetic intensity={0.2}>
               <ThemeToggle />
             </Magnetic>

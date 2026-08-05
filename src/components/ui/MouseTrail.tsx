@@ -162,14 +162,31 @@ export default function MouseTrail() {
       updateMousePos(e.clientX, e.clientY);
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
+        // Offset Y slightly up so the user can see it above their finger
+        lastMouse.x = e.touches[0].clientX;
+        lastMouse.y = e.touches[0].clientY - 40;
       }
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        // Offset Y slightly up on mobile
+        updateMousePos(e.touches[0].clientX, e.touches[0].clientY - 40);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      lastMouse.x = -100;
+      lastMouse.y = -100;
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("touchcancel", handleTouchEnd);
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -191,7 +208,10 @@ export default function MouseTrail() {
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchEnd);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

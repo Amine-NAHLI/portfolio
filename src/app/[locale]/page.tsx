@@ -10,6 +10,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Roadmap from "@/components/ui/Roadmap";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import TextReveal from "@/components/ui/TextReveal";
+import HackerText from "@/components/ui/HackerText";
 import { TechCore } from "@/components/ui/TechCore";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
@@ -105,11 +106,10 @@ export default async function HomePage({ params }: HomePageProps) {
                 L&apos;ingénieur
               </div>
               
-              <TextReveal 
-                as="h1"
+              <HackerText 
                 text={siteConfig.name}
                 className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
-                delay={0.1}
+                as="h1"
               />
               
               <TextReveal
@@ -128,8 +128,9 @@ export default async function HomePage({ params }: HomePageProps) {
               </p>
               
               <div className="mt-10 flex flex-wrap items-center gap-4">
-                <ButtonLink href={`/${locale}/contact`}>
-                  {copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" />
+                <ButtonLink href={`/${locale}/contact`} className="relative overflow-hidden group">
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                  <span className="relative flex items-center gap-2">{copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" /></span>
                 </ButtonLink>
                 <ButtonLink href={contactLinks.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
                   <FileText aria-hidden="true" className="size-4" />
@@ -139,7 +140,7 @@ export default async function HomePage({ params }: HomePageProps) {
             </div>
 
             {/* Right Column - Photo */}
-            <div className="relative flex justify-center lg:col-span-5 lg:justify-end">
+            <div className="relative flex justify-center lg:col-span-5 lg:justify-end perspective-[1000px]">
               <HeroImageParallax name={siteConfig.name} />
             </div>
           </div>
@@ -153,7 +154,17 @@ export default async function HomePage({ params }: HomePageProps) {
             <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
               <SectionHeading eyebrow={copy.proofEyebrow} title={copy.proofTitle} description={copy.proofDescription} />
               <dl className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
-                {copy.proofItems.map(([term, description], index) => <div key={term} className="group relative overflow-hidden p-5 bg-surface-subtle/50 backdrop-blur-sm border border-border/50 rounded-xl transition-all hover:bg-surface-subtle/80 hover:border-accent/30"><span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70">{String(index + 1).padStart(2, "0")}</span><dt className="font-mono text-[.68rem] font-semibold uppercase tracking-[.12em] text-accent">{term}</dt><dd className="mt-2 text-sm font-medium leading-6 text-text-primary">{description}</dd></div>)}
+                {copy.proofItems.map(([term, description], index) => (
+                  <ScrollReveal key={term} delay={0.1 * index} yOffset={20}>
+                    <div className="group relative overflow-hidden p-6 bg-surface-subtle/50 backdrop-blur-xl border border-border/50 rounded-xl transition-all hover:bg-surface-subtle/80 hover:border-accent/50 hover:shadow-[0_0_20px_rgba(56,189,248,0.15)] cursor-default">
+                      <span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70 group-hover:text-accent transition-colors">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <dt className="font-mono text-xs font-semibold uppercase tracking-[.12em] text-accent mb-3">{term}</dt>
+                      <dd className="mt-2 text-sm font-medium leading-relaxed text-text-primary group-hover:text-white transition-colors">{description}</dd>
+                    </div>
+                  </ScrollReveal>
+                ))}
               </dl>
             </div>
           </ScrollReveal>

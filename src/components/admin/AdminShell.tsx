@@ -14,11 +14,11 @@ export function AdminShell({ children, email }: AdminShellProps) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen lg:pl-72 w-full">
-        <header className="sticky top-0 h-16 bg-bg-page/80 backdrop-blur-xl z-40 border-b border-border flex items-center justify-between px-4 lg:px-8">
+        <header className="sticky top-0 h-16 bg-bg-page/40 backdrop-blur-2xl z-40 border-b border-border/50 flex items-center justify-between px-4 lg:px-8 shadow-sm">
           <div className="flex items-center gap-2 text-text-secondary font-mono text-[10px] sm:text-xs uppercase tracking-widest">
             <span className="hidden sm:inline">Control Center</span>
-            <ChevronRight aria-hidden="true" className="size-4 hidden sm:block" />
-            <span className="text-text-primary">System Overview</span>
+            <ChevronRight aria-hidden="true" className="size-4 hidden sm:block text-accent/50" />
+            <span className="text-text-primary font-bold shadow-accent">System Overview</span>
           </div>
 
           <div className="flex items-center gap-4 lg:gap-8">

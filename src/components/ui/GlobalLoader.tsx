@@ -23,7 +23,7 @@ function scrambleText(text: string, progress: number): string {
   return result;
 }
 
-export function GlobalLoader({ onComplete }: { onComplete?: () => void }) {
+export function GlobalLoader() {
   const [progress, setProgress] = useState(0);
   const [currentText, setCurrentText] = useState("");
   

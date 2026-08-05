@@ -99,74 +99,78 @@ export default async function HomePage({ params }: HomePageProps) {
           
           <Container className="relative z-10">
             <ScrollReveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
-                
-                {/* Main Intro Box (8 Cols) */}
-                <div className="md:col-span-8">
-                  <SpotlightCard className="h-full flex flex-col justify-center p-8 sm:p-10 lg:p-14">
-                    <div className="flex items-center gap-4 text-sm font-semibold tracking-[0.15em] text-accent uppercase">
-                      <span className="h-px w-8 bg-accent" />
-                      L&apos;ingénieur
-                    </div>
-                    
-                    <HackerText 
-                      text={siteConfig.name}
-                      className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
-                      as="h1"
-                    />
-                    
-                    <TextReveal
-                      as="h2"
-                      text={copy.eyebrow}
-                      className="mt-6 font-mono text-sm font-semibold uppercase tracking-widest text-accent sm:text-base"
-                      delay={0.3}
-                    />
-                    
-                    <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
-                      {copy.title}
-                    </p>
-                    
-                    <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
-                      {copy.introduction}
-                    </p>
-                    
-                    <div className="mt-10 flex flex-wrap items-center gap-4">
-                      <ButtonLink href={`/${locale}/contact`} className="relative overflow-hidden group">
-                        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                        <span className="relative flex items-center gap-2">{copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" /></span>
-                      </ButtonLink>
-                      <ButtonLink href={contactLinks.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
-                        <FileText aria-hidden="true" className="size-4" />
-                        {copy.resumeCta}
-                      </ButtonLink>
-                    </div>
-                  </SpotlightCard>
-                </div>
+          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+            {/* Left Column - Text Content */}
+            <div className="flex flex-col justify-center lg:col-span-7">
+              <div className="flex items-center gap-4 text-sm font-semibold tracking-[0.15em] text-accent uppercase">
+                <span className="h-px w-8 bg-accent" />
+                L&apos;ingénieur
+              </div>
+              
+              <HackerText 
+                text={siteConfig.name}
+                className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
+                as="h1"
+              />
+              
+              <TextReveal
+                as="h2"
+                text={copy.eyebrow}
+                className="mt-6 font-mono text-sm font-semibold uppercase tracking-widest text-accent sm:text-base"
+                delay={0.3}
+              />
+              
+              <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
+                {copy.title}
+              </p>
+              
+              <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
+                {copy.introduction}
+              </p>
+              
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <ButtonLink href={`/${locale}/contact`} className="relative overflow-hidden group">
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                  <span className="relative flex items-center gap-2">{copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" /></span>
+                </ButtonLink>
+                <ButtonLink href={contactLinks.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
+                  <FileText aria-hidden="true" className="size-4" />
+                  {copy.resumeCta}
+                </ButtonLink>
+              </div>
+            </div>
 
-                {/* Photo Box (4 Cols, spans down) */}
-                <div className="md:col-span-4 md:row-span-2 h-[500px] md:h-auto">
-                  <SpotlightCard className="h-full w-full p-4 flex items-center justify-center bg-surface-subtle/20">
-                    <HeroImageParallax name={siteConfig.name} />
-                  </SpotlightCard>
-                </div>
+            {/* Right Column - Photo */}
+            <div className="relative flex justify-center lg:col-span-5 lg:justify-end perspective-[1000px]">
+              <HeroImageParallax name={siteConfig.name} />
+            </div>
+          </div>
+          </ScrollReveal>
+        </Container>
+      </section>
 
-                {/* Profile Proof Items (3 items spread in 8 cols) */}
-                <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
-                  {copy.proofItems.map(([term, description], index) => (
-                    <SpotlightCard key={term} className="h-full p-6 flex flex-col justify-start">
+      <section className="relative z-10 py-16 sm:py-24">
+        <Container>
+          <ScrollReveal yOffset={40}>
+            <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
+              <SectionHeading eyebrow={copy.proofEyebrow} title={copy.proofTitle} description={copy.proofDescription} />
+              <dl className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
+                {copy.proofItems.map(([term, description], index) => (
+                  <ScrollReveal key={term} delay={0.1 * index} yOffset={20}>
+                    <SpotlightCard className="h-full">
                       <span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70 group-hover:text-accent transition-colors">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <dt className="font-mono text-xs font-semibold uppercase tracking-[.12em] text-accent mb-3">{term}</dt>
-                      <dd className="mt-auto text-sm font-medium leading-relaxed text-text-primary group-hover:text-white transition-colors">{description}</dd>
+                      <dd className="mt-2 text-sm font-medium leading-relaxed text-text-primary group-hover:text-white transition-colors">{description}</dd>
                     </SpotlightCard>
-                  ))}
-                </div>
-
-              </div>
-            </ScrollReveal>
-          </Container>
-        </section>
+                  </ScrollReveal>
+                ))}
+              </dl>
+            </div>
+          </ScrollReveal>
+        </Container>
+      </section>
 
       {allTechnologies.length > 0 && (
         <section id="expertise" className="relative z-10 py-16 sm:py-24 overflow-hidden">

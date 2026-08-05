@@ -18,14 +18,12 @@ export default function HackerText({
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-10% 0px" });
   
-  useEffect(() => {
-    if (!inView) return;
-
-    let iteration = 0;
-    let interval: NodeJS.Timeout;
+  const triggerAnimation = () => {
+    let iteration = -2; // Start negative for a pure random scramble at the beginning
+    let interval: NodeJS.Timeout | undefined;
 
     const animate = () => {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
       
       interval = setInterval(() => {
         setDisplayText((prev) =>
@@ -44,17 +42,26 @@ export default function HackerText({
           clearInterval(interval);
         }
         
-        iteration += 1 / 3;
-      }, 30);
+        iteration += 1 / 4; // Slower reveal (was 1/3)
+      }, 35);
     };
 
     animate();
+    return interval;
+  };
 
+  useEffect(() => {
+    if (!inView) return;
+    const interval = triggerAnimation();
     return () => clearInterval(interval);
   }, [text, inView]);
 
   return (
-    <Component ref={ref} className={className}>
+    <Component 
+      ref={ref} 
+      className={className}
+      onMouseEnter={triggerAnimation}
+    >
       {displayText}
     </Component>
   );

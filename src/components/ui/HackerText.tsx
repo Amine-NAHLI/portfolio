@@ -20,10 +20,10 @@ export default function HackerText({
   
   const triggerAnimation = () => {
     let iteration = -2; // Start negative for a pure random scramble at the beginning
-    let interval: NodeJS.Timeout | undefined;
+    let interval: NodeJS.Timeout;
 
     const animate = () => {
-      if (interval) clearInterval(interval);
+      clearInterval(interval);
       
       interval = setInterval(() => {
         setDisplayText((prev) =>

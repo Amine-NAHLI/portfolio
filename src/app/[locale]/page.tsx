@@ -12,7 +12,7 @@ import TechnicalFrame from "@/components/ui/TechnicalFrame";
 import HackerText from "@/components/ui/HackerText";
 import SystemStatus from "@/components/ui/SystemStatus";
 import SystemBadges from "@/components/ui/SystemBadges";
-import SpotlightCard from "@/components/ui/SpotlightCard";
+import TechCard from "@/components/ui/TechCard";
 import { TechCore } from "@/components/ui/TechCore";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
@@ -149,19 +149,63 @@ export default async function HomePage({ params }: HomePageProps) {
           <ScrollReveal yOffset={40}>
             <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
               <SectionHeading eyebrow={copy.proofEyebrow} title={copy.proofTitle} description={copy.proofDescription} />
-              <dl className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
-                {copy.proofItems.map(([term, description], index) => (
-                  <ScrollReveal key={term} delay={0.1 * index} yOffset={20}>
-                    <SpotlightCard className="h-full">
-                      <span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70 group-hover:text-accent transition-colors">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <dt className="font-mono text-xs font-semibold uppercase tracking-[.12em] text-accent mb-3">{term}</dt>
-                      <dd className="mt-2 text-sm font-medium leading-relaxed text-text-primary group-hover:text-white transition-colors">{description}</dd>
-                    </SpotlightCard>
-                  </ScrollReveal>
-                ))}
-              </dl>
+              <div className="relative">
+                {/* Vertical Glowing Line */}
+                <div className="absolute left-4 sm:left-6 top-6 bottom-6 w-px bg-gradient-to-b from-accent/50 via-accent/20 to-transparent hidden lg:block" />
+                
+                <dl className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
+                  {copy.proofItems.map(([term, description], index) => {
+                    const isLanguages = index === 2;
+                    const languageItems = isLanguages ? description.split(" · ") : [];
+
+                    return (
+                      <ScrollReveal key={term} delay={0.1 * index} yOffset={20}>
+                        <div className="relative flex items-center">
+                          {/* Node on the vertical line */}
+                          <div className="absolute -left-[1.35rem] size-2 rounded-full bg-accent shadow-[0_0_8px_var(--color-accent)] hidden lg:block" />
+                          
+                          <TechCard className="w-full h-full">
+                            <span aria-hidden="true" className="absolute right-4 top-4 font-mono text-[.62rem] text-text-muted/70 group-hover:text-accent transition-colors">
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+                            <dt className="font-mono text-xs font-semibold uppercase tracking-[.12em] text-accent mb-3 flex items-center gap-2">
+                              {term}
+                              {index === 1 && (
+                                <span className="inline-flex items-center rounded-sm bg-accent/10 px-1.5 py-0.5 text-[0.55rem] text-accent border border-accent/20">
+                                  <span className="mr-1.5 size-1.5 rounded-full bg-accent animate-pulse" />
+                                  {locale === "fr" ? "EN COURS" : "CURRENT"}
+                                </span>
+                              )}
+                            </dt>
+                            <dd className="mt-2 text-sm font-medium leading-relaxed text-text-primary group-hover:text-white transition-colors">
+                              {isLanguages ? (
+                                <div className="flex flex-wrap gap-2 mt-3">
+                                  {languageItems.map((lang, i) => {
+                                    // Split language and level for better styling
+                                    const parts = locale === "fr" ? lang.split(" (") : lang.split(" · ");
+                                    const name = parts[0];
+                                    const level = parts.length > 1 ? (locale === "fr" ? `(${parts[1]}` : parts[1]) : "";
+                                    
+                                    return (
+                                      <span key={i} className="inline-flex items-center gap-1.5 rounded border border-border/50 bg-surface-subtle/50 px-2 py-1 text-xs">
+                                        <span className="text-accent font-mono opacity-60">[{String(i + 1).padStart(2, "0")}]</span>
+                                        <span className="font-semibold">{name}</span>
+                                        {level && <span className="opacity-60 text-[0.65rem] uppercase tracking-wider">{level}</span>}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                description
+                              )}
+                            </dd>
+                          </TechCard>
+                        </div>
+                      </ScrollReveal>
+                    );
+                  })}
+                </dl>
+              </div>
             </div>
           </ScrollReveal>
         </Container>

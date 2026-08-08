@@ -9,8 +9,9 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Roadmap from "@/components/ui/Roadmap";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
-import TextReveal from "@/components/ui/TextReveal";
 import HackerText from "@/components/ui/HackerText";
+import SystemStatus from "@/components/ui/SystemStatus";
+import SystemBadges from "@/components/ui/SystemBadges";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import { TechCore } from "@/components/ui/TechCore";
 import { getSiteUrl, siteConfig } from "@/config/site";
@@ -102,23 +103,17 @@ export default async function HomePage({ params }: HomePageProps) {
           <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
             {/* Left Column - Text Content */}
             <div className="flex flex-col justify-center lg:col-span-7">
-              <div className="flex items-center gap-4 text-sm font-semibold tracking-[0.15em] text-accent uppercase">
-                <span className="h-px w-8 bg-accent" />
-                L&apos;ingénieur
+              <div className="mb-4">
+                <SystemStatus locale={locale} />
               </div>
               
               <HackerText 
                 text={siteConfig.name}
-                className="mt-6 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
+                className="mt-2 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
                 as="h1"
               />
               
-              <TextReveal
-                as="h2"
-                text={copy.eyebrow}
-                className="mt-6 font-mono text-sm font-semibold uppercase tracking-widest text-accent sm:text-base"
-                delay={0.3}
-              />
+              <SystemBadges locale={locale} />
               
               <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
                 {copy.title}

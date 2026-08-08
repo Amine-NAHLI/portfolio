@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useInView } from "framer-motion";
+import { useCallback } from "react";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -18,43 +19,37 @@ export default function HackerText({
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-10% 0px" });
   
-  const triggerAnimation = () => {
+  const triggerAnimation = useCallback(() => {
     let iteration = -2; // Start negative for a pure random scramble at the beginning
-    let interval: NodeJS.Timeout;
-
-    const animate = () => {
-      clearInterval(interval);
+    
+    const interval = setInterval(() => {
+      setDisplayText((prev) =>
+        prev
+          .split("")
+          .map((char, index) => {
+            if (index < iteration) {
+              return text[index];
+            }
+            return char === " " ? " " : LETTERS[Math.floor(Math.random() * 26)];
+          })
+          .join("")
+      );
       
-      interval = setInterval(() => {
-        setDisplayText((prev) =>
-          prev
-            .split("")
-            .map((char, index) => {
-              if (index < iteration) {
-                return text[index];
-              }
-              return char === " " ? " " : LETTERS[Math.floor(Math.random() * 26)];
-            })
-            .join("")
-        );
-        
-        if (iteration >= text.length) {
-          clearInterval(interval);
-        }
-        
-        iteration += 1 / 4; // Slower reveal (was 1/3)
-      }, 35);
-    };
+      if (iteration >= text.length) {
+        clearInterval(interval);
+      }
+      
+      iteration += 1 / 4; // Slower reveal (was 1/3)
+    }, 35);
 
-    animate();
     return interval;
-  };
+  }, [text]);
 
   useEffect(() => {
     if (!inView) return;
     const interval = triggerAnimation();
     return () => clearInterval(interval);
-  }, [text, inView]);
+  }, [text, inView, triggerAnimation]);
 
   return (
     <Component 

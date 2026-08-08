@@ -13,7 +13,7 @@ export default function SpotlightCard({
   const ref = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const [isHovered, setIsHovered] = useState(false);
+
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!ref.current) return;
@@ -29,8 +29,6 @@ export default function SpotlightCard({
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={`group relative overflow-hidden rounded-xl bg-surface-subtle/40 backdrop-blur-xl border border-border/40 transition-all duration-300 hover:shadow-[0_0_30px_rgba(56,189,248,0.1)] ${className}`}
     >
       {/* Animated Border Glow */}

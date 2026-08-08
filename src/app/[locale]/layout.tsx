@@ -14,6 +14,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import Spotlight from "@/components/ui/Spotlight";
 import HackerTrail from "@/components/ui/HackerTrail";
+import ThemeGlitch from "@/components/ui/ThemeGlitch";
 import ChatWidget from "@/components/ui/ChatWidget";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import ScrollProgress from "@/components/ui/ScrollProgress";
@@ -96,6 +97,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <ScrollProgress />
       <CustomCursor />
       <HackerTrail />
+      <ThemeGlitch />
       <NoiseOverlay />
       <Spotlight />
       <div className="flex min-h-screen flex-col">

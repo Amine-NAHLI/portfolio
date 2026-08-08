@@ -124,7 +124,7 @@ export function GlobalLoader() {
         {/* Hacker text decoding */}
         <div 
           className={`text-xl sm:text-2xl font-bold tracking-widest transition-colors duration-300 ${
-            progress >= 99 ? "text-accent" : "text-white/70"
+            progress >= 99 ? "text-accent" : "text-slate-800/70 dark:text-white/70"
           }`}
           style={{ textShadow: progress >= 99 ? "0 0 15px var(--color-accent)" : "none" }}
         >
@@ -133,7 +133,7 @@ export function GlobalLoader() {
         </div>
 
         {/* Minimalist Progress Bar */}
-        <div className="w-64 h-[2px] bg-white/10 relative overflow-hidden">
+        <div className="w-64 h-[2px] bg-slate-800/10 dark:bg-white/10 relative overflow-hidden">
           <motion.div 
             className="absolute top-0 left-0 h-full bg-accent"
             style={{ width: `${progress}%` }}

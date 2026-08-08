@@ -95,9 +95,9 @@ export default function HackerTrail() {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      const r = isDark ? 0 : 2;
-      const g = isDark ? 255 : 132;
-      const b = isDark ? 65 : 199;
+      const r = isDark ? 56 : 2;
+      const g = isDark ? 189 : 132;
+      const b = isDark ? 248 : 199;
 
       // Only loop through the grid cells that are near the mouse
       const startCol = Math.max(0, Math.floor((mouse.x - RADIUS) / FONT_SIZE));

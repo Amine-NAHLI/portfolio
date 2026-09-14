@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText, RefreshCw } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText, RefreshCw, Orbit, Languages } from "lucide-react";
 import { signOutAdmin } from "@/app/admin/(protected)/actions";
 
 const navigation = [
@@ -14,6 +14,8 @@ const navigation = [
   { href: "/admin/testimonials", label: "Avis", icon: MessageSquare },
   { href: "/admin/messages", label: "Messages", icon: Inbox },
   { href: "/admin/general", label: "Infos Générales", icon: FileText },
+  { href: "/admin/hero-tech", label: "Tech Accueil", icon: Orbit },
+  { href: "/admin/translations", label: "Traductions", icon: Languages },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ] as const;
 

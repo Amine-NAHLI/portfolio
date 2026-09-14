@@ -17,7 +17,7 @@ import { TechCore } from "@/components/ui/TechCore";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { publicCopy } from "@/content/copy";
 import { getHomeCopy } from "@/content/dynamic-copy";
-import { getPublicCertifications, getPublicTestimonials, getPublicJourney, getPublicContactLinks } from "@/features/portfolio/data";
+import { getPublicCertifications, getPublicTestimonials, getPublicJourney, getPublicContactLinks, getSectionsVisibility, getHeroTechnologies } from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
 import { isLocale, Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
@@ -45,23 +45,30 @@ export default async function HomePage({ params }: HomePageProps) {
   if (!isLocale(locale)) notFound();
 
   const copy = await getHomeCopy(locale);
-  const [projects, certifications, testimonials, journey, contactLinks] = await Promise.all([
+  const [projects, certifications, testimonials, journey, contactLinks, sectionsVisibility, heroTech] = await Promise.all([
     getPublishedProjects(locale),
     getPublicCertifications(locale),
     getPublicTestimonials(locale),
     getPublicJourney(locale),
     getPublicContactLinks(),
+    getSectionsVisibility(),
+    getHeroTechnologies(),
   ]);
-  let featuredProjects = projects.filter((project) => project.featured);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let featuredProjects = projects.filter((project: any) => project.featured);
   if (featuredProjects.length === 0) featuredProjects = projects;
+  featuredProjects = featuredProjects.slice(0, 3);
 
-  const allTechnologies = Array.from(new Set(projects.flatMap((p) => p.coreTechnologies || p.technologies || []))).filter(Boolean);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const allTechnologies = heroTech || Array.from(new Set(projects.flatMap((p: any) => p.coreTechnologies || p.technologies || []))).filter(Boolean);
 
-  let displayCertifications = certifications.filter((c) => c.featured);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let displayCertifications = certifications.filter((c: any) => c.featured);
   if (displayCertifications.length === 0) displayCertifications = certifications;
   displayCertifications = displayCertifications.slice(0, 3);
 
-  let displayTestimonials = testimonials.filter((t) => t.featured);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let displayTestimonials = testimonials.filter((t: any) => t.featured);
   if (displayTestimonials.length === 0) displayTestimonials = testimonials;
   const displayJourney = journey;
 
@@ -231,17 +238,29 @@ export default async function HomePage({ params }: HomePageProps) {
       )}
 
       {/* GitHub Preview */}
-      <GitHubPreviewSection locale={locale as Locale} />
+      {sectionsVisibility.github && <GitHubPreviewSection locale={locale as Locale} />}
 
-      <section id="projects" className="relative z-10 py-16 sm:py-24">
+      {sectionsVisibility.projects && (
+        <section id="projects" className="relative z-10 py-16 sm:py-24">
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between"><SectionHeading eyebrow={copy.projectsEyebrow} title={copy.projectsTitle} description={overviewDescription} /><ButtonLink href={`/${locale}/projects`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.allProjects}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink></div>
-            {featuredProjects.length ? <div className="mt-10 grid gap-5 xl:grid-cols-12">{featuredProjects.map((project, index) => <div key={project.slug} className={index === 0 ? "xl:col-span-7" : "xl:col-span-5"}><ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} /></div>)}</div> : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
+            {featuredProjects.length ? (
+              <div className="mt-10 grid gap-5 md:grid-cols-3 xl:grid-cols-12">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {featuredProjects.map((project: any) => (
+                  <div key={project.slug} className="md:col-span-1 xl:col-span-4">
+                    <ProjectSummaryCard project={project} locale={locale} cta={publicCopy[locale].projects.viewProject} />
+                  </div>
+                ))}
+              </div>
+            ) : <PortfolioEmptyState collection="projects" locale={locale} className="mt-10" />}
           </ScrollReveal>
         </Container>
       </section>
+      )}
 
+      {sectionsVisibility.journey && (
       <section id="journey" className="relative z-10 py-16 sm:py-24">
         <Container>
           <ScrollReveal yOffset={40}>
@@ -253,8 +272,10 @@ export default async function HomePage({ params }: HomePageProps) {
           </ScrollReveal>
         </Container>
       </section>
+      )}
 
 
+      {sectionsVisibility.certifications && (
       <section id="certifications" className="relative z-10 py-16 sm:py-24">
         <Container>
           <ScrollReveal yOffset={40}>
@@ -287,8 +308,10 @@ export default async function HomePage({ params }: HomePageProps) {
           </ScrollReveal>
         </Container>
       </section>
+      )}
 
-      <section id="testimonials" className="relative z-10 py-16 sm:py-24 overflow-hidden">
+      {sectionsVisibility.testimonials && (
+      <section id="reviews" className="relative z-10 overflow-hidden py-24 sm:py-32">
         <Container>
           <ScrollReveal yOffset={40}>
             <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between mb-10">
@@ -311,7 +334,9 @@ export default async function HomePage({ params }: HomePageProps) {
           )}
         </ScrollReveal>
       </section>
+      )}
 
+      {sectionsVisibility.contact && (
       <section id="contact" className="relative z-10 py-16 sm:py-24">
         <Container>
           <ScrollReveal yOffset={40}>
@@ -319,6 +344,7 @@ export default async function HomePage({ params }: HomePageProps) {
           </ScrollReveal>
         </Container>
       </section>
+      )}
       </div>
     </>
   );

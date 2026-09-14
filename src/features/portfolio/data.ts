@@ -173,3 +173,35 @@ export const getPublicSkillGroups = (locale: Locale) => locale === "fr" ? skills
 export const getPublicCertifications = (locale: Locale) => locale === "fr" ? certificatesFr() : certificatesEn();
 export const getPublicTestimonials = (locale: Locale) => locale === "fr" ? testimonialsFr() : testimonialsEn();
 export const getPublicContactLinks = () => contactLinksCache();
+
+async function querySectionsVisibility() {
+  if (!hasSupabasePublicConfig()) {
+    return { github: true, projects: true, journey: true, certifications: true, testimonials: true, contact: true };
+  }
+  try {
+    const { data, error } = await createPublicClient().from("site_settings").select("value").eq("key", "sections_visibility").single();
+    if (error || !data) {
+      return { github: true, projects: true, journey: true, certifications: true, testimonials: true, contact: true };
+    }
+    return data.value as { github: boolean; projects: boolean; journey: boolean; certifications: boolean; testimonials: boolean; contact: boolean };
+  } catch {
+    return { github: true, projects: true, journey: true, certifications: true, testimonials: true, contact: true };
+  }
+}
+const sectionsVisibilityCache = unstable_cache(() => querySectionsVisibility(), ["portfolio-sections-visibility"], { revalidate: 900, tags: ["portfolio", "settings"] });
+
+export const getSectionsVisibility = () => sectionsVisibilityCache();
+
+async function queryHeroTechnologies() {
+  if (!hasSupabasePublicConfig()) return null;
+  try {
+    const { data, error } = await createPublicClient().from("site_settings").select("value").eq("key", "hero_technologies").single();
+    if (error || !data) return null;
+    return (data.value as string[]) || null;
+  } catch {
+    return null;
+  }
+}
+const heroTechnologiesCache = unstable_cache(() => queryHeroTechnologies(), ["portfolio-hero-technologies"], { revalidate: 900, tags: ["portfolio", "settings"] });
+
+export const getHeroTechnologies = () => heroTechnologiesCache();

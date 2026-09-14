@@ -61,51 +61,30 @@ export function GlobalLoader() {
 
   useEffect(() => {
     let animationFrameId: number;
+    let currentSimulated = 0;
 
-    const checkRealProgress = () => {
-      const images = Array.from(document.images);
-      const totalImages = images.length;
-      const loadedImages = images.filter((img) => img.complete).length;
-      
-      let baseProgress = 0;
-      if (document.readyState === "interactive") baseProgress = 20;
-      if (document.readyState === "complete") baseProgress = 60;
-      
-      const imageProgress = totalImages === 0 ? 40 : (loadedImages / totalImages) * 40;
-      
-      let finalProgress = baseProgress + imageProgress;
-      
-      if (document.readyState === "complete" && loadedImages === totalImages) {
-        finalProgress = 100;
-      }
-      
-      // Smoothly animate towards finalProgress
+    const animateProgress = () => {
+      currentSimulated += Math.random() * 3 + 1; // Random increment between 1 and 4
+      if (currentSimulated > 100) currentSimulated = 100;
+
       setProgress(current => {
-        const next = current + (finalProgress - current) * 0.1;
-        
-        // If we are super close to 100%, snap to 100%
-        if (finalProgress === 100 && next > 99) {
-          return 100;
-        }
+        const next = current + (currentSimulated - current) * 0.15;
+        if (currentSimulated === 100 && next > 99) return 100;
         return next;
       });
 
-      if (finalProgress < 100) {
-        animationFrameId = requestAnimationFrame(checkRealProgress);
+      if (currentSimulated < 100) {
+        animationFrameId = requestAnimationFrame(animateProgress);
       } else {
-        // Just wait
+        // Ensure it snaps to 100 at the end
+        setProgress(100);
       }
     };
 
-    // Sometimes events fire fast or already fired
-    checkRealProgress();
-
-    // Fallback interval just in case requestAnimationFrame gets stuck
-    const fallbackInterval = setInterval(checkRealProgress, 100);
+    animationFrameId = requestAnimationFrame(animateProgress);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      clearInterval(fallbackInterval);
     };
   }, []);
 

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ";
 const FONT_SIZE = 14;
-const RADIUS = 90; // Size of the hacker circle
+const RADIUS = 80;
 
 export default function HackerTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -13,10 +13,8 @@ export default function HackerTrail() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Initial check
     setIsDark(document.documentElement.dataset.theme !== "light");
     
-    // Watch for theme changes
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.attributeName === "data-theme") {
@@ -30,6 +28,9 @@ export default function HackerTrail() {
   }, []);
 
   useEffect(() => {
+    // Disable on touch devices to save battery & performance
+    if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -40,9 +41,8 @@ export default function HackerTrail() {
     let rows = 0;
     let grid: string[][] = [];
     
-    const mouse = { x: -1000, y: -1000 };
+    const mouse = { x: -1000, y: -1000, active: false };
     let animationFrameId: number;
-
 
     const initGrid = () => {
       columns = Math.ceil(window.innerWidth / FONT_SIZE);
@@ -61,71 +61,62 @@ export default function HackerTrail() {
     };
 
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", resize, { passive: true });
 
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
+      mouse.active = true;
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY - 40; // Offset for finger
-      }
-    };
-
-    const handleTouchEnd = () => {
+    const handleMouseLeave = () => {
+      mouse.active = false;
       mouse.x = -1000;
       mouse.y = -1000;
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    window.addEventListener("touchstart", handleTouchMove, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd);
-    window.addEventListener("touchcancel", handleTouchEnd);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("mouseleave", handleMouseLeave, { passive: true });
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+      if (mouse.active && mouse.x > 0 && mouse.y > 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        ctx.font = `bold ${FONT_SIZE}px monospace`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-      ctx.font = `bold ${FONT_SIZE}px monospace`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+        const r = isDark ? 59 : 2;
+        const g = isDark ? 130 : 132;
+        const b = isDark ? 246 : 199;
 
-      const r = isDark ? 56 : 2;
-      const g = isDark ? 189 : 132;
-      const b = isDark ? 248 : 199;
+        const startCol = Math.max(0, Math.floor((mouse.x - RADIUS) / FONT_SIZE));
+        const endCol = Math.min(columns - 1, Math.ceil((mouse.x + RADIUS) / FONT_SIZE));
+        const startRow = Math.max(0, Math.floor((mouse.y - RADIUS) / FONT_SIZE));
+        const endRow = Math.min(rows - 1, Math.ceil((mouse.y + RADIUS) / FONT_SIZE));
 
-      // Only loop through the grid cells that are near the mouse
-      const startCol = Math.max(0, Math.floor((mouse.x - RADIUS) / FONT_SIZE));
-      const endCol = Math.min(columns - 1, Math.ceil((mouse.x + RADIUS) / FONT_SIZE));
-      const startRow = Math.max(0, Math.floor((mouse.y - RADIUS) / FONT_SIZE));
-      const endRow = Math.min(rows - 1, Math.ceil((mouse.y + RADIUS) / FONT_SIZE));
+        for (let i = startCol; i <= endCol; i++) {
+          for (let j = startRow; j <= endRow; j++) {
+            const charX = i * FONT_SIZE + FONT_SIZE / 2;
+            const charY = j * FONT_SIZE + FONT_SIZE / 2;
+            
+            const dx = charX - mouse.x;
+            const dy = charY - mouse.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < RADIUS) {
+              if (Math.random() < 0.15) {
+                grid[i][j] = CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
+              }
 
-      for (let i = startCol; i <= endCol; i++) {
-        for (let j = startRow; j <= endRow; j++) {
-          const charX = i * FONT_SIZE + FONT_SIZE / 2;
-          const charY = j * FONT_SIZE + FONT_SIZE / 2;
-          
-          const dx = charX - mouse.x;
-          const dy = charY - mouse.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < RADIUS) {
-            // Rapidly animate characters that are currently visible
-            if (Math.random() < 0.15) { // 15% chance to change each frame
-              grid[i][j] = CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
+              const opacity = Math.pow(1 - (distance / RADIUS), 1.5);
+              ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+              ctx.fillText(grid[i][j], charX, charY);
             }
-
-            // Fade out towards the edges of the circle
-            const opacity = Math.pow(1 - (distance / RADIUS), 1.5);
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-            ctx.fillText(grid[i][j], charX, charY);
           }
         }
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       
       animationFrameId = requestAnimationFrame(animate);
@@ -136,10 +127,7 @@ export default function HackerTrail() {
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchstart", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("touchcancel", handleTouchEnd);
+      document.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, [isDark, pathname]);
@@ -147,7 +135,7 @@ export default function HackerTrail() {
   return (
     <canvas 
       ref={canvasRef} 
-      className="pointer-events-none fixed inset-0 z-40 opacity-100 transition-colors duration-500"
+      className="pointer-events-none fixed inset-0 z-40 opacity-100 transition-colors duration-500 hidden sm:block"
       style={{ mixBlendMode: isDark ? "screen" : "multiply" }}
     />
   );

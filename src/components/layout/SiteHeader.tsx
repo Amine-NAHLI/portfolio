@@ -13,24 +13,39 @@ import { motion } from "framer-motion";
 import Magnetic from "@/components/ui/Magnetic";
 import TextScramble from "@/components/ui/TextScramble";
 
-type SiteHeaderProps = { locale: Locale; dictionary: Dictionary; resumeLink: string };
+type SiteHeaderProps = { 
+  locale: Locale; 
+  dictionary: Dictionary; 
+  resumeLink: string;
+  sectionsVisibility?: {
+    github: boolean;
+    projects: boolean;
+    journey: boolean;
+    certifications: boolean;
+    testimonials: boolean;
+    contact: boolean;
+  };
+};
 type NavigationItem = { label: string; href: string };
 
-export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeaderProps) {
+export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVisibility }: SiteHeaderProps) {
   const pathname = usePathname() ?? `/${locale}`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("");
   const alternateLocale = getAlternateLocale(locale);
-  const navigation = useMemo<NavigationItem[]>(() => [
-    { label: dictionary.nav.home, href: `/${locale}` }, 
-    { label: dictionary.nav.openSource, href: `/${locale}#github-activity` },
-    { label: dictionary.nav.projects, href: `/${locale}#projects` },
-    { label: dictionary.nav.journey, href: `/${locale}#journey` }, 
-    { label: dictionary.nav.certifications, href: `/${locale}#certifications` }, 
-    { label: dictionary.nav.testimonials, href: `/${locale}#testimonials` },
-    { label: dictionary.nav.contact, href: `/${locale}#contact` },
-  ], [dictionary, locale]);
+  const navigation = useMemo<NavigationItem[]>(() => {
+    const nav = [
+      { label: dictionary.nav.home, href: `/${locale}` }
+    ];
+    if (!sectionsVisibility || sectionsVisibility.github) nav.push({ label: dictionary.nav.openSource, href: `/${locale}#github-activity` });
+    if (!sectionsVisibility || sectionsVisibility.projects) nav.push({ label: dictionary.nav.projects, href: `/${locale}#projects` });
+    if (!sectionsVisibility || sectionsVisibility.journey) nav.push({ label: dictionary.nav.journey, href: `/${locale}#journey` });
+    if (!sectionsVisibility || sectionsVisibility.certifications) nav.push({ label: dictionary.nav.certifications, href: `/${locale}#certifications` });
+    if (!sectionsVisibility || sectionsVisibility.testimonials) nav.push({ label: dictionary.nav.testimonials, href: `/${locale}#testimonials` });
+    if (!sectionsVisibility || sectionsVisibility.contact) nav.push({ label: dictionary.nav.contact, href: `/${locale}#contact` });
+    return nav;
+  }, [dictionary, locale, sectionsVisibility]);
   
   const alternatePath = useMemo(() => { 
     const segments = pathname.split("/"); 

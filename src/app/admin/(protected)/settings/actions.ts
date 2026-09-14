@@ -52,3 +52,30 @@ export async function saveContactLinks(prevState: unknown, formData: FormData) {
 
   return { success: true, message: "Les liens de contact ont été mis à jour avec succès." };
 }
+
+export async function saveSectionsVisibility(prevState: unknown, formData: FormData) {
+  const supabase = await createClient();
+  const data = {
+    github: formData.get("github") === "on",
+    projects: formData.get("projects") === "on",
+    journey: formData.get("journey") === "on",
+    certifications: formData.get("certifications") === "on",
+    testimonials: formData.get("testimonials") === "on",
+    contact: formData.get("contact") === "on",
+  };
+
+  const { error } = await supabase.from("site_settings").upsert(
+    { key: "sections_visibility", value: data, is_public: true },
+    { onConflict: "key" }
+  );
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidateTag("settings");
+  revalidateTag("portfolio");
+  revalidatePath("/", "layout");
+
+  return { success: true, message: "La visibilité des sections a été mise à jour avec succès." };
+}

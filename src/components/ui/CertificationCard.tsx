@@ -44,17 +44,17 @@ export default function CertificationCard({ certification, locale, copy }: Certi
       <button 
         type="button"
         onClick={() => setOpen(true)}
-        className="group relative flex flex-col text-left overflow-hidden rounded-[2rem] border border-border/50 bg-surface transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_40px_-15px_rgba(var(--color-accent-rgb),0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full aspect-[16/10]"
+        className="group relative flex flex-col text-left overflow-hidden rounded-[1.75rem] border border-white/10 bg-surface/80 backdrop-blur-xl transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full h-full"
       >
-        {/* Loading Skeleton (Only for images, iframes show their own loading state) */}
-        {!isLoaded && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised animate-pulse">
-            <LoaderCircle className="size-8 animate-spin text-text-muted/50" />
-          </div>
-        )}
+        {/* Document Preview Frame (Full view without text overlap) */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-deep/90 border-b border-white/5 flex items-center justify-center">
+          {/* Loading Skeleton */}
+          {!isLoaded && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised animate-pulse">
+              <LoaderCircle className="size-8 animate-spin text-text-muted/50" />
+            </div>
+          )}
 
-        {/* Full Bleed Background Image */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden bg-bg-page">
           {certification.hasDocument ? (
             certification.documentMimeType?.startsWith("image/") ? (
               <img
@@ -62,7 +62,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 alt={`Preview of ${certification.name}`}
                 loading="lazy"
                 onLoad={() => setIsLoaded(true)}
-                className={`pointer-events-none h-full w-full object-cover object-top transition-all duration-700 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                className={`h-full w-full object-contain p-2 transition-all duration-700 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             ) : (
               <div className="relative h-full w-full overflow-hidden bg-white">
@@ -78,45 +78,58 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             )
           ) : (
             <div className="grid h-full place-items-center bg-surface-raised text-text-muted">
-              <Award className="size-24 opacity-10 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500" />
+              <Award className="size-20 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-500" />
+            </div>
+          )}
+
+          {/* Issuer Pill Badge on top corner of preview */}
+          {certification.issuer && (
+            <div className="absolute top-3 right-3 z-20 rounded-full border border-white/10 bg-black/70 px-2.5 py-1 backdrop-blur-md text-[0.68rem] font-mono font-semibold text-accent shadow-lg">
+              {certification.issuer}
             </div>
           )}
         </div>
         
-        {/* Glassmorphic Overlay for Text */}
-        <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end p-6 sm:p-8 pt-24 bg-gradient-to-t from-bg-page via-bg-page/90 to-transparent backdrop-blur-[2px] translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-          <div className="flex items-center gap-1.5 mb-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 delay-100">
-             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent">
-               {locale === "fr" ? "Ouvrir" : "Open"}
-             </span>
-             <ArrowUpRight className="size-3.5 text-accent" />
+        {/* Dedicated Info Content Container Below Image */}
+        <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-surface-subtle/50">
+          <div>
+            <h2 className="text-lg sm:text-xl font-display font-bold leading-snug text-text-primary group-hover:text-white transition-colors line-clamp-2">
+              {certification.name}
+            </h2>
           </div>
-          <h2 className="text-xl sm:text-2xl font-display font-bold leading-tight text-text-primary drop-shadow-sm line-clamp-2">
-            {certification.name}
-          </h2>
-          {certification.issuer && (
-            <p className="mt-2 text-sm font-mono text-text-secondary truncate drop-shadow-sm">
-              {certification.issuer}
-            </p>
-          )}
+
+          <div className="mt-4 flex items-center justify-between pt-3 border-t border-white/5">
+            <span className="text-xs font-mono text-text-muted flex items-center gap-1.5">
+              <Calendar className="size-3.5 opacity-60" />
+              {certification.issuedOn 
+                ? new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "short" }) 
+                : "—"}
+            </span>
+
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent group-hover:translate-x-0.5 transition-transform">
+              {locale === "fr" ? "Voir" : "View"}
+              <ArrowUpRight className="size-3.5" />
+            </span>
+          </div>
         </div>
       </button>
 
+      {/* Verification Dialog */}
       <dialog 
         ref={dialogRef} 
-        className="m-auto w-full max-w-lg rounded-2xl border border-border bg-bg-page p-0 text-text-primary backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in-0 open:zoom-in-95"
+        className="m-auto w-full max-w-lg rounded-2xl border border-white/10 bg-bg-page p-0 text-text-primary backdrop:bg-black/85 backdrop:backdrop-blur-md open:animate-in open:fade-in-0 open:zoom-in-95"
         onClose={() => setOpen(false)}
         onCancel={() => setOpen(false)}
       >
         <div className="flex flex-col p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-full border border-border-strong bg-surface text-accent">
+            <div className="grid size-12 shrink-0 place-items-center rounded-full border border-accent/20 bg-accent/10 text-accent">
               <Award className="size-6" />
             </div>
             <button 
               type="button" 
               onClick={() => setOpen(false)}
-              className="inline-grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised text-text-muted hover:bg-surface hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="inline-grid size-10 shrink-0 place-items-center rounded-full border border-white/10 bg-surface-raised text-text-muted hover:bg-surface hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <X className="size-5" />
             </button>
@@ -138,9 +151,9 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             )}
           </div>
 
-          <div className="mt-6 flex flex-col gap-4 border-y border-border py-6">
+          <div className="mt-6 flex flex-col gap-4 border-y border-white/10 py-6">
             <div className="flex items-center gap-3 text-text-secondary">
-              <Calendar className="size-5 opacity-70" />
+              <Calendar className="size-5 opacity-70 text-accent" />
               <span>
                 {certification.issuedOn 
                   ? new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" }) 
@@ -155,7 +168,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 href={certification.verificationUrl} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="flex w-full sm:w-auto flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="flex w-full sm:w-auto flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 {copy.verify} <ArrowUpRight className="size-4" />
               </a>
@@ -166,7 +179,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 href={`/api/certifications/${certification.id}/document`} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-white/10 bg-surface px-5 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <Download className="size-4" />
                 <span>Document</span>

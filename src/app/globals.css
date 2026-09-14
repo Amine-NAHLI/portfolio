@@ -85,7 +85,7 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-  html { min-width: 20rem; overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  html { min-width: 20rem; overflow-x: clip; scroll-padding-top: 5rem; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   body { min-height: 100vh; overflow-x: clip; background-color: transparent; color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
   h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.025em; }
   a, button, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }

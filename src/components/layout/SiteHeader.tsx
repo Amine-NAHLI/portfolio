@@ -49,29 +49,44 @@ export default function SiteHeader({ locale, dictionary, resumeLink }: SiteHeade
     if (pathname !== `/${locale}`) return;
 
     const sectionIds = ["home", "github-activity", "projects", "journey", "certifications", "testimonials", "contact"];
+    
+    if (!window.IntersectionObserver) return;
 
-    const handleScroll = () => {
-      const sectionElements = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
-      let current = "";
-      const triggerPoint = window.innerHeight * 0.4; // 40% from top
-      
-      for (const section of sectionElements) {
-        if (!section) continue;
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= triggerPoint) {
-          current = `#${section.id}`;
-        }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHash(entry.target.id === "home" ? "" : `#${entry.target.id}`);
+          }
+        });
+      },
+      {
+        rootMargin: "-20% 0px -60% 0px",
       }
-      
-      if (window.scrollY < 50) current = "";
-      setActiveHash(current);
-    };
+    );
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Check on mount
+    sectionIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    let ticking = false;
+    const handleScrollTop = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (window.scrollY < 50) setActiveHash("");
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener("scroll", handleScrollTop, { passive: true });
+    handleScrollTop();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScrollTop);
     };
   }, [pathname, locale]);
 

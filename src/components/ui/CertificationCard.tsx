@@ -44,7 +44,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
       <button 
         type="button"
         onClick={() => setOpen(true)}
-        className="group relative flex flex-col text-left overflow-hidden rounded-[2rem] border border-border/50 bg-surface transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_40px_-15px_rgba(var(--color-accent-rgb),0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full aspect-[4/3]"
+        className="group relative flex flex-col text-left overflow-hidden rounded-[2rem] border border-border/50 bg-surface transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_40px_-15px_rgba(var(--color-accent-rgb),0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full aspect-[16/10]"
       >
         {/* Loading Skeleton (Only for images, iframes show their own loading state) */}
         {!isLoaded && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
@@ -62,7 +62,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 alt={`Preview of ${certification.name}`}
                 loading="lazy"
                 onLoad={() => setIsLoaded(true)}
-                className={`pointer-events-none h-full w-full object-cover transition-all duration-700 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                className={`pointer-events-none h-full w-full object-cover object-top transition-all duration-700 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             ) : (
               <div className="relative h-full w-full overflow-hidden bg-white">

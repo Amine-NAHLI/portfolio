@@ -101,55 +101,97 @@ export default async function HomePage({ params }: HomePageProps) {
       }} />
 
       <div className="relative w-full">
-        <section id="home" className="relative z-10 py-16 sm:py-24 lg:py-32">
+        <section id="home" className="relative z-10 py-12 sm:py-20 lg:py-24">
           {/* Spotlight Blur Effect */}
-          <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-accent/10 blur-[120px]" />
+          <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[45rem] w-[65rem] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-accent/10 blur-[140px]" />
           
           <Container className="relative z-10">
             <ScrollReveal>
-          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-            {/* Left Column - Text Content */}
-            <div className="flex flex-col justify-center lg:col-span-7">
-              <div className="mb-4">
-                <SystemStatus locale={locale} />
-              </div>
-              
-              <HackerText 
-                text={siteConfig.name}
-                className="mt-2 text-5xl font-black uppercase tracking-tight text-text-primary sm:text-7xl lg:text-[5.5rem] lg:leading-[1.1]"
-                as="h1"
-              />
-              
-              <SystemBadges locale={locale} />
-              
-              <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
-                {copy.title}
-              </p>
-              
-              <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-text-secondary">
-                {copy.introduction}
-              </p>
-              
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <ButtonLink href={`/${locale}/contact`} className="relative overflow-hidden group">
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                  <span className="relative flex items-center gap-2">{copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" /></span>
-                </ButtonLink>
-                <ButtonLink href={contactLinks.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
-                  <FileText aria-hidden="true" className="size-4" />
-                  {copy.resumeCta}
-                </ButtonLink>
-              </div>
-            </div>
+              <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-8">
+                {/* Left Column - Hero Content */}
+                <div className="flex flex-col justify-center lg:col-span-7">
+                  <div className="mb-4">
+                    <SystemStatus locale={locale} />
+                  </div>
+                  
+                  <HackerText 
+                    text={siteConfig.name}
+                    className="mt-1 text-4xl font-black tracking-tight text-text-primary sm:text-6xl lg:text-[4.75rem] lg:leading-[1.05]"
+                    as="h1"
+                  />
+                  
+                  <p className="mt-3 text-lg sm:text-xl font-semibold tracking-tight text-accent">
+                    {locale === "fr" ? "Élève Ingénieur en Génie Informatique" : "Computer Engineering Student"} · UPF Fès
+                  </p>
 
-            {/* Right Column - Photo */}
-            <div className="relative flex justify-center lg:col-span-5 lg:justify-end perspective-[1000px]">
-              <HeroImageParallax name={siteConfig.name} />
-            </div>
-          </div>
-          </ScrollReveal>
-        </Container>
-      </section>
+                  <div className="mt-4">
+                    <SystemBadges locale={locale} />
+                  </div>
+                  
+                  <p className="mt-5 max-w-xl text-pretty text-base sm:text-lg leading-relaxed text-text-secondary">
+                    {copy.introduction}
+                  </p>
+                  
+                  <div className="mt-8 flex flex-wrap items-center gap-4">
+                    <ButtonLink href={`/${locale}/contact`} className="relative overflow-hidden group shadow-lg shadow-accent/20">
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                      <span className="relative flex items-center gap-2">{copy.contactCta} <ArrowRight aria-hidden="true" className="size-4" /></span>
+                    </ButtonLink>
+
+                    <ButtonLink href={contactLinks.resume} target="_blank" rel="noreferrer" variant="secondary" data-analytics-event="cv_open">
+                      <FileText aria-hidden="true" className="size-4" />
+                      {copy.resumeCta}
+                    </ButtonLink>
+                  </div>
+                </div>
+
+                {/* Right Column - Bento Portrait Card */}
+                <div className="relative flex justify-center lg:col-span-5 lg:justify-end perspective-[1000px]">
+                  <HeroImageParallax name={siteConfig.name} />
+                </div>
+              </div>
+
+              {/* Executive Bento Quick Highlights Strip */}
+              <div className="mt-16 grid gap-4 sm:grid-cols-3">
+                <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/40 p-5 backdrop-blur-md transition-colors hover:border-accent/40 hover:bg-surface/60">
+                  <div className="font-mono text-xs font-semibold uppercase tracking-wider text-accent mb-1">
+                    {locale === "fr" ? "Discipline 01" : "Discipline 01"}
+                  </div>
+                  <div className="font-display text-lg font-bold text-text-primary group-hover:text-white transition-colors">
+                    {locale === "fr" ? "Cybersécurité & Audit" : "Cybersecurity & Audit"}
+                  </div>
+                  <div className="mt-1 text-xs text-text-secondary">
+                    {locale === "fr" ? "Pentesting, IAM, Sécurité Réseau & IntelTrust" : "Pentesting, IAM, Network Security & IntelTrust"}
+                  </div>
+                </div>
+
+                <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/40 p-5 backdrop-blur-md transition-colors hover:border-accent/40 hover:bg-surface/60">
+                  <div className="font-mono text-xs font-semibold uppercase tracking-wider text-accent mb-1">
+                    {locale === "fr" ? "Discipline 02" : "Discipline 02"}
+                  </div>
+                  <div className="font-display text-lg font-bold text-text-primary group-hover:text-white transition-colors">
+                    {locale === "fr" ? "Développement Full-Stack" : "Full-Stack Software Dev"}
+                  </div>
+                  <div className="mt-1 text-xs text-text-secondary">
+                    {locale === "fr" ? "Architectures Web Modernes, Next.js, APIs" : "Modern Web Architectures, Next.js, APIs"}
+                  </div>
+                </div>
+
+                <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/40 p-5 backdrop-blur-md transition-colors hover:border-accent/40 hover:bg-surface/60">
+                  <div className="font-mono text-xs font-semibold uppercase tracking-wider text-accent mb-1">
+                    {locale === "fr" ? "Discipline 03" : "Discipline 03"}
+                  </div>
+                  <div className="font-display text-lg font-bold text-text-primary group-hover:text-white transition-colors">
+                    {locale === "fr" ? "Intelligence Artificielle" : "Artificial Intelligence"}
+                  </div>
+                  <div className="mt-1 text-xs text-text-secondary">
+                    {locale === "fr" ? "Deep Learning, NLP & Systèmes Intelligents" : "Deep Learning, NLP & Intelligent Systems"}
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          </Container>
+        </section>
 
       <section className="relative z-10 py-16 sm:py-24">
         <Container>

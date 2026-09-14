@@ -1,28 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
 import { GlobalLoader } from "./GlobalLoader";
 import { AnimatePresence } from "framer-motion";
 
 export function PageLoadWrapper({ children }: { children: React.ReactNode }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("portfolio_has_loaded");
+    }
+    return false;
+  });
 
   useEffect(() => {
-    // Show loader on route change
-    setIsLoading(true);
+    if (typeof window === "undefined") return;
 
-    // Wait for the simulated progress to hit 100% in GlobalLoader (approx 1200ms)
+    const hasLoaded = sessionStorage.getItem("portfolio_has_loaded");
+    if (hasLoaded) {
+      setIsLoading(false);
+      return;
+    }
+
+    // First visit in session: show loader for 1.2s then record in sessionStorage
     const timeoutId = setTimeout(() => {
+      sessionStorage.setItem("portfolio_has_loaded", "true");
       setIsLoading(false);
     }, 1200);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [pathname, searchParams]);
+  }, []);
 
   return (
     <>

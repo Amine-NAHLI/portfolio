@@ -35,7 +35,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
   const [activeHash, setActiveHash] = useState("");
   const alternateLocale = getAlternateLocale(locale);
   const navigation = useMemo<NavigationItem[]>(() => {
-    const nav = [
+    const nav: NavigationItem[] = [
       { label: dictionary.nav.home, href: `/${locale}` }
     ];
     if (!sectionsVisibility || sectionsVisibility.github) nav.push({ label: dictionary.nav.openSource, href: `/${locale}#github-activity` });

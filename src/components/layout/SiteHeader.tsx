@@ -9,7 +9,6 @@ import { siteConfig } from "@/config/site";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getAlternateLocale, type Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import Magnetic from "@/components/ui/Magnetic";
 import TextScramble from "@/components/ui/TextScramble";
 
@@ -152,11 +151,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
                   </Magnetic>
                   
                   {active && (
-                    <motion.div 
-                      layoutId="nav-indicator"
-                      className="absolute inset-0 rounded-full bg-surface-raised/80 -z-0"
-                      transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
-                    />
+                    <div className="absolute inset-0 rounded-full bg-surface-raised/80 -z-0 transition-all duration-200" />
                   )}
                 </LinkComponent>
               );

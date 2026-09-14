@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { GlobalLoader } from "./GlobalLoader";
-import { AnimatePresence } from "framer-motion";
 
 export function PageLoadWrapper({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(() => {
@@ -34,9 +33,7 @@ export function PageLoadWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {isLoading && <GlobalLoader key="global-loader" />}
-      </AnimatePresence>
+      {isLoading && <GlobalLoader />}
       {children}
     </>
   );

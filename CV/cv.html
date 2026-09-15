@@ -3,31 +3,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Amine NAHLI - CV</title>
+    <title>Amine NAHLI - CV Ingénieur Cybersécurité & IA</title>
     <style>
         /* CSS reset and basics */
         :root {
             --c-text: #1a1a1a;
-            --c-muted: #555;
-            --c-accent: #D92D20; /* Red accent inspired by Monica Roy */
+            --c-muted: #4b5563;
+            --c-accent: #D92D20;
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         
         @page { size: A4; margin: 0; }
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             background: #e2e8f0; 
             display: flex; 
             justify-content: center; 
-            padding: 20px; 
+            padding: 10px; 
             color: var(--c-text); 
+            line-height: 1.28;
         }
         .resume {
             width: 210mm;
             height: 297mm;
             background: white;
-            padding: 8mm 15mm;
+            padding: 6.5mm 11mm 6.5mm 11mm;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
@@ -38,15 +39,30 @@
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 4px;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .header__left-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header__photo {
+            width: 64px;
+            height: 64px;
+            border-radius: 6px;
+            object-fit: cover;
+            object-position: top center;
+            border: 1.2px solid #111;
+            filter: contrast(1.05) brightness(1.02);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .header__left {
             display: flex;
             flex-direction: column;
         }
         .header__name {
-            font-size: 28pt;
+            font-size: 20pt;
             font-weight: 800;
             text-transform: uppercase;
             line-height: 1;
@@ -55,70 +71,73 @@
             color: #111;
         }
         .header__title {
-            font-size: 11.5pt;
-            font-weight: 600;
+            font-size: 8.8pt;
+            font-weight: 700;
             color: var(--c-accent);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.2px;
         }
         .header__right {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
             align-items: flex-end;
-            font-size: 8pt;
+            font-size: 7.6pt;
             font-weight: 500;
-            margin-top: 4px;
         }
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             color: var(--c-text);
             text-decoration: none;
+            font-weight: 500;
         }
-        .contact-item svg { width: 12px; height: 12px; }
+        .contact-item svg { width: 9.5px; height: 9.5px; }
 
         /* DIVIDER */
         .divider {
             width: 100%;
-            height: 4px;
+            height: 1.5px;
             background: #111;
-            margin-bottom: 8px;
+            margin: 4px 0 6px 0;
         }
 
         /* SECTION TITLES */
         .section {
-            margin-bottom: 8px;
+            margin-bottom: 6.5px;
         }
         .section-title {
-            font-size: 10pt;
+            font-size: 8.8pt;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+            margin-bottom: 3.5px;
+            color: #111;
+            border-bottom: 1.2px solid #111;
+            padding-bottom: 1px;
         }
 
         /* SUMMARY */
         .summary {
-            font-size: 8.5pt;
-            line-height: 1.45;
+            font-size: 8.0pt;
+            line-height: 1.3;
             text-align: justify;
             color: var(--c-text);
-            margin-bottom: 12px;
+            margin-bottom: 6.5px;
         }
 
         /* SKILLS (Grid) */
         .skills-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 4px 15px;
-            font-size: 8.5pt;
-            line-height: 1.4;
+            gap: 3.5px 12px;
+            font-size: 7.8pt;
+            line-height: 1.25;
         }
         .skills-grid strong {
             display: block;
-            font-size: 7.5pt;
+            font-size: 7.2pt;
             text-transform: uppercase;
             color: var(--c-muted);
             margin-bottom: 1px;
@@ -126,7 +145,7 @@
 
         /* EXPERIENCE & PROJECTS */
         .item {
-            margin-bottom: 8px;
+            margin-bottom: 3.5px;
         }
         .item:last-child { margin-bottom: 0; }
         
@@ -134,80 +153,83 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 1px;
+            margin-bottom: 0.5px;
         }
         .item__title {
-            font-size: 9.5pt;
+            font-size: 8.5pt;
             font-weight: 700;
             color: #111;
         }
         .item__date {
-            font-size: 8.5pt;
+            font-size: 7.6pt;
             font-weight: 700;
             color: var(--c-accent);
         }
         .item__subtitle {
-            font-size: 8.5pt;
+            font-size: 7.6pt;
             font-weight: 600;
             font-style: italic;
-            margin-bottom: 3px;
+            margin-bottom: 1px;
             color: var(--c-text);
         }
         
         .item__list {
-            padding-left: 12px;
+            padding-left: 9.5px;
             list-style: none;
         }
         .item__list li {
-            font-size: 8.5pt;
-            line-height: 1.4;
-            margin-bottom: 2px;
+            font-size: 7.8pt;
+            line-height: 1.28;
+            margin-bottom: 1px;
             position: relative;
         }
         .item__list li::before {
             content: "•";
             color: var(--c-accent);
-            font-size: 14pt;
+            font-size: 9.5pt;
             line-height: 0;
             position: absolute;
-            left: -12px;
-            top: 7px;
+            left: -8.5px;
+            top: 5px;
         }
 
         /* BOTTOM GRID */
         .bottom-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 5px;
+            gap: 12px;
+            margin-top: 4px;
         }
 
         @media print {
             body { padding: 0; background: white; }
-            .resume { box-shadow: none; }
+            .resume { box-shadow: none; padding: 6.5mm 11mm 6.5mm 11mm; }
         }
     </style>
 </head>
 <body>
 <div class="resume">
     <header class="header">
-        <div class="header__left">
-            <div class="header__name">Amine Nahli</div>
-            <div class="header__title">Élève Ingénieur — Cyber & IA</div>
+        <div class="header__left-group">
+            <img src="../public/nahli.png" alt="Amine Nahli" class="header__photo">
+            <div class="header__left">
+                <div class="header__name">Amine Nahli</div>
+                <div class="header__title">Élève Ingénieur en Génie Informatique | Cybersécurité & IA</div>
+            </div>
         </div>
         <div class="header__right">
+            <a href="https://nahli.dev" target="_blank" class="contact-item">nahli.dev <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></a>
             <a href="mailto:nahli-ami@upf.ac.ma" class="contact-item">nahli-ami@upf.ac.ma <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a>
             <a href="tel:+212627135764" class="contact-item">+212 6 27 13 57 64 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></a>
-            <a href="https://linkedin.com/in/AmineNAHLI" class="contact-item">in/AmineNAHLI <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
-            <a href="https://github.com/Amine-NAHLI" class="contact-item">github.com/Amine-NAHLI <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-            <a href="https://tryhackme.com/p/nahliAmine" class="contact-item">thm/nahliAmine <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></a>
+            <a href="https://linkedin.com/in/AmineNAHLI" target="_blank" class="contact-item">linkedin.com/in/AmineNAHLI <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+            <a href="https://github.com/Amine-NAHLI" target="_blank" class="contact-item">github.com/Amine-NAHLI <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
         </div>
     </header>
 
     <div class="divider"></div>
 
     <p class="summary">
-        Élève Ingénieur 3ème année avec une expertise hybride en <strong>Ingénierie Logicielle, Cybersécurité et Intelligence Artificielle</strong>. Je conçois des architectures robustes et sécurisées de bout en bout — de l'audit réseau et la prédiction de vulnérabilités par Machine Learning, à l'intégration de modèles IA génératifs et au développement d'applications Full-Stack performantes. Rigoureux, autonome et orienté impact, je cherche à résoudre des problèmes complexes à l'intersection de la sécurité et de l'intelligence artificielle.
+        Élève Ingénieur en 4ème année de <strong>Génie Informatique</strong> spécialisé en <strong>Cybersécurité, Intelligence Artificielle et Ingénierie Logicielle</strong>. Expert dans la conception d'architectures distribuées et sécurisées (REST, JWT, PKI/RSA), le déploiement de pipelines ML/Computer Vision (Scikit-Learn, YOLOv8), la surveillance SIEM/SOC (Wazuh, TheHive) et l'intégration de modèles LLM/RAG. Orienté performance et sécurité, je développe des solutions d'entreprise Full-Stack à fort impact.
     </p>
 
     <section class="section">
@@ -215,33 +237,32 @@
         <div class="skills-grid">
             <div>
                 <strong>Cybersécurité & Réseau</strong>
-                Pentest Réseau, Wazuh (SIEM) / TheHive, Scapy / Sockets, Analyse Vulnérabilités, PKI / RSA-2048
+                Audit Réseau & Sécurité, Wazuh (SIEM) / TheHive (SOC), Scapy / Sockets, Analyse Vulnérabilités (CVE/NVD)
             </div>
             <div>
-                <strong>IA & Data</strong>
-                Machine Learning (Scikit-Learn), Computer Vision (YOLOv8), RAG & LangChain, HuggingFace, Python Avancé
+                <strong>IA & Data Science</strong>
+                Machine Learning (Scikit-Learn), Computer Vision (YOLOv8, OpenCV), RAG & LangChain, Python Avancé
             </div>
             <div>
                 <strong>Full-Stack & DevOps</strong>
-                React / Next.js / Three.js, Angular / Spring Boot, Laravel / PHPUnit, Supabase / SQL, Docker
+                React / Next.js / Three.js, React Native, Angular 21 / Spring Boot 3.5, Laravel 12 / PHPUnit, Supabase / SQL, Docker
             </div>
         </div>
     </section>
 
     <section class="section">
-        <h2 class="section-title">Expérience Professionnelle</h2>
+        <h2 class="section-title">Expériences Professionnelles</h2>
         
         <div class="item">
             <div class="item__header">
                 <div class="item__title">Ingénieur Cybersécurité & IA — Stage PFA</div>
                 <div class="item__date">07/2026 – Présent</div>
             </div>
-            <div class="item__subtitle">IntelTrust · Rabat, Maroc</div>
+            <div class="item__subtitle">IntelTrust</div>
             <ul class="item__list">
-                <li><strong>Smart Network Mapper :</strong> Conception d'une suite d'audit réseau (Scapy/Sockets) multithread (300 workers), avec rapports d'audit par IA (Groq Llama-3.3) et alertes Telegram automatisées (n8n).</li>
-                <li><strong>CVE Dataset Generator :</strong> Développement d'un pipeline d'extraction NVD/NIST créant un dataset ML structuré (2,3M d'entrées, normalisation, One-Hot encoding, 7 OS simulés).</li>
-                <li><strong>Training Random Forest :</strong> Entraînement et modélisation prédictive (500 arbres, RobustScaler) ; modèle de 5.1GB déployé sur Hugging Face pour l'inférence.</li>
-                <li><strong>SNM Docs :</strong> Déploiement d'un portail web interactif (React 19, Vite, Tailwind CSS 4) avec animations 3D (Three.js, Framer Motion) hébergé sur GitHub Pages.</li>
+                <li><strong>Smart Network Mapper :</strong> Architecture et développement d'un scanner d'audit réseau multithread sous Scapy/Sockets (300 workers simultanés), avec rapports d'audit par IA (Groq Llama-3.3) et alertes Telegram (n8n).</li>
+                <li><strong>CVE Dataset Generator & Modélisation ML :</strong> Extraction NVD/NIST (2,3M d'entrées) et entraînement d'un modèle Random Forest (500 arbres, RobustScaler) déployé sur Hugging Face Hub (5,1 Go).</li>
+                <li><strong>Portail SNM Docs :</strong> Déploiement du site interactif (React 19, Vite, Tailwind CSS 4, Three.js) hébergé sur GitHub Pages.</li>
             </ul>
         </div>
 
@@ -252,8 +273,45 @@
             </div>
             <div class="item__subtitle">HumanOne · Casablanca, Maroc</div>
             <ul class="item__list">
-                <li><strong>Déploiement et paramétrage</strong> avancé de l'environnement virtuel sous VMware ; intégration et configuration du SIEM <strong>Wazuh</strong> pour la détection proactive des menaces réseau.</li>
-                <li><strong>Mise en place</strong> de <strong>TheHive</strong> pour la centralisation des alertes et réalisation de simulations d'attaques (scan Nmap, brute force Hydra, sniffing Wireshark) pour éprouver la résilience.</li>
+                <li><strong>Architecture SIEM & SOC :</strong> Déploiement et paramétrage d'un environnement virtuel sous VMware avec intégration du SIEM <strong>Wazuh</strong> pour la détection proactive des menaces réseau.</li>
+                <li><strong>Gestion d'Incidents & Attaques :</strong> Centralisation des alertes sur <strong>TheHive</strong> et réalisation de simulations d'attaques offensives (Nmap, Hydra, Wireshark) pour valider la résilience.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Hackathons & Compétitions</h2>
+        
+        <div class="item">
+            <div class="item__header">
+                <div class="item__title">Build with Gemma Hackathon 2026 — <span style="color:var(--c-accent);">1er Prix</span></div>
+                <div class="item__date">07/2026</div>
+            </div>
+            <div class="item__subtitle">Google Developer Group (GDG ENSAB) & AI Crafters · Technopark Casablanca</div>
+            <ul class="item__list">
+                <li>Développement d'une application d'IA générative et d'agents autonomes basée sur le modèle open-source <strong>Google Gemma</strong>, récompensée par le <strong>1er Prix</strong> de la compétition.</li>
+            </ul>
+        </div>
+
+        <div class="item">
+            <div class="item__header">
+                <div class="item__title">1er OpenAI Codex Hackathon — <span style="color:var(--c-accent);">Prix Coup de Cœur</span></div>
+                <div class="item__date">08/2026</div>
+            </div>
+            <div class="item__subtitle">AI Crafters · Startup Station, Technopark Casablanca</div>
+            <ul class="item__list">
+                <li>Conception et prototypage intensif en 1 jour d'une solution logicielle propulsée par <strong>OpenAI Codex</strong>, récompensée par le <strong>Prix Coup de Cœur</strong>.</li>
+            </ul>
+        </div>
+
+        <div class="item">
+            <div class="item__header">
+                <div class="item__title">Hack The Box Morocco Summer CTF Cup</div>
+                <div class="item__date">2026</div>
+            </div>
+            <div class="item__subtitle">Hack The Box (HTB) Morocco Community</div>
+            <ul class="item__list">
+                <li>Résolution en équipe de challenges de cybersécurité offensives (CTF) : analyse de vulnérabilités, reverse engineering et debugging.</li>
             </ul>
         </div>
     </section>
@@ -263,34 +321,34 @@
         
         <div class="item">
             <div class="item__header">
-                <div class="item__title">Stockly — ERP Full-Stack (Gestion & Commerce)</div>
+                <div class="item__title">7YATK — Application de Survie & IA de Secours (Mesh & Télémétrie)</div>
+                <div class="item__date">React Native / Groq API / WebSockets</div>
+            </div>
+            <ul class="item__list">
+                <li><strong>Assistant & Diagnostic IA :</strong> Intégration de modèles IA (Groq API, Whisper V3 Turbo) réalisant un diagnostic vocal d'urgence sous 800ms et guidage furtif interactif.</li>
+                <li><strong>Réseau Mesh & Télémétrie G-Force :</strong> Implémentation d'un protocole hors-ligne de relais SOS P2P via WebSockets et détection automatique d'accidents de la route.</li>
+            </ul>
+        </div>
+
+        <div class="item">
+            <div class="item__header">
+                <div class="item__title">Stockly — ERP Full-Stack de Gestion Commerciale</div>
                 <div class="item__date">Angular 21 / Spring Boot 3.5</div>
             </div>
             <ul class="item__list">
-                <li><strong>Conception et développement</strong> d'une architecture REST robuste (60 endpoints) sécurisée par JWT avec gestion des rôles (Admin/Gérant/Employé) et export Excel via Apache POI.</li>
-                <li><strong>Mise en œuvre</strong> d'un dashboard analytique temps réel intégrant un assistant intelligent propulsé par <strong>Groq AI (Llama-3)</strong>, avec un front-end réactif basé sur la détection Zoneless.</li>
+                <li><strong>Architecture REST & Sécurité :</strong> API REST de 60 endpoints sécurisée par JWT avec contrôle d'accès basé sur les rôles (RBAC) et génération de rapports Excel (Apache POI).</li>
+                <li><strong>Dashboard & IA Métier :</strong> Interface Angular Zoneless à haut rendement couplée à un assistant intelligent propulsé par <strong>Groq Llama-3</strong> pour l'analyse des ventes.</li>
             </ul>
         </div>
 
         <div class="item">
             <div class="item__header">
-                <div class="item__title">Transport Robot — Vision Autonome (YOLOv8)</div>
+                <div class="item__title">Transport Robot — Vision Autonome & Systèmes Embarqués</div>
                 <div class="item__date">YOLOv8 / OpenCV / Raspberry Pi</div>
             </div>
             <ul class="item__list">
-                <li><strong>Conception</strong> d'une architecture distribuée (PC de calcul IA ↔ Raspberry Pi embarqué) pilotée par une machine à états asynchrone (multithreading) garantissant la fluidité du flux vidéo.</li>
-                <li><strong>Création</strong> de datasets sur-mesure et fine-tuning <strong>YOLOv8</strong> couplé au scan de QR Codes et à la synthèse vocale (gTTS) pour interaction en temps réel.</li>
-            </ul>
-        </div>
-
-        <div class="item">
-            <div class="item__header">
-                <div class="item__title">E-UPF — Écosystème Universitaire (ERP & SIS)</div>
-                <div class="item__date">Laravel 12 / PKI (RSA) / RAG</div>
-            </div>
-            <ul class="item__list">
-                <li><strong>Développement</strong> de 4 portails hermétiques (protection anti-IDOR, sécurité CSRF + Sanctum) incluant un algorithme mathématique anti-collision pour la réservation des infrastructures.</li>
-                <li><strong>Intégration</strong> d'un scellement cryptographique des documents (signature asymétrique) et d'un assistant parental IA contextuel entièrement couverts par PHPUnit.</li>
+                <li><strong>Architecture Distribuée & Vision :</strong> Pipeline asynchrone multithread PC ↔ Raspberry Pi embarqué assurant le traitement vidéo temps réel sans latence.</li>
+                <li><strong>Fine-Tuning YOLOv8 :</strong> Annotation de datasets sur-mesure, entraînement du modèle YOLOv8, décodage de QR Codes et synthèse vocale interactive (gTTS).</li>
             </ul>
         </div>
     </section>
@@ -300,38 +358,42 @@
             <h2 class="section-title">Formation</h2>
             <div class="item">
                 <div class="item__title">Ingénieur d'État — Génie Informatique</div>
-                <div class="item__subtitle" style="font-weight:400; margin:1px 0;">Université Privée de Fès (UPF)</div>
-                <div class="item__date" style="font-weight:400; color:var(--c-muted);">2023 – Présent</div>
+                <div class="item__subtitle" style="font-weight:400; margin:0;">Université Privée de Fès (UPF) <span style="float:right; font-weight:600; color:var(--c-accent);">2023 – Présent</span></div>
             </div>
-            <div class="item" style="margin-top:6px;">
+            <div class="item" style="margin-top:2px;">
                 <div class="item__title">Baccalauréat Scientifique — Maths</div>
-                <div class="item__subtitle" style="font-weight:400; margin:1px 0;">Lycée Fes City School</div>
-                <div class="item__date" style="font-weight:400; color:var(--c-muted);">2022 – 2023</div>
+                <div class="item__subtitle" style="font-weight:400; margin:0;">Lycée Fes City School <span style="float:right; font-weight:600; color:var(--c-accent);">2022 – 2023</span></div>
             </div>
             
-            <h2 class="section-title" style="margin-top:14px;">Langues</h2>
+            <h2 class="section-title" style="margin-top:4px;">Langues</h2>
             <ul class="item__list" style="margin-left: 5px;">
-                <li><strong>Arabe</strong> — Maternelle</li>
-                <li><strong>Français</strong> — Courant</li>
-                <li><strong>Anglais</strong> — Intermédiaire</li>
+                <li><strong>Arabe :</strong> Langue Maternelle</li>
+                <li><strong>Français :</strong> Avancé / Courant</li>
+                <li><strong>Anglais :</strong> Intermédiaire / Technique</li>
             </ul>
         </section>
         
-        <section class="section">
-            <h2 class="section-title">Certifications</h2>
-            <ul class="item__list" style="margin-left: 5px;">
-                <li>Offensive Security & Pre Security Path — <em>TryHackMe</em></li>
-                <li>Fondements de la Sécurité Informatique</li>
-                <li>Automatisation avancée n8n — <em>LinkedIn Learning</em></li>
-            </ul>
-            
-            <h2 class="section-title" style="margin-top:14px;">Centres d'intérêt</h2>
-            <ul class="item__list" style="margin-left: 5px;">
-                <li>CTF & Challenges Offensifs (TryHackMe, HackTheBox)</li>
-                <li>Veille IA — LLMs, agents autonomes & RAG</li>
-                <li>Contribution Open Source & projets personnels</li>
-                <li>Automatisation & scripting Python</li>
-            </ul>
+        <section class="section" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+                <h2 class="section-title">Certifications</h2>
+                <ul class="item__list" style="margin-left: 5px;">
+                    <li>AI Engineer Associate — <em>DataCamp</em></li>
+                    <li>Pre Security Learning Path — <em>TryHackMe</em></li>
+                    <li>Python Essentials 1 — <em>Cisco Networking Academy</em></li>
+                    <li>Automatisation & Agents IA (n8n) — <em>LinkedIn</em></li>
+                </ul>
+                
+                <h2 class="section-title" style="margin-top:4px;">Centres d'intérêt</h2>
+                <ul class="item__list" style="margin-left: 5px;">
+                    <li>CTF & Équipes Tech (TryHackMe, HackTheBox)</li>
+                    <li>Hackathons & Challenges IA (LLMs, Agents Autonomes)</li>
+                    <li>Veille Technologique & Podcasts Cybersécurité</li>
+                </ul>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; margin-top:2px; justify-content:flex-end;">
+                <span style="font-size:6.5pt; font-weight:700; color:var(--c-muted); text-transform:uppercase; letter-spacing:0.5px;">Portfolio & Links</span>
+                <img src="../public/qrcode.jpeg" alt="QR Code" style="width:50px; height:50px; border-radius:5px; border:1px solid #cbd5e1; padding:2px; background:#fff;">
+            </div>
         </section>
     </div>
 

@@ -28,6 +28,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -46,22 +47,23 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         onClick={() => setOpen(true)}
         className="group relative flex flex-col text-left overflow-hidden rounded-[1.75rem] border border-white/10 bg-surface/80 backdrop-blur-xl transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full h-full"
       >
-        {/* Document Preview Frame (Full view without text overlap) */}
+        {/* Document Preview Frame */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-deep/90 border-b border-white/5 flex items-center justify-center">
           {/* Loading Skeleton */}
-          {!isLoaded && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
+          {!isLoaded && !hasError && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised animate-pulse">
-              <LoaderCircle className="size-8 animate-spin text-text-muted/50" />
+              <LoaderCircle className="size-8 animate-spin text-accent/60" />
             </div>
           )}
 
-          {certification.hasDocument ? (
+          {certification.hasDocument && !hasError ? (
             certification.documentMimeType?.startsWith("image/") ? (
               <img
                 src={`/api/certifications/${certification.id}/document`}
                 alt={`Preview of ${certification.name}`}
                 loading="lazy"
                 onLoad={() => setIsLoaded(true)}
+                onError={() => setHasError(true)}
                 className={`h-full w-full object-contain p-2 transition-all duration-700 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             ) : (
@@ -77,8 +79,13 @@ export default function CertificationCard({ certification, locale, copy }: Certi
               </div>
             )
           ) : (
-            <div className="grid h-full place-items-center bg-surface-raised text-text-muted">
-              <Award className="size-20 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-500" />
+            <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-surface to-surface-deep p-6 text-center">
+              <div className="grid size-14 place-items-center rounded-2xl border border-accent/20 bg-accent/10 text-accent mb-2 group-hover:scale-110 transition-transform">
+                <Award className="size-7 text-accent" />
+              </div>
+              <span className="font-mono text-[0.65rem] font-bold uppercase tracking-widest text-text-muted">
+                {certification.issuer || "Certification"}
+              </span>
             </div>
           )}
 

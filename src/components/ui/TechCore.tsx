@@ -1,114 +1,98 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import SkillIcon from "@/components/ui/SkillIcon";
 import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
 
 type TechCoreProps = {
   technologies: string[];
   className?: string;
 };
 
+// Priority badges to add subtle sparkles
+const HIGHLIGHT_TECHS = new Set([
+  "Next.js", "React", "Python", "Wazuh", "YOLOv8", "Angular 21", "Spring Boot 3.5",
+  "Laravel 12", "Docker", "OpenCV", "Scikit-Learn", "TheHive", "Pentesting", "TypeScript"
+]);
+
 export function TechCore({ technologies, className }: TechCoreProps) {
-  const [activeTech, setActiveTech] = useState<string | null>(null);
-  const isHovered = activeTech !== null;
-
-  // Pre-calculate orbits to distribute the technologies
-  // We'll put them on 3 different orbital rings
-  const orbits = useMemo(() => {
-    const sorted = [...technologies].sort();
-    const ringCount = Math.min(3, Math.max(1, Math.ceil(sorted.length / 8))); // dynamically adjust ring count based on items
-    const rings: string[][] = Array.from({ length: ringCount }, () => []);
+  // Clean, unique, and split technologies into two continuous streams
+  const { row1, row2 } = useMemo(() => {
+    const list = Array.from(new Set(technologies)).filter(Boolean);
     
-    // Distribute evenly among the rings
-    sorted.forEach((tech, index) => {
-      rings[index % ringCount].push(tech);
-    });
+    // Split into 2 rows for opposite scrolling
+    const mid = Math.ceil(list.length / 2);
+    const r1 = list.slice(0, mid);
+    const r2 = list.slice(mid);
 
-    return rings;
+    return {
+      row1: r1,
+      row2: r2,
+    };
   }, [technologies]);
 
-  const ringRadiuses = [120, 190, 260]; // in pixels
-  const ringSpeeds = [25, 35, 50]; // in seconds for a full orbit
-
   return (
-    <div className={cn("relative flex h-[350px] sm:h-[500px] md:h-[600px] w-full max-w-4xl mx-auto items-center justify-center overflow-hidden", className)}>
-      <div className="absolute inset-0 flex items-center justify-center scale-[0.6] sm:scale-[0.8] md:scale-100 origin-center">
-        {/* Background glow for the core */}
-        <div className="absolute inset-0 bg-accent/5 rounded-full blur-[100px] pointer-events-none scale-75" />
+    <div className={cn("relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4 select-none", className)}>
+      
+      {/* Left & Right Gradient Edge Fade Masks */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 sm:w-48 bg-gradient-to-r from-[#060709] via-[#060709]/80 to-transparent z-20" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 sm:w-48 bg-gradient-to-l from-[#060709] via-[#060709]/80 to-transparent z-20" />
 
-        {/* The Core (Singularity) */}
-        <div className="relative z-10 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-surface-raised shadow-[0_0_80px_rgba(var(--color-accent-rgb),0.3)] border border-accent/30 backdrop-blur-xl">
-          {/* Core pulsing animation */}
-          <div className="absolute inset-0 rounded-full bg-accent/20 animate-ping opacity-20" style={{ animationDuration: '3s' }} />
-          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-accent/40 to-transparent animate-spin-slow opacity-50" style={{ animationPlayState: isHovered ? 'paused' : 'running' }} />
-          <span className="relative z-20 font-display text-xl sm:text-2xl font-bold tracking-wider text-text-primary">
-            <span className="bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent">AN</span>
-          </span>
+      <div className="flex flex-col gap-3.5">
+        
+        {/* TRACK 1: Moves Left Continuously across full page width */}
+        <div className="group flex overflow-hidden">
+          <div className="flex shrink-0 items-center gap-3 animate-marquee group-hover:[animation-play-state:paused]">
+            {[...row1, ...row1, ...row1, ...row1].map((tech, idx) => (
+              <TechBadge key={`r1-${tech}-${idx}`} tech={tech} />
+            ))}
+          </div>
+          <div aria-hidden="true" className="flex shrink-0 items-center gap-3 animate-marquee group-hover:[animation-play-state:paused]">
+            {[...row1, ...row1, ...row1, ...row1].map((tech, idx) => (
+              <TechBadge key={`r1-dup-${tech}-${idx}`} tech={tech} />
+            ))}
+          </div>
         </div>
 
-      {/* Orbits */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {orbits.map((ringTechs, ringIndex) => {
-          const radius = ringRadiuses[ringIndex];
-          const speed = ringSpeeds[ringIndex];
-          const isReverse = ringIndex % 2 !== 0;
+        {/* TRACK 2: Moves Right Continuously across full page width */}
+        <div className="group flex overflow-hidden">
+          <div className="flex shrink-0 items-center gap-3 animate-marquee-reverse group-hover:[animation-play-state:paused]">
+            {[...row2, ...row2, ...row2, ...row2].map((tech, idx) => (
+              <TechBadge key={`r2-${tech}-${idx}`} tech={tech} />
+            ))}
+          </div>
+          <div aria-hidden="true" className="flex shrink-0 items-center gap-3 animate-marquee-reverse group-hover:[animation-play-state:paused]">
+            {[...row2, ...row2, ...row2, ...row2].map((tech, idx) => (
+              <TechBadge key={`r2-dup-${tech}-${idx}`} tech={tech} />
+            ))}
+          </div>
+        </div>
 
-          return (
-            <div 
-              key={ringIndex}
-              className="absolute rounded-full border border-border-strong/20 transition-opacity duration-300"
-              style={{
-                width: radius * 2,
-                height: radius * 2,
-                opacity: isHovered ? 0.4 : 1,
-              }}
-            >
-              <div 
-                className={cn("w-full h-full animate-orbit pointer-events-none", isReverse && "animate-orbit-reverse")}
-                style={{
-                  animationDuration: `${speed}s`,
-                  animationPlayState: isHovered ? 'paused' : 'running',
-                }}
-              >
-                {ringTechs.map((tech, techIndex) => {
-                  const angle = (techIndex / ringTechs.length) * 360;
-                  return (
-                    <div
-                      key={tech}
-                      className={cn("absolute inset-0 m-auto flex items-center justify-center w-0 h-0", activeTech === tech ? "z-[100]" : "hover:z-[100]")}
-                      style={{
-                        transform: `rotate(${angle}deg) translateX(${radius}px) rotate(-${angle}deg)`,
-                      }}
-                      onMouseEnter={() => setActiveTech(tech)}
-                      onMouseLeave={() => setActiveTech(null)}
-                      onTouchStart={() => setActiveTech(tech)}
-                      onTouchEnd={() => setActiveTech(null)}
-                      onTouchCancel={() => setActiveTech(null)}
-                    >
-                      <div 
-                        className={cn("animate-orbit-counter pointer-events-auto", isReverse && "animate-orbit-counter-reverse")}
-                        style={{ 
-                          animationDuration: `${speed}s`,
-                          animationPlayState: isHovered ? 'paused' : 'running',
-                        }}
-                      >
-                        <div className={cn("relative flex items-center justify-center transition-transform duration-300 z-10", activeTech === tech ? "scale-150 z-[100]" : "scale-100 hover:z-[100]")}>
-                          <SkillIcon name={tech} className={cn("text-[40px] sm:text-5xl rounded-full bg-surface-raised shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all duration-300 relative z-10", activeTech === tech ? "ring-2 ring-accent shadow-[0_0_30px_rgba(56,189,248,0.8)]" : "ring-1 ring-border-strong/50")} />
-                          <div className={cn("absolute -top-14 transition-opacity whitespace-nowrap px-4 py-2 rounded-lg text-sm font-black pointer-events-none z-[100] border-2", activeTech === tech ? "opacity-100 bg-accent text-bg-page border-accent-light shadow-[0_0_20px_rgba(56,189,248,0.6)]" : "opacity-0 bg-bg-page text-text-primary border-border-strong shadow-2xl")}>
-                            {tech}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
       </div>
-      </div>
+
+    </div>
+  );
+}
+
+// Compact Glass Technology Badge Component
+function TechBadge({ tech }: { tech: string }) {
+  const isHighlight = HIGHLIGHT_TECHS.has(tech);
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-2.5 rounded-xl border px-3.5 py-2 text-xs font-semibold backdrop-blur-md transition-all duration-300 cursor-pointer shrink-0",
+        isHighlight
+          ? "border-white/15 bg-surface/80 text-text-primary hover:border-accent/60 hover:bg-surface-raised hover:scale-105 hover:shadow-md hover:shadow-accent/15 hover:text-white"
+          : "border-white/10 bg-surface/50 text-text-secondary hover:border-white/30 hover:bg-surface-raised hover:scale-105 hover:text-white"
+      )}
+    >
+      <SkillIcon name={tech} className="size-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
+      <span className="font-sans tracking-tight whitespace-nowrap">{tech}</span>
+      {isHighlight && (
+        <Sparkles className="size-3 text-accent/80 animate-pulse" />
+      )}
     </div>
   );
 }

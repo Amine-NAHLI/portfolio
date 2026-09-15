@@ -36,11 +36,6 @@ export default function HeroImageParallax({ name }: { name: string }) {
 
   return (
     <div className="relative flex items-center justify-center w-full max-w-sm sm:max-w-md">
-      {/* Ambient Radial Backlight Glow */}
-      <div 
-        aria-hidden="true" 
-        className="pointer-events-none absolute -inset-6 rounded-[3.5rem] bg-gradient-to-tr from-accent/30 via-blue-500/15 to-purple-500/10 blur-3xl opacity-80"
-      />
 
       <motion.div
         ref={ref}

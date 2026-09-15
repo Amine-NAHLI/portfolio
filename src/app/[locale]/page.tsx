@@ -102,9 +102,6 @@ export default async function HomePage({ params }: HomePageProps) {
 
       <div className="relative w-full">
         <section id="home" className="relative z-10 pt-24 pb-12 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24">
-          {/* Spotlight Blur Effect */}
-          <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[45rem] w-[65rem] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-accent/10 blur-[140px]" />
-          
           <Container className="relative z-10">
             <ScrollReveal>
               <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-8">

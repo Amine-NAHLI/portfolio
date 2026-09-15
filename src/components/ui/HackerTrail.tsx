@@ -28,9 +28,6 @@ export default function HackerTrail() {
   }, []);
 
   useEffect(() => {
-    // Disable on touch devices
-    if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -78,13 +75,39 @@ export default function HackerTrail() {
       mouse.y = -1000;
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+        mouse.active = true;
+        lastMoveTime = Date.now();
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+        mouse.active = true;
+        lastMoveTime = Date.now();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      mouse.active = false;
+    };
+
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
 
     const animate = () => {
-      const isIdle = Date.now() - lastMoveTime > 250;
+      const isIdle = Date.now() - lastMoveTime > 350;
 
-      // Smoothly fade out when mouse is stationary, fade in when moving
+      // Smoothly fade out when inactive/idle, fade in when moving
       if (isIdle || !mouse.active) {
         currentOpacity = Math.max(0, currentOpacity - 0.04);
       } else {
@@ -138,6 +161,10 @@ export default function HackerTrail() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchEnd);
       cancelAnimationFrame(animationFrameId);
     };
   }, [isDark, pathname]);
@@ -145,7 +172,7 @@ export default function HackerTrail() {
   return (
     <canvas 
       ref={canvasRef} 
-      className="pointer-events-none fixed inset-0 z-40 opacity-100 transition-colors duration-500 hidden sm:block"
+      className="pointer-events-none fixed inset-0 z-40 opacity-100 transition-colors duration-500 block"
       style={{ mixBlendMode: isDark ? "screen" : "multiply" }}
     />
   );

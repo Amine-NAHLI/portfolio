@@ -24,12 +24,19 @@ function scrambleText(text: string, progress: number): string {
 }
 
 export function GlobalLoader() {
+  const [shouldRender, setShouldRender] = useState(true);
   const [progress, setProgress] = useState(0);
   const [currentText, setCurrentText] = useState("");
   
   // Scramble text effect
   const [targetText, setTargetText] = useState("INITIALIZING SYSTEM...");
   const [textProgress, setTextProgress] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("portfolio_has_loaded") === "true") {
+      setShouldRender(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Determine target text based on global progress
@@ -87,6 +94,8 @@ export function GlobalLoader() {
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
+
+  if (!shouldRender) return null;
 
   return (
     <motion.div

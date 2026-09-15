@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Languages, Menu, Search, X } from "lucide-react";
 import ThemeToggle from "@/components/layout/ThemeToggle";
@@ -128,8 +129,9 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
         <div className="flex h-14 items-center justify-between gap-2 rounded-[2.5rem] border border-border/50 bg-bg-page/80 p-2 backdrop-blur-xl shadow-2xl">
           
           <Magnetic intensity={0.2}>
-            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
-              <span className="font-display text-xs font-bold text-accent transition-transform duration-200 group-hover:-rotate-12">AN</span>
+            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent overflow-hidden border border-accent/20 p-1" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
+              <Image src="/logo-light.png" alt="Amine Nahli Logo" width={36} height={36} className="size-full object-contain dark:hidden transition-transform duration-300 group-hover:scale-110" />
+              <Image src="/logo-dark.png" alt="Amine Nahli Logo" width={36} height={36} className="size-full object-contain hidden dark:block transition-transform duration-300 group-hover:scale-110" />
             </Link>
           </Magnetic>
 

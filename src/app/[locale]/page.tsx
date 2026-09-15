@@ -114,11 +114,19 @@ export default async function HomePage({ params }: HomePageProps) {
                     <SystemStatus locale={locale} />
                   </div>
                   
-                  <HackerText 
-                    text={siteConfig.name}
-                    className="mt-1 text-4xl font-black tracking-tight text-text-primary sm:text-6xl lg:text-[4.75rem] lg:leading-[1.05]"
-                    as="h1"
-                  />
+                  <div className="flex items-center gap-3.5 mt-2">
+                    <div className="flex items-center justify-center size-12 sm:size-14 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 via-surface to-surface-deep text-accent shadow-xl shadow-accent/15 backdrop-blur-xl shrink-0">
+                      <span className="font-display text-xl sm:text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-accent via-blue-400 to-indigo-300">
+                        AN
+                      </span>
+                    </div>
+
+                    <HackerText 
+                      text={siteConfig.name}
+                      className="text-4xl font-black tracking-tight text-text-primary sm:text-6xl lg:text-[4.75rem] lg:leading-[1.05]"
+                      as="h1"
+                    />
+                  </div>
                   
                   <p className="mt-3 text-base sm:text-lg font-semibold tracking-tight text-accent">
                     {locale === "fr" ? "Élève Ingénieur en Génie Informatique & Développeur Full-Stack / Cybersécurité" : "Computer Engineering Student & Full-Stack / Security Developer"}

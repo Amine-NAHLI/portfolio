@@ -11,7 +11,6 @@ import { getSiteUrl, siteConfig } from "@/config/site";
 import { getPublicContactLinks, getSectionsVisibility } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
-import Spotlight from "@/components/ui/Spotlight";
 import HackerTrail from "@/components/ui/HackerTrail";
 import ThemeGlitch from "@/components/ui/ThemeGlitch";
 import ChatWidget from "@/components/ui/ChatWidget";
@@ -100,7 +99,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <HackerTrail />
       <ThemeGlitch />
       <NoiseOverlay />
-      <Spotlight />
       <div className="flex min-h-screen flex-col">
         <LocaleDocumentAttributes locale={candidate} />
         <a href="#main-content" className="skip-link">

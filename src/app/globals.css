@@ -25,14 +25,14 @@
 
 @layer base {
   :root {
-    --bg-page: #02040a;
-    --bg-gradient: radial-gradient(120% 80% at 50% -10%, #080c1f 0%, #02040a 100%);
-    --surface-subtle: #060814;
-    --surface: #0a0d1e;
-    --surface-raised: #10142b;
-    --surface-deep: #000105;
-    --border: rgb(255 255 255 / 7%);
-    --border-strong: rgb(255 255 255 / 14%);
+    --bg-page: #03050b;
+    --bg-gradient: radial-gradient(120% 80% at 50% -10%, #050812 0%, #020306 100%);
+    --surface-subtle: #04050a;
+    --surface: #060912;
+    --surface-raised: #0b0f1d;
+    --surface-deep: #000103;
+    --border: rgb(255 255 255 / 6%);
+    --border-strong: rgb(255 255 255 / 12%);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;

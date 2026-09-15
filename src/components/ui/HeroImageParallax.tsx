@@ -67,27 +67,6 @@ export default function HeroImageParallax({ name }: { name: string }) {
           {/* Subtle Bottom Vignette for elegant depth */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
         </div>
-
-        {/* High-Tech Personal Logo Badge at bottom corner of picture */}
-        <motion.div 
-          className="absolute -bottom-3 -right-3 z-20 flex size-16 sm:size-20 items-center justify-center rounded-2xl border-2 border-accent/40 bg-surface/90 p-2 shadow-2xl shadow-accent/30 backdrop-blur-xl transition-all duration-300 group-hover:scale-110 group-hover:border-accent"
-          whileHover={{ scale: 1.12, rotate: 3 }}
-        >
-          <Image
-            src="/logo-light.png"
-            alt="Amine Nahli Logo"
-            width={64}
-            height={64}
-            className="size-full object-contain dark:hidden"
-          />
-          <Image
-            src="/logo-dark.png"
-            alt="Amine Nahli Logo"
-            width={64}
-            height={64}
-            className="size-full object-contain hidden dark:block"
-          />
-        </motion.div>
       </motion.div>
     </div>
   );

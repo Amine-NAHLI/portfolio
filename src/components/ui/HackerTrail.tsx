@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ";
-const FONT_SIZE = 14;
-const RADIUS = 80;
+const FONT_SIZE = 13;
+const RADIUS = 55; // Slightly smaller trail circle as requested
 
 export default function HackerTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,7 +28,7 @@ export default function HackerTrail() {
   }, []);
 
   useEffect(() => {
-    // Disable on touch devices to save battery & performance
+    // Disable on touch devices
     if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
 
     const canvas = canvasRef.current;
@@ -42,6 +42,8 @@ export default function HackerTrail() {
     let grid: string[][] = [];
     
     const mouse = { x: -1000, y: -1000, active: false };
+    let lastMoveTime = Date.now();
+    let currentOpacity = 0;
     let animationFrameId: number;
 
     const initGrid = () => {
@@ -67,6 +69,7 @@ export default function HackerTrail() {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
       mouse.active = true;
+      lastMoveTime = Date.now();
     };
 
     const handleMouseLeave = () => {
@@ -79,9 +82,18 @@ export default function HackerTrail() {
     document.addEventListener("mouseleave", handleMouseLeave, { passive: true });
 
     const animate = () => {
-      if (mouse.active && mouse.x > 0 && mouse.y > 0) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isIdle = Date.now() - lastMoveTime > 250;
 
+      // Smoothly fade out when mouse is stationary, fade in when moving
+      if (isIdle || !mouse.active) {
+        currentOpacity = Math.max(0, currentOpacity - 0.04);
+      } else {
+        currentOpacity = Math.min(1, currentOpacity + 0.12);
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (currentOpacity > 0.01 && mouse.x > 0 && mouse.y > 0) {
         ctx.font = `bold ${FONT_SIZE}px monospace`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -105,18 +117,16 @@ export default function HackerTrail() {
             const distance = Math.sqrt(dx * dx + dy * dy);
             
             if (distance < RADIUS) {
-              if (Math.random() < 0.15) {
+              if (Math.random() < 0.12) {
                 grid[i][j] = CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
               }
 
-              const opacity = Math.pow(1 - (distance / RADIUS), 1.5);
-              ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+              const cellOpacity = Math.pow(1 - (distance / RADIUS), 1.5) * currentOpacity;
+              ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${cellOpacity})`;
               ctx.fillText(grid[i][j], charX, charY);
             }
           }
         }
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       
       animationFrameId = requestAnimationFrame(animate);

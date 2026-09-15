@@ -10,7 +10,6 @@ import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttribut
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { getPublicContactLinks, getSectionsVisibility } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
-import CustomCursor from "@/components/ui/CustomCursor";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import Spotlight from "@/components/ui/Spotlight";
 import HackerTrail from "@/components/ui/HackerTrail";
@@ -98,7 +97,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <PageLoadWrapper>
       <SmoothScroll />
       <ScrollProgress />
-      <CustomCursor />
       <HackerTrail />
       <ThemeGlitch />
       <NoiseOverlay />

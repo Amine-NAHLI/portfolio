@@ -336,9 +336,9 @@ export default async function HomePage({ params }: HomePageProps) {
               <ButtonLink href={`/${locale}/certifications`} variant="secondary" className="shrink-0 self-start md:self-auto">{copy.certificationsCta}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
             </div>
             {displayCertifications.length ? (
-              <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 no-scrollbar">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {displayCertifications.map((certification) => (
-                  <div key={certification.id} className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[30vw] shrink-0 snap-start">
+                  <div key={certification.id} className="w-full">
                     <CertificationCard 
                       certification={{
                         id: certification.id,

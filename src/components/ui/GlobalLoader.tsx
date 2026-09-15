@@ -40,12 +40,12 @@ export function GlobalLoader() {
 
   useEffect(() => {
     // Determine target text based on global progress
-    if (progress < 40) {
-      setTargetText("INITIALIZING SYSTEM...");
-    } else if (progress < 80) {
-      setTargetText("BYPASSING SECURITY...");
+    if (progress < 50) {
+      setTargetText("CHARGEMENT DU PORTFOLIO...");
+    } else if (progress < 90) {
+      setTargetText("PRÉPARATION DE L'ÉCOSYSTÈME...");
     } else {
-      setTargetText("ACCESS GRANTED.");
+      setTargetText("BIENVENUE.");
     }
   }, [progress]);
 

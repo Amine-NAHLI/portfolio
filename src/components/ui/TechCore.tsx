@@ -3,70 +3,131 @@
 import { useMemo } from "react";
 import SkillIcon from "@/components/ui/SkillIcon";
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
+import { Code2 } from "lucide-react";
 
 type TechCoreProps = {
   technologies: string[];
   className?: string;
 };
 
-// Priority badges to add subtle sparkles
-const HIGHLIGHT_TECHS = new Set([
-  "Next.js", "React", "Python", "Wazuh", "YOLOv8", "Angular 21", "Spring Boot 3.5",
-  "Laravel 12", "Docker", "OpenCV", "Scikit-Learn", "TheHive", "Pentesting", "TypeScript"
-]);
+// Key highlighted technologies
+const CORE_TECHS_ROW1 = [
+  "Next.js", "Wazuh", "YOLOv8", "React", "Python", "Angular 21", "Docker", "Pentesting"
+];
+
+const CORE_TECHS_ROW2 = [
+  "Spring Boot 3.5", "Laravel 12", "OpenCV", "Scikit-Learn", "TheHive", "Nmap", "Wireshark", "TypeScript"
+];
 
 export function TechCore({ technologies, className }: TechCoreProps) {
-  // Clean, unique, and split technologies into two continuous streams
-  const { row1, row2 } = useMemo(() => {
-    const list = Array.from(new Set(technologies)).filter(Boolean);
+  // Deduplicate and split technologies list
+  const { row1, row2, totalCount } = useMemo(() => {
+    const unique = Array.from(new Set(technologies)).filter(Boolean);
+    const list = unique.length > 0 ? unique : [...CORE_TECHS_ROW1, ...CORE_TECHS_ROW2];
     
-    // Split into 2 rows for opposite scrolling
     const mid = Math.ceil(list.length / 2);
-    const r1 = list.slice(0, mid);
-    const r2 = list.slice(mid);
-
     return {
-      row1: r1,
-      row2: r2,
+      row1: list.slice(0, mid),
+      row2: list.slice(mid),
+      totalCount: list.length,
     };
   }, [technologies]);
 
   return (
-    <div className={cn("relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4 select-none", className)}>
+    <div className={cn("relative w-full max-w-6xl mx-auto flex flex-col gap-4 select-none", className)}>
       
-      {/* Left & Right Gradient Edge Fade Masks */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 sm:w-48 bg-gradient-to-r from-[#060709] via-[#060709]/80 to-transparent z-20" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 sm:w-48 bg-gradient-to-l from-[#060709] via-[#060709]/80 to-transparent z-20" />
-
-      <div className="flex flex-col gap-3.5">
+      {/* ELEGANT VISUAL STACK CONTAINER */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface-deep/80 p-6 md:p-8 backdrop-blur-2xl shadow-2xl">
         
-        {/* TRACK 1: Moves Left Continuously across full page width */}
-        <div className="group flex overflow-hidden">
-          <div className="flex shrink-0 items-center gap-3 animate-marquee group-hover:[animation-play-state:paused]">
-            {[...row1, ...row1, ...row1, ...row1].map((tech, idx) => (
-              <TechBadge key={`r1-${tech}-${idx}`} tech={tech} />
-            ))}
+        {/* Subtle Background Glow */}
+        <div className="pointer-events-none absolute -top-32 -left-32 size-80 rounded-full bg-accent/5 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 size-80 rounded-full bg-purple-500/5 blur-[100px]" />
+
+        {/* HEADER STRIP */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-white/10">
+          
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent shadow-sm">
+              <Code2 className="size-4" />
+            </div>
+            <div>
+              <h3 className="font-display text-base font-bold text-text-primary tracking-tight">
+                Écosystème & Stack Technique
+              </h3>
+              <p className="text-xs text-text-muted">
+                {totalCount} technologies maîtrisées et déployées en environnement réel
+              </p>
+            </div>
           </div>
-          <div aria-hidden="true" className="flex shrink-0 items-center gap-3 animate-marquee group-hover:[animation-play-state:paused]">
-            {[...row1, ...row1, ...row1, ...row1].map((tech, idx) => (
-              <TechBadge key={`r1-dup-${tech}-${idx}`} tech={tech} />
-            ))}
+
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-surface/60 font-mono text-[0.7rem] text-text-secondary">
+            <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+            <span>Environnement Production</span>
           </div>
+
         </div>
 
-        {/* TRACK 2: Moves Right Continuously across full page width */}
-        <div className="group flex overflow-hidden">
-          <div className="flex shrink-0 items-center gap-3 animate-marquee-reverse group-hover:[animation-play-state:paused]">
-            {[...row2, ...row2, ...row2, ...row2].map((tech, idx) => (
-              <TechBadge key={`r2-${tech}-${idx}`} tech={tech} />
-            ))}
+        {/* ULTRA-SLOW CONTINUOUS MOTION TRACKS (95s) */}
+        <div className="relative z-10 py-5 overflow-hidden">
+          
+          {/* Edge Fade Masks */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-32 bg-gradient-to-r from-surface-deep via-surface-deep/80 to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-32 bg-gradient-to-l from-surface-deep via-surface-deep/80 to-transparent z-20" />
+
+          <div className="flex flex-col gap-3.5">
+            
+            {/* TRACK 1: Moves Left Ultra Slow (95s) */}
+            <div className="flex overflow-hidden">
+              <div className="flex shrink-0 items-center gap-3 animate-marquee">
+                {[...row1, ...row1, ...row1, ...row1].map((tech, idx) => (
+                  <VisualTechCard key={`t1-${tech}-${idx}`} tech={tech} />
+                ))}
+              </div>
+              <div aria-hidden="true" className="flex shrink-0 items-center gap-3 animate-marquee">
+                {[...row1, ...row1, ...row1, ...row1].map((tech, idx) => (
+                  <VisualTechCard key={`t1-dup-${tech}-${idx}`} tech={tech} />
+                ))}
+              </div>
+            </div>
+
+            {/* TRACK 2: Moves Right Ultra Slow (95s) */}
+            <div className="flex overflow-hidden">
+              <div className="flex shrink-0 items-center gap-3 animate-marquee-reverse">
+                {[...row2, ...row2, ...row2, ...row2].map((tech, idx) => (
+                  <VisualTechCard key={`t2-${tech}-${idx}`} tech={tech} />
+                ))}
+              </div>
+              <div aria-hidden="true" className="flex shrink-0 items-center gap-3 animate-marquee-reverse">
+                {[...row2, ...row2, ...row2, ...row2].map((tech, idx) => (
+                  <VisualTechCard key={`t2-dup-${tech}-${idx}`} tech={tech} />
+                ))}
+              </div>
+            </div>
+
           </div>
-          <div aria-hidden="true" className="flex shrink-0 items-center gap-3 animate-marquee-reverse group-hover:[animation-play-state:paused]">
-            {[...row2, ...row2, ...row2, ...row2].map((tech, idx) => (
-              <TechBadge key={`r2-dup-${tech}-${idx}`} tech={tech} />
-            ))}
+
+        </div>
+
+        {/* FOOTER READOUT */}
+        <div className="relative z-10 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 font-mono text-[0.68rem] text-text-muted">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-blue-400" />
+              Cybersécurité & Audit
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-purple-400" />
+              Intelligence Artificielle
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-emerald-400" />
+              Full-Stack & DevOps
+            </span>
           </div>
+
+          <span className="tracking-wider uppercase opacity-60">
+            AMINE NAHLI
+          </span>
         </div>
 
       </div>
@@ -75,24 +136,16 @@ export function TechCore({ technologies, className }: TechCoreProps) {
   );
 }
 
-// Compact Glass Technology Badge Component
-function TechBadge({ tech }: { tech: string }) {
-  const isHighlight = HIGHLIGHT_TECHS.has(tech);
-
+// Clean Glass Technology Badge Component
+function VisualTechCard({ tech }: { tech: string }) {
   return (
-    <div
-      className={cn(
-        "flex items-center gap-2.5 rounded-xl border px-3.5 py-2 text-xs font-semibold backdrop-blur-md transition-all duration-300 cursor-pointer shrink-0",
-        isHighlight
-          ? "border-white/15 bg-surface/80 text-text-primary hover:border-accent/60 hover:bg-surface-raised hover:scale-105 hover:shadow-md hover:shadow-accent/15 hover:text-white"
-          : "border-white/10 bg-surface/50 text-text-secondary hover:border-white/30 hover:bg-surface-raised hover:scale-105 hover:text-white"
-      )}
-    >
-      <SkillIcon name={tech} className="size-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-      <span className="font-sans tracking-tight whitespace-nowrap">{tech}</span>
-      {isHighlight && (
-        <Sparkles className="size-3 text-accent/80 animate-pulse" />
-      )}
+    <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-surface/70 px-3.5 py-2 shadow-sm backdrop-blur-md shrink-0">
+      <div className="flex size-6 items-center justify-center rounded-lg bg-surface-deep/80 p-1 border border-white/5">
+        <SkillIcon name={tech} className="size-4" />
+      </div>
+      <span className="font-sans text-xs font-semibold text-text-primary tracking-tight whitespace-nowrap">
+        {tech}
+      </span>
     </div>
   );
 }

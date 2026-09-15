@@ -71,7 +71,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 <iframe
                   src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
                   loading="lazy"
-                  className="pointer-events-none absolute inset-0 h-full w-full border-0 transition-transform duration-700 group-hover:scale-105"
+                  className="pointer-events-none absolute -top-1 -left-1 w-[calc(100%+36px)] h-[calc(100%+16px)] border-0 transition-transform duration-700 group-hover:scale-105"
                   tabIndex={-1}
                   title={`Preview of ${certification.name}`}
                 />
@@ -121,61 +121,89 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         </div>
       </button>
 
-      {/* Verification Dialog */}
+      {/* Verification & Full Document Viewer Dialog */}
       <dialog 
         ref={dialogRef} 
-        className="m-auto w-full max-w-lg rounded-2xl border border-white/10 bg-bg-page p-0 text-text-primary backdrop:bg-black/85 backdrop:backdrop-blur-md open:animate-in open:fade-in-0 open:zoom-in-95"
+        className="m-auto w-[92vw] max-w-4xl rounded-2xl border border-white/10 bg-bg-page p-0 text-text-primary backdrop:bg-black/85 backdrop:backdrop-blur-md open:animate-in open:fade-in-0 open:zoom-in-95 shadow-2xl"
         onClose={() => setOpen(false)}
         onCancel={() => setOpen(false)}
       >
-        <div className="flex flex-col p-6 sm:p-8">
+        <div className="flex flex-col p-5 sm:p-7 max-h-[90vh] overflow-y-auto">
+          {/* Header */}
           <div className="flex items-start justify-between gap-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-full border border-accent/20 bg-accent/10 text-accent">
-              <Award className="size-6" />
+            <div className="flex items-center gap-3">
+              <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
+                <Award className="size-6" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary">
+                  {certification.name}
+                </h2>
+                {certification.issuer && (
+                  <p className="text-sm text-accent font-medium mt-0.5">
+                    {certification.issuer}
+                    {certification.issuedOn && (
+                      <span className="text-text-muted font-normal ml-2">
+                        · {new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long" })}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
             </div>
+
             <button 
               type="button" 
               onClick={() => setOpen(false)}
-              className="inline-grid size-10 shrink-0 place-items-center rounded-full border border-white/10 bg-surface-raised text-text-muted hover:bg-surface hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="inline-grid size-9 shrink-0 place-items-center rounded-full border border-white/10 bg-surface-raised text-text-muted hover:bg-surface hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              aria-label="Close dialog"
             >
               <X className="size-5" />
             </button>
           </div>
 
-          <div className="mt-6">
-            <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-              {certification.name}
-            </h2>
-            {certification.issuer && (
-              <p className="mt-2 text-lg text-accent font-medium">
-                {certification.issuer}
-              </p>
-            )}
-            {certification.description && (
-              <p className="mt-4 text-sm leading-relaxed text-text-secondary">
-                {certification.description}
-              </p>
-            )}
-          </div>
+          {certification.description && (
+            <p className="mt-4 text-xs sm:text-sm leading-relaxed text-text-secondary border-t border-white/5 pt-3">
+              {certification.description}
+            </p>
+          )}
 
-          <div className="mt-6 flex flex-col gap-4 border-y border-white/10 py-6">
-            <div className="flex items-center gap-3 text-text-secondary">
-              <Calendar className="size-5 opacity-70 text-accent" />
-              <span>
-                {certification.issuedOn 
-                  ? new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" }) 
-                  : "—"}
-              </span>
+          {/* FULL CERTIFICATE DOCUMENT VISUALIZER */}
+          {certification.hasDocument ? (
+            <div className="mt-5 w-full overflow-hidden rounded-xl border border-white/10 bg-surface-deep/90 flex items-center justify-center shadow-inner">
+              {certification.documentMimeType?.startsWith("image/") ? (
+                <img
+                  src={`/api/certifications/${certification.id}/document`}
+                  alt={certification.name}
+                  className="w-full max-h-[65vh] object-contain p-2 rounded-xl"
+                />
+              ) : (
+                <div className="relative w-full h-[65vh] overflow-hidden rounded-xl bg-white">
+                  <iframe
+                    src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                    className="absolute -top-1 -left-1 w-[calc(100%+36px)] h-[calc(100%+16px)] border-0"
+                    title={`Document ${certification.name}`}
+                  />
+                </div>
+              )}
             </div>
-          </div>
+          ) : certification.verificationUrl ? (
+            <div className="mt-5 w-full overflow-hidden rounded-xl border border-white/10 bg-surface-deep/90 p-8 text-center flex flex-col items-center justify-center">
+              <Award className="size-12 text-accent mb-3 opacity-80" />
+              <p className="text-sm text-text-secondary mb-4 max-w-md">
+                Cette certification est enregistrée et vérifiable directement auprès de l&apos;organisme d&apos;émission.
+              </p>
+            </div>
+          ) : null}
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+          {/* Footer CTAs */}
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-white/10">
             {certification.verificationUrl && (
               <a 
                 href={certification.verificationUrl} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="flex w-full sm:w-auto flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-semibold text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 {copy.verify} <ArrowUpRight className="size-4" />
               </a>
@@ -186,10 +214,10 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 href={`/api/certifications/${certification.id}/document`} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-white/10 bg-surface px-5 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-white/10 bg-surface-raised px-5 py-2.5 text-xs font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <Download className="size-4" />
-                <span>Document</span>
+                <span>Télécharger le Document</span>
               </a>
             )}
           </div>

@@ -128,8 +128,8 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
         <div className="flex h-14 items-center justify-between gap-2 rounded-[2.5rem] border border-border/50 bg-bg-page/80 p-2 backdrop-blur-xl shadow-2xl">
           
           <Magnetic intensity={0.2}>
-            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
-              <span className="font-display text-xs font-bold text-accent transition-transform duration-200 group-hover:-rotate-12">AN</span>
+            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface/80 border border-white/10 hover:border-accent/40 hover:bg-surface transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
+              <span className="font-mono text-xs font-black tracking-tighter text-text-primary group-hover:text-accent transition-colors">AN<span className="text-accent">.</span></span>
             </Link>
           </Magnetic>
 
@@ -173,7 +173,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
               </Link>
             </Magnetic>
             <Magnetic intensity={0.1}>
-              <Link href={resumeLink} target="_blank" rel="noreferrer" data-analytics-event="cv_open" className="hidden h-10 items-center gap-1.5 rounded-full bg-text-primary px-5 font-mono text-xs font-bold uppercase tracking-[.08em] text-bg-page transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex">
+              <Link href={resumeLink} target="_blank" rel="noreferrer" data-analytics-event="cv_open" className="hidden h-10 items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-5 font-mono text-xs font-bold uppercase tracking-[.08em] text-accent transition-all hover:bg-accent hover:text-bg-page hover:shadow-lg hover:shadow-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex">
                 {dictionary.nav.resume}
               </Link>
             </Magnetic>

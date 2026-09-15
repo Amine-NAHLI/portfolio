@@ -413,7 +413,8 @@ export default function ChatWidget() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-[0_0_20px_rgba(var(--color-accent),0.4)] transition-shadow hover:shadow-[0_0_30px_rgba(var(--color-accent),0.6)]"
+        className="group relative flex h-13 w-13 items-center justify-center rounded-full border border-white/15 bg-surface/90 text-text-primary shadow-xl backdrop-blur-xl transition-all hover:border-accent/50 hover:bg-surface-raised hover:text-accent"
+        aria-label="Toggle AI Assistant"
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
@@ -423,7 +424,7 @@ export default function ChatWidget() {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
             >
-              <X className="h-6 w-6" />
+              <X className="h-5 w-5" />
             </motion.div>
           ) : (
             <motion.div
@@ -432,7 +433,7 @@ export default function ChatWidget() {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: -90, opacity: 0 }}
             >
-              <Sparkles className="h-6 w-6" />
+              <Sparkles className="h-5 w-5 text-accent" />
             </motion.div>
           )}
         </AnimatePresence>

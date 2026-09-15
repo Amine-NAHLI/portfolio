@@ -9,7 +9,6 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Roadmap from "@/components/ui/Roadmap";
 import TechnicalFrame from "@/components/ui/TechnicalFrame";
-import HackerText from "@/components/ui/HackerText";
 import SystemStatus from "@/components/ui/SystemStatus";
 import SystemBadges from "@/components/ui/SystemBadges";
 import TechCard from "@/components/ui/TechCard";
@@ -112,11 +111,9 @@ export default async function HomePage({ params }: HomePageProps) {
                   </div>
                   
                   <div className="mt-2">
-                    <HackerText 
-                      text={siteConfig.name}
-                      className="text-4xl font-black tracking-tight text-text-primary sm:text-6xl lg:text-[4.75rem] lg:leading-[1.05]"
-                      as="h1"
-                    />
+                    <h1 className="text-4xl font-black tracking-tight text-text-primary sm:text-6xl lg:text-[4.75rem] lg:leading-[1.05]">
+                      {siteConfig.name}
+                    </h1>
                   </div>
                   
                   <p className="mt-3 text-base sm:text-lg font-semibold tracking-tight text-accent">
@@ -276,10 +273,10 @@ export default async function HomePage({ params }: HomePageProps) {
               <div className="flex flex-col items-center justify-center text-center mb-12">
                 <p className="eyebrow">{locale === "fr" ? "Mon Expertise" : "My Expertise"}</p>
                 <h2 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">
-                  {locale === "fr" ? "La Singularité Technique" : "The Technical Singularity"}
+                  {locale === "fr" ? "Technologies & Écosystème" : "Technologies & Ecosystem"}
                 </h2>
                 <p className="mt-3 max-w-xl text-text-secondary">
-                  {locale === "fr" ? "Toutes les technologies que je maîtrise, unifiées en un seul écosystème dynamique." : "All the technologies I master, unified into a single dynamic ecosystem."}
+                  {locale === "fr" ? "Les technologies et outils que j'utilise dans mes projets en cybersécurité, IA et développement full-stack." : "Technologies and tools used across my cybersecurity, AI, and full-stack development projects."}
                 </p>
               </div>
               <TechCore technologies={allTechnologies} className="mt-8" />

@@ -10,7 +10,6 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { getAlternateLocale, type Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import Magnetic from "@/components/ui/Magnetic";
-import TextScramble from "@/components/ui/TextScramble";
 
 type SiteHeaderProps = { 
   locale: Locale; 
@@ -123,16 +122,25 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
 
   return (
     <>
-      {/* Floating Pill Navbar */}
-      <header className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[95%] max-w-[65rem]">
-        <div className="flex h-14 items-center justify-between gap-2 rounded-[2.5rem] border border-border/50 bg-bg-page/80 p-2 backdrop-blur-xl shadow-2xl">
+      {/* Floating Glass Capsule Navbar */}
+      <header className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[94%] max-w-[66rem]">
+        <div className="flex h-14 items-center justify-between gap-3 rounded-full border border-white/10 bg-bg-page/75 px-3 py-1.5 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all">
           
+          {/* Brand Signature Logo */}
           <Magnetic intensity={0.2}>
-            <Link href={`/${locale}`} className="group flex size-10 items-center justify-center rounded-full bg-surface/80 border border-white/10 hover:border-accent/40 hover:bg-surface transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}>
-              <span className="font-mono text-xs font-black tracking-tighter text-text-primary group-hover:text-accent transition-colors">AN<span className="text-accent">.</span></span>
+            <Link 
+              href={`/${locale}`} 
+              className="group flex items-center gap-2.5 rounded-full px-3 py-1.5 transition-all hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
+              aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}
+            >
+              <div className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              <span className="font-display text-sm font-bold tracking-tight text-text-primary group-hover:text-accent transition-colors">
+                Amine Nahli<span className="text-accent">.</span>
+              </span>
             </Link>
           </Magnetic>
 
+          {/* Clean Navigation Links */}
           <nav className="hidden items-center gap-1 lg:flex" aria-label={dictionary.navigationLabel}>
             {navigation.map((item) => {
               const active = checkActive(item.href);
@@ -142,42 +150,71 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
                   key={item.href} 
                   href={item.href} 
                   aria-current={active ? "page" : undefined} 
-                  className={cn("relative px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full")}
+                  className={cn(
+                    "relative rounded-full px-3.5 py-1.5 font-sans text-xs font-medium tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                    active 
+                      ? "text-white bg-white/10 border border-white/15 shadow-sm" 
+                      : "text-text-secondary hover:text-white hover:bg-white/5"
+                  )}
                 >
                   <Magnetic intensity={0.1}>
-                    <span className={cn("relative z-10 font-mono text-[.7rem] font-semibold uppercase tracking-[.1em] transition-colors", active ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}>
-                      <TextScramble>{item.label}</TextScramble>
-                    </span>
+                    <span className="relative z-10">{item.label}</span>
                   </Magnetic>
-                  
-                  {active && (
-                    <div className="absolute inset-0 rounded-full bg-surface-raised/80 -z-0 transition-all duration-200" />
-                  )}
                 </LinkComponent>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-1.5">
+          {/* Utility Actions & CTAs */}
+          <div className="flex items-center gap-2">
             <Magnetic intensity={0.2}>
               <ThemeToggle />
             </Magnetic>
+            
             <Magnetic intensity={0.2}>
-              <Link href={`/${locale}/search`} className="inline-grid size-10 place-items-center rounded-full text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={dictionary.nav.search}>
+              <Link 
+                href={`/${locale}/search`} 
+                className="inline-flex size-9 items-center justify-center rounded-full border border-white/5 bg-white/5 text-text-secondary transition-all hover:border-white/20 hover:bg-white/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
+                aria-label={dictionary.nav.search}
+              >
                 <Search aria-hidden="true" className="size-4" />
               </Link>
             </Magnetic>
+
             <Magnetic intensity={0.2}>
-              <Link href={alternatePath} hrefLang={alternateLocale} onClick={rememberLocale} data-analytics-event="language_change" className="inline-grid size-10 place-items-center rounded-full text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" aria-label={dictionary.switchLanguage}>
-                <Languages aria-hidden="true" className="size-4" />
+              <Link 
+                href={alternatePath} 
+                hrefLang={alternateLocale} 
+                onClick={rememberLocale} 
+                data-analytics-event="language_change" 
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 font-mono text-[0.7rem] font-semibold text-text-secondary transition-all hover:border-accent/40 hover:bg-white/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
+                aria-label={dictionary.switchLanguage}
+              >
+                <Languages aria-hidden="true" className="size-3.5 text-accent" />
+                <span className="uppercase">{alternateLocale}</span>
               </Link>
             </Magnetic>
+
             <Magnetic intensity={0.1}>
-              <Link href={resumeLink} target="_blank" rel="noreferrer" data-analytics-event="cv_open" className="hidden h-10 items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-5 font-mono text-xs font-bold uppercase tracking-[.08em] text-accent transition-all hover:bg-accent hover:text-bg-page hover:shadow-lg hover:shadow-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex">
+              <Link 
+                href={resumeLink} 
+                target="_blank" 
+                rel="noreferrer" 
+                data-analytics-event="cv_open" 
+                className="hidden h-9 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/15 px-4 font-sans text-xs font-semibold text-accent shadow-[0_0_15px_rgba(59,130,246,0.15)] transition-all hover:bg-accent hover:text-bg-page hover:shadow-[0_0_25px_rgba(59,130,246,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex"
+              >
                 {dictionary.nav.resume}
               </Link>
             </Magnetic>
-            <button type="button" className="inline-grid size-10 place-items-center rounded-full border border-border text-text-primary transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:hidden" aria-label={dictionary.openMenu} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(true)}>
+
+            <button 
+              type="button" 
+              className="inline-grid size-9 place-items-center rounded-full border border-white/10 bg-white/5 text-text-primary transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:hidden" 
+              aria-label={dictionary.openMenu} 
+              aria-expanded={menuOpen} 
+              aria-controls="mobile-navigation" 
+              onClick={() => setMenuOpen(true)}
+            >
               <Menu aria-hidden="true" className="size-4" />
             </button>
           </div>

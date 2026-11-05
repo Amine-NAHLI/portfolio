@@ -115,7 +115,7 @@ export default function AboutScene({ locale }: AboutSceneProps) {
           <div ref={textRef} className="lg:col-span-7 flex flex-col justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-xs font-mono font-semibold text-[#9A71FF] uppercase tracking-wider mb-4 w-fit">
               <Terminal className="size-3.5" />
-              <span>{"//"} 05 — ABOUT AMINE</span>
+              <span>{"//"} 03 — ABOUT AMINE</span>
             </div>
 
             <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#f3f1f7] leading-tight mb-8">

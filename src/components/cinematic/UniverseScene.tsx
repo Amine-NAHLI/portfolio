@@ -98,7 +98,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div>
             <div className="font-mono text-xs font-semibold text-[#9A71FF] uppercase tracking-widest mb-3">
-              {"//"} 03 — MY UNIVERSE
+              {"//"} 04 — MY UNIVERSE
             </div>
             <h2 className="font-display text-4xl sm:text-6xl font-black tracking-tight text-[#f3f1f7]">
               {locale === "fr" ? "Trois Disciplines. Un Esprit." : "Three Disciplines. One Mindset."}

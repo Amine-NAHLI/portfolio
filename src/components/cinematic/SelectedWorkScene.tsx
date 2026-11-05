@@ -137,7 +137,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-xs font-mono font-semibold text-[#9A71FF] uppercase tracking-wider mb-4">
                 <Layers className="size-3.5" />
-                <span>{"//"} 04 — SELECTED WORK</span>
+                <span>{"//"} 05 — SELECTED WORK</span>
               </div>
 
               <h2 className="font-display text-4xl sm:text-6xl font-black tracking-tight text-[#f3f1f7] leading-none mb-4">

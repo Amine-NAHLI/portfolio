@@ -38,7 +38,7 @@ export default function CinematicCanvas({
 }: CinematicCanvasProps) {
   return (
     <div className="relative w-full bg-[#101015] text-[#f3f1f7] selection:bg-[#9A71FF]/30 selection:text-white">
-      {/* Scene 01: Hero / First Impression */}
+      {/* Scene 01: Hero / First Impression (Centered Monumental Typography) */}
       <HeroScene
         locale={locale}
         siteName={siteName}
@@ -46,17 +46,17 @@ export default function CinematicCanvas({
         contactLinks={contactLinks}
       />
 
-      {/* Scene 02: Manifesto (Pinned Scroll Kinetics) */}
+      {/* Scene 02: Manifesto (Pinned Scroll Kinetics: I BUILD. I SECURE. I INNOVATE.) */}
       <ManifestoScene locale={locale} />
 
-      {/* Scene 03: My Universe (Cybersecurity, Software, AI) */}
+      {/* Scene 03: About Me & Portrait Frame (Engineer Profile, UPF, IntelTrust) */}
+      <AboutScene locale={locale} />
+
+      {/* Scene 04: My Universe (Three Disciplines. One Mindset: Cyber, Software, AI) */}
       <UniverseScene locale={locale} />
 
-      {/* Scene 04: Selected Work (Card Deck Stacking as in Reference Video) */}
+      {/* Scene 05: Selected Work (Card Deck Stacking as in Reference Video) */}
       <SelectedWorkScene locale={locale} projects={projects} />
-
-      {/* Scene 05: About Me (Beyond the Code) */}
-      <AboutScene locale={locale} />
 
       {/* Scene 06: Experience & Journey Timeline (Innovative HUD Console) */}
       <JourneyScene locale={locale} journey={journey} />

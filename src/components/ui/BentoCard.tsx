@@ -58,15 +58,15 @@ export default function BentoCard({
         transformStyle: "preserve-3d",
       }}
       className={cn(
-        "group relative flex flex-col rounded-2xl border border-border/50 bg-bg-page/40 p-6 backdrop-blur-xl shadow-lg transition-colors hover:border-accent/50 overflow-hidden",
+        "group relative flex flex-col rounded-[2rem] border border-white/10 bg-surface/70 p-6 sm:p-7 backdrop-blur-2xl shadow-2xl transition-all duration-500 hover:border-accent/40 hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)] overflow-hidden",
         className
       )}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px rounded-[2rem] opacity-0 transition duration-300 group-hover:opacity-100"
         style={{ background }}
       />
-      <div className="relative z-10 flex flex-col h-full" style={{ transform: "translateZ(30px)" }}>
+      <div className="relative z-10 flex flex-col h-full" style={{ transform: "translateZ(20px)" }}>
         {children}
       </div>
     </motion.div>

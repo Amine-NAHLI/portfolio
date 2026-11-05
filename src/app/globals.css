@@ -17,6 +17,14 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-info: var(--info);
+  --color-cinematic-bg: var(--cinematic-bg);
+  --color-cinematic-surface: var(--cinematic-surface);
+  --color-cinematic-secondary: var(--cinematic-secondary);
+  --color-cinematic-accent: var(--cinematic-accent);
+  --color-cinematic-accent-glow: var(--cinematic-accent-glow);
+  --color-cinematic-text: var(--cinematic-text);
+  --color-cinematic-muted: var(--cinematic-muted);
+  --color-cinematic-border: var(--cinematic-border);
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
   --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
@@ -33,6 +41,15 @@
     --surface-deep: #020304;
     --border: rgb(255 255 255 / 5%);
     --border-strong: rgb(255 255 255 / 10%);
+    /* Cinematic Palette */
+    --cinematic-bg: #101015;
+    --cinematic-surface: #17161e;
+    --cinematic-secondary: #211b2a;
+    --cinematic-accent: #9a71ff;
+    --cinematic-accent-glow: rgba(154, 113, 255, 0.25);
+    --cinematic-text: #f3f1f7;
+    --cinematic-muted: #797681;
+    --cinematic-border: rgba(243, 241, 247, 0.08);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;

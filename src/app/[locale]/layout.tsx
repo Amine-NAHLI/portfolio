@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import SiteFooter from "@/components/layout/SiteFooter";
-import SiteHeader from "@/components/layout/SiteHeader";
+import MinimalNavbar from "@/components/navigation/MinimalNavbar";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { PrivacyAnalytics } from "@/components/analytics/PrivacyAnalytics";
 import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttributes";
 import { getSiteUrl, siteConfig } from "@/config/site";
-import { getPublicContactLinks, getSectionsVisibility } from "@/features/portfolio/data";
+import { getPublicContactLinks } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import HackerTrail from "@/components/ui/HackerTrail";
@@ -87,10 +87,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   if (!isLocale(candidate)) notFound();
 
   const dictionary = getDictionary(candidate);
-  const [contactLinks, sectionsVisibility] = await Promise.all([
-    getPublicContactLinks(),
-    getSectionsVisibility()
-  ]);
+  const contactLinks = await getPublicContactLinks();
 
   return (
     <PageLoadWrapper>
@@ -104,7 +101,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <a href="#main-content" className="skip-link">
           {dictionary.skipToContent}
         </a>
-        <SiteHeader locale={candidate} dictionary={dictionary} resumeLink={contactLinks.resume} sectionsVisibility={sectionsVisibility} />
+        <MinimalNavbar locale={candidate} contactLinks={contactLinks} />
         <PrivacyAnalytics locale={candidate} />
         <main id="main-content" className="flex-1" tabIndex={-1}>
           {children}

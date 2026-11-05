@@ -3,7 +3,7 @@ import { resolve } from "path";
 // Load environment variables from .env.local
 try {
   process.loadEnvFile(resolve(process.cwd(), ".env.local"));
-} catch (error) {
+} catch {
   // Fallback if file doesn't exist
 }
 
@@ -78,7 +78,7 @@ async function testGitHubAPI() {
       console.log(`- ${repo.name} (${repo.primaryLanguage?.name || "Unknown"}): Last pushed ${new Date(repo.pushedAt).toLocaleDateString()}`);
     });
 
-  } catch (error) {
+  } catch {
     console.error("\n❌ Error fetching GitHub data:", error.message);
   }
 }

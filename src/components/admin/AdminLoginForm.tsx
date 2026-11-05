@@ -79,26 +79,29 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
   }
 
   return (
-    <div className="w-full max-w-md">
-      <div className="mb-8">
-        <div className="grid size-12 place-items-center rounded-xl border border-border bg-surface-raised text-accent">
-          <LockKeyhole aria-hidden="true" className="size-5" />
+    <div className="w-full max-w-md rounded-3xl border border-white/10 bg-surface/70 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+      {/* Background Ambient Glow */}
+      <div className="pointer-events-none absolute -top-20 -right-20 size-48 rounded-full bg-accent/10 blur-3xl" />
+      
+      <div className="mb-8 relative z-10">
+        <div className="grid size-12 place-items-center rounded-2xl border border-accent/30 bg-accent/15 text-accent shadow-md shadow-accent/10">
+          <LockKeyhole aria-hidden="true" className="size-6" />
         </div>
-        <h1 className="mt-6 text-3xl font-semibold text-text-primary">{labels.title}</h1>
-        <p className="mt-2 text-sm leading-6 text-text-secondary">{labels.description}</p>
+        <h1 className="mt-5 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">{labels.title}</h1>
+        <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-text-secondary">{labels.description}</p>
       </div>
 
       {!configured ? (
-        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm leading-6 text-warning" role="alert">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-xs leading-6 text-warning" role="alert">
           La configuration Supabase serveur est absente. Consultez <code>.env.example</code> avant d’utiliser l’administration.
         </div>
       ) : null}
 
-      <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
-        <label className="grid gap-2 text-sm font-semibold text-text-primary">
+      <form className="mt-6 space-y-4 relative z-10" onSubmit={handleSubmit} noValidate>
+        <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
           {labels.email}
           <span className="relative">
-            <Mail aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+            <Mail aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
             <input
               type="email"
               name="email"
@@ -110,15 +113,15 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
               autoCorrect="off"
               required
               disabled={!configured || submitting}
-              className="min-h-12 pl-10 pr-4 text-sm disabled:opacity-60"
+              className="h-11 w-full rounded-xl border border-white/10 bg-bg-page/60 pl-11 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60 transition-all"
             />
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-semibold text-text-primary">
+        <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
           {labels.password}
           <span className="relative">
-            <LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+            <LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
             <input
               type="password"
               name="password"
@@ -129,22 +132,31 @@ export default function AdminLoginForm({ locale = "fr", configured }: AdminLogin
               autoCorrect="off"
               required
               disabled={!configured || submitting}
-              className="min-h-12 pl-10 pr-4 text-sm disabled:opacity-60"
+              className="h-11 w-full rounded-xl border border-white/10 bg-bg-page/60 pl-11 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60 transition-all"
             />
           </span>
         </label>
 
-        {errorMessage ? <p className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger" role="alert">{errorMessage}</p> : null}
+        {errorMessage ? <p className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs font-medium text-danger" role="alert">{errorMessage}</p> : null}
 
-        <button type="submit" disabled={!configured || submitting || !email.trim() || !password} className="button-primary w-full disabled:opacity-50">
-          {submitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin motion-reduce:animate-none" /> : null}
+        <button 
+          type="submit" 
+          disabled={!configured || submitting || !email.trim() || !password} 
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent text-xs font-semibold uppercase tracking-wider text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent-hover disabled:opacity-50 mt-2"
+        >
+          {submitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : null}
           {submitting ? labels.submitting : labels.submit}
         </button>
       </form>
 
-      <Link href={`/${locale}`} className="mt-7 inline-flex min-h-11 items-center rounded-lg text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-        {labels.home}
-      </Link>
+      <div className="mt-6 pt-4 border-t border-white/5 text-center relative z-10">
+        <Link 
+          href={`/${locale}`} 
+          className="inline-flex items-center text-xs font-medium text-text-secondary hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          ← {labels.home}
+        </Link>
+      </div>
     </div>
   );
 }

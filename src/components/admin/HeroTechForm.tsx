@@ -55,29 +55,30 @@ export function HeroTechForm({ initialTechnologies }: Props) {
               handleAdd();
             }
           }}
-          className="flex h-10 w-full rounded-sm border border-border/50 bg-surface px-3 py-2 text-sm placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-11 w-full rounded-xl border border-white/10 bg-surface/70 px-4 text-sm placeholder:text-text-muted focus-visible:border-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent disabled:opacity-50"
         />
         <button
           type="button"
           onClick={handleAdd}
-          className="inline-flex items-center justify-center rounded-sm bg-surface-raised px-4 py-2 text-sm font-medium transition-colors hover:bg-border/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex items-center justify-center rounded-xl bg-surface-raised border border-white/10 px-5 text-sm font-semibold transition-all hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <Plus className="size-4" />
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-3 p-4 rounded-sm border border-border/50 bg-surface min-h-[100px]">
+      <div className="flex flex-wrap gap-2.5 p-5 rounded-2xl border border-white/10 bg-surface/70 backdrop-blur-xl min-h-[100px]">
         {technologies.length === 0 ? (
-          <p className="text-sm text-text-muted italic w-full text-center py-4">Aucune technologie ajoutée.</p>
+          <p className="text-sm text-text-muted italic w-full text-center py-6">Aucune technologie ajoutée.</p>
         ) : (
           technologies.map((tech) => (
-            <div key={tech} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-raised border border-border/50 group">
+            <div key={tech} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-raised/80 border border-white/10 text-text-primary text-xs font-semibold shadow-sm transition-all hover:border-accent/40">
               <SkillIcon name={tech} className="size-4" />
-              <span className="text-sm font-medium">{tech}</span>
+              <span className="capitalize">{tech}</span>
               <button
                 type="button"
                 onClick={() => handleRemove(tech)}
-                className="ml-1 text-text-muted hover:text-danger focus:outline-none"
+                className="ml-1 text-text-muted hover:text-danger focus:outline-none transition-colors"
+                aria-label={`Supprimer ${tech}`}
               >
                 <X className="size-3.5" />
               </button>
@@ -87,18 +88,18 @@ export function HeroTechForm({ initialTechnologies }: Props) {
       </div>
 
       {status?.type === "error" && (
-        <p className="text-sm text-danger font-medium">{status.message}</p>
+        <p className="text-sm text-danger font-medium rounded-xl border border-danger/30 bg-danger/10 p-3">{status.message}</p>
       )}
       {status?.type === "success" && (
-        <p className="text-sm text-success font-medium">{status.message}</p>
+        <p className="text-sm text-emerald-400 font-medium rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">{status.message}</p>
       )}
 
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-end pt-2">
         <button
           type="button"
           onClick={handleSave}
           disabled={isPending}
-          className="inline-flex items-center justify-center rounded-sm bg-accent px-6 py-2.5 text-sm font-medium text-text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
         >
           {isPending ? (
             <>

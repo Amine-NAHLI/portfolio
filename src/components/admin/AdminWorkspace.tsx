@@ -136,27 +136,167 @@ export function AdminWorkspace({ section }: { section: AdminWorkspaceSection }) 
 
   const meta = labels[section];
   return (
-    <div>
-      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-        <div className="max-w-3xl border-b border-border pb-6"><p className="system-label">{"// Administration"}</p><h1 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">{meta.title}</h1><p className="mt-3 text-sm leading-6 text-text-secondary sm:text-base">{meta.description}</p></div>
-        {meta.create ? <button className="button-primary shrink-0" type="button" onClick={() => setEditor("new")}><Plus aria-hidden="true" className="size-4" />{meta.create}</button> : null}
+    <div className="space-y-6">
+      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center border-b border-border/50 pb-6">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/25 text-accent text-xs font-mono font-semibold uppercase tracking-wider mb-2">
+            <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+            Administration · {meta.title}
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+            {meta.title}
+          </h1>
+          <p className="mt-1 text-sm text-text-secondary leading-relaxed max-w-2xl">
+            {meta.description}
+          </p>
+        </div>
+        
+        {meta.create ? (
+          <button 
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent-hover hover:shadow-accent/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent shrink-0" 
+            type="button" 
+            onClick={() => setEditor("new")}
+          >
+            <Plus aria-hidden="true" className="size-4" />
+            {meta.create}
+          </button>
+        ) : null}
       </header>
-      {error ? <p className="mt-6 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger" role="alert">{error}</p> : null}
-      {loading ? <p className="mt-8 text-sm text-text-muted">Chargement…</p> : section === "testimonials" ? <TestimonialsWorkspace records={records} onView={view} onDelete={remove} onModerate={moderate} onToggleFeatured={toggleFeatured} /> : <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />}
-      {editor && section !== "testimonials" && section !== "messages" ? <WorkspaceEditor section={section} record={editor === "new" ? null : editor} onClose={() => setEditor(null)} onSaved={async () => { setEditor(null); await load(); }} /> : null}
+
+      {error ? (
+        <p className="rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm font-medium text-danger" role="alert">
+          {error}
+        </p>
+      ) : null}
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="size-8 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+        </div>
+      ) : section === "testimonials" ? (
+        <TestimonialsWorkspace records={records} onView={view} onDelete={remove} onModerate={moderate} onToggleFeatured={toggleFeatured} />
+      ) : (
+        <WorkspaceTable section={section} records={records} onEdit={setEditor} onView={view} onDelete={remove} onModerate={moderate} />
+      )}
+
+      {editor && section !== "testimonials" && section !== "messages" ? (
+        <WorkspaceEditor section={section} record={editor === "new" ? null : editor} onClose={() => setEditor(null)} onSaved={async () => { setEditor(null); await load(); }} />
+      ) : null}
+      
       {detail ? <DetailDialog section={section} record={detail} onClose={() => setDetail(null)} /> : null}
     </div>
   );
 }
 
 function WorkspaceTable({ section, records, onEdit, onView, onDelete, onModerate, onToggleFeatured }: { section: AdminWorkspaceSection; records: RecordValue[]; onEdit: (record: RecordValue) => void; onView: (record: RecordValue) => void; onDelete: (record: RecordValue) => void; onModerate: (record: RecordValue, status: "approved" | "rejected") => void; onToggleFeatured?: (record: RecordValue) => void }) {
-  if (!records.length) return <div className="mt-8 border border-dashed border-border bg-surface/60 p-10 text-center text-sm text-text-muted">Aucun contenu pour le moment. Utilisez l’action d’ajout pour commencer.</div>;
+  if (!records.length) return (
+    <div className="rounded-2xl border border-dashed border-border bg-surface/40 p-12 text-center text-sm text-text-muted">
+      Aucun contenu pour le moment. Utilisez l’action d’ajout pour commencer.
+    </div>
+  );
+
   const headers = section === "projects" ? ["Titre", "GitHub", "Technologies", "Ordre"]
     : section === "journey" ? ["Type", "Titre", "Organisation", "Début"]
       : section === "certifications" ? ["Titre", "Organisme", "Date", "PDF"]
         : section === "testimonials" ? ["Nom", "Rôle", "Date", "Statut"]
           : ["Nom", "E-mail", "Sujet", "Date", "État"];
-  return <div className="mt-8 overflow-x-auto border border-border"><table className="w-full min-w-[46rem] text-left text-sm"><thead className="bg-surface-subtle font-mono text-[.68rem] uppercase tracking-wider text-text-muted"><tr>{headers.map((header) => <th key={header} className="border-b border-border px-4 py-3 font-semibold">{header}</th>)}<th className="border-b border-border px-4 py-3 text-right font-semibold">Actions</th></tr></thead><tbody className="divide-y divide-border bg-surface">{records.map((record) => <tr key={String(record.id)} className={`align-top transition-colors hover:bg-surface-raised/50 ${section === "messages" && record.status === "new" ? "bg-surface-raised/30" : ""}`}><Cells section={section} record={record} /><td className="px-4 py-3"><div className="flex justify-end gap-2"><button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onView(record)} aria-label="Voir le détail"><Eye className="size-4" /></button>{["projects", "journey", "certifications"].includes(section) ? <button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-text-secondary hover:border-accent hover:text-text-primary" onClick={() => onEdit(record)} aria-label="Modifier"><Pencil className="size-4" /></button> : null}{section === "testimonials" ? <>{record.status === "approved" ? <button type="button" className={`grid size-10 place-items-center rounded-sm border border-border ${record.featured ? "text-amber-500 hover:border-amber-500" : "text-text-secondary hover:border-amber-500 hover:text-amber-500"}`} onClick={() => onToggleFeatured?.(record)} aria-label={record.featured ? "Ne plus mettre en avant" : "Mettre en avant"}><Star className="size-4" fill={record.featured ? "currentColor" : "none"} /></button> : null}<button type="button" className="grid size-10 place-items-center rounded-sm border border-border text-success hover:border-success hover:text-success" onClick={() => onModerate(record, "approved")} aria-label="Approuver"><Check className="size-4" /></button><button type="button" className="button-secondary px-3 text-xs" onClick={() => onModerate(record, "rejected")}>Rejeter</button></> : null}<button type="button" className="grid size-10 place-items-center rounded-sm border border-danger text-danger" onClick={() => onDelete(record)} aria-label="Supprimer"><Trash2 className="size-4" /></button></div></td></tr>)}</tbody></table></div>;
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-surface/70 backdrop-blur-xl shadow-xl">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[46rem] text-left text-sm">
+          <thead className="border-b border-white/10 bg-surface-raised/80 font-mono text-[0.68rem] uppercase tracking-wider text-text-muted">
+            <tr>
+              {headers.map((header) => (
+                <th key={header} className="px-5 py-3.5 font-semibold">{header}</th>
+              ))}
+              <th className="px-5 py-3.5 text-right font-semibold">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {records.map((record) => (
+              <tr 
+                key={String(record.id)} 
+                className={`align-middle transition-colors hover:bg-white/5 ${
+                  section === "messages" && record.status === "new" ? "bg-accent/5 font-semibold" : ""
+                }`}
+              >
+                <Cells section={section} record={record} />
+                <td className="px-5 py-3.5 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <button 
+                      type="button" 
+                      className="inline-grid size-8 place-items-center rounded-xl border border-white/10 bg-surface-subtle text-text-secondary hover:border-accent/40 hover:bg-surface-raised hover:text-accent transition-all" 
+                      onClick={() => onView(record)} 
+                      aria-label="Voir le détail"
+                    >
+                      <Eye className="size-4" />
+                    </button>
+
+                    {["projects", "journey", "certifications"].includes(section) ? (
+                      <button 
+                        type="button" 
+                        className="inline-grid size-8 place-items-center rounded-xl border border-white/10 bg-surface-subtle text-text-secondary hover:border-accent/40 hover:bg-surface-raised hover:text-accent transition-all" 
+                        onClick={() => onEdit(record)} 
+                        aria-label="Modifier"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                    ) : null}
+
+                    {section === "testimonials" ? (
+                      <>
+                        {record.status === "approved" ? (
+                          <button 
+                            type="button" 
+                            className={`inline-grid size-8 place-items-center rounded-xl border transition-all ${
+                              record.featured 
+                                ? "border-amber-500/40 bg-amber-500/10 text-amber-400" 
+                                : "border-white/10 bg-surface-subtle text-text-secondary hover:border-amber-500/40 hover:text-amber-400"
+                            }`} 
+                            onClick={() => onToggleFeatured?.(record)} 
+                            aria-label={record.featured ? "Ne plus mettre en avant" : "Mettre en avant"}
+                          >
+                            <Star className="size-4" fill={record.featured ? "currentColor" : "none"} />
+                          </button>
+                        ) : null}
+
+                        <button 
+                          type="button" 
+                          className="inline-grid size-8 place-items-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all" 
+                          onClick={() => onModerate(record, "approved")} 
+                          aria-label="Approuver"
+                        >
+                          <Check className="size-4" />
+                        </button>
+
+                        <button 
+                          type="button" 
+                          className="rounded-xl border border-white/10 bg-surface-subtle px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-danger/10 hover:text-danger transition-all" 
+                          onClick={() => onModerate(record, "rejected")}
+                        >
+                          Rejeter
+                        </button>
+                      </>
+                    ) : null}
+
+                    <button 
+                      type="button" 
+                      className="inline-grid size-8 place-items-center rounded-xl border border-danger/30 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-all" 
+                      onClick={() => onDelete(record)} 
+                      aria-label="Supprimer"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 function Cells({ section, record }: { section: AdminWorkspaceSection; record: RecordValue }) {

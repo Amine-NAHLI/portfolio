@@ -124,13 +124,13 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
     <>
       {/* Floating Glass Capsule Navbar */}
       <header className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[94%] max-w-[66rem]">
-        <div className="flex h-14 items-center justify-between gap-3 rounded-full border border-white/10 bg-bg-page/75 px-3 py-1.5 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all">
+        <div className="flex h-14 items-center justify-between gap-3 rounded-full border border-border bg-bg-page/80 px-3 py-1.5 backdrop-blur-2xl shadow-xl transition-all">
           
           {/* Brand Signature Logo */}
           <Magnetic intensity={0.2}>
             <Link 
               href={`/${locale}`} 
-              className="group flex items-center gap-2.5 rounded-full px-3 py-1.5 transition-all hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
+              className="group flex items-center gap-2.5 rounded-full px-3 py-1.5 transition-all hover:bg-surface-raised/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
               aria-label={`${siteConfig.name} — ${dictionary.nav.home}`}
             >
               <div className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
@@ -151,10 +151,10 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
                   href={item.href} 
                   aria-current={active ? "page" : undefined} 
                   className={cn(
-                    "relative rounded-full px-3.5 py-1.5 font-sans text-xs font-medium tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                    "relative rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     active 
-                      ? "text-white bg-white/10 border border-white/15 shadow-sm" 
-                      : "text-text-secondary hover:text-white hover:bg-white/5"
+                      ? "text-accent bg-accent/10 border border-accent/25 shadow-xs" 
+                      : "text-text-secondary hover:text-text-primary hover:bg-surface-raised/60"
                   )}
                 >
                   <Magnetic intensity={0.1}>
@@ -174,7 +174,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
             <Magnetic intensity={0.2}>
               <Link 
                 href={`/${locale}/search`} 
-                className="inline-flex size-9 items-center justify-center rounded-full border border-white/5 bg-white/5 text-text-secondary transition-all hover:border-white/20 hover:bg-white/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
+                className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-surface-subtle text-text-secondary transition-all hover:border-accent/40 hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
                 aria-label={dictionary.nav.search}
               >
                 <Search aria-hidden="true" className="size-4" />
@@ -187,7 +187,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
                 hrefLang={alternateLocale} 
                 onClick={rememberLocale} 
                 data-analytics-event="language_change" 
-                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 font-mono text-[0.7rem] font-semibold text-text-secondary transition-all hover:border-accent/40 hover:bg-white/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-surface-subtle px-3 font-mono text-[0.7rem] font-semibold text-text-secondary transition-all hover:border-accent/40 hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" 
                 aria-label={dictionary.switchLanguage}
               >
                 <Languages aria-hidden="true" className="size-3.5 text-accent" />
@@ -209,7 +209,7 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
 
             <button 
               type="button" 
-              className="inline-grid size-9 place-items-center rounded-full border border-white/10 bg-white/5 text-text-primary transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:hidden" 
+              className="inline-grid size-9 place-items-center rounded-full border border-border bg-surface-subtle text-text-primary transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:hidden" 
               aria-label={dictionary.openMenu} 
               aria-expanded={menuOpen} 
               aria-controls="mobile-navigation" 

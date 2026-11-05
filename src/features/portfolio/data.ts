@@ -12,6 +12,7 @@ export type PublicJourneyEntry = {
   title: string;
   description: string;
   eventDate: string;
+  organization?: string;
 };
 
 export type PublicSkill = { name: string; level: "beginner" | "intermediate" | "advanced"; evidence: string[] };
@@ -46,6 +47,7 @@ async function queryJourney(locale: Locale): Promise<PublicJourneyEntry[]> {
       title: locale === "fr" ? entry.title_fr : entry.title_en,
       description: locale === "fr" ? (entry.summary_fr ?? "") : (entry.summary_en ?? ""),
       eventDate: formatJourneyDate(entry.started_on, entry.ended_on, locale),
+      organization: "institution" in entry && entry.institution ? (entry.institution as string) : ("organization" in entry && entry.organization ? (entry.organization as string) : undefined),
     }));
   } catch { return []; }
 }

@@ -259,7 +259,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
         {/* 3D Centered Flipping Stage */}
         <div
           style={{ perspective: "1600px" }}
-          className="relative w-full max-w-2xl lg:max-w-3xl h-[470px] sm:h-[430px] my-auto flex items-center justify-center"
+          className="relative w-full max-w-2xl lg:max-w-3xl h-[520px] sm:h-[490px] my-auto flex items-center justify-center"
         >
           {displayProjects.map((project, index) => {
             const projectTitle = typeof project.title === "string" ? project.title : project.title?.[locale];
@@ -285,14 +285,14 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                   zIndex: isCurrent ? 30 : 10 - index,
                   pointerEvents: isCurrent ? "auto" : "none",
                 }}
-                className={`absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/15 bg-[#0B0510] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-shadow duration-300 hover:border-[#9A71FF]/50 hover:shadow-[0_25px_90px_rgba(154,113,255,0.15)] will-change-transform ${
+                className={`absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/15 bg-[#0B0510] px-6 py-5 sm:px-8 sm:py-6 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-shadow duration-300 hover:border-[#9A71FF]/50 hover:shadow-[0_25px_90px_rgba(154,113,255,0.15)] will-change-transform ${
                   isCurrent ? "pointer-events-auto" : "pointer-events-none"
                 }`}
               >
                 {/* Top Card Bar */}
                 <div
                   style={{ transform: "translateZ(30px)" }}
-                  className="flex items-center justify-between pb-4 border-b border-white/[0.08] relative z-30 pointer-events-auto"
+                  className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] relative z-30 pointer-events-auto shrink-0"
                 >
                   <div className="flex items-center gap-3">
                     <span className="font-mono text-xs font-bold text-[#9A71FF] bg-[#9A71FF]/10 border border-[#9A71FF]/30 px-2 py-0.5 rounded-full">
@@ -334,23 +334,23 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 </div>
 
                 {/* Main Card Content */}
-                <div className="py-4 sm:py-5 flex-1 flex flex-col justify-center">
-                  <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#f3f1f7] mb-2 leading-snug">
+                <div className="py-2.5 sm:py-3.5 flex-1 flex flex-col justify-center min-h-0">
+                  <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#f3f1f7] mb-1.5 leading-snug">
                     {projectTitle}
                   </h3>
 
                   {projectSubtitle && (
-                    <p className="text-xs sm:text-sm font-medium text-[#9A71FF] mb-3 line-clamp-1">
+                    <p className="text-xs sm:text-sm font-medium text-[#9A71FF] mb-2 line-clamp-1">
                       {projectSubtitle}
                     </p>
                   )}
 
-                  <p className="text-xs sm:text-sm text-[#797681] leading-relaxed line-clamp-3 sm:line-clamp-4 mb-5 font-normal">
+                  <p className="text-xs sm:text-sm text-[#797681] leading-relaxed line-clamp-2 sm:line-clamp-3 mb-3.5 font-normal">
                     {projectSummary}
                   </p>
 
                   {/* Core Technologies Badges */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {techList.slice(0, 6).map((tech: string) => (
                       <span
                         key={tech}
@@ -365,11 +365,11 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 {/* Card Footer Bar */}
                 <div
                   style={{ transform: "translateZ(30px)" }}
-                  className="pt-4 border-t border-white/[0.08] flex items-center justify-between relative z-30 pointer-events-auto"
+                  className="pt-3.5 border-t border-white/[0.08] flex items-center justify-between relative z-30 pointer-events-auto shrink-0 mt-auto"
                 >
                   <Link
                     href={`/${locale}/projects/${project.slug}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-5 py-2.5 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm cursor-pointer pointer-events-auto relative z-30"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-5 py-2 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm cursor-pointer pointer-events-auto relative z-30"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>

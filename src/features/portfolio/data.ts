@@ -121,8 +121,8 @@ async function queryCertificates(locale: Locale): Promise<PublicCertification[]>
       const mimeType = certificate.media_assets?.mime_type || (Array.isArray(certificate.media_assets) ? certificate.media_assets[0]?.mime_type : null) || null;
       return { 
         id: certificate.id, 
-        name: locale === "fr" ? certificate.name_fr : certificate.name_en, 
-        description: locale === "fr" ? certificate.description_fr : certificate.description_en, 
+        name: (locale === "fr" ? certificate.name_fr : certificate.name_en) || certificate.name_fr || certificate.name_en || "", 
+        description: (locale === "fr" ? certificate.description_fr : certificate.description_en) || certificate.description_fr || certificate.description_en || null, 
         issuer: certificate.issuer, 
         status: certificate.credential_status, 
         skills: certificate.skills, 

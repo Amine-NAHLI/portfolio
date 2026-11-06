@@ -105,6 +105,11 @@ html.lenis, html.lenis body {
 .lenis.lenis-smooth iframe {
   pointer-events: none;
 }
+.lenis.lenis-smooth [data-lenis-prevent] iframe,
+.lenis.lenis-smooth [role="dialog"] iframe,
+.lenis.lenis-smooth .modal-interactive iframe {
+  pointer-events: auto !important;
+}
 
 @layer components {
   .skip-link { position: fixed; left: 1rem; top: 1rem; z-index: 100; transform: translateY(-200%); border-radius: var(--radius-md); background: var(--accent); padding: .75rem 1rem; color: var(--text-on-accent); font-weight: 700; }

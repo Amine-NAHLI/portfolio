@@ -36,24 +36,36 @@ export default function CertificationCard({ certification, locale, copy }: Certi
     setMounted(true);
   }, []);
 
-  // Lock body scroll on modal open and pause Lenis smooth scroll
+  // Strictly lock both body and html scroll on modal open, stop Lenis, and prevent bleed-through
   useEffect(() => {
-    if (open) {
-      window.__lenis?.stop();
-      document.body.style.overflow = "hidden";
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") setOpen(false);
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      return () => {
-        window.__lenis?.start();
-        document.body.style.overflow = "";
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    } else {
-      window.__lenis?.start();
-      document.body.style.overflow = "";
+    if (!open) return;
+
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyPaddingRight = document.body.style.paddingRight;
+
+    // Compensate for scrollbar shift to prevent layout jumping
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
+
+    window.__lenis?.stop();
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.__lenis?.start();
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.paddingRight = originalBodyPaddingRight;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [open]);
 
   const formattedDate = certification.issuedOn
@@ -62,6 +74,8 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         month: "long",
       })
     : null;
+
+  const isImage = Boolean(certification.documentMimeType?.startsWith("image/"));
 
   return (
     <>
@@ -74,14 +88,14 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         {/* Document Preview Frame: Displays the actual certificate preview directly */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#060605] border-b border-white/[0.06] flex items-center justify-center">
           {/* Loading Skeleton */}
-          {!isLoaded && !hasError && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
+          {!isLoaded && !hasError && certification.hasDocument && isImage && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#17161e] animate-pulse">
               <LoaderCircle className="size-7 animate-spin text-[#9A71FF]/60" />
             </div>
           )}
 
           {certification.hasDocument && !hasError ? (
-            certification.documentMimeType?.startsWith("image/") ? (
+            isImage ? (
               <img
                 src={`/api/certifications/${certification.id}/document`}
                 alt={`Aperçu de ${certification.name}`}
@@ -93,16 +107,23 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 }`}
               />
             ) : (
-              /* Real document preview rendered directly on the card */
+              /* Real document preview rendered directly on the card with object/iframe fallback */
               <div className="relative w-full h-full overflow-hidden bg-white select-none">
-                <iframe
-                  src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                <object
+                  data={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                  type="application/pdf"
                   className="size-full border-0 pointer-events-none select-none scale-100 origin-top"
                   title={`Aperçu de ${certification.name}`}
-                  tabIndex={-1}
-                  loading="lazy"
-                />
-                {/* Overlay to ensure smooth card click and hover interactions */}
+                >
+                  <iframe
+                    src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                    className="size-full border-0 pointer-events-none select-none scale-100 origin-top"
+                    title={`Aperçu de ${certification.name}`}
+                    tabIndex={-1}
+                    loading="lazy"
+                  />
+                </object>
+                {/* Transparent overlay ensuring smooth card click and hover interactions without pointer interception */}
                 <div className="absolute inset-0 z-10 bg-black/5 group-hover:bg-transparent transition-colors" />
               </div>
             )
@@ -147,18 +168,30 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         </div>
       </button>
 
-      {/* Credential Inspector Modal: 2-column side-by-side layout, zero vertical scroll */}
+      {/* Credential Inspector Modal: 2-column side-by-side layout, zero bleed-through scroll */}
       {mounted &&
         createPortal(
           <AnimatePresence>
             {open && (
-              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 lg:p-8">
-                {/* Backdrop Blur Overlay */}
+              <div
+                className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 lg:p-8 overflow-hidden select-none"
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+              >
+                {/* Backdrop Blur Overlay: traps background scroll */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setOpen(false)}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onTouchMove={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   className="absolute inset-0 bg-black/85 backdrop-blur-xl"
                 />
 
@@ -173,10 +206,12 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                   data-lenis-prevent="true"
                   data-lenis-prevent-wheel="true"
                   data-lenis-prevent-touch="true"
-                  className="relative z-10 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] text-[#f3f1f7] shadow-2xl overscroll-contain"
+                  onWheel={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  className="relative z-10 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] text-[#f3f1f7] shadow-2xl overscroll-contain select-text"
                 >
                   {/* Compact Header Bar */}
-                  <div className="flex items-center justify-between border-b border-white/10 bg-[#120A1C] px-5 sm:px-6 py-3.5">
+                  <div className="flex items-center justify-between border-b border-white/10 bg-[#120A1C] px-5 sm:px-6 py-3.5 shrink-0">
                     <div className="flex items-center gap-2.5">
                       <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#9A71FF]/10 border border-[#9A71FF]/30 text-[#9A71FF]">
                         <ShieldCheck className="size-4" />
@@ -199,7 +234,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                     <button
                       type="button"
                       onClick={() => setOpen(false)}
-                      aria-label="Fermer"
+                      aria-label={locale === "fr" ? "Fermer" : "Close"}
                       className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:bg-white/[0.08] hover:text-[#f3f1f7] transition-colors cursor-pointer"
                     >
                       <X className="size-4" />
@@ -207,12 +242,18 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                   </div>
 
                   {/* Main Content Body: 2 Columns Side-by-Side (Document on Left, Description & Details on Right) */}
-                  <div className="p-5 sm:p-6 lg:p-7 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch overflow-y-auto md:overflow-visible">
-                    {/* Left Column (md:col-span-7): Certificate Document slightly smaller and completely visible */}
+                  <div
+                    data-lenis-prevent="true"
+                    data-lenis-prevent-wheel="true"
+                    data-lenis-prevent-touch="true"
+                    onWheel={(e) => e.stopPropagation()}
+                    className="p-5 sm:p-6 lg:p-7 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch overflow-y-auto overscroll-contain max-h-[calc(92vh-64px)]"
+                  >
+                    {/* Left Column (md:col-span-7): Certificate Document completely visible */}
                     <div className="md:col-span-7 flex flex-col justify-center">
-                      <div className="relative w-full h-[300px] sm:h-[350px] md:h-[390px] rounded-2xl border border-white/10 bg-[#060605] p-2 flex items-center justify-center overflow-hidden shadow-inner">
+                      <div className="relative w-full h-[320px] sm:h-[370px] md:h-[410px] rounded-2xl border border-white/10 bg-[#060605] p-2 flex items-center justify-center overflow-hidden shadow-inner">
                         {certification.hasDocument ? (
-                          certification.documentMimeType?.startsWith("image/") ? (
+                          isImage ? (
                             <img
                               src={`/api/certifications/${certification.id}/document`}
                               alt={certification.name}
@@ -220,11 +261,18 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                             />
                           ) : (
                             <div className="relative w-full h-full overflow-hidden rounded-xl bg-white shadow-lg">
-                              <iframe
-                                src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                                className="size-full border-0"
+                              <object
+                                data={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                                type="application/pdf"
+                                className="size-full border-0 rounded-xl"
                                 title={certification.name}
-                              />
+                              >
+                                <iframe
+                                  src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                                  className="size-full border-0 rounded-xl"
+                                  title={certification.name}
+                                />
+                              </object>
                             </div>
                           )
                         ) : (
@@ -267,13 +315,14 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                           data-lenis-prevent="true"
                           data-lenis-prevent-wheel="true"
                           data-lenis-prevent-touch="true"
-                          className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 flex-1 overflow-y-auto max-h-[200px] overscroll-contain"
+                          onWheel={(e) => e.stopPropagation()}
+                          className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 flex-1 overflow-y-auto max-h-[220px] overscroll-contain"
                         >
                           <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9A71FF] mb-2 flex items-center gap-1.5">
                             <ShieldCheck className="size-3.5" />
                             {locale === "fr" ? "Objectifs & Compétences Validées" : "Verified Objectives & Skills"}
                           </span>
-                          <p className="text-xs sm:text-sm leading-relaxed text-[#c4c0cd]">
+                          <p className="text-xs sm:text-sm leading-relaxed text-[#c4c0cd] whitespace-pre-line">
                             {certification.description}
                           </p>
                         </div>

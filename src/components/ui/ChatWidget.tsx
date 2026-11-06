@@ -366,7 +366,6 @@ Envoyer un message chiffré : [Formulaire de Contact](/fr/contact)`,
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = "";
-      let accumulatedReasoning = "";
 
       if (reader) {
         while (true) {
@@ -379,27 +378,15 @@ Envoyer un message chiffré : [Formulaire de Contact](/fr/contact)`,
             if (line.startsWith("data: ") && line !== "data: [DONE]") {
               try {
                 const data = JSON.parse(line.slice(6));
-                const deltaObj = data.choices?.[0]?.delta;
-                const rChunk = deltaObj?.reasoning_content;
-                const cChunk = deltaObj?.content;
+                const cChunk = data.choices?.[0]?.delta?.content;
 
-                let hasUpdate = false;
-                if (rChunk) {
-                  accumulatedReasoning += rChunk;
-                  hasUpdate = true;
-                }
                 if (cChunk) {
                   accumulatedContent += cChunk;
-                  hasUpdate = true;
-                }
-
-                if (hasUpdate) {
                   setMessages((prev) => {
                     const updated = [...prev];
                     const last = updated[updated.length - 1];
                     if (last && last.id === aiMessageId) {
                       last.content = accumulatedContent;
-                      last.reasoning = accumulatedReasoning;
                     }
                     return updated;
                   });
@@ -620,36 +607,17 @@ Envoyer un message chiffré : [Formulaire de Contact](/fr/contact)`,
                         <Cpu className="size-3" />
                         <span>AMINE_NEURAL_ENGINE</span>
                       </div>
-                      <div className="pl-3 border-l border-white/10 space-y-2">
-                        {msg.reasoning && (
-                          <div className="rounded border border-[#9A71FF]/25 bg-[#9A71FF]/[0.06] p-2 text-[10.5px] font-mono text-[#c4b5fd]">
-                            <div className="flex items-center gap-1.5 text-[9.5px] font-bold text-[#9A71FF] uppercase tracking-wider mb-1">
-                              <span className="size-1.5 rounded-full bg-[#9A71FF] animate-pulse" />
-                              <span>{"// Chaîne de Réflexion Nemotron"}</span>
-                            </div>
-                            <div className="whitespace-pre-line text-[#a78bfa]/80 leading-relaxed max-h-48 overflow-y-auto pr-1">
-                              {msg.reasoning}
-                            </div>
-                          </div>
+                      <div className="pl-3 border-l border-white/10 text-[#e2e0ea] whitespace-pre-line leading-relaxed">
+                        {msg.content ? (
+                          renderMessageContent(msg.content)
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-[#9A71FF] animate-pulse">
+                            <span className="size-1.5 rounded-full bg-[#9A71FF]" />
+                            <span className="size-1.5 rounded-full bg-[#9A71FF]" />
+                            <span className="size-1.5 rounded-full bg-[#9A71FF]" />
+                            <span className="text-[11px] font-mono ml-1 text-[#797681]">traitement en cours...</span>
+                          </span>
                         )}
-
-                        <div className="text-[#e2e0ea] whitespace-pre-line leading-relaxed">
-                          {msg.content ? (
-                            renderMessageContent(msg.content)
-                          ) : msg.reasoning ? (
-                            <span className="inline-flex items-center gap-1.5 text-[#9A71FF] animate-pulse text-[11px] font-mono">
-                              <span className="size-1.5 rounded-full bg-[#9A71FF]" />
-                              <span className="text-[#797681]">synthèse de la réponse finale...</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1.5 text-[#9A71FF] animate-pulse">
-                              <span className="size-1.5 rounded-full bg-[#9A71FF]" />
-                              <span className="size-1.5 rounded-full bg-[#9A71FF]" />
-                              <span className="size-1.5 rounded-full bg-[#9A71FF]" />
-                              <span className="text-[11px] font-mono ml-1 text-[#797681]">traitement en cours...</span>
-                            </span>
-                          )}
-                        </div>
                       </div>
                     </div>
                   )}

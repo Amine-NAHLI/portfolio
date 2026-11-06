@@ -80,14 +80,13 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           model: NVIDIA_MODEL,
           messages: nvidiaMessages,
-          temperature: 0.8,
+          temperature: 0.7,
           top_p: 0.95,
-          max_tokens: 4096,
-          chat_template_kwargs: { enable_thinking: true },
-          reasoning_budget: 1024,
+          max_tokens: 2048,
+          chat_template_kwargs: { enable_thinking: false },
           stream: true,
         }),
-        signal: AbortSignal.timeout(18000),
+        signal: AbortSignal.timeout(30000),
       });
     } catch (e) {
       console.warn("NVIDIA fetch failed or timed out:", e);

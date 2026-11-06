@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ExternalLink } from "lucide-react";
+import { ArrowUpRight, ExternalLink, ChevronLeft, ChevronRight, Layers } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -39,48 +39,48 @@ const fallbackProjects: DisplayProjectItem[] = [
       en: "Intelligent Network Audit and Topology Mapping Platform",
     },
     summary: {
-      fr: "Cartographie réseau temps réel, scanning de ports passif/actif et analyse d'anomalies de sécurité.",
-      en: "Real-time network mapping, active/passive port scanning, and automated security anomaly detection.",
+      fr: "Application desktop de cybersécurité pour la découverte d'hôtes, le scanning de services TCP/UDP et l'analyse de vulnérabilités enrichie par IA.",
+      en: "Desktop cybersecurity application for host discovery, TCP/UDP port scanning, and AI-augmented vulnerability analysis.",
     },
-    technologies: ["Python", "Scapy", "Wireshark", "Next.js", "Docker"],
-    category: "CYBERSÉCURITÉ",
-    year: "2024",
+    technologies: ["Python", "JavaScript", "Node.js", "React", "Vite"],
+    category: "CYBERSÉCURITÉ & RÉSEAU",
+    year: "2024 — 2026",
   },
   {
-    slug: "transport-yolo-robot",
+    slug: "7yatk",
     title: {
-      fr: "Transport YOLO Robot — Vision Embarquée",
-      en: "Transport YOLO Robot — Embedded Vision",
+      fr: "7YATK — Ange Gardien & Réseau Mesh",
+      en: "7YATK — Guardian Angel & Mesh Network",
     },
     subtitle: {
-      fr: "Système de détection d'obstacles et navigation autonome",
-      en: "Obstacle Detection and Autonomous Navigation System",
+      fr: "Application mobile de secours d'urgence sans connexion Internet",
+      en: "Emergency survival and beaconing mobile app using offline mesh routing",
     },
     summary: {
-      fr: "Pipeline complet d'entraînement et d'inférence YOLO temps réel optimisé pour robotique de transport.",
-      en: "End-to-end YOLO training and low-latency inference pipeline optimized for autonomous transport robotics.",
+      fr: "Système de télémétrie capteurs (accéléromètre, GPS) et réseau décentralisé Bluetooth/Wi-Fi Direct pour alerter les secours hors-ligne en situation de détresse.",
+      en: "Sensor telemetry (accelerometer, GPS) and offline mesh networking (Bluetooth / Wi-Fi Direct) to trigger emergency rescue when cellular connectivity is unavailable.",
     },
-    technologies: ["PyTorch", "YOLOv8", "OpenCV", "ROS", "Python"],
-    category: "VISION PAR ORDINATEUR",
-    year: "2024",
+    technologies: ["React Native", "Expo SDK", "Node.js", "Socket.io", "Express"],
+    category: "SYSTÈMES EMBARQUÉS & MOBILE",
+    year: "2024 — 2026",
   },
   {
-    slug: "e-upf-portail-gestion",
+    slug: "stockly-gestion-de-stock-et-commerce-de-proximite",
     title: {
-      fr: "E-UPF — Portail Unifié Universitaire",
-      en: "E-UPF — Unified Academic Management Portal",
+      fr: "Stockly — Commerce de Proximité",
+      en: "Stockly — Local Retail Inventory Engine",
     },
     subtitle: {
-      fr: "Plateforme de gestion académique avec contrôle d'accès RBAC",
-      en: "Academic Operations Platform with Fine-Grained RBAC",
+      fr: "Solution SaaS de traçabilité, facturation et gestion multi-dépôts",
+      en: "SaaS inventory tracking, barcode POS, and multi-warehouse logistics engine",
     },
     summary: {
-      fr: "Portail full-stack reliant étudiants, corps professoral et administration avec authentification chiffrée.",
-      en: "Full-stack portal interconnecting students, faculty, and administration with encrypted role-based access.",
+      fr: "Gestion des stocks en temps réel, génération automatique de factures conformes, réapprovisionnement prédictif et interface caisse haute vélocité.",
+      en: "Real-time inventory ledger, automated compliant invoicing, predictive reordering alerts, and high-velocity point-of-sale terminal.",
     },
-    technologies: ["Next.js", "TypeScript", "PostgreSQL", "Supabase", "Tailwind CSS"],
-    category: "GÉNIE LOGICIEL",
-    year: "2024",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL", "Supabase"],
+    category: "GÉNIE LOGICIEL & FULL-STACK",
+    year: "2024 — 2026",
   },
   {
     slug: "asl-real-time-detection",
@@ -93,217 +93,367 @@ const fallbackProjects: DisplayProjectItem[] = [
       en: "Computer Vision Sign Language Interpretation Pipeline",
     },
     summary: {
-      fr: "Détection des repères des mains et classification séquentielle pour la traduction instantanée de gestes.",
-      en: "Hand landmark tracking and sequence classification for real-time sign language translation.",
+      fr: "Détection des repères articulaires des mains par MediaPipe et modèle séquentiel de classification pour la traduction instantanée de la langue des signes.",
+      en: "Hand landmark tracking with MediaPipe and sequence classification neural network for instant bidirectional sign language translation.",
     },
-    technologies: ["Python", "MediaPipe", "PyTorch", "OpenCV", "NumPy"],
+    technologies: ["Python", "PyTorch", "OpenCV", "MediaPipe", "NumPy"],
     category: "INTELLIGENCE ARTIFICIELLE",
-    year: "2024",
+    year: "2024 — 2026",
   },
 ];
 
 export default function SelectedWorkScene({ locale, projects }: SelectedWorkSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const cardElementsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const scrollTriggerInstanceRef = useRef<ScrollTrigger | null>(null);
+
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Display the selected projects configured in Admin (up to 4 cards)
+  // Up to 4 featured projects
   const displayProjects = projects && projects.length > 0 ? projects.slice(0, 4) : fallbackProjects;
+  const count = displayProjects.length;
 
   useGSAP(
     () => {
-      if (typeof window === "undefined" || !containerRef.current) return;
+      if (typeof window === "undefined" || !containerRef.current || count <= 1) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const cards = gsap.utils.toArray<HTMLElement>(".stacked-project-card");
+      const cards = cardElementsRef.current.filter((c): c is HTMLDivElement => Boolean(c));
       if (cards.length === 0) return;
 
-      cards.forEach((card, index) => {
-        ScrollTrigger.create({
-          trigger: card,
-          start: "top 45%",
-          end: "bottom 45%",
-          onEnter: () => setActiveIndex(index),
-          onEnterBack: () => setActiveIndex(index),
-        });
-
-        // Card Deck Stacking: When the next card arrives, subtly compress scale & adjust opacity of previous card
-        if (index < cards.length - 1) {
-          gsap.to(card, {
-            scale: 0.94,
-            opacity: 0.8,
-            transformOrigin: "top center",
-            ease: "none",
-            scrollTrigger: {
-              trigger: cards[index + 1],
-              start: "top 75%",
-              end: "top 25%",
-              scrub: true,
-            },
+      // Initial card setups:
+      // Card 0 is facing the user (rotateY: 0deg, visible)
+      // Cards 1..N are on their back (rotateY: 180deg, invisible)
+      cards.forEach((card, idx) => {
+        if (idx === 0) {
+          gsap.set(card, {
+            rotateY: 0,
+            opacity: 1,
+            zIndex: 10,
+            pointerEvents: "auto",
+          });
+        } else {
+          gsap.set(card, {
+            rotateY: 180,
+            opacity: 0,
+            zIndex: 10 - idx,
+            pointerEvents: "none",
           });
         }
       });
+
+      // Pin the section while user scrolls to flip each card over to its back to reveal the next!
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          pin: true,
+          start: "top top",
+          end: `+=${(count - 1) * 900}`,
+          scrub: 0.8,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            const rawIdx = self.progress * (count - 1);
+            const currentIdx = Math.min(count - 1, Math.round(rawIdx));
+            setActiveIndex(currentIdx);
+          },
+        },
+      });
+
+      scrollTriggerInstanceRef.current = tl.scrollTrigger || null;
+
+      // Build the sequential 3D flip transitions:
+      // Card N flips from 0deg to -180deg (flipping to its back)
+      // Card N+1 flips simultaneously from 180deg to 0deg (revealing its face)
+      for (let i = 0; i < cards.length - 1; i++) {
+        const currCard = cards[i];
+        const nextCard = cards[i + 1];
+        const stepTime = i * 1.2;
+
+        // Current card rotates -180deg and fades out at the turn
+        tl.to(
+          currCard,
+          {
+            rotateY: -180,
+            opacity: 0,
+            ease: "power2.inOut",
+            duration: 1,
+            onStart: () => {
+              currCard.style.pointerEvents = "none";
+            },
+            onReverseComplete: () => {
+              currCard.style.pointerEvents = "auto";
+            },
+          },
+          stepTime
+        );
+
+        // Next card rotates from 180deg to 0deg and becomes active
+        tl.to(
+          nextCard,
+          {
+            rotateY: 0,
+            opacity: 1,
+            ease: "power2.inOut",
+            duration: 1,
+            onStart: () => {
+              nextCard.style.pointerEvents = "auto";
+            },
+            onReverseComplete: () => {
+              nextCard.style.pointerEvents = "none";
+            },
+          },
+          stepTime
+        );
+      }
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [count] }
   );
+
+  const scrollToStep = (targetIndex: number) => {
+    if (!scrollTriggerInstanceRef.current) return;
+    const st = scrollTriggerInstanceRef.current;
+    const start = st.start;
+    const end = st.end;
+    const progress = count > 1 ? targetIndex / (count - 1) : 0;
+    const targetY = start + progress * (end - start);
+
+    window.scrollTo({
+      top: targetY,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <section
       ref={containerRef}
       id="work"
-      className="relative w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] scroll-mt-24"
+      className="relative w-full min-h-screen bg-[#000000] py-16 sm:py-20 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-between items-center overflow-hidden scroll-mt-20 select-none"
     >
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
-          
-          {/* Left Column: Sticky Narrative & Counter */}
-          <div className="lg:col-span-5 lg:sticky lg:top-32 flex flex-col justify-between">
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
-                {locale === "fr" ? "Sélection de Réalisations" : "Featured Work"}
-              </span>
+      {/* Background Ambient Lighting: Violet Neon & Obsidian */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full bg-[#9A71FF]/8 blur-[180px] -z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/4 top-1/3 h-[450px] w-[450px] rounded-full bg-[#0E161A] opacity-70 blur-[160px] -z-10"
+      />
 
-              <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight mb-4">
-                {locale === "fr" ? "Projets Phares." : "Work that Speaks."}
-              </h2>
+      <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-between h-full flex-1">
+        
+        {/* Centered Section Header */}
+        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 pt-2">
+          <span className="font-mono text-xs uppercase tracking-wider text-[#9A71FF] block mb-2.5 font-bold">
+            {locale === "fr" ? "// SÉLECTION DE RÉALISATIONS" : "// FEATURED WORK"}
+          </span>
+          <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
+            {locale === "fr" ? "Projets Phares." : "Work that Speaks."}
+          </h2>
+          <p className="mt-2.5 text-xs sm:text-sm text-[#797681] leading-relaxed max-w-xl mx-auto">
+            {locale === "fr"
+              ? "Chaque projet est conçu comme un système complet : problème réel identifié, architecture rigoureuse, métriques mesurées et code source documenté."
+              : "Each project is engineered as a robust system: verified problem space, rigorous architecture, measured outcomes, and documented source code."}
+          </p>
+        </div>
 
-              <p className="text-sm sm:text-base text-[#797681] leading-relaxed mb-6 max-w-md">
-                {locale === "fr"
-                  ? "Chaque projet est conçu comme un système complet : problème réel identifié, architecture rigoureuse, métriques mesurées et code source documenté."
-                  : "Each project is engineered as a robust system: verified problem space, rigorous architecture, measured outcomes, and documented source code."}
-              </p>
+        {/* 3D Centered Flipping Stage */}
+        <div
+          style={{ perspective: "1600px" }}
+          className="relative w-full max-w-2xl lg:max-w-3xl h-[470px] sm:h-[430px] my-auto flex items-center justify-center"
+        >
+          {displayProjects.map((project, index) => {
+            const projectTitle = typeof project.title === "string" ? project.title : project.title?.[locale];
+            const projectSubtitle = typeof project.subtitle === "string" ? project.subtitle : project.subtitle?.[locale];
+            const projectSummary = typeof project.summary === "string" ? project.summary : project.summary?.[locale];
+            const techList = project.coreTechnologies || project.technologies || [];
+            const categoryBadge =
+              ("categories" in project && Array.isArray(project.categories) && project.categories[0]) ||
+              ("category" in project && typeof (project as DisplayProjectItem).category === "string" && (project as DisplayProjectItem).category) ||
+              "PROJET INGÉNIEUR";
+            const projectYear =
+              ("year" in project && typeof (project as DisplayProjectItem).year === "string" && (project as DisplayProjectItem).year) ||
+              "2024 — 2026";
 
-              {/* Dynamic Project Index Counter */}
-              <div className="flex items-center gap-3 text-xs border-t border-b border-white/[0.08] py-3.5 my-6">
-                <span className="text-[#9A71FF] font-bold text-base">
-                  0{activeIndex + 1}
-                </span>
-                <span className="text-white/20">/</span>
-                <span className="text-[#797681]">
-                  0{displayProjects.length}
-                </span>
-                <span className="ml-auto text-[#797681]">
-                  {locale === "fr" ? "Cartes empilées" : "Stacked cards"}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href={`/${locale}/projects`}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-[#f3f1f7] hover:text-[#9A71FF] transition-colors"
+            return (
+              <div
+                key={project.slug || index}
+                ref={(el) => {
+                  cardElementsRef.current[index] = el;
+                }}
+                style={{
+                  transformStyle: "preserve-3d",
+                  backfaceVisibility: "hidden",
+                }}
+                className="absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/15 bg-[#0B0510] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-shadow duration-300 hover:border-[#9A71FF]/50 hover:shadow-[0_25px_90px_rgba(154,113,255,0.15)] will-change-transform"
               >
-                <span>{locale === "fr" ? "Consulter tous les projets" : "View all projects"}</span>
-                <ArrowUpRight className="size-4" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column: Stacked Project Cards */}
-          <div ref={cardsContainerRef} className="lg:col-span-7 flex flex-col gap-8">
-            {(displayProjects as DisplayProjectItem[]).map((project, index) => {
-              const projectTitle = typeof project.title === "string" ? project.title : project.title?.[locale];
-              const projectSubtitle = typeof project.subtitle === "string" ? project.subtitle : project.subtitle?.[locale];
-              const projectSummary = typeof project.summary === "string" ? project.summary : project.summary?.[locale];
-              const techList = project.coreTechnologies || project.technologies || [];
-              const categoryBadge = project.category || "PROJET INGÉNIEUR";
-
-              return (
-                <div
-                  key={project.slug || index}
-                  style={{
-                    top: `${6.5 + index * 1.5}rem`,
-                    zIndex: 10 + index,
-                  }}
-                  className="stacked-project-card sticky group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-7 sm:p-9 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:border-[#9A71FF]/40 will-change-transform mb-12"
-                >
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between pb-5 border-b border-white/[0.08]">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-semibold text-[#9A71FF]">
-                        0{index + 1}
-                      </span>
-                      <span className="text-xs font-medium uppercase tracking-wider text-[#797681]">
-                        {categoryBadge}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {project.githubUrl && (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label="GitHub Repository"
-                          className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#797681] hover:text-white transition-colors"
-                        >
-                          <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
-                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                          </svg>
-                        </a>
-                      )}
-                      {project.demoUrl && (
-                        <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label="Live Demo"
-                          className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#797681] hover:text-white transition-colors"
-                        >
-                          <ExternalLink className="size-3.5" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Card Body */}
-                  <div className="py-6">
-                    <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#f3f1f7] mb-2">
-                      {projectTitle}
-                    </h3>
-
-                    {projectSubtitle && (
-                      <p className="text-xs sm:text-sm font-medium text-[#f3f1f7]/80 mb-3">
-                        {projectSubtitle}
-                      </p>
-                    )}
-
-                    <p className="text-sm text-[#797681] leading-relaxed line-clamp-3 mb-5 font-normal">
-                      {projectSummary}
-                    </p>
-
-                    {/* Tech Badges */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {techList.slice(0, 5).map((tech: string) => (
-                        <span
-                          key={tech}
-                          className="rounded-md border border-white/10 bg-white/[0.02] px-2.5 py-1 text-xs text-[#f3f1f7]/80"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Card Footer */}
-                  <div className="pt-5 border-t border-white/[0.08] flex items-center justify-between">
-                    <Link
-                      href={`/${locale}/projects/${project.slug}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#f3f1f7] hover:text-[#9A71FF] transition-colors"
-                    >
-                      <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>
-                      <ArrowUpRight className="size-3.5" />
-                    </Link>
-
-                    <span className="text-xs text-[#797681]">
-                      {project.year || "2024 - 2026"}
+                {/* Top Card Bar */}
+                <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xs font-bold text-[#9A71FF] bg-[#9A71FF]/10 border border-[#9A71FF]/30 px-2 py-0.5 rounded-full">
+                      0{index + 1}
+                    </span>
+                    <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#797681]">
+                      {categoryBadge}
                     </span>
                   </div>
+
+                  <div className="flex items-center gap-2">
+                    {project.githubUrl && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="GitHub Repository"
+                        className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 transition-colors"
+                      >
+                        <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                      </a>
+                    )}
+                    {project.demoUrl && (
+                      <a
+                        href={project.demoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Live Demo"
+                        className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 transition-colors"
+                      >
+                        <ExternalLink className="size-3.5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
+
+                {/* Main Card Content */}
+                <div className="py-4 sm:py-5 flex-1 flex flex-col justify-center">
+                  <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#f3f1f7] mb-2 leading-snug">
+                    {projectTitle}
+                  </h3>
+
+                  {projectSubtitle && (
+                    <p className="text-xs sm:text-sm font-medium text-[#9A71FF] mb-3 line-clamp-1">
+                      {projectSubtitle}
+                    </p>
+                  )}
+
+                  <p className="text-xs sm:text-sm text-[#797681] leading-relaxed line-clamp-3 sm:line-clamp-4 mb-5 font-normal">
+                    {projectSummary}
+                  </p>
+
+                  {/* Core Technologies Badges */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {techList.slice(0, 6).map((tech: string) => (
+                      <span
+                        key={tech}
+                        className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-[11px] text-[#f3f1f7]/80 hover:border-white/25 transition-colors"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Footer Bar */}
+                <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
+                  <Link
+                    href={`/${locale}/projects/${project.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-4 py-1.5 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm"
+                  >
+                    <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>
+                    <ArrowUpRight className="size-3.5" />
+                  </Link>
+
+                  <span className="font-mono text-xs text-[#797681]">
+                    {projectYear}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom Interactive Controls & Scroll Indicators */}
+        <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-4 mt-6 pb-2">
+          
+          {/* Flip Stepper Indicator & Buttons */}
+          <div className="flex items-center justify-between w-full border-t border-white/[0.08] pt-4">
+            
+            {/* Step Counter */}
+            <div className="flex items-center gap-2">
+              <Layers className="size-3.5 text-[#9A71FF]" />
+              <span className="font-mono text-xs font-bold text-[#f3f1f7]">
+                0{activeIndex + 1}
+              </span>
+              <span className="text-white/20 font-mono text-xs">/</span>
+              <span className="font-mono text-xs text-[#797681]">
+                0{count}
+              </span>
+              <span className="hidden sm:inline font-mono text-[11px] text-[#797681] ml-2">
+                {locale === "fr" ? "· Carte 3D inversée au défilement" : "· 3D card flips on scroll"}
+              </span>
+            </div>
+
+            {/* Clickable Card Navigation Pills */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => scrollToStep(Math.max(0, activeIndex - 1))}
+                disabled={activeIndex === 0}
+                aria-label="Projet précédent"
+                className="size-7 rounded-full border border-white/10 flex items-center justify-center text-[#797681] hover:text-[#f3f1f7] hover:border-white/25 disabled:opacity-30 cursor-pointer transition-all"
+              >
+                <ChevronLeft className="size-3.5" />
+              </button>
+
+              <div className="flex items-center gap-1.5 px-2">
+                {displayProjects.map((_, dotIdx) => (
+                  <button
+                    key={dotIdx}
+                    type="button"
+                    onClick={() => scrollToStep(dotIdx)}
+                    aria-label={`Aller au projet ${dotIdx + 1}`}
+                    className={`rounded-full transition-all cursor-pointer ${
+                      dotIdx === activeIndex
+                        ? "w-6 h-2 bg-[#9A71FF] shadow-[0_0_10px_rgba(154,113,255,0.6)]"
+                        : "size-2 bg-white/20 hover:bg-white/40"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => scrollToStep(Math.min(count - 1, activeIndex + 1))}
+                disabled={activeIndex === count - 1}
+                aria-label="Projet suivant"
+                className="size-7 rounded-full border border-white/10 flex items-center justify-center text-[#797681] hover:text-[#f3f1f7] hover:border-white/25 disabled:opacity-30 cursor-pointer transition-all"
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
+            </div>
+
+            {/* Link to all projects */}
+            <Link
+              href={`/${locale}/projects`}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[#797681] hover:text-[#f3f1f7] transition-colors"
+            >
+              <span>{locale === "fr" ? "Tous les projets" : "All projects"}</span>
+              <ArrowUpRight className="size-3.5" />
+            </Link>
+          </div>
+
+          {/* Scroll Guide Indicator */}
+          <div className="text-[11px] font-mono text-[#797681] flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-[#9A71FF] animate-pulse" />
+            <span>
+              {locale === "fr"
+                ? "Défilez pour retourner la carte vers son dos et découvrir le projet suivant"
+                : "Scroll to flip the card over to its back and reveal the next project"}
+            </span>
           </div>
         </div>
+
       </div>
     </section>
   );

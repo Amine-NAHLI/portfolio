@@ -6,7 +6,7 @@ import "./globals.css";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space", display: "swap" });
 const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
-const themeScript = `try { var theme = localStorage.getItem('portfolio-theme'); if (theme !== 'light' && theme !== 'dark') theme = 'dark'; document.documentElement.dataset.theme = theme; document.documentElement.style.colorScheme = theme; } catch (_) { document.documentElement.dataset.theme = 'dark'; }`;
+const themeScript = `document.documentElement.dataset.theme = 'dark'; document.documentElement.style.colorScheme = 'dark'; try { localStorage.setItem('portfolio-theme', 'dark'); } catch (_) {}`;
 
 import { AdminAutoLogout } from "@/components/admin/AdminAutoLogout";
 
@@ -14,7 +14,7 @@ import FluidBackground from "@/components/layout/FluidBackground";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fr" data-theme="dark" suppressHydrationWarning className={`${spaceGrotesk.variable} ${geist.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${spaceGrotesk.variable} ${geist.variable} ${jetbrainsMono.variable}`}>
       <head><Script id="theme-preference" strategy="beforeInteractive">{themeScript}</Script></head>
       <body>
         <FluidBackground />

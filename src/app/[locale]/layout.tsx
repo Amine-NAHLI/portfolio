@@ -11,8 +11,6 @@ import { getSiteUrl, siteConfig } from "@/config/site";
 import { getPublicContactLinks } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
-import HackerTrail from "@/components/ui/HackerTrail";
-import ThemeGlitch from "@/components/ui/ThemeGlitch";
 import ChatWidget from "@/components/ui/ChatWidget";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import ScrollProgress from "@/components/ui/ScrollProgress";
@@ -52,8 +50,8 @@ const metadataByLocale: Record<Locale, Pick<Metadata, "title" | "description" | 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark light",
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f7f9f9" }, { media: "(prefers-color-scheme: dark)", color: "#121416" }],
+  colorScheme: "dark",
+  themeColor: "#060605",
 };
 
 export function generateStaticParams() {
@@ -93,8 +91,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <PageLoadWrapper>
       <SmoothScroll />
       <ScrollProgress />
-      <HackerTrail />
-      <ThemeGlitch />
       <NoiseOverlay />
       <div className="flex min-h-screen flex-col">
         <LocaleDocumentAttributes locale={candidate} />

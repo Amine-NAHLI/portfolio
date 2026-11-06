@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Languages, Menu, Search, X } from "lucide-react";
-import ThemeToggle from "@/components/layout/ThemeToggle";
 import { siteConfig } from "@/config/site";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getAlternateLocale, type Locale } from "@/i18n/config";
@@ -167,10 +166,6 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
 
           {/* Utility Actions & CTAs */}
           <div className="flex items-center gap-2">
-            <Magnetic intensity={0.2}>
-              <ThemeToggle />
-            </Magnetic>
-            
             <Magnetic intensity={0.2}>
               <Link 
                 href={`/${locale}/search`} 

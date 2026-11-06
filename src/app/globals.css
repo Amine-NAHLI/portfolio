@@ -33,77 +33,51 @@
 
 @layer base {
   :root {
-    --bg-page: #060709;
-    --bg-gradient: linear-gradient(180deg, #080a0d 0%, #040507 100%);
-    --surface-subtle: #090b0e;
-    --surface: #0c0e13;
-    --surface-raised: #11141b;
-    --surface-deep: #020304;
-    --border: rgb(255 255 255 / 5%);
-    --border-strong: rgb(255 255 255 / 10%);
+    /* Palette requested by user: Black (#000000), Black Hole (#060605), Black Magic (#0B0510), Asphalt (#0C0404), Black Pearl (#0E161A) */
+    --bg-page: #060605;
+    --bg-gradient: radial-gradient(circle at 18% 20%, rgba(14, 22, 26, 0.7) 0%, transparent 45%), radial-gradient(circle at 82% 80%, rgba(11, 5, 16, 0.8) 0%, transparent 50%), #000000;
+    --surface-subtle: #0C0404;
+    --surface: #0B0510;
+    --surface-raised: #0E161A;
+    --surface-deep: #000000;
+    --border: rgba(243, 241, 247, 0.08);
+    --border-strong: rgba(243, 241, 247, 0.15);
     /* Cinematic Palette */
-    --cinematic-bg: #101015;
-    --cinematic-surface: #17161e;
-    --cinematic-secondary: #211b2a;
-    --cinematic-accent: #9a71ff;
+    --cinematic-bg: #060605;
+    --cinematic-surface: #0B0510;
+    --cinematic-secondary: #0E161A;
+    --cinematic-accent: #9A71FF;
     --cinematic-accent-glow: rgba(154, 113, 255, 0.25);
     --cinematic-text: #f3f1f7;
     --cinematic-muted: #797681;
     --cinematic-border: rgba(243, 241, 247, 0.08);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --text-on-accent: #ffffff;
-    --accent: #3b82f6;
-    --accent-hover: #60a5fa;
-    --accent-soft: rgb(59 130 246 / 12%);
+    --text-primary: #f3f1f7;
+    --text-secondary: #8b8796;
+    --text-muted: #5e5b66;
+    --text-on-accent: #000000;
+    --accent: #9A71FF;
+    --accent-hover: #b08dff;
+    --accent-soft: rgba(154, 113, 255, 0.12);
     --amber: #f59e0b;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #f43f5e;
-    --info: #3b82f6;
-    --radius-sm: 0.125rem;
-    --radius-md: 0.25rem;
-    --radius-lg: 0.375rem;
-    --radius-xl: 0.5rem;
+    --info: #9A71FF;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
     --pointer-x: 50vw;
     --pointer-y: 20vh;
-    --ambient-cyan: rgb(59 130 246 / 8%);
-    --ambient-amber: rgb(245 158 11 / 4%);
-    --shadow-soft: 0 1.5rem 4rem rgb(0 0 0 / 60%);
+    --ambient-cyan: rgba(154, 113, 255, 0.08);
+    --ambient-amber: rgba(245, 158, 11, 0.04);
+    --shadow-soft: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
     color-scheme: dark;
-  }
-
-  :root[data-theme="light"] {
-    --bg-page: #e0f2fe;
-    --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #bae6fd 60%, #7dd3fc 100%);
-    --surface-subtle: #f0f9ff;
-    --surface: #ffffff;
-    --surface-raised: #ffffff;
-    --surface-deep: #e0f2fe;
-    --border: rgb(2 132 199 / 12%);
-    --border-strong: #7dd3fc;
-    --text-primary: #082f49;
-    --text-secondary: #0369a1;
-    --text-muted: #0284c7;
-    --text-on-accent: #ffffff;
-    --accent: #0284c7;
-    --accent-hover: #0369a1;
-    --accent-soft: rgb(2 132 199 / 15%);
-    --amber: #d97706;
-    --success: #059669;
-    --warning: #d97706;
-    --danger: #dc2626;
-    --info: #0284c7;
-    --ambient-cyan: rgb(2 132 199 / 10%);
-    --ambient-amber: rgb(217 119 6 / 6%);
-    --shadow-soft: 0 1.5rem 4rem rgb(17 34 51 / 6%);
-    color-scheme: light;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
   html { min-width: 20rem; overflow-x: clip; scroll-padding-top: 5rem; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { min-height: 100vh; overflow-x: clip; background-color: transparent; color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
+  body { min-height: 100vh; overflow-x: clip; background-color: var(--bg-page); color: var(--text-secondary); font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif; line-height: 1.6; }
   h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.025em; }
   a, button, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
   button, [role="button"] { cursor: pointer; }

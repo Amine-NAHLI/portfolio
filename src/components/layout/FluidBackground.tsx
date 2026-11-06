@@ -34,11 +34,6 @@ export default function FluidBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Detect theme
-    function isDark() {
-      return document.documentElement.getAttribute("data-theme") !== "light";
-    }
-
     // Aurora blob definitions — positions animate with sin/cos
     const blobs = [
       { cx: 0.15, cy: 0.1, rx: 0.45, ry: 0.5, speed: 0.0003, phase: 0, driftX: 0.08, driftY: 0.06 },
@@ -48,28 +43,20 @@ export default function FluidBackground() {
       { cx: 0.85, cy: 0.65, rx: 0.3, ry: 0.35, speed: 0.00028, phase: 3.7, driftX: 0.05, driftY: 0.05 },
     ];
 
-    // Color palettes
+    // Color palettes mixed from requested colors: Black (#000000), Asphalt (#0C0404), Black Hole (#060605), Black Magic (#0B0510), Black Pearl (#0E161A)
     const darkColors = [
-      ["rgba(56, 189, 248, 0.18)", "rgba(56, 189, 248, 0)"],   // Sky-400
-      ["rgba(139, 92, 246, 0.15)", "rgba(139, 92, 246, 0)"],   // Violet-500
-      ["rgba(59, 130, 246, 0.14)", "rgba(59, 130, 246, 0)"],   // Blue-500
-      ["rgba(6, 182, 212, 0.12)", "rgba(6, 182, 212, 0)"],     // Cyan-500
-      ["rgba(168, 85, 247, 0.10)", "rgba(168, 85, 247, 0)"],   // Purple-500
-    ];
-
-    const lightColors = [
-      ["rgba(2, 132, 199, 0.12)", "rgba(2, 132, 199, 0)"],     // Sky-600
-      ["rgba(124, 58, 237, 0.10)", "rgba(124, 58, 237, 0)"],   // Violet-600
-      ["rgba(37, 99, 235, 0.09)", "rgba(37, 99, 235, 0)"],     // Blue-600
-      ["rgba(8, 145, 178, 0.08)", "rgba(8, 145, 178, 0)"],     // Cyan-600
-      ["rgba(147, 51, 234, 0.07)", "rgba(147, 51, 234, 0)"],   // Purple-600
+      ["rgba(14, 22, 26, 0.6)", "rgba(14, 22, 26, 0)"],   // Black Pearl #0E161A (left cool slate/teal depth)
+      ["rgba(11, 5, 16, 0.7)", "rgba(11, 5, 16, 0)"],     // Black Magic #0B0510 (right violet/indigo depth)
+      ["rgba(12, 4, 4, 0.45)", "rgba(12, 4, 4, 0)"],     // Asphalt #0C0404 (warm dark undertone)
+      ["rgba(6, 6, 5, 0.6)", "rgba(6, 6, 5, 0)"],         // Black Hole #060605
+      ["rgba(154, 113, 255, 0.08)", "rgba(154, 113, 255, 0)"], // Subtle accent glow
     ];
 
     function draw(time: number) {
-      ctx!.clearRect(0, 0, width, height);
+      ctx!.fillStyle = "#000000";
+      ctx!.fillRect(0, 0, width, height);
 
-      const dark = isDark();
-      const colors = dark ? darkColors : lightColors;
+      const colors = darkColors;
 
       for (let i = 0; i < blobs.length; i++) {
         const b = blobs[i];

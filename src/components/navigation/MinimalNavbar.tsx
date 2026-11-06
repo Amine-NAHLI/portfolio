@@ -28,53 +28,88 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navLinks = [
+    { label: locale === "fr" ? "Projets" : "Projects", href: `/${locale}#work`, targetId: "work" },
+    { label: locale === "fr" ? "Parcours" : "Journey", href: `/${locale}#journey`, targetId: "journey" },
+    { label: locale === "fr" ? "Certifications" : "Certifications", href: `/${locale}#certifications`, targetId: "certifications" },
+    { label: locale === "fr" ? "Contact" : "Contact", href: `/${locale}#contact`, targetId: "contact" },
+  ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    if (typeof window === "undefined") return;
+    const currentPath = window.location.pathname;
+    const isHomePage = currentPath === `/${locale}` || currentPath === `/${locale}/` || currentPath === "/";
+
+    if (isHomePage) {
+      e.preventDefault();
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        window.history.pushState(null, "", `#${targetId}`);
+        const lenis = window.__lenis;
+        if (lenis) {
+          lenis.scrollTo(targetElement, { offset: -70, duration: 1.2 });
+        } else {
+          targetElement.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+  };
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
-            ? "bg-[#101015]/80 py-3.5 backdrop-blur-xl border-b border-white/10 shadow-2xl"
-            : "bg-transparent py-6"
+            ? "bg-[#060605]/90 py-3.5 backdrop-blur-xl border-b border-white/[0.08] shadow-lg"
+            : "bg-transparent py-5 sm:py-6"
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-14">
           
-          {/* Left: Minimal Monogram Logo */}
+          {/* Left: Brand Monogram */}
           <Link
             href={`/${locale}`}
-            className="group flex items-center gap-2 font-display text-lg font-black tracking-tighter text-[#f3f1f7]"
+            className="group flex items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#f3f1f7]"
           >
-            <span>NAHLI</span>
-            <span className="size-1.5 rounded-full bg-[#9A71FF] transition-transform duration-300 group-hover:scale-150" />
+            <span>Amine Nahli</span>
+            <span className="size-1.5 rounded-full bg-[#9A71FF]" />
           </Link>
 
-          {/* Center: Subtle Status (Desktop) */}
-          <div className="hidden md:flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-[11px] font-mono backdrop-blur-md">
-            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[#797681]">INGÉNIEUR EN FORMATION · UPF</span>
-          </div>
+          {/* Center: Clean Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.targetId)}
+                className="text-xs font-medium text-[#797681] hover:text-[#f3f1f7] transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
           {/* Right: Language switch + Menu Button */}
-          <div className="flex items-center gap-3">
-            
-            {/* Language Switcher Pill */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Language Switcher */}
             <Link
               href={`/${locale === "fr" ? "en" : "fr"}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-xs font-semibold text-[#f3f1f7] hover:border-[#9A71FF]/40 hover:bg-[#9A71FF]/10 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
               aria-label="Changer de langue"
             >
               <Globe className="size-3 text-[#9A71FF]" />
               <span>{locale === "fr" ? "EN" : "FR"}</span>
             </Link>
 
-            {/* Magnetic-styled Menu Pill */}
+            {/* Menu Trigger */}
             <button
+              type="button"
               onClick={() => setIsMenuOpen(true)}
               aria-label="Ouvrir le menu de navigation"
-              className="group flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 font-mono text-xs font-bold text-[#f3f1f7] backdrop-blur-xl transition-all duration-300 hover:border-[#9A71FF] hover:bg-[#9A71FF] hover:text-[#101015] hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <span>MENU</span>
-              <Menu className="size-3.5 transition-transform group-hover:scale-110" />
+              <span>Menu</span>
+              <Menu className="size-3.5 text-[#797681]" />
             </button>
           </div>
         </div>
@@ -90,4 +125,3 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
     </>
   );
 }
-

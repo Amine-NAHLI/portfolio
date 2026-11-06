@@ -75,7 +75,8 @@ export default function CertificationCard({ certification, locale, copy }: Certi
       })
     : null;
 
-  const isImage = Boolean(certification.documentMimeType?.startsWith("image/"));
+  // Primary preview source: static high-res pre-rendered thumbnail, fallback to document stream
+  const previewUrl = `/images/certifications/${certification.id}.png`;
 
   return (
     <>
@@ -88,45 +89,26 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         {/* Document Preview Frame: Displays the actual certificate preview directly */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#060605] border-b border-white/[0.06] flex items-center justify-center">
           {/* Loading Skeleton */}
-          {!isLoaded && !hasError && certification.hasDocument && isImage && (
+          {!isLoaded && !hasError && certification.hasDocument && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#17161e] animate-pulse">
               <LoaderCircle className="size-7 animate-spin text-[#9A71FF]/60" />
             </div>
           )}
 
           {certification.hasDocument && !hasError ? (
-            isImage ? (
-              <img
-                src={`/api/certifications/${certification.id}/document`}
-                alt={`Aperçu de ${certification.name}`}
-                loading="lazy"
-                onLoad={() => setIsLoaded(true)}
-                onError={() => setHasError(true)}
-                className={`h-full w-full object-contain p-2.5 transition-all duration-700 group-hover:scale-105 ${
-                  isLoaded ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            ) : (
-              /* Real document preview rendered directly on the card with object/iframe fallback */
-              <div className="relative w-full h-full overflow-hidden bg-white select-none">
-                <object
-                  data={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                  type="application/pdf"
-                  className="size-full border-0 pointer-events-none select-none scale-100 origin-top"
-                  title={`Aperçu de ${certification.name}`}
-                >
-                  <iframe
-                    src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                    className="size-full border-0 pointer-events-none select-none scale-100 origin-top"
-                    title={`Aperçu de ${certification.name}`}
-                    tabIndex={-1}
-                    loading="lazy"
-                  />
-                </object>
-                {/* Transparent overlay ensuring smooth card click and hover interactions without pointer interception */}
-                <div className="absolute inset-0 z-10 bg-black/5 group-hover:bg-transparent transition-colors" />
-              </div>
-            )
+            <img
+              src={previewUrl}
+              alt={`Aperçu de ${certification.name}`}
+              loading="lazy"
+              onLoad={() => setIsLoaded(true)}
+              onError={() => {
+                // If static thumbnail is not present, fall back to /api/certifications/[id]/document
+                setHasError(true);
+              }}
+              className={`h-full w-full object-contain p-2.5 transition-all duration-700 group-hover:scale-105 ${
+                isLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            />
           ) : (
             <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#17161e] to-[#101015] p-6 text-center">
               <div className="grid size-12 place-items-center rounded-2xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 text-[#9A71FF] mb-2 group-hover:scale-110 transition-transform">
@@ -253,28 +235,15 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                     <div className="md:col-span-7 flex flex-col justify-center">
                       <div className="relative w-full h-[320px] sm:h-[370px] md:h-[410px] rounded-2xl border border-white/10 bg-[#060605] p-2 flex items-center justify-center overflow-hidden shadow-inner">
                         {certification.hasDocument ? (
-                          isImage ? (
-                            <img
-                              src={`/api/certifications/${certification.id}/document`}
-                              alt={certification.name}
-                              className="max-h-full w-auto max-w-full object-contain rounded-xl shadow-lg"
-                            />
-                          ) : (
-                            <div className="relative w-full h-full overflow-hidden rounded-xl bg-white shadow-lg">
-                              <object
-                                data={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                                type="application/pdf"
-                                className="size-full border-0 rounded-xl"
-                                title={certification.name}
-                              >
-                                <iframe
-                                  src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                                  className="size-full border-0 rounded-xl"
-                                  title={certification.name}
-                                />
-                              </object>
-                            </div>
-                          )
+                          <img
+                            src={previewUrl}
+                            alt={certification.name}
+                            onError={(e) => {
+                              // If image fails, fallback to document stream if it's an image or placeholder
+                              (e.currentTarget as HTMLImageElement).src = `/api/certifications/${certification.id}/document`;
+                            }}
+                            className="max-h-full w-auto max-w-full object-contain rounded-xl shadow-lg"
+                          />
                         ) : (
                           <div className="flex flex-col items-center justify-center p-8 text-center">
                             <div className="size-14 rounded-2xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 flex items-center justify-center text-[#9A71FF] mb-3">
@@ -347,7 +316,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                               className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
                             >
                               <Download className="size-3.5 text-[#9A71FF]" />
-                              <span>{locale === "fr" ? "Télécharger" : "Download"}</span>
+                              <span>{locale === "fr" ? "Télécharger le PDF" : "Download PDF"}</span>
                             </a>
                           )}
 

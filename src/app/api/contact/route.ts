@@ -4,21 +4,32 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
 import { validateContactMessage } from "@/features/contact/validation";
 import { getMissingContactStorageConfiguration } from "@/features/contact/config";
+import { sendContactNotification } from "@/features/contact/mailer";
 
 export const runtime = "nodejs";
 
 const messages = {
   fr: {
-    refused: "Requête refusée.", unavailable: "Le formulaire est temporairement indisponible. Utilisez l’adresse e-mail affichée sur cette page.",
-    invalidForm: "Formulaire invalide.", received: "Message reçu.", reload: "Veuillez recharger le formulaire puis réessayer.",
-    invalidFields: "Vérifiez les champs du formulaire.", limited: "Trop de messages ont été envoyés récemment. Réessayez plus tard ou utilisez l’e-mail direct.",
-    storageError: "Le message n’a pas pu être enregistré. Utilisez l’adresse e-mail affichée sur cette page.", saved: "Votre message a bien été enregistré.",
+    refused: "Requête refusée.",
+    unavailable: "Le formulaire est temporairement indisponible. Utilisez l’adresse e-mail affichée sur cette page.",
+    invalidForm: "Formulaire invalide.",
+    received: "Message reçu.",
+    reload: "Veuillez recharger le formulaire puis réessayer.",
+    invalidFields: "Vérifiez les champs du formulaire.",
+    limited: "Trop de messages ont été envoyés récemment. Réessayez plus tard ou utilisez l’e-mail direct.",
+    storageError: "Le message n’a pas pu être enregistré. Utilisez l’adresse e-mail affichée sur cette page.",
+    saved: "Votre message a bien été enregistré.",
   },
   en: {
-    refused: "Request refused.", unavailable: "The form is temporarily unavailable. Please use the email address shown on this page.",
-    invalidForm: "Invalid form.", received: "Message received.", reload: "Please reload the form and try again.",
-    invalidFields: "Check the form fields.", limited: "Too many messages were sent recently. Try again later or use the direct email address.",
-    storageError: "The message could not be saved. Please use the email address shown on this page.", saved: "Your message has been saved.",
+    refused: "Request refused.",
+    unavailable: "The form is temporarily unavailable. Please use the email address shown on this page.",
+    invalidForm: "Invalid form.",
+    received: "Message received.",
+    reload: "Please reload the form and try again.",
+    invalidFields: "Check the form fields.",
+    limited: "Too many messages were sent recently. Try again later or use the direct email address.",
+    storageError: "The message could not be saved. Please use the email address shown on this page.",
+    saved: "Your message has been saved.",
   },
 } as const;
 
@@ -26,7 +37,10 @@ type MessageKey = keyof typeof messages.fr;
 
 function respond(key: MessageKey, status: number, locale: "fr" | "en" = "fr") {
   const message = messages[locale][key];
-  return NextResponse.json(status < 400 ? { message } : { error: message }, { status, headers: { "Cache-Control": "private, no-store" } });
+  return NextResponse.json(status < 400 ? { message } : { error: message }, {
+    status,
+    headers: { "Cache-Control": "private, no-store" },
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -69,7 +83,7 @@ export async function POST(request: NextRequest) {
   }
   if ((recentResult.count ?? 0) >= 3 || (dailyResult.count ?? 0) >= 10) return respond("limited", 429, responseLocale);
 
-  const { error } = await supabase.from("contact_messages").insert({
+  const { data: inserted, error } = await supabase.from("contact_messages").insert({
     sender_name: name,
     sender_email: email,
     subject,
@@ -80,7 +94,33 @@ export async function POST(request: NextRequest) {
     user_agent_summary: null,
   }).select("id, created_at").single();
   
-  if (error) return respond("storageError", 500, responseLocale);
+  if (error || !inserted) return respond("storageError", 500, responseLocale);
 
-  return respond("saved", 201, locale);
+  // Dispatch actual email notification directly from server
+  let notificationSent = false;
+  try {
+    const mailResult = await sendContactNotification({
+      id: inserted.id,
+      createdAt: inserted.created_at,
+      name,
+      email,
+      subject,
+      message,
+      locale,
+    });
+    notificationSent = mailResult.success;
+  } catch (mailError) {
+    console.error("Failed to dispatch email notification:", mailError);
+  }
+
+  return NextResponse.json(
+    {
+      message: messages[locale].saved,
+      notification: notificationSent ? "sent" : "not_sent",
+    },
+    {
+      status: 201,
+      headers: { "Cache-Control": "private, no-store" },
+    }
+  );
 }

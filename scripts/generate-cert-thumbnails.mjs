@@ -44,7 +44,7 @@ async function run() {
   <body>
     <canvas id="pdf-canvas"></canvas>
     <script>
-      async function renderPdf(b64) {
+      async function renderPdf(b64, isLinkedIn) {
         const raw = atob(b64);
         const uint8 = new Uint8Array(raw.length);
         for (let i = 0; i < raw.length; i++) uint8[i] = raw.charCodeAt(i);
@@ -52,11 +52,19 @@ async function run() {
         const page = await pdf.getPage(1);
         const viewport = page.getViewport({ scale: 2.0 });
         const canvas = document.getElementById('pdf-canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        
+        if (isLinkedIn) {
+          // Clean 4:3 crop to remove the 218px blank bleed margin produced by openhtmltopdf
+          canvas.width = 1800;
+          canvas.height = 1350;
+        } else {
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+        }
+        
         const ctx = canvas.getContext('2d');
         await page.render({ canvasContext: ctx, viewport }).promise;
-        return { width: viewport.width, height: viewport.height };
+        return { width: canvas.width, height: canvas.height };
       }
     </script>
   </body>
@@ -66,10 +74,7 @@ async function run() {
   await page.setContent(html);
 
   for (const cert of certs) {
-    if (!cert.document_media_id) {
-      console.log(`Cert ${cert.name_fr} has no document_media_id, skipping.`);
-      continue;
-    }
+    if (!cert.document_media_id) continue;
 
     const { data: media } = await supabase
       .from('media_assets')
@@ -77,31 +82,26 @@ async function run() {
       .eq('id', cert.document_media_id)
       .maybeSingle();
 
-    if (!media || !media.storage_path) {
-      console.log(`Media for ${cert.name_fr} not found, skipping.`);
-      continue;
-    }
+    if (!media || !media.storage_path) continue;
 
     console.log(`Downloading document for ${cert.name_fr} (${cert.issuer})...`);
     const { data: blob, error: downloadError } = await supabase.storage
       .from(media.bucket_id)
       .download(media.storage_path);
 
-    if (downloadError || !blob) {
-      console.error(`Error downloading ${media.storage_path}:`, downloadError);
-      continue;
-    }
+    if (downloadError || !blob) continue;
 
     const base64Pdf = Buffer.from(await blob.arrayBuffer()).toString('base64');
+    const isLinkedIn = cert.issuer?.toLowerCase().includes('linkedin');
 
     try {
-      const dims = await page.evaluate((b64) => window.renderPdf(b64), base64Pdf);
+      const dims = await page.evaluate(({ b64, isLinkedIn }) => window.renderPdf(b64, isLinkedIn), { b64: base64Pdf, isLinkedIn });
       console.log(`Rendered ${cert.name_fr} on canvas:`, dims);
 
       const canvasEl = await page.$('#pdf-canvas');
       const outputPath = path.join(outputDir, `${cert.id}.png`);
       await canvasEl.screenshot({ path: outputPath });
-      console.log(`Successfully generated thumbnail: ${outputPath}`);
+      console.log(`Saved thumbnail: ${outputPath}`);
     } catch (renderError) {
       console.error(`Failed to render PDF for ${cert.name_fr}:`, renderError);
     }
@@ -115,4 +115,3 @@ run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-

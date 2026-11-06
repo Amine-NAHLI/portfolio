@@ -86,8 +86,8 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         onClick={() => setOpen(true)}
         className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-white/10 bg-[#17161e] transition-all duration-300 hover:border-[#9A71FF]/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#9A71FF]/10 w-full h-full cursor-pointer"
       >
-        {/* Document Preview Frame: Displays the actual certificate preview directly */}
-        <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#060605] border-b border-white/[0.06] flex items-center justify-center">
+        {/* Document Preview Frame: Framed presentation with subtle ambient gradient */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gradient-to-b from-[#181224] via-[#0f0a18] to-[#0a0710] border-b border-white/[0.06] flex items-center justify-center p-3 sm:p-3.5">
           {/* Loading Skeleton */}
           {!isLoaded && !hasError && certification.hasDocument && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#17161e] animate-pulse">
@@ -96,19 +96,20 @@ export default function CertificationCard({ certification, locale, copy }: Certi
           )}
 
           {certification.hasDocument && !hasError ? (
-            <img
-              src={previewUrl}
-              alt={`Aperçu de ${certification.name}`}
-              loading="lazy"
-              onLoad={() => setIsLoaded(true)}
-              onError={() => {
-                // If static thumbnail is not present, fall back to /api/certifications/[id]/document
-                setHasError(true);
-              }}
-              className={`h-full w-full object-contain p-2.5 transition-all duration-700 group-hover:scale-105 ${
-                isLoaded ? "opacity-100" : "opacity-0"
-              }`}
-            />
+            <div className="relative h-full w-full flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:border-[#9A71FF]/40 transition-colors bg-[#08050e]">
+              <img
+                src={previewUrl}
+                alt={`Aperçu de ${certification.name}`}
+                loading="lazy"
+                onLoad={() => setIsLoaded(true)}
+                onError={() => {
+                  setHasError(true);
+                }}
+                className={`h-full w-full object-contain transition-transform duration-700 group-hover:scale-[1.03] ${
+                  isLoaded ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            </div>
           ) : (
             <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#17161e] to-[#101015] p-6 text-center">
               <div className="grid size-12 place-items-center rounded-2xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 text-[#9A71FF] mb-2 group-hover:scale-110 transition-transform">
@@ -122,7 +123,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
 
           {/* Issuer Pill Badge */}
           {certification.issuer && (
-            <div className="absolute top-3 right-3 z-20 rounded-full border border-white/10 bg-[#101015]/85 px-2.5 py-1 backdrop-blur-md text-[11px] font-semibold text-[#9A71FF] shadow-lg">
+            <div className="absolute top-2.5 right-2.5 z-20 rounded-full border border-white/10 bg-[#0d0916]/85 px-2.5 py-1 backdrop-blur-md text-[10px] font-mono font-semibold text-[#9A71FF] shadow-lg">
               {certification.issuer}
             </div>
           )}
@@ -231,19 +232,20 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                     onWheel={(e) => e.stopPropagation()}
                     className="p-5 sm:p-6 lg:p-7 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch overflow-y-auto overscroll-contain max-h-[calc(92vh-64px)]"
                   >
-                    {/* Left Column (md:col-span-7): Certificate Document completely visible */}
+                    {/* Left Column (md:col-span-7): Certificate Document completely visible in luxury frame */}
                     <div className="md:col-span-7 flex flex-col justify-center">
-                      <div className="relative w-full h-[320px] sm:h-[370px] md:h-[410px] rounded-2xl border border-white/10 bg-[#060605] p-2 flex items-center justify-center overflow-hidden shadow-inner">
+                      <div className="relative w-full h-[320px] sm:h-[370px] md:h-[410px] rounded-2xl border border-white/10 bg-gradient-to-b from-[#140f20] to-[#08050e] p-3 sm:p-4 flex items-center justify-center overflow-hidden shadow-inner">
                         {certification.hasDocument ? (
-                          <img
-                            src={previewUrl}
-                            alt={certification.name}
-                            onError={(e) => {
-                              // If image fails, fallback to document stream if it's an image or placeholder
-                              (e.currentTarget as HTMLImageElement).src = `/api/certifications/${certification.id}/document`;
-                            }}
-                            className="max-h-full w-auto max-w-full object-contain rounded-xl shadow-lg"
-                          />
+                          <div className="relative h-full w-full flex items-center justify-center rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black/40">
+                            <img
+                              src={previewUrl}
+                              alt={certification.name}
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = `/api/certifications/${certification.id}/document`;
+                              }}
+                              className="max-h-full w-auto max-w-full object-contain rounded-lg shadow-md transition-transform hover:scale-[1.02]"
+                            />
+                          </div>
                         ) : (
                           <div className="flex flex-col items-center justify-center p-8 text-center">
                             <div className="size-14 rounded-2xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 flex items-center justify-center text-[#9A71FF] mb-3">

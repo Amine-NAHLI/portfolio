@@ -15,11 +15,17 @@ export async function POST(request: NextRequest) {
   const body = await readJsonObject(request);
   const source = typeof body?.text === "string" ? body.text.trim() : "";
   if (!source || source.length > 5_000) return fail("Texte à traduire invalide.", 422);
+  const targetLang = body?.targetLang === "fr" ? "fr" : "en";
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     console.error("Groq translation unavailable", { missing: ["GROQ_API_KEY"] });
     return fail("La traduction automatique est temporairement indisponible.", 503);
   }
+
+  const systemContent =
+    targetLang === "fr"
+      ? "Translate English portfolio content into natural, professional French. Return only the translation. Preserve facts, URLs, names, code and line breaks. Do not add information."
+      : "Translate French portfolio content into natural, professional English. Return only the translation. Preserve facts, URLs, names, code and line breaks. Do not add information.";
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -29,7 +35,7 @@ export async function POST(request: NextRequest) {
         model: "llama-3.3-70b-versatile",
         temperature: 0,
         messages: [
-          { role: "system", content: "Translate French portfolio content into natural professional English. Return only the translation. Preserve facts, URLs, names, code and line breaks. Do not add information." },
+          { role: "system", content: systemContent },
           { role: "user", content: source },
         ],
       }),

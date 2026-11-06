@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +20,20 @@ type ProjectGalleryProps = {
 export default function ProjectGallery({ images, locale }: ProjectGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    if (lightboxOpen) {
+      window.__lenis?.stop();
+      document.body.style.overflow = "hidden";
+    } else {
+      window.__lenis?.start();
+      document.body.style.overflow = "";
+    }
+    return () => {
+      window.__lenis?.start();
+      document.body.style.overflow = "";
+    };
+  }, [lightboxOpen]);
 
   if (images.length === 0) return null;
 
@@ -87,6 +101,8 @@ export default function ProjectGallery({ images, locale }: ProjectGalleryProps) 
       {lightboxOpen && (
         <dialog 
           open
+          data-lenis-prevent="true"
+          aria-modal="true"
           className="fixed inset-0 z-[100] m-0 grid h-dvh w-dvw place-items-center bg-black/90 p-0 open:animate-in open:fade-in-0"
           onClose={() => setLightboxOpen(false)}
         >

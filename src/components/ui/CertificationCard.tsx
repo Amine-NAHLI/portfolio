@@ -36,19 +36,22 @@ export default function CertificationCard({ certification, locale, copy }: Certi
     setMounted(true);
   }, []);
 
-  // Lock body scroll on modal open
+  // Lock body scroll on modal open and pause Lenis smooth scroll
   useEffect(() => {
     if (open) {
+      window.__lenis?.stop();
       document.body.style.overflow = "hidden";
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") setOpen(false);
       };
       window.addEventListener("keydown", handleKeyDown);
       return () => {
+        window.__lenis?.start();
         document.body.style.overflow = "";
         window.removeEventListener("keydown", handleKeyDown);
       };
     } else {
+      window.__lenis?.start();
       document.body.style.overflow = "";
     }
   }, [open]);
@@ -165,7 +168,12 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 16 }}
                   transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="relative z-10 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] text-[#f3f1f7] shadow-2xl"
+                  role="dialog"
+                  aria-modal="true"
+                  data-lenis-prevent="true"
+                  data-lenis-prevent-wheel="true"
+                  data-lenis-prevent-touch="true"
+                  className="relative z-10 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] text-[#f3f1f7] shadow-2xl overscroll-contain"
                 >
                   {/* Compact Header Bar */}
                   <div className="flex items-center justify-between border-b border-white/10 bg-[#120A1C] px-5 sm:px-6 py-3.5">
@@ -255,7 +263,12 @@ export default function CertificationCard({ certification, locale, copy }: Certi
 
                       {/* Middle: Verified Objectives & Skills Description */}
                       {certification.description ? (
-                        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 flex-1 overflow-y-auto max-h-[200px]">
+                        <div
+                          data-lenis-prevent="true"
+                          data-lenis-prevent-wheel="true"
+                          data-lenis-prevent-touch="true"
+                          className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 flex-1 overflow-y-auto max-h-[200px] overscroll-contain"
+                        >
                           <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9A71FF] mb-2 flex items-center gap-1.5">
                             <ShieldCheck className="size-3.5" />
                             {locale === "fr" ? "Objectifs & Compétences Validées" : "Verified Objectives & Skills"}

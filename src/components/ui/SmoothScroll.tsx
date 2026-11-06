@@ -54,6 +54,51 @@ export default function SmoothScroll() {
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
+      prevent: (node: HTMLElement) => {
+        if (!node) return false;
+
+        // 1. If element or ancestor explicitly requests prevention via attribute
+        if (
+          node.hasAttribute?.("data-lenis-prevent") ||
+          node.closest?.("[data-lenis-prevent]")
+        ) {
+          return true;
+        }
+
+        // 2. If inside any modal, dialog, terminal, popup, drawer, or fullscreen menu
+        if (
+          node.closest?.('[role="dialog"]') ||
+          node.closest?.('[aria-modal="true"]') ||
+          node.closest?.("[data-scroll-lock]") ||
+          node.closest?.(".modal-overlay") ||
+          node.closest?.("#terminal-chat")
+        ) {
+          return true;
+        }
+
+        // 3. If body scroll is locked (e.g. any modal is open)
+        if (typeof document !== "undefined" && document.body.style.overflow === "hidden") {
+          return true;
+        }
+
+        // 4. If hovering over any scrollable inner container (overflow-y or overflow-x auto/scroll)
+        let el: HTMLElement | null = node;
+        while (el && el !== document.body && el !== document.documentElement) {
+          const style = window.getComputedStyle(el);
+          const hasScrollY =
+            (style.overflowY === "auto" || style.overflowY === "scroll") &&
+            el.scrollHeight > el.clientHeight;
+          const hasScrollX =
+            (style.overflowX === "auto" || style.overflowX === "scroll") &&
+            el.scrollWidth > el.clientWidth;
+          if (hasScrollY || hasScrollX) {
+            return true;
+          }
+          el = el.parentElement;
+        }
+
+        return false;
+      },
     });
 
     // Make lenis globally accessible for navbar and in-page anchor links

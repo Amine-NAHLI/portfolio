@@ -237,6 +237,9 @@ export default function GitHubContributionsScene({
             {/* Real Matrix Grid Container (Scrollable on mobile with focus on recent weeks) */}
             <div
               ref={matrixScrollRef}
+              data-lenis-prevent="true"
+              data-lenis-prevent-wheel="true"
+              data-lenis-prevent-touch="true"
               className="overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 touch-pan-x overscroll-x-contain scrollbar-thin scrollbar-thumb-emerald-500/30 scrollbar-track-white/[0.03]"
             >
               <div className="min-w-[760px] flex gap-[3.5px] py-1">

@@ -514,7 +514,11 @@ Envoyer un message chiffré : [Formulaire de Contact](/fr/contact)`,
             initial={{ opacity: 0, y: 25, scale: 0.94, transformOrigin: "bottom right" }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 25, scale: 0.94, transition: { duration: 0.2 } }}
-            className={`absolute bottom-16 right-0 mb-3 flex flex-col overflow-hidden rounded-2xl border border-white/20 bg-[#060605] shadow-[0_25px_70px_rgba(0,0,0,0.9)] backdrop-blur-2xl font-mono text-xs transition-all duration-300 ${
+            id="terminal-chat"
+            data-lenis-prevent="true"
+            data-lenis-prevent-wheel="true"
+            data-lenis-prevent-touch="true"
+            className={`absolute bottom-16 right-0 mb-3 flex flex-col overflow-hidden rounded-2xl border border-white/20 bg-[#060605] shadow-[0_25px_70px_rgba(0,0,0,0.9)] backdrop-blur-2xl font-mono text-xs transition-all duration-300 overscroll-contain ${
               isExpanded
                 ? "w-[92vw] sm:w-[680px] lg:w-[740px] h-[82vh] max-h-[82vh]"
                 : "w-[360px] sm:w-[480px] lg:w-[520px] h-[560px] max-h-[80vh]"
@@ -589,7 +593,12 @@ Envoyer un message chiffré : [Formulaire de Contact](/fr/contact)`,
             </div>
 
             {/* Terminal Output Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 text-[12px] leading-relaxed">
+            <div
+              data-lenis-prevent="true"
+              data-lenis-prevent-wheel="true"
+              data-lenis-prevent-touch="true"
+              className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 text-[12px] leading-relaxed overscroll-contain"
+            >
               {messages.map((msg) => (
                 <div key={msg.id} className="space-y-1">
                   {msg.role === "user" ? (

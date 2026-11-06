@@ -16,6 +16,20 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      window.__lenis?.stop();
+      document.body.style.overflow = "hidden";
+    } else {
+      window.__lenis?.start();
+      document.body.style.overflow = "";
+    }
+    return () => {
+      window.__lenis?.start();
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -155,7 +169,12 @@ export default function TestimonialForm({ locale, inline = false }: { locale: Lo
   );
 
   const portalContainer = isOpen && mounted ? createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-page/60 p-4 sm:p-6 backdrop-blur-md animate-in fade-in duration-300">
+    <div
+      role="dialog"
+      aria-modal="true"
+      data-lenis-prevent="true"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-page/60 p-4 sm:p-6 backdrop-blur-md animate-in fade-in duration-300 overscroll-contain"
+    >
       <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent pointer-events-none" />
       {formContent}
     </div>,

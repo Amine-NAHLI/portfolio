@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { siteConfig, getSiteUrl } from "@/config/site";
 import type { Locale } from "@/i18n/config";
 
 type PageMetadataInput = {
@@ -10,17 +10,20 @@ type PageMetadataInput = {
 };
 
 export function createPageMetadata({ locale, title, description, path = "" }: PageMetadataInput): Metadata {
-  const localizedPath = `/${locale}${path}`;
+  const baseUrl = getSiteUrl();
+  const canonicalUrl = new URL(`/${locale}${path}`, baseUrl).toString();
+  const frUrl = new URL(`/fr${path}`, baseUrl).toString();
+  const enUrl = new URL(`/en${path}`, baseUrl).toString();
 
   return {
     title,
     description,
     alternates: {
-      canonical: localizedPath,
+      canonical: canonicalUrl,
       languages: {
-        fr: `/fr${path}`,
-        en: `/en${path}`,
-        "x-default": `/fr${path}`,
+        fr: frUrl,
+        en: enUrl,
+        "x-default": frUrl,
       },
     },
     openGraph: {
@@ -28,7 +31,7 @@ export function createPageMetadata({ locale, title, description, path = "" }: Pa
       description,
       type: "website",
       locale: locale === "fr" ? "fr_FR" : "en_US",
-      url: localizedPath,
+      url: canonicalUrl,
       siteName: `${siteConfig.name} — Portfolio`,
     },
     twitter: {

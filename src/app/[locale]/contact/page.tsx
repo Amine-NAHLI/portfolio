@@ -24,54 +24,92 @@ export default async function ContactPage({ params }: ContactPageProps) {
   const copy = publicCopy[locale].contact;
   const contactLinks = await getPublicContactLinks();
   const links = [
-    { label: copy.email, value: contactLinks.email.replace("mailto:", ""), href: contactLinks.email, icon: Mail, external: false },
-    { label: copy.linkedin, value: contactLinks.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\//, ""), href: contactLinks.linkedin, icon: LinkedinIcon, external: true },
-    { label: copy.github, value: contactLinks.github.replace(/^https?:\/\/(www\.)?/, ""), href: contactLinks.github, icon: GithubIcon, external: true },
+    {
+      label: copy.email,
+      value: contactLinks.email.replace("mailto:", ""),
+      href: contactLinks.email,
+      icon: Mail,
+      external: false,
+    },
+    {
+      label: copy.linkedin,
+      value: contactLinks.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\//, ""),
+      href: contactLinks.linkedin,
+      icon: LinkedinIcon,
+      external: true,
+    },
+    {
+      label: copy.github,
+      value: contactLinks.github.replace(/^https?:\/\/(www\.)?/, ""),
+      href: contactLinks.github,
+      icon: GithubIcon,
+      external: true,
+    },
   ];
 
   return (
-    <Container className="py-24 sm:py-32">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-16 lg:gap-24">
-        
-        {/* Left Column (Sticky) */}
-        <div className="lg:sticky lg:top-32 lg:h-max">
-          <div className="mb-12 lg:mb-16">
-            <p className="font-mono text-sm uppercase tracking-widest text-accent mb-4">{copy.eyebrow}</p>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-text-primary mb-6">{copy.title}</h1>
-            <p className="text-lg text-text-secondary leading-relaxed max-w-md">{copy.description}</p>
+    <div className="min-h-screen bg-[#000000] text-[#f3f1f7] pb-32">
+      {/* Background ambient lighting */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full bg-[#0E161A] opacity-60 blur-[180px] -z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-[#0B0510] opacity-70 blur-[180px] -z-10"
+      />
+
+      <Container className="pt-28 sm:pt-36">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          
+          {/* Left Column (Sticky Overview & Channels) */}
+          <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8">
+            <div>
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
+                {copy.eyebrow}
+              </span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-[#f3f1f7] leading-tight mb-5">
+                {copy.title}
+              </h1>
+              <p className="text-base text-[#797681] leading-relaxed max-w-md font-normal">
+                {copy.description}
+              </p>
+            </div>
+
+            {/* Direct Connect Channels */}
+            <div className="flex flex-col gap-3">
+              {links.map(({ label, value, href, icon: Icon, external }) => (
+                <a
+                  key={href}
+                  href={href}
+                  target={external ? "_blank" : undefined}
+                  rel={external ? "noreferrer" : undefined}
+                  data-analytics-event={href === contactLinks.github ? "github_click" : undefined}
+                  className="group relative flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-[#0B0510] transition-all duration-300 hover:border-[#9A71FF]/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#9A71FF]/10 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="flex items-center justify-center size-11 rounded-xl bg-[#060605] border border-white/10 group-hover:border-[#9A71FF]/50 text-[#9A71FF] transition-all">
+                      <Icon aria-hidden="true" className="size-4 text-[#9A71FF]" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors">
+                        {label}
+                      </p>
+                      <p className="text-xs font-mono text-[#797681] mt-0.5">{value}</p>
+                    </div>
+                  </div>
+                  <ArrowUpRight className="size-4 text-[#797681] group-hover:text-[#9A71FF] transition-colors" />
+                </a>
+              ))}
+            </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {links.map(({ label, value, href, icon: Icon, external }) => (
-              <a 
-                key={href} 
-                href={href} 
-                target={external ? "_blank" : undefined} 
-                rel={external ? "noreferrer" : undefined} 
-                data-analytics-event={href === contactLinks.github ? "github_click" : undefined} 
-                className="group relative flex items-center justify-between p-4 rounded-2xl border border-border/20 bg-surface-subtle/20 backdrop-blur-md transition-all hover:bg-surface-subtle/60 hover:border-accent/30 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none" />
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="flex items-center justify-center size-12 rounded-xl bg-bg-page border border-border/50 group-hover:border-accent/40 group-hover:shadow-[0_0_20px_-5px_rgba(var(--color-accent-rgb),0.3)] transition-all">
-                    <Icon aria-hidden="true" className="size-5 text-text-muted group-hover:text-accent transition-colors" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">{label}</p>
-                    <p className="text-xs font-mono text-text-secondary mt-1">{value}</p>
-                  </div>
-                </div>
-                {external ? <ArrowUpRight aria-hidden="true" className="size-5 text-text-muted opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-accent transition-all relative z-10" /> : null}
-              </a>
-            ))}
+          {/* Right Column (High-End Form) */}
+          <div className="lg:col-span-7">
+            <ContactForm locale={locale} />
           </div>
         </div>
-
-        {/* Right Column (Form) */}
-        <div className="mt-8 lg:mt-0">
-          <ContactForm locale={locale} />
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 }

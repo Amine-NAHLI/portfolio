@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, GraduationCap, Terminal } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,9 +11,17 @@ import type { Locale } from "@/i18n/config";
 
 interface AboutSceneProps {
   locale: Locale;
+  aboutTitle?: string;
+  aboutBio?: string;
+  proofItems?: Array<[string, string]>;
 }
 
-export default function AboutScene({ locale }: AboutSceneProps) {
+export default function AboutScene({
+  locale,
+  aboutTitle,
+  aboutBio,
+  proofItems,
+}: AboutSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -26,11 +34,11 @@ export default function AboutScene({ locale }: AboutSceneProps) {
       if (imageRef.current) {
         gsap.fromTo(
           imageRef.current,
-          { opacity: 0.3, scale: 0.95 },
+          { opacity: 0.3, scale: 0.96 },
           {
             opacity: 1,
             scale: 1,
-            duration: 1,
+            duration: 0.9,
             ease: "power2.out",
             scrollTrigger: {
               trigger: containerRef.current,
@@ -45,11 +53,11 @@ export default function AboutScene({ locale }: AboutSceneProps) {
       if (paragraphs && paragraphs.length > 0) {
         gsap.fromTo(
           paragraphs,
-          { opacity: 0.25, y: 30 },
+          { opacity: 0.3, y: 24 },
           {
             opacity: 1,
             y: 0,
-            stagger: 0.15,
+            stagger: 0.12,
             duration: 0.8,
             ease: "power2.out",
             scrollTrigger: {
@@ -67,59 +75,39 @@ export default function AboutScene({ locale }: AboutSceneProps) {
   return (
     <section
       ref={containerRef}
-      className="relative w-full bg-[#101015] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/5"
+      id="about"
+      className="relative w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08]"
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-center">
           
-          {/* Left Column: Stylized Portrait Frame */}
+          {/* Left Column: Clean Editorial Portrait */}
           <div ref={imageRef} className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-[360px] sm:max-w-[420px]">
-              
-              {/* Corner Architectural Accents */}
-              <div className="pointer-events-none absolute -left-2 -top-2 size-6 border-l-2 border-t-2 border-[#9A71FF]/60" />
-              <div className="pointer-events-none absolute -right-2 -top-2 size-6 border-r-2 border-t-2 border-[#9A71FF]/60" />
-              <div className="pointer-events-none absolute -left-2 -bottom-2 size-6 border-l-2 border-b-2 border-[#9A71FF]/60" />
-              <div className="pointer-events-none absolute -right-2 -bottom-2 size-6 border-r-2 border-b-2 border-[#9A71FF]/60" />
-
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#17161e] p-2.5 shadow-2xl backdrop-blur-2xl">
-                <div className="relative size-full overflow-hidden rounded-[1.75rem] bg-[#101015]">
-                  <Image
-                    src="/nahli.png"
-                    alt="Amine Nahli"
-                    fill
-                    className="object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-700"
-                    sizes="(max-width: 768px) 100vw, 420px"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#101015] via-transparent to-transparent opacity-80" />
-
-                  {/* Overlay Badge */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-md">
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="size-4 text-[#9A71FF]" />
-                      <span className="font-mono text-xs font-semibold text-[#f3f1f7]">
-                        UPF · 4e Année Génie Info
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 font-mono text-[10px] text-emerald-400">
-                      <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>ACTIF</span>
-                    </div>
-                  </div>
-                </div>
+            <div className="relative w-full max-w-[340px] sm:max-w-[390px]">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-[#17161e] shadow-2xl">
+                <Image
+                  src="/nahli.png"
+                  alt="Amine Nahli"
+                  fill
+                  priority
+                  className="object-cover object-top transition-transform duration-500 hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 390px"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#101015]/40 via-transparent to-transparent" />
               </div>
             </div>
           </div>
 
           {/* Right Column: Editorial Narrative */}
           <div ref={textRef} className="lg:col-span-7 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-xs font-mono font-semibold text-[#9A71FF] uppercase tracking-wider mb-4 w-fit">
-              <Terminal className="size-3.5" />
-              <span>{"//"} 03 — ABOUT AMINE</span>
-            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3">
+              {locale === "fr" ? "Profil & Vision" : "Profile & Vision"}
+            </span>
 
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#f3f1f7] leading-tight mb-8">
-              {locale === "fr" ? (
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight mb-6">
+              {aboutTitle ? (
+                <span>{aboutTitle}</span>
+              ) : locale === "fr" ? (
                 <>
                   Bâtir des solutions fiables, <span className="text-[#9A71FF]">sécurisées dès la conception.</span>
                 </>
@@ -130,49 +118,69 @@ export default function AboutScene({ locale }: AboutSceneProps) {
               )}
             </h2>
 
-            <div className="space-y-6 text-sm sm:text-base text-[#797681] leading-relaxed">
-              <p className="about-paragraph">
-                {locale === "fr"
-                  ? "Élève ingénieur en 4ème année de Génie Informatique à l'Université Privée de Fès (UPF), je développe des applications logicielles complètes où la sécurité n'est pas une surcouche de fin de projet, mais le fondement même de l'architecture."
-                  : "Fourth-year computer engineering student at Université Privée de Fès (UPF), I build full-stack digital systems where security is not a late addition, but the core foundation of architecture."}
-              </p>
+            <div className="space-y-5 text-sm sm:text-base text-[#797681] leading-relaxed">
+              {aboutBio ? (
+                <p className="about-paragraph whitespace-pre-line leading-relaxed text-[#f3f1f7]/90 font-normal">
+                  {aboutBio}
+                </p>
+              ) : (
+                <>
+                  <p className="about-paragraph">
+                    {locale === "fr"
+                      ? "Élève ingénieur en 4ème année de Génie Informatique à l'Université Privée de Fès (UPF), je développe des applications logicielles complètes où la sécurité n'est pas une surcouche de fin de projet, mais le fondement même de l'architecture."
+                      : "Fourth-year computer engineering student at Université Privée de Fès (UPF), I build full-stack digital systems where security is not a late addition, but the core foundation of architecture."}
+                  </p>
 
-              <p className="about-paragraph">
-                {locale === "fr"
-                  ? "Mon expérience de stage chez IntelTrust et mes travaux personnels en cybersécurité offensive et défensive m'ont appris à identifier les vecteurs de défaillance, auditer les flux réseau et verrouiller les politiques d'accès (IAM, Zero-Trust)."
-                  : "My internship experience at IntelTrust and hands-on work in both offensive and defensive cybersecurity taught me how to diagnose threat surfaces, audit network telemetry, and enforce tight access policies (IAM, Zero-Trust)."}
-              </p>
+                  <p className="about-paragraph">
+                    {locale === "fr"
+                      ? "Mon expérience de stage chez IntelTrust et mes travaux personnels en cybersécurité offensive et défensive m'ont appris à identifier les vecteurs de défaillance, auditer les flux réseau et verrouiller les politiques d'accès (IAM, Zero-Trust)."
+                      : "My internship experience at IntelTrust and hands-on work in both offensive and defensive cybersecurity taught me how to diagnose threat surfaces, audit network telemetry, and enforce tight access policies (IAM, Zero-Trust)."}
+                  </p>
 
-              <p className="about-paragraph">
-                {locale === "fr"
-                  ? "En parallèle, j'applique des modèles de machine learning et de vision par ordinateur pour automatiser des tâches d'ingénierie concrètes, de la détection précoce en agritech à l'analyse de signaux en temps réel."
-                  : "Concurrently, I deploy machine learning and computer vision architectures to automate tangible real-world tasks, from agritech diagnostics to real-time signal analysis."}
-              </p>
+                  <p className="about-paragraph">
+                    {locale === "fr"
+                      ? "En parallèle, j'applique des modèles de machine learning et de vision par ordinateur pour automatiser des tâches d'ingénierie concrètes, de la détection précoce en agritech à l'analyse de signaux en temps réel."
+                      : "Concurrently, I deploy machine learning and computer vision architectures to automate tangible real-world tasks, from agritech diagnostics to real-time signal analysis."}
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Quick Facts Strip */}
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10">
-              <div className="flex flex-col">
-                <span className="font-mono text-xs text-[#797681] uppercase tracking-wider">Formation</span>
-                <span className="font-display text-base font-bold text-[#f3f1f7] mt-1">UPF Fès (Ingénieur)</span>
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08]">
+              <div>
+                <span className="text-xs text-[#797681] block">
+                  {proofItems?.[0]?.[0] || (locale === "fr" ? "Formation" : "Education")}
+                </span>
+                <span className="text-sm font-semibold text-[#f3f1f7] mt-0.5 block">
+                  {proofItems?.[0]?.[1] || "UPF Fès (Génie Info)"}
+                </span>
               </div>
-              <div className="flex flex-col">
-                <span className="font-mono text-xs text-[#797681] uppercase tracking-wider">Expérience</span>
-                <span className="font-display text-base font-bold text-[#f3f1f7] mt-1">Stage IntelTrust</span>
+              <div>
+                <span className="text-xs text-[#797681] block">
+                  {proofItems?.[1]?.[0] || (locale === "fr" ? "Expérience" : "Experience")}
+                </span>
+                <span className="text-sm font-semibold text-[#f3f1f7] mt-0.5 block">
+                  {proofItems?.[1]?.[1] || "Stage IntelTrust"}
+                </span>
               </div>
-              <div className="flex flex-col col-span-2 sm:col-span-1">
-                <span className="font-mono text-xs text-[#797681] uppercase tracking-wider">Langues</span>
-                <span className="font-display text-base font-bold text-[#f3f1f7] mt-1">FR · EN · AR</span>
+              <div className="col-span-2 sm:col-span-1">
+                <span className="text-xs text-[#797681] block">
+                  {proofItems?.[2]?.[0] || (locale === "fr" ? "Langues" : "Languages")}
+                </span>
+                <span className="text-sm font-semibold text-[#f3f1f7] mt-0.5 block">
+                  {proofItems?.[2]?.[1] || "Français · Anglais · Arabe"}
+                </span>
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-4">
+            <div className="mt-7">
               <Link
-                href={`/${locale}/journey`}
-                className="inline-flex items-center gap-2 rounded-full bg-white/[0.05] border border-white/15 px-6 py-3 font-sans text-xs font-semibold text-[#f3f1f7] hover:bg-white/10 hover:border-white/30 transition-all"
+                href={`/${locale}#journey`}
+                className="inline-flex items-center gap-2 text-xs font-semibold text-[#9A71FF] hover:text-white transition-colors"
               >
-                <span>{locale === "fr" ? "Voir mon parcours complet" : "View Complete Journey"}</span>
-                <ArrowUpRight className="size-4 text-[#9A71FF]" />
+                <span>{locale === "fr" ? "Découvrir mon parcours complet" : "Explore full journey"}</span>
+                <ArrowUpRight className="size-4" />
               </Link>
             </div>
           </div>

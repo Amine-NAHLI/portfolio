@@ -103,7 +103,7 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
   return (
     <section
       ref={containerRef}
-      className="relative w-full bg-[#101015] text-[#f3f1f7] overflow-hidden"
+      className="relative w-full bg-transparent text-[#f3f1f7] overflow-hidden"
     >
       <div
         ref={pinRef}
@@ -116,17 +116,17 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         />
 
         {/* Top Header */}
-        <div className="relative z-10 flex items-center justify-between border-b border-white/10 pb-6">
+        <div className="relative z-10 flex items-center justify-between border-b border-white/[0.08] pb-6">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs font-semibold text-[#9A71FF] tracking-widest uppercase">
-              {"//"} 02 — MANIFESTO
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF]">
+              {locale === "fr" ? "Philosophie & Vision" : "Philosophy & Vision"}
             </span>
             <span className="hidden sm:inline-block size-1 rounded-full bg-white/30" />
-            <span className="hidden sm:inline-block font-mono text-xs text-[#797681]">
-              {locale === "fr" ? "VISION & PHILOSOPHIE TECHNIQUE" : "VISION & TECHNICAL PHILOSOPHY"}
+            <span className="hidden sm:inline-block text-xs text-[#797681]">
+              {locale === "fr" ? "Exigence d'ingénierie logicielle" : "Software Engineering Standards"}
             </span>
           </div>
-          <span className="font-mono text-xs text-[#797681]">NAHLI.DEV</span>
+          <span className="text-xs text-[#797681]">Amine Nahli</span>
         </div>
 
         {/* Center: Overlapping Kinetic Statements */}
@@ -160,10 +160,10 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
           })}
         </div>
 
-        {/* Bottom Status */}
-        <div className="relative z-10 flex items-center justify-between border-t border-white/10 pt-6 font-mono text-xs text-[#797681]">
-          <span>{locale === "fr" ? "SYSTÈMES ROBUSTES · ZÉRO COMPROMIS" : "ROBUST SYSTEMS · ZERO COMPROMISE"}</span>
-          <span className="text-[#9A71FF] animate-pulse">● LIVE EXECUTION</span>
+        {/* Bottom Bar */}
+        <div className="relative z-10 flex items-center justify-between border-t border-white/[0.08] pt-6 text-xs text-[#797681]">
+          <span>{locale === "fr" ? "Architectures logicielles & Sécurité" : "Software Architectures & Security"}</span>
+          <span>{locale === "fr" ? "Cycle d'Ingénieur UPF" : "UPF Engineering Cycle"}</span>
         </div>
       </div>
     </section>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Code2, Cpu, Shield } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowUpRight, CheckCircle2, Code2, Cpu, Shield, Terminal } from "lucide-react";
+import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,79 +12,239 @@ interface UniverseSceneProps {
   locale: Locale;
 }
 
-const disciplines = [
+interface DisciplineDetail {
+  id: string;
+  icon: typeof Shield;
+  codePrefix: string;
+  title: string;
+  titleFr: string;
+  tagline: string;
+  taglineFr: string;
+  statement: string;
+  statementFr: string;
+  status: string;
+  statusFr: string;
+  metrics: { label: string; labelFr: string; value: string }[];
+  competencies: { name: string; nameFr: string; desc: string; descFr: string }[];
+  techStack: string[];
+  liveCodeSnippet: {
+    language: string;
+    filename: string;
+    lines: string[];
+  };
+  linkedProject: {
+    title: string;
+    slug: string;
+  };
+}
+
+const disciplinesData: DisciplineDetail[] = [
   {
     id: "cyber",
-    number: "01",
     icon: Shield,
-    title: "Cybersecurity",
-    titleFr: "Cybersécurité",
-    tagline: "Audits, Zero-Trust, and Defensive Architecture.",
-    taglineFr: "Audits d'intrusion, Zéro-Trust et architectures défensives.",
-    description: "Deep hands-on experience in vulnerability assessment, IAM protocols, network scanning, and safeguarding critical infrastructure against modern threat vectors.",
-    descriptionFr: "Pratique approfondie de l'évaluation de vulnérabilités, protocoles IAM, cartographie réseau et sécurisation d'infrastructures contre les menaces modernes.",
-    tags: ["Pentesting", "Network Mapping", "Zero-Trust", "IAM", "Scapy", "Wireshark"],
-    accentColor: "#38bdf8",
-    bgGradient: "from-sky-500/10 via-transparent to-transparent",
+    codePrefix: "01",
+    title: "Cybersecurity & Defensive Networks",
+    titleFr: "Cybersécurité & Réseaux Défensifs",
+    tagline: "Offensive diagnostics, zero-trust policies, and attack surface mitigation.",
+    taglineFr: "Audit offensif, politiques Zéro-Trust et réduction de surface d'attaque.",
+    statement:
+      "Security is not a final perimeter layer; it is the fundamental contract of system architecture. From network telemetry forensics to strict IAM access enforcement.",
+    statementFr:
+      "La sécurité n'est pas une surcouche périphérique tardive, mais le contrat fondamental de toute architecture système. Du décorticage de télémétrie réseau aux politiques IAM strictes.",
+    status: "MISSION-HARDENED",
+    statusFr: "ENVIRONNEMENT SÉCURISÉ",
+    metrics: [
+      { label: "Threat Modeling", labelFr: "Modélisation Menaces", value: "OWASP Top 10" },
+      { label: "Network Protocol", labelFr: "Protocoles Réseau", value: "Zero-Trust / IAM" },
+      { label: "Packet Inspection", labelFr: "Analyse Traces", value: "Scapy / Wireshark" },
+    ],
+    competencies: [
+      {
+        name: "Penetration Testing & Surface Auditing",
+        nameFr: "Tests d'Intrusion & Cartographie de Surface",
+        desc: "Automated vulnerability scans, perimeter attack vectors diagnosis, web API security.",
+        descFr: "Cartographie des vecteurs d'attaque, diagnostic d'APIs et audits web conformes OWASP.",
+      },
+      {
+        name: "Zero-Trust & Identity Governance",
+        nameFr: "Zero-Trust & Gouvernance d'Identités (IAM)",
+        desc: "Role-based access controls, cryptographic tokens, strict session isolation.",
+        descFr: "Gestion stricte des habilitations RBAC, jetons cryptographiques et isolation de sessions.",
+      },
+      {
+        name: "Network Forensics & Packet Crafting",
+        nameFr: "Forensics Réseau & Packet Crafting",
+        desc: "Low-level protocol dissection, traffic anomaly detection using Python Scapy.",
+        descFr: "Dissection bas-niveau des trames TCP/IP, détection proactive d'anomalies de trafic.",
+      },
+    ],
+    techStack: ["Linux Hardening", "Scapy", "Wireshark", "Nmap", "Zero-Trust", "Burp Suite", "Bash Security", "Docker Isolation"],
+    liveCodeSnippet: {
+      language: "python",
+      filename: "telemetry_threat_guard.py",
+      lines: [
+        "from scapy.all import sniff, IP, TCP",
+        "# Real-time probe: Telemetry inspection",
+        "def audit_stream(pkt):",
+        "    if pkt.haslayer(IP) and pkt[TCP].flags == 'S':",
+        "        threat_score = evaluate_anomaly(pkt[IP].src)",
+        "        if threat_score > 0.85:",
+        "            enforce_zero_trust_quarantine(pkt[IP].src)",
+        "sniff(filter='tcp port 443', prn=audit_stream, store=0)",
+      ],
+    },
+    linkedProject: {
+      title: "IntelTrust Security Audit & Threat Modeling",
+      slug: "inteltrust-stage",
+    },
   },
   {
     id: "software",
-    number: "02",
     icon: Code2,
-    title: "Software Engineering",
-    titleFr: "Génie Logiciel",
-    tagline: "High-Performance Full-Stack Systems & APIs.",
-    taglineFr: "Systèmes Full-Stack performants & architectures résilientes.",
-    description: "Building production-grade web platforms, scalable backend services, and resilient data layers with Next.js, TypeScript, PostgreSQL, and clean architecture.",
-    descriptionFr: "Conception d'applications web de production, services backend évolutifs et couches de données résilientes avec Next.js, TypeScript et PostgreSQL.",
-    tags: ["Next.js", "TypeScript", "PostgreSQL", "Supabase", "Docker", "Clean Architecture"],
-    accentColor: "#9A71FF",
-    bgGradient: "from-[#9A71FF]/10 via-transparent to-transparent",
+    codePrefix: "02",
+    title: "Software Engineering & Systems",
+    titleFr: "Génie Logiciel & Systèmes Distribués",
+    tagline: "Resilient full-stack architectures, strict typing, and high-concurrency systems.",
+    taglineFr: "Architectures web full-stack, typage strict et systèmes distribués résilients.",
+    statement:
+      "Engineering robust web applications with Next.js, TypeScript strict mode, relational PostgreSQL persistence, and containerized Docker pipelines.",
+    statementFr:
+      "Conception d'applications web de production et d'architectures orientées services : typage statique absolu, intégrité relationnelle et pipelines conteneurisés.",
+    status: "PRODUCTION-READY",
+    statusFr: "ARCHITECTURES VÉRIFIÉES",
+    metrics: [
+      { label: "Type Contract", labelFr: "Contrat de Données", value: "Strict TypeScript" },
+      { label: "Persistence Engine", labelFr: "Moteur de Données", value: "PostgreSQL & RLS" },
+      { label: "Deployment Pipeline", labelFr: "Conteneurisation", value: "Docker / CI-CD" },
+    ],
+    competencies: [
+      {
+        name: "Full-Stack Web Architectures",
+        nameFr: "Architectures Applicatives Full-Stack",
+        desc: "Next.js App Router, React 19 SSR/ISR pipelines, headless data structures.",
+        descFr: "Pipelines SSR/ISR avec Next.js App Router, contrats API stricts et microservices headless.",
+      },
+      {
+        name: "Database Design & Row-Level Security",
+        nameFr: "Bases de Données & Sécurité Niveau Ligne (RLS)",
+        desc: "Relational schema normalization, complex SQL migrations, multi-tenant policies.",
+        descFr: "Normalisation relationnelle, politiques RLS étanches et intégrité transactionnelle PostgreSQL.",
+      },
+      {
+        name: "DevOps & Container Orchestration",
+        nameFr: "DevOps & Conteneurisation Isolée",
+        desc: "Reproducible Docker environments, GitHub Actions automated CI/CD checks.",
+        descFr: "Environnements reproductibles Docker, pipelines GitHub Actions et tests end-to-end automatisés.",
+      },
+    ],
+    techStack: ["Next.js", "React 19", "TypeScript", "PostgreSQL", "Supabase", "Docker", "Tailwind CSS", "REST & GraphQL"],
+    liveCodeSnippet: {
+      language: "typescript",
+      filename: "architecture_service_contract.ts",
+      lines: [
+        "interface ServicePipeline<TInput, TOutput> {",
+        "  validate(payload: unknown): Result<TInput>;",
+        "  execute(context: ExecutionCtx, data: TInput): Promise<TOutput>;",
+        "}",
+        "export async function dispatchTask<T>(pipeline: ServicePipeline<T, void>) {",
+        "  const auditSession = await verifySecuritySession();",
+        "  return db.transaction(async (trx) => pipeline.execute(auditSession, data));",
+        "}",
+      ],
+    },
+    linkedProject: {
+      title: "Plateforme Technique Multi-Tenant & Portfolio Next.js",
+      slug: "portfolio-nahli",
+    },
   },
   {
     id: "ai",
-    number: "03",
     icon: Cpu,
-    title: "Artificial Intelligence",
-    titleFr: "Intelligence Artificielle",
-    tagline: "Machine Learning & Real-Time Computer Vision.",
-    taglineFr: "Machine Learning & Vision par Ordinateur temps réel.",
-    description: "Applying neural architectures, computer vision, and NLP models to solve complex domain challenges from agricultural monitoring to sign-language interpretation.",
-    descriptionFr: "Application d'architectures neuronales, vision par ordinateur et NLP pour résoudre des problématiques réelles, de l'agritech à l'interprétation de la LSF.",
-    tags: ["TensorFlow", "PyTorch", "Computer Vision", "NLP", "YOLO", "LLM Integration"],
-    accentColor: "#a855f7",
-    bgGradient: "from-purple-500/10 via-transparent to-transparent",
+    codePrefix: "03",
+    title: "Artificial Intelligence & Vision",
+    titleFr: "Intelligence Artificielle & Vision par Ordinateur",
+    tagline: "Machine learning pipelines, real-time computer vision, and applied model integration.",
+    taglineFr: "Pipelines de vision par ordinateur, détection temps réel et fine-tuning de modèles ouverts.",
+    statement:
+      "Harnessing machine learning where it creates decisive value: real-time landmark tracking, optical recognition, fine-tuned open language models, and autonomous edge reasoning.",
+    statementFr:
+      "Exploiter l'IA là où elle apporte une valeur concrète et vérifiable : suivi biométrique temps réel, détection d'objets YOLO, fine-tuning Google Gemma et inférence optimisée.",
+    status: "APPLIED INNOVATION",
+    statusFr: "MODÈLES & INFÉRENCE",
+    metrics: [
+      { label: "Vision Pipeline", labelFr: "Détection Visuelle", value: "YOLO & OpenCV" },
+      { label: "Neural Frameworks", labelFr: "Frameworks IA", value: "PyTorch / MediaPipe" },
+      { label: "Model Ecosystem", labelFr: "Modèles Ouverts", value: "Gemma 2 Fine-Tuned" },
+    ],
+    competencies: [
+      {
+        name: "Real-Time Computer Vision & Object Tracking",
+        nameFr: "Vision par Ordinateur & Télémétrie Temps Réel",
+        desc: "Multi-object detection, trajectory extrapolation, autonomous vehicle vision.",
+        descFr: "Détection multi-objets YOLO, traitement de flux vidéo OpenCV et télémétrie robotique.",
+      },
+      {
+        name: "Applied LLM Orchestration & Fine-Tuning",
+        nameFr: "Orchestration LLM & Fine-Tuning de Modèles",
+        desc: "Fine-tuning open weights models (Gemma 2), prompt routing, RAG pipelines.",
+        descFr: "Adaptation de modèles ouverts (Google Gemma 2), chaînes RAG et inférence accélérée.",
+      },
+      {
+        name: "Edge Model Deployment & Inference",
+        nameFr: "Optimisation & Inférence Embarquée",
+        desc: "Quantization, lightweight models for constrained edge systems and robotics.",
+        descFr: "Quantification, compression de modèles et exécution fluide sur systèmes contraints.",
+      },
+    ],
+    techStack: ["Python", "PyTorch", "OpenCV", "YOLO v8", "Google Gemma 2", "MediaPipe", "Scikit-Learn", "FastAPI"],
+    liveCodeSnippet: {
+      language: "python",
+      filename: "vision_inference_engine.py",
+      lines: [
+        "import cv2, torch",
+        "from ultralytics import YOLO",
+        "# Load quantified vision model for high-fps inference",
+        "model = YOLO('models/yolov8_optimized.pt').to('cuda')",
+        "def process_frame(frame):",
+        "    results = model(frame, conf=0.75, iou=0.45)",
+        "    telemetry = extract_bounding_coordinates(results)",
+        "    return calculate_steering_vector(telemetry)",
+      ],
+    },
+    linkedProject: {
+      title: "Google Build with Gemma Hackathon Winner & YOLO Vision Robot",
+      slug: "gemma-hackathon",
+    },
   },
 ];
 
 export default function UniverseScene({ locale }: UniverseSceneProps) {
+  const [activeTab, setActiveTab] = useState<string>("cyber");
   const containerRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState(0);
+
+  const current = disciplinesData.find((d) => d.id === activeTab) || disciplinesData[0];
+  const Icon = current.icon;
 
   useGSAP(
     () => {
       if (typeof window === "undefined" || !containerRef.current) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const cards = containerRef.current.querySelectorAll(".universe-card");
-      if (cards.length > 0) {
-        gsap.fromTo(
-          cards,
-          { y: 40, opacity: 0.25 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.9,
-            stagger: 0.18,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top 80%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
-      }
+      gsap.fromTo(
+        containerRef.current.querySelector(".universe-console"),
+        { opacity: 0.3, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 78%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
     },
     { scope: containerRef }
   );
@@ -91,96 +252,227 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
   return (
     <section
       ref={containerRef}
-      className="relative w-full bg-[#101015] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/5"
+      id="disciplines"
+      className="relative w-full bg-[#101015] py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden"
     >
-      <div className="mx-auto max-w-7xl">
+      {/* Background Radial Glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#9A71FF]/8 blur-[160px]"
+      />
+
+      <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
-        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <div className="font-mono text-xs font-semibold text-[#9A71FF] uppercase tracking-widest mb-3">
-              {"//"} 04 — MY UNIVERSE
-            </div>
-            <h2 className="font-display text-4xl sm:text-6xl font-black tracking-tight text-[#f3f1f7]">
-              {locale === "fr" ? "Trois Disciplines. Un Esprit." : "Three Disciplines. One Mindset."}
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
+              {locale === "fr" ? "Expertise & Pôles d'Ingénierie" : "Engineering Disciplines"}
+            </span>
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7]">
+              {locale === "fr" ? "Trois Domaines. Une Même Exigence." : "Three Disciplines. One Standard."}
             </h2>
           </div>
-          <p className="max-w-md text-sm sm:text-base text-[#797681] leading-relaxed">
+          <p className="max-w-md text-sm text-[#797681] leading-relaxed">
             {locale === "fr"
-              ? "La convergence du logiciel, de la sécurité offensive/défensive et de l'intelligence artificielle pour des solutions fiables et complètes."
-              : "The convergence of robust software, offensive/defensive security, and artificial intelligence into reliable end-to-end systems."}
+              ? "Une vision holistique reliant sécurité offensive/défensive, ingénierie logicielle avancée et intelligence artificielle appliquée."
+              : "A holistic engineering synergy connecting cybersecurity, resilient software systems, and applied computer vision."}
           </p>
         </div>
 
-        {/* 3 Interactive Pillar Cards */}
-        <div className="grid gap-8 lg:grid-cols-3">
-          {disciplines.map((item, index) => {
-            const Icon = item.icon;
-            const title = locale === "fr" ? item.titleFr : item.title;
-            const tagline = locale === "fr" ? item.taglineFr : item.tagline;
-            const description = locale === "fr" ? item.descriptionFr : item.description;
+        {/* Innovative Interactive Domain Switcher Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+          {disciplinesData.map((d) => {
+            const isSelected = d.id === activeTab;
+            const TabIcon = d.icon;
+            const title = locale === "fr" ? d.titleFr : d.title;
 
             return (
-              <div
-                key={item.id}
-                onMouseEnter={() => setActiveTab(index)}
-                className={`universe-card group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border p-8 transition-all duration-500 backdrop-blur-xl ${
-                  activeTab === index
-                    ? "border-[#9A71FF]/50 bg-[#17161e] shadow-[0_0_50px_rgba(154,113,255,0.15)] scale-[1.01]"
-                    : "border-white/10 bg-[#17161e]/50 hover:border-white/20 hover:bg-[#17161e]/80"
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => setActiveTab(d.id)}
+                className={`group relative flex items-center gap-3.5 rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 cursor-pointer ${
+                  isSelected
+                    ? "border-[#9A71FF] bg-[#17161e] shadow-[0_0_25px_rgba(154,113,255,0.15)] ring-1 ring-[#9A71FF]/40"
+                    : "border-white/10 bg-[#17161e]/50 hover:border-white/20 hover:bg-[#17161e]"
                 }`}
               >
-                {/* Background Ambient Gradient */}
                 <div
-                  className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${item.bgGradient} opacity-60 transition-opacity duration-500 group-hover:opacity-100`}
-                />
-
-                <div className="relative z-10">
-                  {/* Top Header Badge */}
-                  <div className="flex items-center justify-between mb-8">
-                    <span className="font-mono text-xs font-bold text-[#797681]">
-                      [ {item.number} ]
+                  className={`size-10 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
+                    isSelected
+                      ? "bg-[#9A71FF] text-[#101015]"
+                      : "bg-white/[0.04] text-[#9A71FF] group-hover:bg-white/[0.08]"
+                  }`}
+                >
+                  <TabIcon className="size-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] font-bold text-[#797681]">
+                      {d.codePrefix}
                     </span>
-                    <div
-                      className="flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] transition-transform duration-500 group-hover:scale-110"
-                      style={{ color: item.accentColor }}
+                    <span
+                      className={`text-xs font-mono font-semibold uppercase tracking-wider ${
+                        isSelected ? "text-[#9A71FF]" : "text-[#797681]"
+                      }`}
                     >
-                      <Icon className="size-6" />
-                    </div>
+                      {locale === "fr" ? d.statusFr : d.status}
+                    </span>
                   </div>
-
-                  {/* Title & Tagline */}
-                  <h3 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-[#f3f1f7] mb-2 group-hover:text-white">
+                  <h3 className="font-display text-sm sm:text-base font-bold text-[#f3f1f7] truncate mt-0.5">
                     {title}
                   </h3>
-                  <p
-                    className="font-mono text-xs sm:text-sm font-semibold mb-6"
-                    style={{ color: item.accentColor }}
-                  >
-                    {tagline}
-                  </p>
-
-                  <p className="text-sm text-[#797681] leading-relaxed mb-8">
-                    {description}
-                  </p>
                 </div>
-
-                {/* Tech Tags */}
-                <div className="relative z-10 pt-6 border-t border-white/5">
-                  <div className="flex flex-wrap gap-2">
-                    {item.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 font-mono text-[11px] text-[#f3f1f7]/80"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              </button>
             );
           })}
         </div>
+
+        {/* Innovative Engineering Cockpit Console */}
+        <div className="universe-console rounded-3xl border border-white/10 bg-[#17161e] p-6 sm:p-10 shadow-2xl transition-all duration-500">
+          <div className="grid gap-10 lg:grid-cols-12 items-start">
+            
+            {/* Left 7 Columns: In-depth Technical Spec */}
+            <div className="lg:col-span-7 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="size-11 rounded-xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 flex items-center justify-center text-[#9A71FF]">
+                    <Icon className="size-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#9A71FF]">
+                      {current.codePrefix} · {locale === "fr" ? current.statusFr : current.status}
+                    </span>
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold text-[#f3f1f7]">
+                      {locale === "fr" ? current.titleFr : current.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <p className="text-sm sm:text-base text-[#f3f1f7]/90 leading-relaxed font-medium mb-4">
+                  {locale === "fr" ? current.taglineFr : current.tagline}
+                </p>
+
+                <p className="text-sm text-[#797681] leading-relaxed mb-8">
+                  {locale === "fr" ? current.statementFr : current.statement}
+                </p>
+
+                {/* 3 Live Metric Badges */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+                  {current.metrics.map((m, i) => (
+                    <div
+                      key={i}
+                      className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5"
+                    >
+                      <span className="text-[11px] uppercase tracking-wider text-[#797681] font-mono block mb-1">
+                        {locale === "fr" ? m.labelFr : m.label}
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-[#f3f1f7]">
+                        {m.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Technical Competencies Breakdown */}
+                <div className="space-y-4 mb-8">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block">
+                    {locale === "fr" ? "Compétences d'Ingénierie Spécialisées" : "Specialized Engineering Capabilities"}
+                  </span>
+                  {current.competencies.map((comp, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:border-white/10"
+                    >
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <CheckCircle2 className="size-4 text-[#9A71FF] shrink-0" />
+                        <h4 className="text-sm font-bold text-[#f3f1f7]">
+                          {locale === "fr" ? comp.nameFr : comp.name}
+                        </h4>
+                      </div>
+                      <p className="text-xs text-[#797681] leading-relaxed pl-6">
+                        {locale === "fr" ? comp.descFr : comp.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Technologies Badges */}
+              <div className="pt-6 border-t border-white/[0.08]">
+                <span className="text-xs uppercase tracking-wider text-[#797681] font-mono mb-3 block">
+                  {locale === "fr" ? "Stack & Outils Vérifiés" : "Verified Stack & Tooling"}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {current.techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#f3f1f7] hover:border-[#9A71FF]/40 hover:text-[#9A71FF] transition-colors"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right 5 Columns: Live Architecture Terminal / Code Simulator */}
+            <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
+              <div className="rounded-2xl border border-white/10 bg-[#101015] overflow-hidden shadow-2xl">
+                {/* Terminal Title Bar */}
+                <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2.5 rounded-full bg-rose-500/80" />
+                    <span className="size-2.5 rounded-full bg-amber-500/80" />
+                    <span className="size-2.5 rounded-full bg-emerald-500/80" />
+                    <span className="ml-2 font-mono text-xs text-[#797681]">
+                      {current.liveCodeSnippet.filename}
+                    </span>
+                  </div>
+                  <span className="font-mono text-[10px] text-[#9A71FF] uppercase tracking-wider">
+                    {current.liveCodeSnippet.language}
+                  </span>
+                </div>
+
+                {/* Code Window */}
+                <div className="p-4 sm:p-5 font-mono text-xs text-[#f3f1f7]/90 leading-relaxed overflow-x-auto space-y-1">
+                  {current.liveCodeSnippet.lines.map((line, idx) => (
+                    <div key={idx} className="flex">
+                      <span className="w-6 shrink-0 text-[#797681]/50 select-none text-right pr-3">
+                        {idx + 1}
+                      </span>
+                      <span className={line.startsWith("#") ? "text-[#797681]" : line.includes("def ") || line.includes("interface ") ? "text-[#9A71FF] font-semibold" : ""}>
+                        {line}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Connected Real-World Project Card */}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-mono text-[#9A71FF] uppercase tracking-wider font-semibold">
+                    {locale === "fr" ? "Projet & Cas d'Application" : "Applied Engineering Case"}
+                  </span>
+                  <Terminal className="size-4 text-[#797681]" />
+                </div>
+                <h4 className="font-display text-base font-bold text-[#f3f1f7] mb-4">
+                  {current.linkedProject.title}
+                </h4>
+                <Link
+                  href={`/${locale}/projects`}
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#9A71FF] hover:text-white transition-colors"
+                >
+                  <span>{locale === "fr" ? "Consulter les projets associés" : "Explore related work"}</span>
+                  <ArrowUpRight className="size-4" />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </section>
   );

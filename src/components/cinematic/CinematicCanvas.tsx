@@ -2,7 +2,6 @@
 
 import HeroScene from "@/components/cinematic/HeroScene";
 import ManifestoScene from "@/components/cinematic/ManifestoScene";
-import UniverseScene from "@/components/cinematic/UniverseScene";
 import SelectedWorkScene from "@/components/cinematic/SelectedWorkScene";
 import AboutScene from "@/components/cinematic/AboutScene";
 import JourneyScene from "@/components/cinematic/JourneyScene";
@@ -11,11 +10,13 @@ import ContactScene from "@/components/cinematic/ContactScene";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
 import type { PublicJourneyEntry, PublicCertification } from "@/features/portfolio/data";
+import type { HomeDynamicCopy } from "@/content/dynamic-copy";
 
 interface CinematicCanvasProps {
   locale: Locale;
   siteName: string;
-  introduction: string;
+  dynamicCopy?: HomeDynamicCopy;
+  introduction?: string;
   projects: PortfolioProject[];
   journey?: PublicJourneyEntry[];
   certifications?: PublicCertification[];
@@ -30,6 +31,7 @@ interface CinematicCanvasProps {
 export default function CinematicCanvas({
   locale,
   siteName,
+  dynamicCopy,
   introduction,
   projects,
   journey,
@@ -37,12 +39,28 @@ export default function CinematicCanvas({
   contactLinks,
 }: CinematicCanvasProps) {
   return (
-    <div className="relative w-full bg-[#101015] text-[#f3f1f7] selection:bg-[#9A71FF]/30 selection:text-white">
+    <div className="relative w-full bg-[#000000] text-[#f3f1f7] selection:bg-[#9A71FF]/30 selection:text-white">
+      {/* Background Mixed Atmospheric Lighting: Black Pearl (#0E161A), Black Magic (#0B0510), Asphalt (#0C0404) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full bg-[#0E161A] opacity-60 blur-[200px] -z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full bg-[#0B0510] opacity-70 blur-[220px] -z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-[10%] bottom-[5%] h-[800px] w-[800px] rounded-full bg-[#0C0404] opacity-50 blur-[200px] -z-10"
+      />
+
       {/* Scene 01: Hero / First Impression (Centered Monumental Typography) */}
       <HeroScene
         locale={locale}
         siteName={siteName}
-        introduction={introduction}
+        introduction={dynamicCopy?.introduction || introduction || ""}
+        roleBadge={dynamicCopy?.roleBadge}
+        headline={dynamicCopy?.headline}
         contactLinks={contactLinks}
       />
 
@@ -50,21 +68,23 @@ export default function CinematicCanvas({
       <ManifestoScene locale={locale} />
 
       {/* Scene 03: About Me & Portrait Frame (Engineer Profile, UPF, IntelTrust) */}
-      <AboutScene locale={locale} />
+      <AboutScene
+        locale={locale}
+        aboutTitle={dynamicCopy?.aboutTitle}
+        aboutBio={dynamicCopy?.aboutBio}
+        proofItems={dynamicCopy?.proofItems}
+      />
 
-      {/* Scene 04: My Universe (Three Disciplines. One Mindset: Cyber, Software, AI) */}
-      <UniverseScene locale={locale} />
-
-      {/* Scene 05: Selected Work (Card Deck Stacking as in Reference Video) */}
+      {/* Scene 04: Selected Work (Card Deck Stacking as in Reference Video) */}
       <SelectedWorkScene locale={locale} projects={projects} />
 
-      {/* Scene 06: Experience & Journey Timeline (Innovative HUD Console) */}
+      {/* Scene 05: Experience & Journey Timeline (Alternating Glowing Central Line) */}
       <JourneyScene locale={locale} journey={journey} />
 
-      {/* Scene 07: Verified Credentials & Certifications (Interactive Document Viewer) */}
+      {/* Scene 06: Verified Credentials & Certifications (Interactive Document Viewer) */}
       <CertificationsScene locale={locale} certifications={certifications} />
 
-      {/* Scene 08: Final Contact & Minimal Footer */}
+      {/* Scene 07: Final Contact & Minimal Footer */}
       <ContactScene locale={locale} contactLinks={contactLinks} />
     </div>
   );

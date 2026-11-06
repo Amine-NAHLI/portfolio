@@ -1,21 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import {
-  Activity,
-  ArrowUpRight,
-  Briefcase,
-  Calendar,
-  Compass,
-  Cpu,
-  GraduationCap,
-  Milestone,
-  Radio,
-  ShieldCheck,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import { ArrowUpRight, Award, Briefcase, GraduationCap, MapPin, Trophy } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -27,424 +14,357 @@ interface JourneySceneProps {
   journey?: PublicJourneyEntry[];
 }
 
-interface ProcessedMilestone {
+interface TimelineItem {
   id: string;
-  stationId: string;
   year: string;
-  role: string;
+  title: string;
+  titleEn: string;
   organization: string;
+  location: string;
   type: "education" | "experience";
-  category: "hackathon" | "internship" | "education" | "competition";
-  description: string;
+  categoryLabel: string;
+  categoryLabelEn: string;
+  award?: string;
   tags: string[];
-  highlight?: boolean;
 }
 
-const fallbackJourney: ProcessedMilestone[] = [
+const timelineData: TimelineItem[] = [
   {
-    id: "gemma-hackathon",
-    stationId: "01",
-    year: "Juillet 2026",
-    role: "1ʳᵉ place – Google Build with Gemma Hackathon (Afrique du Nord)",
-    organization: "AI Crafters & GDG on Campus ENSA Berrechid",
-    type: "experience",
-    category: "hackathon",
-    description:
-      "Vainqueur du 1er prix régional parmi des dizaines d'équipes d'ingénieurs en concevant une solution intégrant l'écosystème open-models Google Gemma 2, le fine-tuning appliqué et une chaîne de traitement intelligente.",
-    tags: ["Google Gemma 2", "1ère Place", "Fine-Tuning", "Intelligence Artificielle", "GDG"],
-    highlight: true,
-  },
-  {
-    id: "inteltrust-stage",
-    stationId: "02",
-    year: "Juil. – Août 2026",
-    role: "Stagiaire Développeur Cybersécurité & Intelligence Artificielle",
-    organization: "IntelTrust",
-    type: "experience",
-    category: "internship",
-    description:
-      "Mission industrielle spécialisée en modélisation des menaces, audit d'infrastructures d'authentification IAM et développement d'outils automatisés pour la détection proactive d'anomalies de sécurité.",
-    tags: ["Cybersécurité", "IAM & Zero-Trust", "Python & Go", "Audit Réseau", "IA Défensive"],
-    highlight: false,
-  },
-  {
-    id: "robotics-upf",
-    stationId: "03",
-    year: "Avril 2026",
-    role: "National UPF Robotics Competition – 3ème prix",
-    organization: "Université Privée de Fès (UPF)",
-    type: "experience",
-    category: "competition",
-    description:
-      "Conception et programmation d'un robot autonome en équipe avec capteurs de télémétrie, traitement de trajectoire temps réel et optimisation algorithmique des déplacements.",
-    tags: ["Robotique", "Systèmes Embarqués", "Algorithmique Temps Réel", "3ème Prix National"],
-    highlight: false,
+    id: "bac-sm",
+    year: "2022 — 2023",
+    title: "Baccalauréat Sciences Mathématiques",
+    titleEn: "Baccalaureate in Pure Mathematical Sciences",
+    organization: "Fès City School",
+    location: "Fès, Maroc",
+    type: "education",
+    categoryLabel: "FORMATION",
+    categoryLabelEn: "EDUCATION",
+    tags: ["Sciences Mathématiques", "Algèbre & Analyse", "Physique"],
   },
   {
     id: "upf-cycle-ing",
-    stationId: "04",
-    year: "2023 — 2028 (En cours)",
-    role: "Cycle d'Ingénieur d'État en Génie Informatique",
+    year: "2023 — EN COURS",
+    title: "Cycle d'Ingénieur en Génie Informatique",
+    titleEn: "Master's Degree Cycle in Computer Engineering",
     organization: "Université Privée de Fès (UPF)",
+    location: "Fès, Maroc",
     type: "education",
-    category: "education",
-    description:
-      "Formation d'ingénierie d'État de 5 ans accréditée par la CTI. Spécialisation en architectures logicielles distribuées, cybersécurité offensive/défensive, réseaux informatiques et systèmes d'intelligence artificielle.",
-    tags: ["Cycle Ingénieur d'État", "UPF Fès", "Cybersécurité", "Architectures Distribuées", "IA"],
-    highlight: true,
+    categoryLabel: "FORMATION",
+    categoryLabelEn: "EDUCATION",
+    tags: ["Cycle Ingénieur d'État", "Architectures Distribuées", "Cybersécurité"],
   },
   {
-    id: "bac-sm",
-    stationId: "05",
-    year: "2022 — 2023",
-    role: "Baccalauréat Sciences Mathématiques",
-    organization: "Fès City School",
-    type: "education",
-    category: "education",
-    description:
-      "Formation intensive d'excellence en mathématiques pures, analyse fonctionnelle, physique-chimie et raisonnement logique structuré, posant le socle fondamental pour le génie informatique.",
-    tags: ["Sciences Mathématiques", "Fondations Algébriques", "Physique", "Mention"],
-    highlight: false,
+    id: "robotics-upf",
+    year: "Avril 2026",
+    title: "National UPF Robotics Competition – 9ème édition — 3ème prix",
+    titleEn: "National UPF Robotics Competition – 9th Edition — 3rd Prize",
+    organization: "Université Privée de Fès (UPF)",
+    location: "Fès, Maroc",
+    type: "experience",
+    categoryLabel: "COMPÉTITION",
+    categoryLabelEn: "COMPETITION",
+    award: "3ème Prix National",
+    tags: ["Robotique", "Systèmes Embarqués", "Algorithmique Temps Réel"],
+  },
+  {
+    id: "inteltrust-stage",
+    year: "Juil. – Août 2026",
+    title: "Stagiaire Développeur Cybersécurité & Intelligence Artificielle",
+    titleEn: "Cybersecurity & AI Engineering Intern",
+    organization: "IntelTrust",
+    location: "Fès, Maroc",
+    type: "experience",
+    categoryLabel: "EXPÉRIENCE",
+    categoryLabelEn: "EXPERIENCE",
+    tags: ["Cybersécurité", "IAM & Zero-Trust", "Python & Go", "Audit Réseau"],
+  },
+  {
+    id: "gemma-hackathon",
+    year: "Juillet 2026",
+    title: "1ʳᵉ place – Google Build with Gemma Hackathon (Afrique du Nord)",
+    titleEn: "1st Place – Google Build with Gemma Hackathon (North Africa)",
+    organization: "AI Crafters & GDG on Campus ENSA Berrechid",
+    location: "Afrique du Nord",
+    type: "experience",
+    categoryLabel: "DISTINCTION & HACKATHON",
+    categoryLabelEn: "HONOR & HACKATHON",
+    award: "1ère Place Régionale",
+    tags: ["Google Gemma 2", "Fine-Tuning", "Intelligence Artificielle"],
   },
 ];
 
-function deriveCategory(title: string, org: string): ProcessedMilestone["category"] {
-  const lower = (title + " " + org).toLowerCase();
-  if (lower.includes("hackathon") || lower.includes("1ère place") || lower.includes("1er prix") || lower.includes("gemma")) {
-    return "hackathon";
-  }
-  if (lower.includes("robotics") || lower.includes("robotique") || lower.includes("competition")) {
-    return "competition";
-  }
-  if (lower.includes("stage") || lower.includes("stagiaire") || lower.includes("inteltrust")) {
-    return "internship";
-  }
-  return "education";
-}
-
-function deriveTags(title: string, org: string, type: string): string[] {
-  const lower = (title + " " + org).toLowerCase();
-  const tags: string[] = [];
-  if (lower.includes("gemma")) tags.push("Google Gemma 2", "Fine-Tuning", "1ère Place");
-  if (lower.includes("inteltrust")) tags.push("Cybersécurité", "IAM & Zero-Trust", "Audit Menaces");
-  if (lower.includes("robotics") || lower.includes("robotique")) tags.push("Robotique", "Systèmes Embarqués", "3ème Prix");
-  if (lower.includes("génie informatique") || lower.includes("cycle")) tags.push("Cycle Ingénieur d'État", "UPF Fès", "Systèmes Distribués");
-  if (lower.includes("mathématiques") || lower.includes("bac")) tags.push("Sciences Mathématiques", "Algèbre & Analyse");
-  if (lower.includes("codex")) tags.push("OpenAI Codex", "Hackathon Casablanca");
-  
-  if (tags.length === 0) {
-    tags.push(type === "education" ? "Formation Académique" : "Projet Ingénieur", org || "Engineering");
-  }
-  return tags;
-}
-
-export default function JourneyScene({ locale, journey }: JourneySceneProps) {
+export default function JourneyScene({ locale }: JourneySceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [activeStation, setActiveStation] = useState<number>(0);
-
-  // Process data from database with fallback
-  const processedMilestones: ProcessedMilestone[] =
-    journey && journey.length > 0
-      ? journey.map((item, index) => {
-          const category = deriveCategory(item.title, item.organization || "");
-          const isWinner = category === "hackathon" || item.title.includes("1ʳᵉ place");
-          const isCurrentUPF = item.title.toLowerCase().includes("cycle d'ingénieur");
-          
-          return {
-            id: item.id || `milestone-${index}`,
-            stationId: String(index + 1).padStart(2, "0"),
-            year: item.eventDate,
-            role: item.title,
-            organization: item.organization || (item.type === "education" ? "Université Privée de Fès" : "IntelTrust"),
-            type: item.type === "experience" ? "experience" : "education",
-            category,
-            description: item.description,
-            tags: deriveTags(item.title, item.organization || "", item.type),
-            highlight: isWinner || isCurrentUPF,
-          };
-        })
-      : fallbackJourney;
+  const lineRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       if (typeof window === "undefined" || !containerRef.current) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      // Station cards animation with fromTo (resilient against StrictMode double run)
-      const stationCards = containerRef.current.querySelectorAll(".station-card");
-      if (stationCards.length > 0) {
+      // Animate line progress as user scrolls through the timeline
+      if (lineRef.current) {
         gsap.fromTo(
-          stationCards,
-          { opacity: 0.3, y: 35 },
+          lineRef.current,
+          { scaleY: 0 },
           {
-            opacity: 1,
-            y: 0,
-            stagger: 0.15,
-            duration: 0.8,
-            ease: "power2.out",
+            scaleY: 1,
+            ease: "none",
             scrollTrigger: {
               trigger: containerRef.current,
-              start: "top 80%",
-              toggleActions: "play none none none",
+              start: "top 70%",
+              end: "bottom 75%",
+              scrub: 0.6,
             },
           }
         );
+      }
+
+      // Animate timeline nodes
+      const items = containerRef.current.querySelectorAll(".timeline-row");
+      if (items.length > 0) {
+        items.forEach((item) => {
+          gsap.fromTo(
+            item,
+            { opacity: 0.25, y: 35 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: item,
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
+        });
       }
     },
     { scope: containerRef }
   );
 
-  const scrollToStation = (index: number) => {
-    setActiveStation(index);
-    const targetElement = document.getElementById(`station-${index}`);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
-
   return (
     <section
       ref={containerRef}
       id="journey"
-      className="relative w-full bg-[#101015] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/5 overflow-hidden"
+      className="relative w-full bg-[#000000] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden scroll-mt-24"
     >
-      {/* Background Cyber Grid Accent */}
+      {/* Exact ambient dual lighting requested by user: Black Pearl (#0E161A) on left, Black Magic (#0B0510) on right */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(154,113,255,0.06)_0%,transparent_50%),radial-gradient(circle_at_80%_75%,rgba(56,189,248,0.05)_0%,transparent_50%)]"
+        className="pointer-events-none absolute left-[-10%] top-1/4 h-[700px] w-[650px] rounded-full bg-[#0E161A] opacity-80 blur-[180px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[-10%] top-2/3 h-[700px] w-[650px] rounded-full bg-[#0B0510] opacity-90 blur-[180px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#9A71FF]/5 blur-[160px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
-        {/* Section Header */}
-        <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        
+        {/* Section Header: Title + Subtitle on Left, "TOUT LE PARCOURS →" Button on Right */}
+        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <div className="inline-flex items-center gap-2 font-mono text-xs font-semibold text-[#9A71FF] uppercase tracking-widest mb-3">
-              <Milestone className="size-3.5" />
-              <span>{"//"} 06 — TRAJECTOIRE D&apos;INGÉNIERIE</span>
-            </div>
-            <h2 className="font-display text-4xl sm:text-6xl font-black tracking-tight text-[#f3f1f7]">
-              {locale === "fr" ? "Le Chemin Parcouru." : "The Trajectory."}
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
+              {locale === "fr"
+                ? "Une trajectoire d'ingénierie rigoureuse."
+                : "A deliberate engineering trajectory."}
             </h2>
+            <p className="mt-3 text-sm sm:text-base text-[#797681] leading-relaxed max-w-xl">
+              {locale === "fr"
+                ? "Voici un aperçu de mon profil. Cliquez sur le bouton pour tout explorer."
+                : "A preview of key milestones. Click the button to explore the full timeline."}
+            </p>
           </div>
-          <p className="max-w-md text-sm sm:text-base text-[#797681] leading-relaxed">
-            {locale === "fr"
-              ? "Console de télémétrie académique et industrielle : victoires en hackathons, responsabilités en R&D et formation d'ingénieur d'État."
-              : "Academic and industrial engineering telemetry: hackathon victories, R&D industrial missions, and state engineering curriculum."}
-          </p>
+
+          <Link
+            href={`/${locale}/journey`}
+            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-white/10 bg-[#0B0510]/80 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] backdrop-blur-md transition-all duration-300 hover:border-[#9A71FF] hover:bg-[#9A71FF] hover:text-[#000000] hover:shadow-[0_0_25px_rgba(154,113,255,0.25)]"
+          >
+            <span>{locale === "fr" ? "TOUT LE PARCOURS" : "VIEW EXPANDED PATH"}</span>
+            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </Link>
         </div>
 
-        {/* Interactive Station Quick-Selector Rail */}
-        <div className="mb-12 overflow-x-auto pb-4 scrollbar-none">
-          <div className="flex items-center gap-3 min-w-max">
-            <span className="font-mono text-xs uppercase tracking-widest text-[#9A71FF] flex items-center gap-1.5 mr-2">
-              <Radio className="size-3.5 animate-pulse text-emerald-400" />
-              <span>STATIONS :</span>
-            </span>
-            {processedMilestones.map((item, idx) => {
-              const isSelected = activeStation === idx;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => scrollToStation(idx)}
-                  className={`group relative flex items-center gap-2.5 rounded-full border px-4 py-2 font-mono text-xs transition-all duration-300 ${
-                    isSelected
-                      ? "border-[#9A71FF] bg-[#9A71FF]/15 text-white shadow-[0_0_15px_rgba(154,113,255,0.3)]"
-                      : "border-white/10 bg-[#17161e]/80 text-[#797681] hover:border-white/25 hover:text-[#f3f1f7]"
-                  }`}
-                >
-                  <span
-                    className={`size-2 rounded-full transition-colors ${
-                      isSelected
-                        ? "bg-[#9A71FF] shadow-[0_0_8px_#9A71FF]"
-                        : "bg-white/20 group-hover:bg-[#9A71FF]"
-                    }`}
-                  />
-                  <span className="font-bold text-[#f3f1f7]">
-                    [{item.stationId}]
-                  </span>
-                  <span className="truncate max-w-[140px] sm:max-w-[200px]">
-                    {item.organization}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Main Dual-Column Cockpit HUD */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        {/* Central Alternating Timeline */}
+        <div className="relative mx-auto max-w-5xl py-6">
           
-          {/* Left Column: Fixed Avionics / Telemetry Console */}
-          <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-[#17161e]/90 p-6 sm:p-7 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
-              {/* Pulsing Corner Laser Accent */}
-              <div className="absolute top-0 right-0 size-24 bg-[#9A71FF]/10 rounded-full blur-2xl" />
-
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
-                <div className="flex items-center gap-2">
-                  <Compass className="size-4 text-[#9A71FF]" />
-                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#f3f1f7]">
-                    SYSTEM TELEMETRY
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-400">
-                  <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span>LIVE NODE</span>
-                </div>
-              </div>
-
-              {/* Real-time Status Card */}
-              <div className="space-y-4 font-mono text-xs">
-                <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 space-y-2">
-                  <div className="text-[10px] text-[#797681] uppercase tracking-wider">
-                    CURRENT DISCIPLINE
-                  </div>
-                  <div className="font-display text-base font-bold text-[#f3f1f7]">
-                    Génie Informatique · 4ème Année
-                  </div>
-                  <div className="text-xs text-[#9A71FF]">
-                    Université Privée de Fès (UPF)
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                    <div className="text-[10px] text-[#797681] uppercase">HACKATHONS</div>
-                    <div className="text-sm font-bold text-amber-400 flex items-center gap-1 mt-1">
-                      <Trophy className="size-3.5" />
-                      <span>1ère Place NA</span>
-                    </div>
-                  </div>
-                  <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                    <div className="text-[10px] text-[#797681] uppercase">MISSION R&D</div>
-                    <div className="text-sm font-bold text-[#38bdf8] flex items-center gap-1 mt-1">
-                      <Briefcase className="size-3.5" />
-                      <span>IntelTrust</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                  <div className="text-[10px] text-[#797681] uppercase">ACCRÉDITATION DIPLÔME</div>
-                  <div className="text-xs text-[#f3f1f7] flex items-center gap-1.5 mt-1 font-sans font-medium">
-                    <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
-                    <span>Diplôme d&apos;Ingénieur d&apos;État reconnu</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress Summary */}
-              <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#797681]">
-                <span>TOTAL STATIONS : {processedMilestones.length}</span>
-                <span className="text-[#9A71FF] font-bold">100% VÉRIFIÉ</span>
-              </div>
-            </div>
-
-            {/* Quick Link to full timeline page */}
-            <Link
-              href={`/${locale}/journey`}
-              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-[#17161e]/60 p-4 font-mono text-xs font-semibold text-[#f3f1f7] transition-all hover:border-[#9A71FF] hover:bg-[#9A71FF]/10"
-            >
-              <span className="flex items-center gap-2">
-                <Activity className="size-4 text-[#9A71FF]" />
-                <span>{locale === "fr" ? "CHRONOLOGIE DÉTAILLÉE" : "EXPANDED CHRONOLOGY"}</span>
-              </span>
-              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#9A71FF]" />
-            </Link>
+          {/* Central Vertical Line (Desktop: centered at 50%, Mobile: left-8) */}
+          <div className="absolute top-2 bottom-6 left-8 md:left-1/2 md:-ml-[0.5px] w-[1px] bg-white/10">
+            <div
+              ref={lineRef}
+              className="size-full origin-top bg-gradient-to-b from-[#9A71FF] via-[#9A71FF]/80 to-white/10 shadow-[0_0_12px_rgba(154,113,255,0.5)]"
+            />
           </div>
 
-          {/* Right Column: High-Tech Station Flight Logs */}
-          <div className="lg:col-span-8 space-y-8">
-            {processedMilestones.map((item, index) => {
-              const isHackathon = item.category === "hackathon";
-              const isInternship = item.category === "internship";
-              const isCompetition = item.category === "competition";
+          {/* Timeline Nodes List */}
+          <div className="space-y-16 sm:space-y-24">
+            {timelineData.map((item, index) => {
+              const isEven = index % 2 === 0;
+              const isEducation = item.type === "education";
+              const title = locale === "fr" ? item.title : item.titleEn;
+              const categoryLabel = locale === "fr" ? item.categoryLabel : item.categoryLabelEn;
+              const Icon = item.award ? Trophy : isEducation ? GraduationCap : Briefcase;
 
               return (
                 <div
                   key={item.id}
-                  id={`station-${index}`}
-                  onMouseEnter={() => setActiveStation(index)}
-                  className={`station-card group relative rounded-3xl border p-6 sm:p-9 backdrop-blur-xl transition-all duration-300 ${
-                    item.highlight
-                      ? "border-[#9A71FF]/40 bg-[#1a1926]/90 shadow-[0_10px_35px_rgba(154,113,255,0.12)] hover:border-[#9A71FF]"
-                      : "border-white/10 bg-[#17161e]/80 hover:border-white/20 hover:bg-[#1a1923]"
-                  }`}
+                  className="timeline-row group relative flex flex-col md:flex-row md:items-center md:justify-between"
                 >
-                  {/* Station Overhead Telemetry Ribbon */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-5 mb-5">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`grid size-9 place-items-center rounded-xl border font-mono text-xs font-bold ${
-                          isHackathon
-                            ? "border-amber-400/40 bg-amber-400/10 text-amber-300"
-                            : isInternship
-                            ? "border-[#38bdf8]/40 bg-[#38bdf8]/10 text-[#38bdf8]"
-                            : isCompetition
-                            ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
-                            : "border-[#9A71FF]/40 bg-[#9A71FF]/10 text-[#9A71FF]"
-                        }`}
-                      >
-                        {isHackathon ? (
-                          <Trophy className="size-4" />
-                        ) : isInternship ? (
-                          <Briefcase className="size-4" />
-                        ) : isCompetition ? (
-                          <Cpu className="size-4" />
-                        ) : (
-                          <GraduationCap className="size-4" />
-                        )}
-                      </div>
+                  {/* Central Iconic Glowing Node */}
+                  <div className="absolute left-8 md:left-1/2 top-4 md:top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#9A71FF]/40 bg-[#0B0510] text-[#9A71FF] shadow-[0_0_20px_rgba(154,113,255,0.3)] transition-all duration-300 group-hover:scale-125 group-hover:border-[#9A71FF] group-hover:shadow-[0_0_30px_rgba(154,113,255,0.6)] z-20">
+                    <Icon className="size-5 transition-transform group-hover:rotate-6" />
+                  </div>
 
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-[#f3f1f7]">
-                            {item.organization}
-                          </span>
-                          {item.highlight && (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300">
-                              <Sparkles className="size-2.5" />
-                              <span>DISTINCTION</span>
-                            </span>
-                          )}
-                        </div>
-                        <span className="font-mono text-[11px] text-[#797681]">
-                          STATION // {item.stationId}
-                        </span>
-                      </div>
+                  {/* Mobile Layout: everything to the right of left-8 line */}
+                  <div className="ml-18 flex flex-col md:hidden pl-3">
+                    <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#9A71FF] mb-1">
+                      {item.year}
+                    </span>
+                    <h3 className="font-display text-lg font-bold text-[#f3f1f7] leading-snug group-hover:text-[#9A71FF] transition-colors mb-1.5">
+                      {title}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#797681]">
+                        {categoryLabel}
+                      </span>
+                      <span className="text-white/20">·</span>
+                      <span className="text-xs text-[#797681]">
+                        {item.organization}
+                      </span>
                     </div>
-
-                    <div className="flex items-center gap-2 font-mono text-xs font-semibold text-[#f3f1f7] bg-white/[0.04] px-3.5 py-1.5 rounded-full border border-white/10">
-                      <Calendar className="size-3 text-[#9A71FF]" />
-                      <span>{item.year}</span>
+                    {item.award && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-300 mb-2 w-max">
+                        <Award className="size-3" />
+                        <span>{item.award}</span>
+                      </span>
+                    )}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {item.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-md border border-white/[0.08] bg-[#0E161A]/80 px-2 py-0.5 text-[10px] text-[#f3f1f7]/80"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Station Title */}
-                  <h3 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-[#f3f1f7] mb-3 leading-snug">
-                    {item.role}
-                  </h3>
+                  {/* Desktop Layout: Alternating Sides */}
+                  {/* Left Side Container */}
+                  <div
+                    className={`hidden w-[calc(50%-3.5rem)] md:flex md:flex-col transition-all duration-300 ${
+                      isEven ? "text-right items-end pr-2" : "text-right items-end pr-2"
+                    }`}
+                  >
+                    {isEven ? (
+                      /* Left has Content (when index is even: 0, 2, 4) */
+                      <div className="space-y-2">
+                        <h3 className="font-display text-xl lg:text-2xl font-bold tracking-tight text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors leading-snug">
+                          {title}
+                        </h3>
 
-                  {/* Operational Context / Description */}
-                  <p className="text-sm sm:text-base text-[#797681] leading-relaxed mb-6 font-normal">
-                    {item.description}
-                  </p>
+                        <div className="flex items-center justify-end gap-2 text-xs">
+                          <span className="text-[#797681]">{item.organization}</span>
+                          <span className="text-white/20">·</span>
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#797681]">
+                            {categoryLabel}
+                          </span>
+                        </div>
 
-                  {/* Competencies & Tech Chips Matrix */}
-                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
-                    {item.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className={`rounded-lg border px-2.5 py-1 font-mono text-[11px] transition-colors ${
-                          tag.includes("1ère") || tag.includes("Prix")
-                            ? "border-amber-400/30 bg-amber-400/10 text-amber-200"
-                            : "border-white/10 bg-white/[0.03] text-[#f3f1f7]/80 hover:border-[#9A71FF]/40"
-                        }`}
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                        {item.award && (
+                          <div className="flex justify-end">
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-0.5 text-[11px] font-semibold text-amber-300">
+                              <Award className="size-3" />
+                              <span>{item.award}</span>
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap justify-end gap-1.5 pt-1">
+                          {item.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-md border border-white/[0.08] bg-[#0E161A]/80 px-2.5 py-0.5 text-xs text-[#f3f1f7]/70"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      /* Left has Date (when index is odd: 1, 3) */
+                      <div className="py-2">
+                        <span className="font-mono text-base lg:text-lg font-bold tracking-wider text-[#9A71FF]">
+                          {item.year}
+                        </span>
+                        <div className="text-xs text-[#797681] flex items-center justify-end gap-1 mt-1">
+                          <MapPin className="size-3 text-[#797681]" />
+                          <span>{item.location}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Side Container */}
+                  <div
+                    className={`hidden w-[calc(50%-3.5rem)] md:flex md:flex-col transition-all duration-300 ${
+                      !isEven ? "text-left items-start pl-2" : "text-left items-start pl-2"
+                    }`}
+                  >
+                    {!isEven ? (
+                      /* Right has Content (when index is odd: 1, 3) */
+                      <div className="space-y-2">
+                        <h3 className="font-display text-xl lg:text-2xl font-bold tracking-tight text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors leading-snug">
+                          {title}
+                        </h3>
+
+                        <div className="flex items-center justify-start gap-2 text-xs">
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#797681]">
+                            {categoryLabel}
+                          </span>
+                          <span className="text-white/20">·</span>
+                          <span className="text-[#797681]">{item.organization}</span>
+                        </div>
+
+                        {item.award && (
+                          <div className="flex justify-start">
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-0.5 text-[11px] font-semibold text-amber-300">
+                              <Award className="size-3" />
+                              <span>{item.award}</span>
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap justify-start gap-1.5 pt-1">
+                          {item.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-md border border-white/[0.08] bg-[#0E161A]/80 px-2.5 py-0.5 text-xs text-[#f3f1f7]/70"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      /* Right has Date (when index is even: 0, 2, 4) */
+                      <div className="py-2">
+                        <span className="font-mono text-base lg:text-lg font-bold tracking-wider text-[#9A71FF]">
+                          {item.year}
+                        </span>
+                        <div className="text-xs text-[#797681] flex items-center justify-start gap-1 mt-1">
+                          <MapPin className="size-3 text-[#797681]" />
+                          <span>{item.location}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

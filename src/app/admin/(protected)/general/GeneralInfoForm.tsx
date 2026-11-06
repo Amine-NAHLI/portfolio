@@ -14,6 +14,8 @@ type Props = {
     introduction: string;
     formation: string;
     experience: string;
+    experienceStatus?: "completed" | "in_progress" | string;
+    experienceTitle?: string;
     languages: string;
     aboutTitle?: string;
     aboutBio?: string;
@@ -170,12 +172,48 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
               />
             </label>
             <label className="grid gap-2 font-semibold text-[#f3f1f7]">
-              <span className="text-xs text-[#797681]">Expérience actuelle</span>
+              <span className="text-xs text-[#797681]">Détails de l&apos;expérience</span>
               <input
                 name="experience"
                 defaultValue={defaultValues.experience}
                 className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
                 required
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label className="grid gap-2 font-semibold text-[#f3f1f7]">
+              <span className="text-xs text-[#797681]">Statut de l&apos;expérience (Actuelle ou Terminée)</span>
+              <select
+                name="experienceStatus"
+                defaultValue={defaultValues.experienceStatus || "completed"}
+                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none cursor-pointer"
+              >
+                <option value="completed">
+                  {locale === "fr" ? "Terminée (Affiche: Dernière expérience)" : "Completed (Displays: Recent Experience)"}
+                </option>
+                <option value="in_progress">
+                  {locale === "fr" ? "En cours (Affiche: Expérience actuelle)" : "In Progress (Displays: Current Experience)"}
+                </option>
+              </select>
+            </label>
+
+            <label className="grid gap-2 font-semibold text-[#f3f1f7]">
+              <span className="text-xs text-[#797681]">
+                {locale === "fr"
+                  ? "Titre personnalisé du repère (optionnel)"
+                  : "Custom Label Title (optional)"}
+              </span>
+              <input
+                name="experienceTitle"
+                placeholder={
+                  defaultValues.experienceStatus === "in_progress"
+                    ? (locale === "fr" ? "Expérience actuelle" : "Current Experience")
+                    : (locale === "fr" ? "Dernière expérience" : "Recent Experience")
+                }
+                defaultValue={defaultValues.experienceTitle || ""}
+                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
               />
             </label>
           </div>

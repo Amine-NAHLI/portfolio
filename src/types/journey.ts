@@ -1,5 +1,6 @@
 export type JourneyTag = {
   name: string;
+  nameEn?: string;
   color: "standard" | string;
 };
 
@@ -14,7 +15,9 @@ export type JourneyTimelineItem = {
   categoryLabel: string;
   categoryLabelEn: string;
   award?: string;
+  awardEn?: string;
   awardColor?: string;
+  status?: "completed" | "in_progress";
   tags: JourneyTag[];
 };
 
@@ -77,6 +80,7 @@ export const DEFAULT_JOURNEY_TIMELINE: JourneyTimelineItem[] = [
     organization: "IntelTrust",
     location: "Fès, Maroc",
     type: "experience",
+    status: "completed",
     categoryLabel: "EXPÉRIENCE",
     categoryLabelEn: "EXPERIENCE",
     tags: [

@@ -20,12 +20,18 @@ const labels: Record<AdminWorkspaceSection, { title: string; description: string
 function emptyValues(section: AdminWorkspaceSection): RecordValue {
   if (section === "projects") return { title: "", subtitle_fr: "", subtitle_en: "", description_fr: "", description_en: "", problem_fr: "", problem_en: "", solution_fr: "", solution_en: "", objectives_fr: "", objectives_en: "", architecture_fr: "", architecture_en: "", results_fr: "", results_en: "", github_url: "", demo_url: "", categories: "", technologies: "", sort_order: 0, featured: 0 };
   if (section === "journey") return { kind: "experience", title_fr: "", title_en: "", organization: "", summary_fr: "", summary_en: "", started_on: "", ended_on: "", sort_order: 0 };
-  if (section === "certifications") return { title: "", issuer: "", issued_on: "", description_fr: "", description_en: "", document_media_id: "" };
+  if (section === "certifications") return { title_fr: "", title_en: "", issuer: "", issued_on: "", description_fr: "", description_en: "", document_media_id: "" };
   return {};
 }
 
 function fromRecord(section: AdminWorkspaceSection, record: RecordValue): RecordValue {
   if (section === "projects") return { ...emptyValues(section), ...record, technologies: Array.isArray(record.technologies) ? record.technologies.join(", ") : "" };
+  if (section === "certifications") return {
+    ...emptyValues(section),
+    ...record,
+    title_fr: record.title_fr ?? record.name_fr ?? record.title ?? "",
+    title_en: record.title_en ?? record.name_en ?? record.title ?? "",
+  };
   return { ...emptyValues(section), ...record };
 }
 
@@ -478,7 +484,7 @@ function EditorFields({ section, values, set, translate, translating, generateCa
     <span className="text-xs font-normal text-text-muted">Si la date est vide ou dans le futur, le parcours s’affiche « En cours ». Il passera automatiquement à la date de fin une fois atteinte.</span>
   </div>
   {field("sort_order", "Ordre d’affichage", "number")}</>;
-  return <>{field("title", "Titre", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
+  return <>{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
 }
 
 function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSection; record: RecordValue; onClose: () => void }) {
@@ -505,7 +511,7 @@ function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSec
       break;
     case "certifications":
       title = "Certification";
-      entries = [["Titre", record.title], ["Organisme", record.issuer], ["Date", formatDate(record.issued_on)]];
+      entries = [["Titre FR", record.title_fr ?? record.name_fr ?? record.title], ["Titre EN", record.title_en ?? record.name_en ?? record.title], ["Organisme", record.issuer], ["Date", formatDate(record.issued_on)]];
       break;
   }
 

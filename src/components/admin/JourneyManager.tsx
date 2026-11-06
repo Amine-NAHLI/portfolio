@@ -409,6 +409,22 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 </select>
               </div>
 
+              <div className="space-y-1.5">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                  Statut de l&apos;étape (En cours vs Terminé)
+                </label>
+                <select
+                  value={activeItem.status || (activeItem.year?.toUpperCase().includes("EN COURS") ? "in_progress" : "completed")}
+                  onChange={(e) =>
+                    updateItemField(activeItemIndex, "status", e.target.value as "completed" | "in_progress")
+                  }
+                  className="w-full rounded-lg border border-white/10 bg-[#0B0510] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none cursor-pointer"
+                >
+                  <option value="completed">Terminé / Effectué</option>
+                  <option value="in_progress">En cours actuellement</option>
+                </select>
+              </div>
+
               {/* Award / Distinction Optional */}
               <div className="space-y-1.5 sm:col-span-2 p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/[0.04]">
                 <div className="flex items-center gap-2 mb-1">
@@ -418,12 +434,19 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-2 space-y-2">
                     <input
                       type="text"
-                      placeholder="Ex: 3ème Prix National, 1ère Place Régionale..."
+                      placeholder="Distinction en français (ex: 3ème Prix National...)"
                       value={activeItem.award || ""}
                       onChange={(e) => updateItemField(activeItemIndex, "award", e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-amber-400 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Distinction en anglais (ex: 3rd National Prize, 1st Regional Place...)"
+                      value={activeItem.awardEn || ""}
+                      onChange={(e) => updateItemField(activeItemIndex, "awardEn", e.target.value)}
                       className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-amber-400 focus:outline-none"
                     />
                   </div>

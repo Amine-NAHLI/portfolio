@@ -67,9 +67,9 @@ export default function CinematicCanvas({
       <HeroScene
         locale={locale}
         siteName={siteName}
-        introduction={dynamicCopy?.introduction || introduction || ""}
         headline={dynamicCopy?.headline}
         contactLinks={contactLinks}
+        heroButtons={dynamicCopy?.heroButtons}
       />
 
       {/* Scene 02: Manifesto (Pinned Scroll Kinetics: I BUILD. I SECURE. I INNOVATE.) */}

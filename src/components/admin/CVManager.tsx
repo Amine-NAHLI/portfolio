@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, ChangeEvent, DragEvent } from "react";
-import { FileText, UploadCloud, CheckCircle2, AlertCircle, ExternalLink, Loader2, RefreshCw } from "lucide-react";
+import { useState, useRef, useEffect, useCallback, ChangeEvent, DragEvent } from "react";
+import { FileText, UploadCloud, CheckCircle2, AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 
 type CVInfo = {
   exists: boolean;
@@ -35,16 +35,24 @@ function formatDate(iso: string | null) {
   }
 }
 
-export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
-  const [cvInfo, setCvInfo] = useState<CVInfo>(
-    initialInfo || {
-      exists: true,
-      size: 0,
-      updatedAt: null,
-      url: "/Amine_Nahli_CV.pdf",
-      filename: "Amine_Nahli_CV.pdf",
-    }
-  );
+function SingleCVCard({
+  locale,
+  title,
+  subtitle,
+  defaultFilename,
+}: {
+  locale: "fr" | "en";
+  title: string;
+  subtitle: string;
+  defaultFilename: string;
+}) {
+  const [cvInfo, setCvInfo] = useState<CVInfo>({
+    exists: true,
+    size: 0,
+    updatedAt: null,
+    url: `/${defaultFilename}`,
+    filename: defaultFilename,
+  });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -53,17 +61,18 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch initial info if not provided
+  const fetchStatus = useCallback(() => {
+    fetch(`/api/admin/cv?locale=${locale}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && data.exists !== undefined) setCvInfo(data);
+      })
+      .catch(() => {});
+  }, [locale]);
+
   useEffect(() => {
-    if (!initialInfo?.size) {
-      fetch("/api/admin/cv")
-        .then((r) => r.json())
-        .then((data) => {
-          if (data && data.exists !== undefined) setCvInfo(data);
-        })
-        .catch(() => {});
-    }
-  }, [initialInfo]);
+    fetchStatus();
+  }, [fetchStatus]);
 
   const handleFile = (file: File) => {
     setErrorMessage(null);
@@ -116,6 +125,7 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
+      formData.append("locale", locale);
 
       const res = await fetch("/api/admin/cv", {
         method: "POST",
@@ -128,14 +138,11 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
         throw new Error(data.error || "Erreur lors du téléchargement.");
       }
 
-      setSuccessMessage("Votre CV PDF officiel a été mis à jour avec succès et est en ligne !");
+      setSuccessMessage(`Le CV (${locale.toUpperCase()}) a été mis à jour avec succès et est en ligne !`);
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
 
-      // Refresh CV status
-      const updatedRes = await fetch("/api/admin/cv");
-      const updatedData = await updatedRes.json();
-      if (updatedData) setCvInfo(updatedData);
+      fetchStatus();
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
@@ -144,24 +151,36 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Current CV status */}
-      <div className="p-4 rounded-sm border border-border/60 bg-surface-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="flex flex-col rounded-2xl border border-white/10 bg-[#060605] overflow-hidden p-6 gap-6">
+      <div className="flex items-center justify-between border-b border-white/10 pb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-sm bg-purple-500/10 border border-purple-500/20 text-purple-400">
-            <FileText className="size-6" />
+          <span className="grid size-9 rounded-lg bg-[#9A71FF]/10 text-[#9A71FF] border border-[#9A71FF]/30 place-items-center text-xs font-bold font-mono">
+            {locale.toUpperCase()}
+          </span>
+          <div>
+            <h3 className="text-base font-bold text-[#f3f1f7]">{title}</h3>
+            <p className="text-xs text-[#797681]">{subtitle}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Current file status */}
+      <div className="p-4 rounded-xl border border-white/10 bg-[#0B0510] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-lg bg-[#9A71FF]/10 border border-[#9A71FF]/20 text-[#9A71FF]">
+            <FileText className="size-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm font-semibold text-text-primary">
+              <span className="font-mono text-xs font-semibold text-[#f3f1f7]">
                 {cvInfo.filename}
               </span>
               <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                EN LIGNE
+                {cvInfo.exists ? "EN LIGNE" : "NON DISPONIBLE"}
               </span>
             </div>
-            <p className="font-mono text-xs text-text-muted mt-0.5">
-              {cvInfo.size > 0 ? formatBytes(cvInfo.size) : "Fichier actif"} · Mis à jour le {formatDate(cvInfo.updatedAt)}
+            <p className="font-mono text-[11px] text-[#797681] mt-0.5">
+              {cvInfo.size > 0 ? formatBytes(cvInfo.size) : "Fichier actif"} · Mis à jour : {formatDate(cvInfo.updatedAt)}
             </p>
           </div>
         </div>
@@ -170,7 +189,7 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
           href={cvInfo.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-border text-xs font-mono text-text-secondary hover:text-text-primary hover:border-accent transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs font-mono text-[#f3f1f7] hover:border-[#9A71FF] hover:text-[#9A71FF] transition-colors shrink-0"
         >
           <span>Consulter le PDF</span>
           <ExternalLink className="size-3.5" />
@@ -179,15 +198,15 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
 
       {/* Error & Success Feedback */}
       {errorMessage && (
-        <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-sm text-red-400 text-sm">
-          <AlertCircle className="size-5 shrink-0" />
+        <div className="flex items-center gap-3 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs font-semibold">
+          <AlertCircle className="size-4 shrink-0" />
           <p>{errorMessage}</p>
         </div>
       )}
 
       {successMessage && (
-        <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-sm text-emerald-400 text-sm">
-          <CheckCircle2 className="size-5 shrink-0" />
+        <div className="flex items-center gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-semibold">
+          <CheckCircle2 className="size-4 shrink-0" />
           <p>{successMessage}</p>
         </div>
       )}
@@ -198,77 +217,80 @@ export function CVManager({ initialInfo }: { initialInfo?: CVInfo }) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-sm p-8 text-center cursor-pointer transition-all ${
+        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-3 ${
           isDragging
-            ? "border-accent bg-accent/5 scale-[0.99]"
-            : "border-border/60 hover:border-accent/60 bg-surface-subtle/50"
+            ? "border-[#9A71FF] bg-[#9A71FF]/10"
+            : "border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.04]"
         }`}
       >
         <input
           ref={fileInputRef}
           type="file"
           accept=".pdf,application/pdf"
-          onChange={onFileInputChange}
           className="hidden"
+          onChange={onFileInputChange}
         />
 
-        <div className="flex flex-col items-center gap-2">
-          <div className="p-3 rounded-full bg-surface border border-border text-accent mb-1">
-            <UploadCloud className="size-6" />
-          </div>
+        <div className="p-3 rounded-full bg-white/5 border border-white/10 text-[#797681]">
+          <UploadCloud className="size-6 text-[#9A71FF]" />
+        </div>
 
-          <p className="font-display text-sm font-medium text-text-primary">
-            {selectedFile ? (
-              <span className="text-accent font-semibold">{selectedFile.name}</span>
-            ) : (
-              "Glissez-déposez votre nouveau CV PDF ici, ou cliquez pour parcourir"
-            )}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-[#f3f1f7]">
+            Glissez-déposez le fichier PDF ici, ou <span className="text-[#9A71FF] underline underline-offset-2">parcourez vos fichiers</span>
           </p>
-
-          <p className="font-mono text-xs text-text-muted">
-            {selectedFile
-              ? `Taille : ${formatBytes(selectedFile.size)} · Prêt à être déployé`
-              : "Format PDF uniquement (.pdf) · Max 15 Mo"}
+          <p className="text-[11px] text-[#797681]">
+            Format PDF uniquement · Taille max 15 Mo
           </p>
         </div>
+
+        {selectedFile && (
+          <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#9A71FF]/15 border border-[#9A71FF]/30 text-xs text-[#9A71FF] font-mono">
+            <FileText className="size-3.5" />
+            <span className="font-semibold">{selectedFile.name}</span>
+            <span className="text-[#797681]">({formatBytes(selectedFile.size)})</span>
+          </div>
+        )}
       </div>
 
-      {/* Action buttons */}
       {selectedFile && (
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedFile(null);
-              if (fileInputRef.current) fileInputRef.current.value = "";
-            }}
-            disabled={isUploading}
-            className="px-4 py-2 rounded-sm border border-border text-xs font-mono text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
-          >
-            Annuler
-          </button>
-
-          <button
-            type="button"
-            onClick={handleUpload}
-            disabled={isUploading}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-sm bg-accent text-white font-mono text-xs font-semibold hover:bg-accent/90 transition-all shadow-md shadow-accent/20 disabled:opacity-50"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="size-3.5 animate-spin" />
-                <span>Remplacement en cours...</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw className="size-3.5" />
-                <span>Remplacer le CV Officiel</span>
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleUpload}
+          disabled={isUploading}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#9A71FF] px-5 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#9A71FF]/20"
+        >
+          {isUploading ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              <span>Téléversement en cours...</span>
+            </>
+          ) : (
+            <>
+              <UploadCloud className="size-4" />
+              <span>Publier ce CV ({locale.toUpperCase()})</span>
+            </>
+          )}
+        </button>
       )}
     </div>
   );
 }
 
+export function CVManager() {
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SingleCVCard
+          locale="fr"
+          title="Curriculum Vitae (Français)"
+          subtitle="Version officielle servie sur /fr et /cv"
+          defaultFilename="Amine_Nahli_CV.pdf"
+        />
+        <SingleCVCard
+          locale="en"
+          title="Resume / CV (English)"
+          subtitle="Version officielle servie sur /en et /en/cv"
+          defaultFilename="Amine_Nahli_CV_EN.pdf"
+        />
+  

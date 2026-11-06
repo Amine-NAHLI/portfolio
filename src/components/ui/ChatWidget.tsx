@@ -696,23 +696,23 @@ Envoyer un message chiffré : [Formulaire de Contact](/fr/contact)`,
         )}
       </AnimatePresence>
 
-      {/* Floating Action Launcher Pill */}
+      {/* Floating Action Launcher: Compact Circle by Default, Expands on Hover */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative flex h-13 items-center gap-2.5 rounded-full border border-white/15 bg-[#0B0510]/95 px-4 text-[#f3f1f7] shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all hover:border-[#9A71FF]/60 hover:shadow-[0_0_30px_rgba(154,113,255,0.3)] cursor-pointer"
+        className="group relative flex h-11 w-11 hover:w-auto items-center justify-center rounded-full border border-white/15 bg-[#0B0510]/95 px-3 text-[#f3f1f7] shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 ease-out hover:border-[#9A71FF]/60 hover:shadow-[0_0_30px_rgba(154,113,255,0.3)] cursor-pointer overflow-hidden"
         aria-label="Ouvrir le terminal interactif"
       >
-        <span className="relative flex size-2.5">
+        <span className="relative flex size-2 shrink-0">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
+          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
         </span>
 
-        <Terminal className="size-4 text-[#9A71FF] transition-transform group-hover:rotate-6" />
+        <Terminal className="size-4 text-[#9A71FF] shrink-0 ml-1.5 transition-transform duration-300 group-hover:rotate-6" />
 
-        <span className="font-mono text-xs font-semibold tracking-wider text-[#f3f1f7] hidden sm:inline">
-          {isOpen ? "TERMINAL" : "CLI · AMINE"}
+        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 font-mono text-xs font-semibold tracking-wider text-[#f3f1f7]">
+          {isOpen ? "FERMER" : "CLI · AMINE"}
         </span>
       </motion.button>
     </div>

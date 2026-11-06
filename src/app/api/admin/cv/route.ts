@@ -4,27 +4,43 @@ import { resolve } from "node:path";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminContext } from "@/lib/auth/admin";
 
-const CV_FILENAME = "Amine_Nahli_CV.pdf";
-const CV_PATH = resolve("public", CV_FILENAME);
+function getCvDetails(locale: string | null) {
+  const isEn = locale === "en";
+  const filename = isEn ? "Amine_Nahli_CV_EN.pdf" : "Amine_Nahli_CV.pdf";
+  return {
+    filename,
+    filePath: resolve("public", filename),
+    url: `/${filename}`,
+  };
+}
+
 const MAX_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const fileStat = await stat(CV_PATH);
+    const { searchParams } = new URL(req.url);
+    const locale = searchParams.get("locale");
+    const { filename, filePath, url } = getCvDetails(locale);
+
+    const fileStat = await stat(filePath);
     return NextResponse.json({
       exists: true,
       size: fileStat.size,
       updatedAt: fileStat.mtime.toISOString(),
-      url: `/${CV_FILENAME}`,
-      filename: CV_FILENAME,
+      url,
+      filename,
     });
   } catch {
+    const { searchParams } = new URL(req.url);
+    const locale = searchParams.get("locale");
+    const { filename, url } = getCvDetails(locale);
+
     return NextResponse.json({
       exists: false,
       size: 0,
       updatedAt: null,
-      url: `/${CV_FILENAME}`,
-      filename: CV_FILENAME,
+      url,
+      filename,
     });
   }
 }
@@ -38,6 +54,8 @@ export async function POST(req: Request) {
 
     const formData = await req.formData();
     const file = formData.get("file");
+    const locale = formData.get("locale")?.toString() || "fr";
+    const { filename, filePath, url } = getCvDetails(locale);
 
     if (!file || typeof file === "string") {
       return NextResponse.json({ error: "Aucun fichier PDF fourni." }, { status: 400 });
@@ -56,7 +74,7 @@ export async function POST(req: Request) {
     const bytes = await blob.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    await writeFile(CV_PATH, buffer);
+    await writeFile(filePath, buffer);
 
     // Revalidate paths & tags
     try {
@@ -74,8 +92,9 @@ export async function POST(req: Request) {
       success: true,
       size: blob.size,
       updatedAt: new Date().toISOString(),
-      url: `/${CV_FILENAME}`,
-      message: "Curriculum Vitae (PDF) mis à jour avec succès !",
+      url,
+      filename,
+      message: `Curriculum Vitae (${locale.toUpperCase()}) mis à jour avec succès !`,
     });
   } catch (error) {
     console.error("CV upload error:", error);

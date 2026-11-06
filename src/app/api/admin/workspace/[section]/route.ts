@@ -174,7 +174,12 @@ async function getRecords(db: UntypedClient, section: Section) {
   if (section === "certifications") {
     const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, document_media_id, created_at, featured").order("issued_on", { ascending: false });
     if (error) throw error;
-    return (data ?? []).map((item: Record<string, unknown>) => ({ ...item, title: item.name_fr }));
+    return (data ?? []).map((item: Record<string, unknown>) => ({
+      ...item,
+      title: item.name_fr,
+      title_fr: item.name_fr ?? "",
+      title_en: item.name_en ?? item.name_fr ?? "",
+    }));
   }
 
   if (section === "testimonials") {
@@ -394,13 +399,14 @@ async function saveSkill(db: UntypedClient, context: AdminContext, id: string | 
 }
 
 async function saveCertification(db: UntypedClient, context: AdminContext, id: string | null, input: Record<string, unknown>) {
-  const title = text(input.title, 1, 180);
+  const titleFr = text(input.title_fr ?? input.title, 1, 180);
+  const titleEn = nullableText(input.title_en, 180) ?? titleFr;
   const issuer = nullableText(input.issuer, 180);
   const issuedOn = date(input.issued_on);
   const descriptionFr = text(input.description_fr, 1, 1_600);
   const descriptionEn = nullableText(input.description_en, 1_600);
   const documentMediaId = nullableText(input.document_media_id, 64);
-  if (!title || !issuedOn || !descriptionFr || (input.description_en !== undefined && input.description_en !== null && input.description_en !== "" && !descriptionEn) || (documentMediaId && !/^[0-9a-f-]{36}$/i.test(documentMediaId))) throw new ValidationError("Vérifiez les champs de la certification.");
+  if (!titleFr || !issuedOn || !descriptionFr || (input.description_en !== undefined && input.description_en !== null && input.description_en !== "" && !descriptionEn) || (documentMediaId && !/^[0-9a-f-]{36}$/i.test(documentMediaId))) throw new ValidationError("Vérifiez les champs de la certification.");
   const previousDocument = id
     ? await db.from("certifications").select("document_media_id").eq("id", id).maybeSingle()
     : { data: null, error: null };
@@ -417,9 +423,9 @@ async function saveCertification(db: UntypedClient, context: AdminContext, id: s
     const { error: publishError } = await db.from("media_assets").update({ publication_status: "published" }).eq("id", documentMediaId);
     if (publishError) throw publishError;
   }
-  const slug = await uniqueSlug(db, "certifications", title, id ?? undefined);
+  const slug = await uniqueSlug(db, "certifications", titleFr, id ?? undefined);
   const featured = Boolean(input.featured);
-  const payload = { slug, name_fr: title, name_en: title, issuer, issued_on: issuedOn, description_fr: descriptionFr, description_en: descriptionEn, document_media_id: documentMediaId, credential_status: "completed", publication_status: "published", skills: [], sort_order: 0, featured };
+  const payload = { slug, name_fr: titleFr, name_en: titleEn, issuer, issued_on: issuedOn, description_fr: descriptionFr, description_en: descriptionEn, document_media_id: documentMediaId, credential_status: "completed", publication_status: "published", skills: [], sort_order: 0, featured };
   const result = id ? await db.from("certifications").update(payload).eq("id", id).select("id").single() : await db.from("certifications").insert(payload).select("id").single();
   if (result.error || !result.data) {
     if (documentMediaId && documentMediaId !== previousDocumentMediaId) {

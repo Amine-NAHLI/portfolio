@@ -2,32 +2,36 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, FileText } from "lucide-react";
+import { ArrowDown, ArrowUpRight, FileText, Briefcase, Mail, Award, Compass } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
+import type { HeroActionButton } from "@/content/dynamic-copy";
+import { DEFAULT_HERO_BUTTONS } from "@/content/dynamic-copy";
 
 interface HeroSceneProps {
   locale: Locale;
   siteName: string;
-  introduction: string;
+  introduction?: string;
   headline?: string;
   contactLinks: {
     github?: string;
     linkedin?: string;
     resume: string;
   };
+  heroButtons?: HeroActionButton[];
 }
 
 export default function HeroScene({
   locale,
   siteName,
-  introduction,
   headline,
   contactLinks,
+  heroButtons,
 }: HeroSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -37,35 +41,27 @@ export default function HeroScene({
       if (typeof window === "undefined" || !containerRef.current) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      // Title characters reveal
-      const chars = titleRef.current?.querySelectorAll(".hero-char");
-      if (chars && chars.length > 0) {
-        tl.fromTo(
-          chars,
-          { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: 1, stagger: 0.03 }
-        );
-      }
-
-      // Subtitle & CTAs fade in
-      tl.fromTo(
-        subtitleRef.current,
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.6"
+      // Fast, snappy parallel reveal to eliminate any delay / blank screen on refresh
+      gsap.fromTo(
+        titleRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
       );
 
-      tl.fromTo(
+      gsap.fromTo(
+        subtitleRef.current,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.5, delay: 0.1, ease: "power2.out" }
+      );
+
+      gsap.fromTo(
         ctaRef.current,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.7 },
-        "-=0.5"
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.5, delay: 0.15, ease: "power2.out" }
       );
 
       // Subtle scroll fade
-      gsap.to(titleRef.current, {
+      gsap.to(contentRef.current, {
         yPercent: -15,
         opacity: 0.35,
         ease: "none",
@@ -80,14 +76,46 @@ export default function HeroScene({
     { scope: containerRef }
   );
 
-  const nameLetters = siteName.split("");
+  const activeButtons = (heroButtons && heroButtons.length > 0 ? heroButtons : DEFAULT_HERO_BUTTONS).filter(
+    (b) => b.enabled
+  );
+
+  const getButtonIcon = (id: string) => {
+    switch (id) {
+      case "cv":
+        return <FileText className="size-4 text-[#9A71FF]" />;
+      case "projects":
+        return <ArrowUpRight className="size-4" />;
+      case "contact":
+        return <Mail className="size-4 text-[#9A71FF]" />;
+      case "journey":
+        return <Compass className="size-4 text-[#9A71FF]" />;
+      case "certifications":
+        return <Award className="size-4 text-[#9A71FF]" />;
+      default:
+        return <Briefcase className="size-4" />;
+    }
+  };
+
+  const resolveButtonUrl = (btn: HeroActionButton) => {
+    if (btn.id === "cv") {
+      return contactLinks.resume;
+    }
+    if (btn.url.startsWith("#")) {
+      return `/${locale}${btn.url}`;
+    }
+    if (btn.url.startsWith("/") && !btn.url.startsWith(`/${locale}`)) {
+      return `/${locale}${btn.url}`;
+    }
+    return btn.url;
+  };
 
   return (
     <section
       ref={containerRef}
       className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-transparent px-4 sm:px-8 lg:px-14 py-20 text-[#f3f1f7]"
     >
-      {/* Subtle ambient lighting: Black Pearl (#0E161A) & Black Magic (#0B0510) */}
+      {/* Subtle ambient lighting */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#0E161A] opacity-70 blur-[180px]"
@@ -102,28 +130,20 @@ export default function HeroScene({
       />
 
       {/* Main Centered Content Canvas */}
-      <div className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center justify-center text-center my-auto pt-6 pb-12">
+      <div
+        ref={contentRef}
+        className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center justify-center text-center my-auto py-8"
+      >
         {/* Monumental Display Name */}
         <h1
           ref={titleRef}
           aria-label={siteName}
-          className="font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-[#f3f1f7] leading-none overflow-hidden pb-2"
+          className="font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-[#f3f1f7] leading-none"
         >
-          <span className="inline-block overflow-hidden">
-            {nameLetters.map((char, index) => (
-              <span
-                key={index}
-                className={`hero-char inline-block will-change-transform ${
-                  char === " " ? "mr-3 sm:mr-5" : ""
-                }`}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
-          </span>
+          {siteName}
         </h1>
 
-        {/* Tagline & Human Bio */}
+        {/* Tagline */}
         <div ref={subtitleRef} className="mt-6 max-w-2xl mx-auto">
           <p className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#f3f1f7]/90 leading-snug">
             {headline ||
@@ -131,33 +151,46 @@ export default function HeroScene({
                 ? "Concevoir des architectures logicielles fiables, sécurisées et intelligentes."
                 : "Engineering robust, secure, and intelligent systems.")}
           </p>
-          <p className="mt-3 text-sm sm:text-base text-[#797681] leading-relaxed max-w-xl mx-auto font-normal">
-            {introduction}
-          </p>
         </div>
 
-        {/* Sleek Action Buttons */}
-        <div ref={ctaRef} className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href={`/${locale}#work`}
-            className="inline-flex items-center gap-2 rounded-full bg-[#f3f1f7] px-6 py-3 text-xs sm:text-sm font-bold text-[#101015] shadow-lg transition-all duration-200 hover:bg-white hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <span>{locale === "fr" ? "Explorer les projets" : "Explore Selected Work"}</span>
-            <ArrowUpRight className="size-4" />
-          </Link>
+        {/* Dynamic Action Buttons configured from Admin */}
+        <div ref={ctaRef} className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
+          {activeButtons.map((btn) => {
+            const label = locale === "fr" ? btn.labelFr : btn.labelEn;
+            const targetUrl = resolveButtonUrl(btn);
+            const isExternal = btn.id === "cv" || targetUrl.startsWith("http");
 
-          <Link
-            href={contactLinks.resume}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-xs sm:text-sm font-semibold text-[#f3f1f7] transition-all duration-200 hover:bg-white/[0.08]"
-          >
-            <FileText className="size-4 text-[#9A71FF]" />
-            <span>{locale === "fr" ? "Consulter le CV" : "View CV"}</span>
-          </Link>
+            if (btn.style === "primary") {
+              return (
+                <Link
+                  key={btn.id}
+                  href={targetUrl}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noreferrer" : undefined}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#f3f1f7] px-6 py-3 text-xs sm:text-sm font-bold text-[#101015] shadow-lg transition-all duration-200 hover:bg-white hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <span>{label}</span>
+                  {getButtonIcon(btn.id)}
+                </Link>
+              );
+            }
+
+            return (
+              <Link
+                key={btn.id}
+                href={targetUrl}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noreferrer" : undefined}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-xs sm:text-sm font-semibold text-[#f3f1f7] transition-all duration-200 hover:bg-white/[0.08]"
+              >
+                {getButtonIcon(btn.id)}
+                <span>{label}</span>
+              </Link>
+            );
+          })}
 
           {/* Social Icons */}
-          <div className="flex items-center gap-2 pl-2">
+          <div className="flex items-center gap-2 pl-1">
             {contactLinks.github && (
               <a
                 href={contactLinks.github}

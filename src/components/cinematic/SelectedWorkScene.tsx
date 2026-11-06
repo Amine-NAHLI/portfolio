@@ -363,10 +363,6 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>
                     <ArrowUpRight className="size-3.5" />
                   </Link>
-
-                  <span className="font-mono text-xs text-[#797681]">
-                    {projectYear}
-                  </span>
                 </div>
               </div>
             );

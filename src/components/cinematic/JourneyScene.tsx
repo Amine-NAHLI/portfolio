@@ -193,8 +193,15 @@ export default function JourneyScene({
             {items.map((item, index) => {
               const isEven = index % 2 === 0;
               const isEducation = item.type === "education";
-              const title = locale === "fr" ? item.title : item.titleEn;
-              const categoryLabel = locale === "fr" ? item.categoryLabel : item.categoryLabelEn;
+              const title = locale === "fr" ? item.title : (item.titleEn || item.title);
+              const categoryLabel = locale === "fr" ? item.categoryLabel : (item.categoryLabelEn || item.categoryLabel);
+              const award = locale === "fr" ? item.award : (item.awardEn || item.award);
+              const displayYear =
+                item.status === "completed" && item.year.toUpperCase().includes("EN COURS")
+                  ? locale === "fr"
+                    ? item.year.replace(/EN COURS/i, "Terminé")
+                    : item.year.replace(/EN COURS/i, "Completed")
+                  : item.year;
               const Icon = item.award ? Trophy : isEducation ? GraduationCap : Briefcase;
 
               return (
@@ -210,7 +217,7 @@ export default function JourneyScene({
                   {/* Mobile Layout: everything to the right of left-8 line */}
                   <div className="ml-18 flex flex-col md:hidden pl-3">
                     <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#9A71FF] mb-1">
-                      {item.year}
+                      {displayYear}
                     </span>
                     <h3 className="font-display text-lg font-bold text-[#f3f1f7] leading-snug group-hover:text-[#9A71FF] transition-colors mb-1.5">
                       {title}
@@ -224,7 +231,7 @@ export default function JourneyScene({
                         {item.organization}
                       </span>
                     </div>
-                    {renderAwardBadge(item.award, item.awardColor, true)}
+                    {renderAwardBadge(award, item.awardColor, true)}
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {item.tags.map((tag, tIdx) => renderJourneyTag(tag, tIdx, true))}
                     </div>
@@ -252,9 +259,9 @@ export default function JourneyScene({
                           </span>
                         </div>
 
-                        {item.award && (
+                        {award && (
                           <div className="flex justify-end">
-                            {renderAwardBadge(item.award, item.awardColor, false)}
+                            {renderAwardBadge(award, item.awardColor, false)}
                           </div>
                         )}
 
@@ -266,7 +273,7 @@ export default function JourneyScene({
                       /* Left has Date (when index is odd: 1, 3) */
                       <div className="py-2">
                         <span className="font-mono text-base lg:text-lg font-bold tracking-wider text-[#9A71FF]">
-                          {item.year}
+                          {displayYear}
                         </span>
                         <div className="text-xs text-[#797681] flex items-center justify-end gap-1 mt-1">
                           <MapPin className="size-3 text-[#797681]" />
@@ -297,9 +304,9 @@ export default function JourneyScene({
                           <span className="text-[#797681]">{item.organization}</span>
                         </div>
 
-                        {item.award && (
+                        {award && (
                           <div className="flex justify-start">
-                            {renderAwardBadge(item.award, item.awardColor, false)}
+                            {renderAwardBadge(award, item.awardColor, false)}
                           </div>
                         )}
 
@@ -311,7 +318,7 @@ export default function JourneyScene({
                       /* Right has Date (when index is even: 0, 2, 4) */
                       <div className="py-2">
                         <span className="font-mono text-base lg:text-lg font-bold tracking-wider text-[#9A71FF]">
-                          {item.year}
+                          {displayYear}
                         </span>
                         <div className="text-xs text-[#797681] flex items-center justify-start gap-1 mt-1">
                           <MapPin className="size-3 text-[#797681]" />

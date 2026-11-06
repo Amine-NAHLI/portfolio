@@ -129,7 +129,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
           gsap.set(card, {
             rotateY: 0,
             opacity: 1,
-            zIndex: 10,
+            zIndex: 30,
             pointerEvents: "auto",
           });
         } else {
@@ -155,6 +155,16 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
             const rawIdx = self.progress * (count - 1);
             const currentIdx = Math.min(count - 1, Math.round(rawIdx));
             setActiveIndex(currentIdx);
+
+            cards.forEach((card, idx) => {
+              if (idx === currentIdx) {
+                card.style.pointerEvents = "auto";
+                card.style.zIndex = "30";
+              } else {
+                card.style.pointerEvents = "none";
+                card.style.zIndex = `${10 - idx}`;
+              }
+            });
           },
         },
       });
@@ -175,14 +185,9 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
           {
             rotateY: -180,
             opacity: 0,
+            zIndex: 5,
             ease: "power2.inOut",
             duration: 1,
-            onStart: () => {
-              currCard.style.pointerEvents = "none";
-            },
-            onReverseComplete: () => {
-              currCard.style.pointerEvents = "auto";
-            },
           },
           stepTime
         );
@@ -193,14 +198,9 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
           {
             rotateY: 0,
             opacity: 1,
+            zIndex: 25,
             ease: "power2.inOut",
             duration: 1,
-            onStart: () => {
-              nextCard.style.pointerEvents = "auto";
-            },
-            onReverseComplete: () => {
-              nextCard.style.pointerEvents = "none";
-            },
           },
           stepTime
         );
@@ -227,7 +227,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
     <section
       ref={containerRef}
       id="work"
-      className="relative w-full min-h-screen bg-[#000000] py-16 sm:py-20 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-between items-center overflow-hidden scroll-mt-20 select-none"
+      className="relative w-full min-h-screen bg-[#000000] py-16 sm:py-20 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-between items-center overflow-hidden scroll-mt-20"
     >
       {/* Background Ambient Lighting: Violet Neon & Obsidian */}
       <div
@@ -271,6 +271,8 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
               ("category" in project && typeof (project as DisplayProjectItem).category === "string" && (project as DisplayProjectItem).category) ||
               "PROJET INGÉNIEUR";
 
+            const isCurrent = index === activeIndex;
+
             return (
               <div
                 key={project.slug || index}
@@ -280,11 +282,18 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 style={{
                   transformStyle: "preserve-3d",
                   backfaceVisibility: "hidden",
+                  zIndex: isCurrent ? 30 : 10 - index,
+                  pointerEvents: isCurrent ? "auto" : "none",
                 }}
-                className="absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/15 bg-[#0B0510] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-shadow duration-300 hover:border-[#9A71FF]/50 hover:shadow-[0_25px_90px_rgba(154,113,255,0.15)] will-change-transform"
+                className={`absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/15 bg-[#0B0510] p-6 sm:p-9 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-shadow duration-300 hover:border-[#9A71FF]/50 hover:shadow-[0_25px_90px_rgba(154,113,255,0.15)] will-change-transform ${
+                  isCurrent ? "pointer-events-auto" : "pointer-events-none"
+                }`}
               >
                 {/* Top Card Bar */}
-                <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
+                <div
+                  style={{ transform: "translateZ(30px)" }}
+                  className="flex items-center justify-between pb-4 border-b border-white/[0.08] relative z-30 pointer-events-auto"
+                >
                   <div className="flex items-center gap-3">
                     <span className="font-mono text-xs font-bold text-[#9A71FF] bg-[#9A71FF]/10 border border-[#9A71FF]/30 px-2 py-0.5 rounded-full">
                       0{index + 1}
@@ -294,16 +303,17 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 relative z-30 pointer-events-auto">
                     {project.githubUrl && (
                       <a
                         href={project.githubUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         aria-label="GitHub Repository"
-                        className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 transition-colors"
+                        className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer pointer-events-auto relative z-30"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
+                        <svg className="size-4 fill-current" viewBox="0 0 24 24">
                           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                         </svg>
                       </a>
@@ -312,11 +322,12 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                       <a
                         href={project.demoUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         aria-label="Live Demo"
-                        className="flex size-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 transition-colors"
+                        className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer pointer-events-auto relative z-30"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <ExternalLink className="size-3.5" />
+                        <ExternalLink className="size-4" />
                       </a>
                     )}
                   </div>
@@ -352,13 +363,17 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 </div>
 
                 {/* Card Footer Bar */}
-                <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
+                <div
+                  style={{ transform: "translateZ(30px)" }}
+                  className="pt-4 border-t border-white/[0.08] flex items-center justify-between relative z-30 pointer-events-auto"
+                >
                   <Link
                     href={`/${locale}/projects/${project.slug}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-4 py-1.5 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-5 py-2.5 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm cursor-pointer pointer-events-auto relative z-30"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>
-                    <ArrowUpRight className="size-3.5" />
+                    <ArrowUpRight className="size-4" />
                   </Link>
                 </div>
               </div>

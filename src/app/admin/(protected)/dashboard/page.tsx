@@ -1,4 +1,4 @@
-import { FolderKanban, MessageSquare, Inbox, ExternalLink, Activity, Server, ArrowUpRight, Sparkles } from "lucide-react";
+import { FolderKanban, MessageSquare, Inbox, ExternalLink, Activity, Server, ArrowUpRight, Sparkles, Layers, Award } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/admin";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -48,7 +48,19 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Link 
+              href="/admin/featured-projects" 
+              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-sans text-xs font-semibold text-accent hover:bg-accent hover:text-white transition-all shadow-md"
+            >
+              <Layers className="size-4" /> Projets Accueil (4)
+            </Link>
+            <Link 
+              href="/admin/featured-certifications" 
+              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-sans text-xs font-semibold text-accent hover:bg-accent hover:text-white transition-all shadow-md"
+            >
+              <Award className="size-4" /> Certifications Accueil (3)
+            </Link>
             <Link 
               href="/fr" 
               target="_blank" 

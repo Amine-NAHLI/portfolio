@@ -20,28 +20,36 @@ export default async function GeneralInfoPage() {
   const currentFr = {
     eyebrow: frData.eyebrow || defaultFr.eyebrow,
     title: frData.title || defaultFr.title,
+    roleBadge: frData.roleBadge || "Élève Ingénieur en Génie Informatique · UPF / Cyber · IA · Software",
+    headline: frData.headline || "Concevoir des architectures logicielles fiables, sécurisées et intelligentes.",
     introduction: frData.introduction || defaultFr.introduction,
     formation: frData.formation || defaultFr.proofItems[0][1],
     experience: frData.experience || defaultFr.proofItems[1][1],
     languages: frData.languages || defaultFr.proofItems[2][1],
+    aboutTitle: frData.aboutTitle || "Bâtir des solutions fiables, sécurisées dès la conception.",
+    aboutBio: frData.aboutBio || "Élève ingénieur en 4ème année de Génie Informatique à l'Université Privée de Fès (UPF), je développe des applications logicielles complètes où la sécurité n'est pas une surcouche de fin de projet, mais le fondement même de l'architecture. Mon expérience de stage chez IntelTrust et mes travaux personnels en cybersécurité m'ont appris à verrouiller les politiques d'accès (Zero-Trust, IAM) et auditer les surfaces d'attaque.",
   };
 
   const currentEn = {
     eyebrow: enData.eyebrow || defaultEn.eyebrow,
     title: enData.title || defaultEn.title,
+    roleBadge: enData.roleBadge || "Computer Engineering Student · UPF / Cyber · AI · Software",
+    headline: enData.headline || "Engineering robust, secure, and intelligent systems.",
     introduction: enData.introduction || defaultEn.introduction,
     formation: enData.formation || defaultEn.proofItems[0][1],
     experience: enData.experience || defaultEn.proofItems[1][1],
     languages: enData.languages || defaultEn.proofItems[2][1],
+    aboutTitle: enData.aboutTitle || "Engineering resilient systems, secure by design.",
+    aboutBio: enData.aboutBio || "Fourth-year computer engineering student at Université Privée de Fès (UPF), I build full-stack digital systems where security is not a late addition, but the core foundation of architecture. My experience at IntelTrust and hands-on work in defensive cybersecurity taught me how to enforce Zero-Trust access and eliminate attack vectors.",
   };
 
   return (
     <div className="max-w-6xl">
-      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end border-b border-border pb-6 mb-10">
+      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end border-b border-white/10 pb-6 mb-10">
         <div className="max-w-3xl">
-          <p className="system-label">{"// Administration"}</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">Infos Générales</h1>
-          <p className="mt-3 text-sm leading-6 text-text-secondary sm:text-base">Gérez les textes affichés sur la page d&apos;accueil de votre portfolio de manière unifiée.</p>
+          <p className="font-mono text-xs text-[#9A71FF] uppercase tracking-wider">{"// Administration Bilingue"}</p>
+          <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl text-[#f3f1f7]">Textes & Identité du Portfolio</h1>
+          <p className="mt-2 text-sm leading-6 text-[#797681]">Modifiez tous les textes de la page d&apos;accueil, les slogans, la bio et les repères académiques en français et en anglais.</p>
         </div>
       </header>
 

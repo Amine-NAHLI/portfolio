@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminContext, type AdminContext } from "@/lib/auth/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
+import { normalizeProjectCategories } from "@/lib/project-categories";
 
 export const runtime = "nodejs";
 
@@ -251,7 +252,8 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   const slug = await uniqueSlug(db, "projects", title, id ?? undefined);
   const featured = Boolean(input.featured);
   
-  const categories = typeof input.categories === "string" ? input.categories.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const rawCategories = typeof input.categories === "string" ? input.categories.split(",").map(s => s.trim()).filter(Boolean) : Array.isArray(input.categories) ? input.categories : [];
+  const categories = normalizeProjectCategories(rawCategories);
   
   // A project can only become public after both translations have been stored.
   // Create and update it as a draft first, then publish after the upsert below.

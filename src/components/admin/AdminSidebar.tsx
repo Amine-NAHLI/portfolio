@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, 
   Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText, 
-  RefreshCw, Orbit, Languages, ShieldCheck, ChevronRight
+  RefreshCw, Orbit, Languages, ShieldCheck, ChevronRight, Layers
 } from "lucide-react";
 import { signOutAdmin } from "@/app/admin/(protected)/actions";
 
@@ -20,9 +20,11 @@ const navGroups = [
   {
     title: "Gestion Contenu",
     items: [
-      { href: "/admin/projects", label: "Projets", icon: FolderKanban },
+      { href: "/admin/projects", label: "Tous les Projets", icon: FolderKanban },
+      { href: "/admin/featured-projects", label: "Projets Accueil (4)", icon: Layers },
       { href: "/admin/journey", label: "Parcours", icon: Milestone },
-      { href: "/admin/certifications", label: "Certifications", icon: Award },
+      { href: "/admin/certifications", label: "Toutes les Certifications", icon: Award },
+      { href: "/admin/featured-certifications", label: "Certifications Accueil (3)", icon: Award },
       { href: "/admin/testimonials", label: "Avis Clients", icon: MessageSquare },
       { href: "/admin/messages", label: "Messages Contact", icon: Inbox },
     ]

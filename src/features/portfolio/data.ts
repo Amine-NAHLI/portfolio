@@ -207,3 +207,47 @@ async function queryHeroTechnologies() {
 const heroTechnologiesCache = unstable_cache(() => queryHeroTechnologies(), ["portfolio-hero-technologies"], { revalidate: 900, tags: ["portfolio", "settings"] });
 
 export const getHeroTechnologies = () => heroTechnologiesCache();
+
+async function queryFeaturedHomeProjects() {
+  if (!hasSupabasePublicConfig()) return null;
+  try {
+    const { data, error } = await createPublicClient()
+      .from("site_settings")
+      .select("value")
+      .eq("key", "featured_home_projects")
+      .single();
+    if (error || !data || !Array.isArray(data.value)) return null;
+    return (data.value as string[]) || null;
+  } catch {
+    return null;
+  }
+}
+const featuredHomeProjectsCache = unstable_cache(
+  () => queryFeaturedHomeProjects(),
+  ["portfolio-featured-home-projects"],
+  { revalidate: 900, tags: ["portfolio", "projects", "settings"] }
+);
+
+export const getFeaturedHomeProjectSlugs = () => featuredHomeProjectsCache();
+
+async function queryFeaturedHomeCertifications(): Promise<string[] | null> {
+  if (!hasSupabasePublicConfig()) return null;
+  try {
+    const { data, error } = await createPublicClient()
+      .from("site_settings")
+      .select("value")
+      .eq("key", "featured_home_certifications")
+      .single();
+    if (error || !data || !Array.isArray(data.value)) return null;
+    return (data.value as string[]) || null;
+  } catch {
+    return null;
+  }
+}
+const featuredHomeCertificationsCache = unstable_cache(
+  () => queryFeaturedHomeCertifications(),
+  ["portfolio-featured-home-certifications"],
+  { revalidate: 900, tags: ["portfolio", "certifications", "settings"] }
+);
+
+export const getFeaturedHomeCertificationIds = () => featuredHomeCertificationsCache();

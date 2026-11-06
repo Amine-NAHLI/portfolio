@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminContext } from "@/lib/auth/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
+import { normalizeProjectCategories } from "@/lib/project-categories";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
         model: "llama-3.3-70b-versatile",
         temperature: 0,
         messages: [
-          { role: "system", content: "You are an expert technical categorizer. The user will provide a detailed project context, including its title, description, problem, solution, architecture, objectives, and technologies used. You MUST analyze all this information in detail to deeply understand the nature of the project. Based on this thorough analysis, provide an appropriate comma-separated list of general, high-level technical categories that best describe it. Use broad categories such as 'ai', 'cyber', 'dev mobile', 'dev web', 'software', 'embedded', 'data science', etc. Do NOT include specific frameworks (like React, Node), languages, databases, or overly detailed sub-categories. Return ONLY the comma-separated list, and nothing else. No explanation, no quotes." },
+          { role: "system", content: "You are an expert technical categorizer. Analyze the project and categorize it using only the following standardized domains: 'ai', 'cybersecurity', 'software', 'dev-web', 'dev-mobile', 'dev-desktop', 'embedded', 'data-science', 'e-commerce'. Return ONLY a comma-separated list of matching domain IDs from this list. Do not invent other tags or add explanations." },
           { role: "user", content: source },
         ],
       }),
@@ -37,9 +38,10 @@ export async function POST(request: NextRequest) {
     });
     if (!response.ok) throw new Error(`Groq status ${response.status}`);
     const payload = await response.json() as { choices?: Array<{ message?: { content?: string | null } }> };
-    const categories = payload.choices?.[0]?.message?.content?.trim();
-    if (!categories || categories.length > 500) throw new Error("Invalid Groq response");
-    return NextResponse.json({ categories }, { headers: { "Cache-Control": "private, no-store" } });
+    const rawCategories = payload.choices?.[0]?.message?.content?.trim();
+    if (!rawCategories || rawCategories.length > 500) throw new Error("Invalid Groq response");
+    const normalized = normalizeProjectCategories(rawCategories.split(",")).join(", ");
+    return NextResponse.json({ categories: normalized || "software" }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Groq generation failed", { error: error instanceof Error ? error.message : String(error) });
     return fail("La génération automatique a échoué. Vous pouvez saisir les catégories manuellement.", 502);

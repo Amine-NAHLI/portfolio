@@ -8,10 +8,14 @@ export async function saveGeneralInfo(locale: "fr" | "en", formData: FormData) {
   const data = {
     eyebrow: formData.get("eyebrow")?.toString().trim() || "",
     title: formData.get("title")?.toString().trim() || "",
+    roleBadge: formData.get("roleBadge")?.toString().trim() || "",
+    headline: formData.get("headline")?.toString().trim() || "",
     introduction: formData.get("introduction")?.toString().trim() || "",
     formation: formData.get("formation")?.toString().trim() || "",
     experience: formData.get("experience")?.toString().trim() || "",
     languages: formData.get("languages")?.toString().trim() || "",
+    aboutTitle: formData.get("aboutTitle")?.toString().trim() || "",
+    aboutBio: formData.get("aboutBio")?.toString().trim() || "",
   };
 
   const key = `general_info_${locale}`;

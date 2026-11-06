@@ -5,12 +5,14 @@ import ManifestoScene from "@/components/cinematic/ManifestoScene";
 import SelectedWorkScene from "@/components/cinematic/SelectedWorkScene";
 import AboutScene from "@/components/cinematic/AboutScene";
 import JourneyScene from "@/components/cinematic/JourneyScene";
+import GitHubContributionsScene from "@/components/cinematic/GitHubContributionsScene";
 import CertificationsScene from "@/components/cinematic/CertificationsScene";
 import ContactScene from "@/components/cinematic/ContactScene";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
 import type { PublicJourneyEntry, PublicCertification } from "@/features/portfolio/data";
 import type { HomeDynamicCopy } from "@/content/dynamic-copy";
+import type { GitHubStats, GitHubActivity } from "@/lib/github";
 
 interface CinematicCanvasProps {
   locale: Locale;
@@ -20,6 +22,8 @@ interface CinematicCanvasProps {
   projects: PortfolioProject[];
   journey?: PublicJourneyEntry[];
   certifications?: PublicCertification[];
+  showGitHub?: boolean;
+  githubData?: { stats: GitHubStats; activity: GitHubActivity };
   contactLinks: {
     github?: string;
     linkedin?: string;
@@ -36,6 +40,8 @@ export default function CinematicCanvas({
   projects,
   journey,
   certifications,
+  showGitHub,
+  githubData,
   contactLinks,
 }: CinematicCanvasProps) {
   return (
@@ -81,10 +87,20 @@ export default function CinematicCanvas({
       {/* Scene 05: Experience & Journey Timeline (Alternating Glowing Central Line) */}
       <JourneyScene locale={locale} journey={journey} />
 
-      {/* Scene 06: Verified Credentials & Certifications (Interactive Document Viewer) */}
+      {/* Scene 06: GitHub & Open Source Activity (Real-time Code & Live Contributions) */}
+      {showGitHub !== false && githubData && (
+        <GitHubContributionsScene
+          locale={locale}
+          stats={githubData.stats}
+          activity={githubData.activity}
+          githubUrl={contactLinks.github}
+        />
+      )}
+
+      {/* Scene 07: Verified Credentials & Certifications (Interactive Document Viewer) */}
       <CertificationsScene locale={locale} certifications={certifications} />
 
-      {/* Scene 07: Final Contact & Minimal Footer */}
+      {/* Scene 08: Final Contact & Minimal Footer */}
       <ContactScene locale={locale} contactLinks={contactLinks} />
     </div>
   );

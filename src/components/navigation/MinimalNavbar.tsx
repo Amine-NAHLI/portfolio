@@ -31,6 +31,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
   const navLinks = [
     { label: locale === "fr" ? "Projets" : "Projects", href: `/${locale}#work`, targetId: "work" },
     { label: locale === "fr" ? "Parcours" : "Journey", href: `/${locale}#journey`, targetId: "journey" },
+    { label: locale === "fr" ? "Contributions" : "Contributions", href: `/${locale}#github`, targetId: "github" },
     { label: locale === "fr" ? "Certifications" : "Certifications", href: `/${locale}#certifications`, targetId: "certifications" },
     { label: locale === "fr" ? "Contact" : "Contact", href: `/${locale}#contact`, targetId: "contact" },
   ];

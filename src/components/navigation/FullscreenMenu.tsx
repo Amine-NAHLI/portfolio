@@ -22,8 +22,8 @@ interface FullscreenMenuProps {
 const menuItems = [
   { id: "01", label: "ACCUEIL", labelEn: "HOME", href: "/" },
   { id: "02", label: "PROJETS", labelEn: "SELECTED WORK", href: "/projects" },
-  { id: "03", label: "MON UNIVERS", labelEn: "MY UNIVERSE", href: "/skills" },
-  { id: "04", label: "PARCOURS & BIO", labelEn: "JOURNEY & ABOUT", href: "/journey" },
+  { id: "03", label: "PARCOURS & BIO", labelEn: "JOURNEY & ABOUT", href: "/journey" },
+  { id: "04", label: "CONTRIBUTIONS GITHUB", labelEn: "GITHUB CONTRIBUTIONS", href: "/open-source" },
   { id: "05", label: "CERTIFICATIONS", labelEn: "CERTIFICATIONS", href: "/certifications" },
   { id: "06", label: "CONTACT", labelEn: "CONTACT", href: "/contact" },
 ];

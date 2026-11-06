@@ -2,8 +2,16 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/ui/JsonLd";
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { getHomeCopy } from "@/content/dynamic-copy";
-import { getPublicContactLinks, getPublicJourney, getPublicCertifications, getFeaturedHomeProjectSlugs, getFeaturedHomeCertificationIds } from "@/features/portfolio/data";
+import {
+  getPublicContactLinks,
+  getPublicJourney,
+  getPublicCertifications,
+  getFeaturedHomeProjectSlugs,
+  getFeaturedHomeCertificationIds,
+  getSectionsVisibility,
+} from "@/features/portfolio/data";
 import { getPublishedProjects } from "@/features/projects/data";
+import { fetchGitHubData } from "@/lib/github";
 import { isLocale, type Locale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
@@ -26,13 +34,24 @@ export default async function HomePage({ params }: HomePageProps) {
   if (!isLocale(locale)) notFound();
 
   const copy = await getHomeCopy(locale);
-  const [allProjects, journey, contactLinks, allCertifications, featuredSlugs, featuredCertIds] = await Promise.all([
+  const [
+    allProjects,
+    journey,
+    contactLinks,
+    allCertifications,
+    featuredSlugs,
+    featuredCertIds,
+    sectionsVisibility,
+    githubData,
+  ] = await Promise.all([
     getPublishedProjects(locale as Locale),
     getPublicJourney(locale as Locale),
     getPublicContactLinks(),
     getPublicCertifications(locale as Locale),
     getFeaturedHomeProjectSlugs(),
     getFeaturedHomeCertificationIds(),
+    getSectionsVisibility(),
+    fetchGitHubData(),
   ]);
 
   // Order projects according to the 4 featured slugs selected in Admin
@@ -108,6 +127,8 @@ export default async function HomePage({ params }: HomePageProps) {
         projects={projects}
         journey={journey}
         certifications={certifications}
+        showGitHub={sectionsVisibility.github}
+        githubData={githubData}
         contactLinks={contactLinks}
       />
     </>

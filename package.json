@@ -4,8 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "npm run generate:cv",
-    "generate:cv": "node scripts/generate-cv-pdf.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -12,7 +12,6 @@ interface HeroSceneProps {
   locale: Locale;
   siteName: string;
   introduction: string;
-  roleBadge?: string;
   headline?: string;
   contactLinks: {
     github?: string;
@@ -25,7 +24,6 @@ export default function HeroScene({
   locale,
   siteName,
   introduction,
-  roleBadge,
   headline,
   contactLinks,
 }: HeroSceneProps) {
@@ -105,17 +103,6 @@ export default function HeroScene({
 
       {/* Main Centered Content Canvas */}
       <div className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center justify-center text-center my-auto pt-6 pb-12">
-        
-        {/* Subtle, professional role badge */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs text-[#f3f1f7]/80">
-          <span className="font-medium">
-            {roleBadge ||
-              (locale === "fr"
-                ? "Élève Ingénieur en Génie Informatique · UPF / Cyber · IA · Software"
-                : "Computer Engineering Student · UPF / Cyber · AI · Software")}
-          </span>
-        </div>
-
         {/* Monumental Display Name */}
         <h1
           ref={titleRef}

@@ -1,8 +1,11 @@
 import { Settings } from "lucide-react";
+import { stat } from "node:fs/promises";
+import { resolve } from "node:path";
 import { requireAdminPage } from "@/lib/auth/admin";
 import { SettingsForm } from "@/components/admin/SettingsForm";
 import { ContactLinksForm } from "@/components/admin/ContactLinksForm";
 import { SectionVisibilityForm } from "@/components/admin/SectionVisibilityForm";
+import { CVManager } from "@/components/admin/CVManager";
 import { createClient } from "@/lib/supabase/server";
 import { siteConfig } from "@/config/site";
 
@@ -11,6 +14,24 @@ export const metadata = { title: "Paramètres du Compte" };
 export default async function SettingsPage() {
   const context = await requireAdminPage();
   const { data: { user } } = await context.supabase.auth.getUser();
+
+  let cvInfo = {
+    exists: false,
+    size: 0,
+    updatedAt: null as string | null,
+    url: "/Amine_Nahli_CV.pdf",
+    filename: "Amine_Nahli_CV.pdf",
+  };
+  try {
+    const cvStat = await stat(resolve("public", "Amine_Nahli_CV.pdf"));
+    cvInfo = {
+      exists: true,
+      size: cvStat.size,
+      updatedAt: cvStat.mtime.toISOString(),
+      url: "/Amine_Nahli_CV.pdf",
+      filename: "Amine_Nahli_CV.pdf",
+    };
+  } catch {}
 
   const supabaseServer = await createClient();
   const { data: linksData } = await supabaseServer
@@ -61,6 +82,16 @@ export default async function SettingsPage() {
       <div className="bg-surface rounded-sm border border-border/50 p-6 shadow-sm mb-8">
         <h2 className="font-display text-lg font-semibold text-text-primary mb-6">Visibilité des Sections</h2>
         <SectionVisibilityForm currentVisibility={currentVisibility} />
+      </div>
+
+      <div className="bg-surface rounded-sm border border-border/50 p-6 shadow-sm mb-8">
+        <div className="mb-6">
+          <h2 className="font-display text-lg font-semibold text-text-primary">Curriculum Vitae (PDF Officiel)</h2>
+          <p className="font-mono text-xs text-text-secondary mt-1">
+            Mettez à jour directement votre CV au format PDF. Le document téléversé remplace immédiatement le fichier accessible sur <span className="text-accent font-semibold">/cv</span> et sur le portfolio.
+          </p>
+        </div>
+        <CVManager initialInfo={cvInfo} />
       </div>
 
       <div className="bg-surface rounded-sm border border-border/50 p-6 shadow-sm mb-8">

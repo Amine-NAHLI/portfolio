@@ -7,6 +7,12 @@ export type GitHubStats = {
     color: string;
   } | null;
   languages: { name: string; percentage: number; color: string }[];
+  calendarWeeks?: {
+    contributionDays: {
+      contributionCount: number;
+      date: string;
+    }[];
+  }[];
 };
 
 export type GitHubActivity = {
@@ -90,6 +96,13 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
         contributionsCollection {
           contributionCalendar {
             totalContributions
+            weeks {
+              contributionDays {
+                contributionCount
+                date
+                weekday
+              }
+            }
           }
         }
         repositories(first: 100, ownerAffiliations: OWNER, orderBy: {field: PUSHED_AT, direction: DESC}) {
@@ -186,12 +199,20 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
       stargazerCount: repo.stargazerCount,
     }));
 
+    const calendarWeeks = (user.contributionsCollection?.contributionCalendar?.weeks || []) as {
+      contributionDays: {
+        contributionCount: number;
+        date: string;
+      }[];
+    }[];
+
     return {
       stats: {
         totalContributions,
         totalRepositories,
         topLanguage,
         languages,
+        calendarWeeks,
       },
       activity: {
         recentRepositories,

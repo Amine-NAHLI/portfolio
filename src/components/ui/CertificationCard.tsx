@@ -90,15 +90,16 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 }`}
               />
             ) : (
-              <div className="relative h-full w-full overflow-hidden bg-white">
-                <iframe
-                  src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                  loading="lazy"
-                  className="pointer-events-none absolute -top-1 -left-1 w-[calc(100%+36px)] h-[calc(100%+16px)] border-0 transition-transform duration-700 group-hover:scale-105"
-                  tabIndex={-1}
-                  title={`Aperçu de ${certification.name}`}
-                />
-                <div className="absolute inset-0 z-10" aria-hidden="true" />
+              <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#1b1528] to-[#0d0b14] p-6 text-center border-b border-white/[0.06] group-hover:from-[#221a33] transition-colors">
+                <div className="relative mb-3 flex size-14 items-center justify-center rounded-2xl border border-[#9A71FF]/40 bg-[#9A71FF]/10 text-[#9A71FF] shadow-[0_0_20px_rgba(154,113,255,0.2)] transition-transform duration-300 group-hover:scale-110">
+                  <ShieldCheck className="size-7 text-[#9A71FF]" />
+                </div>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 rounded-full mb-1">
+                  Document PDF Vérifié
+                </span>
+                <span className="text-[11px] font-medium text-[#797681]">
+                  {locale === "fr" ? "Cliquer pour examiner" : "Click to inspect document"}
+                </span>
               </div>
             )
           ) : (

@@ -4,6 +4,11 @@ import { getPublishedProjects } from "@/features/projects/data";
 import { getPublicJourney, getPublicCertifications, getPublicSkillGroups, getPublicContactLinks } from "@/features/portfolio/data";
 import { Locale } from "@/i18n/config";
 
+const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+const NVIDIA_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b";
+const NVIDIA_API_KEY =
+  process.env.NVIDIA_API_KEY || "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";
+
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 function buildSystemPrompt(locale: Locale, data: any, currentPath: string) {
@@ -43,11 +48,6 @@ DONNÉES OFFICIELLES D'AMINE NAHLI :
 export async function POST(req: Request) {
   try {
     const { messages, locale = "fr", currentPath = "/" } = await req.json();
-    const apiKey = process.env.GROQ_API_KEY_CHATBOOT || process.env.GROQ_API_KEY;
-
-    if (!apiKey) {
-      return NextResponse.json({ error: "Missing Groq API Key" }, { status: 500 });
-    }
 
     const [projects, journey, certifications, skills, contact] = await Promise.all([
       getPublishedProjects(locale as Locale),
@@ -57,32 +57,68 @@ export async function POST(req: Request) {
       getPublicContactLinks(),
     ]);
 
-    const systemPrompt = buildSystemPrompt(locale as Locale, { projects, journey, certifications, skills, contact }, currentPath);
+    const systemPrompt = buildSystemPrompt(
+      locale as Locale,
+      { projects, journey, certifications, skills, contact },
+      currentPath
+    );
 
-    const groqMessages = [
+    const nvidiaMessages = [
       { role: "system", content: systemPrompt },
-      ...messages.map((m: any) => ({ role: m.role, content: m.content }))
+      ...messages.map((m: any) => ({ role: m.role, content: m.content })),
     ];
 
-    const response = await fetch(GROQ_API_URL, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", 
-        messages: groqMessages,
-        temperature: 0.1, // Strict deterministic mode to prevent hallucinated URLs
-        max_tokens: 500,
-        stream: true,
-      }),
-    });
+    let response: Response | null = null;
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Groq API Error:", err);
-      return NextResponse.json({ error: "Failed to generate response" }, { status: 500 });
+    try {
+      response = await fetch(NVIDIA_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${NVIDIA_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: NVIDIA_MODEL,
+          messages: nvidiaMessages,
+          temperature: 0.8,
+          top_p: 0.95,
+          max_tokens: 4096,
+          chat_template_kwargs: { enable_thinking: true },
+          reasoning_budget: 1024,
+          stream: true,
+        }),
+        signal: AbortSignal.timeout(18000),
+      });
+    } catch (e) {
+      console.warn("NVIDIA fetch failed or timed out:", e);
+    }
+
+    if (!response || !response.ok) {
+      const errText = response ? await response.text() : "Timeout / Network failure";
+      console.warn("NVIDIA Nemotron error or failed, falling back to Groq:", errText);
+      const groqKey = process.env.GROQ_API_KEY_CHATBOOT || process.env.GROQ_API_KEY;
+      if (groqKey) {
+        response = await fetch(GROQ_API_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${groqKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: nvidiaMessages,
+            temperature: 0.3,
+            max_tokens: 1024,
+            stream: true,
+          }),
+        });
+      }
+    }
+
+    if (!response || !response.ok) {
+      const err = response ? await response.text() : "No AI backend available";
+      console.error("AI API Error:", err);
+      return NextResponse.json({ error: "Failed to generate response", details: err }, { status: 500 });
     }
 
     // Return the stream directly to the client
@@ -90,7 +126,7 @@ export async function POST(req: Request) {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
       },
     });
   } catch (error) {

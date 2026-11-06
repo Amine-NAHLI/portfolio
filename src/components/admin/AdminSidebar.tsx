@@ -22,7 +22,7 @@ const navGroups = [
     items: [
       { href: "/admin/projects", label: "Tous les Projets", icon: FolderKanban },
       { href: "/admin/featured-projects", label: "Projets Accueil (4)", icon: Layers },
-      { href: "/admin/journey", label: "Parcours", icon: Milestone },
+      { href: "/admin/journey", label: "Parcours & Tags", icon: Milestone },
       { href: "/admin/certifications", label: "Toutes les Certifications", icon: Award },
       { href: "/admin/featured-certifications", label: "Certifications Accueil (3)", icon: Award },
       { href: "/admin/testimonials", label: "Avis Clients", icon: MessageSquare },
@@ -33,6 +33,7 @@ const navGroups = [
     title: "Configuration",
     items: [
       { href: "/admin/general", label: "Infos Générales", icon: FileText },
+      { href: "/admin/cv", label: "CV Officiel (PDF)", icon: FileText },
       { href: "/admin/hero-tech", label: "Technologies", icon: Orbit },
       { href: "/admin/translations", label: "Traductions", icon: Languages },
       { href: "/admin/settings", label: "Paramètres", icon: Settings },

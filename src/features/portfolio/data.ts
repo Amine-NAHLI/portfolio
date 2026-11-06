@@ -6,6 +6,8 @@ import { hasSupabasePublicConfig } from "@/lib/env/supabase";
 import { createPublicClient } from "@/lib/supabase/public";
 import { siteConfig } from "@/config/site";
 
+import { DEFAULT_JOURNEY_TIMELINE, type JourneyTimelineItem } from "@/types/journey";
+
 export type PublicJourneyEntry = {
   id: string;
   type: "education" | "experience" | "project" | "certification" | "event" | "responsibility";
@@ -251,3 +253,49 @@ const featuredHomeCertificationsCache = unstable_cache(
 );
 
 export const getFeaturedHomeCertificationIds = () => featuredHomeCertificationsCache();
+
+async function queryJourneyTimeline(): Promise<JourneyTimelineItem[]> {
+  if (!hasSupabasePublicConfig()) return DEFAULT_JOURNEY_TIMELINE;
+  try {
+    const { data, error } = await createPublicClient()
+      .from("site_settings")
+      .select("value")
+      .eq("key", "journey_timeline")
+      .single();
+    if (error || !data || !Array.isArray(data.value) || data.value.length === 0) {
+      return DEFAULT_JOURNEY_TIMELINE;
+    }
+    // Normalize items and tags
+    return (data.value as Record<string, unknown>[]).map((item, idx) => ({
+      id: String(item.id || `journey-${idx}`),
+      year: String(item.year || ""),
+      title: String(item.title || ""),
+      titleEn: String(item.titleEn || item.title || ""),
+      organization: String(item.organization || ""),
+      location: String(item.location || ""),
+      type: item.type === "experience" ? ("experience" as const) : ("education" as const),
+      categoryLabel: String(item.categoryLabel || (item.type === "experience" ? "EXPÉRIENCE" : "FORMATION")),
+      categoryLabelEn: String(item.categoryLabelEn || (item.type === "experience" ? "EXPERIENCE" : "EDUCATION")),
+      award: item.award ? String(item.award) : undefined,
+      awardColor: item.awardColor ? String(item.awardColor) : "#F59E0B",
+      tags: Array.isArray(item.tags)
+        ? item.tags.map((t: unknown) =>
+            typeof t === "string"
+              ? { name: t, color: "standard" }
+              : { name: String((t as Record<string, unknown>)?.name || ""), color: String((t as Record<string, unknown>)?.color || "standard") }
+          )
+        : [],
+    }));
+  } catch {
+    return DEFAULT_JOURNEY_TIMELINE;
+  }
+}
+
+const journeyTimelineCache = unstable_cache(
+  () => queryJourneyTimeline(),
+  ["portfolio-journey-timeline"],
+  { revalidate: 900, tags: ["portfolio", "journey", "settings"] }
+);
+
+export const getPublicJourneyTimeline = () => journeyTimelineCache();
+

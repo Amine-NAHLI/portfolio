@@ -29,6 +29,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
   }, []);
 
   const navLinks = [
+    { label: locale === "fr" ? "À Propos" : "About", href: `/${locale}#about`, targetId: "about" },
     { label: locale === "fr" ? "Projets" : "Projects", href: `/${locale}#work`, targetId: "work" },
     { label: locale === "fr" ? "Parcours" : "Journey", href: `/${locale}#journey`, targetId: "journey" },
     { label: locale === "fr" ? "Contributions" : "Contributions", href: `/${locale}#github`, targetId: "github" },

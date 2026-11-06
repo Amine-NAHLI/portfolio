@@ -8,92 +8,78 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
 import type { PublicJourneyEntry } from "@/features/portfolio/data";
+import { DEFAULT_JOURNEY_TIMELINE, type JourneyTimelineItem, type JourneyTag } from "@/types/journey";
 
 interface JourneySceneProps {
   locale: Locale;
   journey?: PublicJourneyEntry[];
+  timelineItems?: JourneyTimelineItem[];
 }
 
-interface TimelineItem {
-  id: string;
-  year: string;
-  title: string;
-  titleEn: string;
-  organization: string;
-  location: string;
-  type: "education" | "experience";
-  categoryLabel: string;
-  categoryLabelEn: string;
-  award?: string;
-  tags: string[];
+function renderJourneyTag(tag: JourneyTag | string, key: string | number, isSmall = false) {
+  const name = typeof tag === "string" ? tag : tag.name;
+  const color = typeof tag === "string" ? "standard" : tag.color;
+  const isCustom = color && color !== "standard" && color.startsWith("#");
+
+  if (isCustom) {
+    return (
+      <span
+        key={key}
+        style={{
+          color: color,
+          borderColor: `${color}45`,
+          backgroundColor: `${color}14`,
+        }}
+        className={`inline-flex items-center rounded-md border font-mono font-medium shadow-[0_0_12px_rgba(0,0,0,0.5)] transition-all hover:scale-105 ${
+          isSmall ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-0.5 text-xs"
+        }`}
+      >
+        {name}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      key={key}
+      className={`rounded-md border border-white/[0.08] bg-[#0E161A]/80 font-mono text-[#f3f1f7]/75 transition-colors hover:border-white/20 ${
+        isSmall ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-0.5 text-xs"
+      }`}
+    >
+      {name}
+    </span>
+  );
 }
 
-const timelineData: TimelineItem[] = [
-  {
-    id: "bac-sm",
-    year: "2022 — 2023",
-    title: "Baccalauréat Sciences Mathématiques",
-    titleEn: "Baccalaureate in Pure Mathematical Sciences",
-    organization: "Fès City School",
-    location: "Fès, Maroc",
-    type: "education",
-    categoryLabel: "FORMATION",
-    categoryLabelEn: "EDUCATION",
-    tags: ["Sciences Mathématiques", "Algèbre & Analyse", "Physique"],
-  },
-  {
-    id: "upf-cycle-ing",
-    year: "2023 — EN COURS",
-    title: "Cycle d'Ingénieur en Génie Informatique",
-    titleEn: "Master's Degree Cycle in Computer Engineering",
-    organization: "Université Privée de Fès (UPF)",
-    location: "Fès, Maroc",
-    type: "education",
-    categoryLabel: "FORMATION",
-    categoryLabelEn: "EDUCATION",
-    tags: ["Cycle Ingénieur d'État", "Architectures Distribuées", "Cybersécurité"],
-  },
-  {
-    id: "robotics-upf",
-    year: "Avril 2026",
-    title: "National UPF Robotics Competition – 9ème édition — 3ème prix",
-    titleEn: "National UPF Robotics Competition – 9th Edition — 3rd Prize",
-    organization: "Université Privée de Fès (UPF)",
-    location: "Fès, Maroc",
-    type: "experience",
-    categoryLabel: "COMPÉTITION",
-    categoryLabelEn: "COMPETITION",
-    award: "3ème Prix National",
-    tags: ["Robotique", "Systèmes Embarqués", "Algorithmique Temps Réel"],
-  },
-  {
-    id: "inteltrust-stage",
-    year: "Juil. – Août 2026",
-    title: "Stagiaire Développeur Cybersécurité & Intelligence Artificielle",
-    titleEn: "Cybersecurity & AI Engineering Intern",
-    organization: "IntelTrust",
-    location: "Fès, Maroc",
-    type: "experience",
-    categoryLabel: "EXPÉRIENCE",
-    categoryLabelEn: "EXPERIENCE",
-    tags: ["Cybersécurité", "IAM & Zero-Trust", "Python & Go", "Audit Réseau"],
-  },
-  {
-    id: "gemma-hackathon",
-    year: "Juillet 2026",
-    title: "1ʳᵉ place – Google Build with Gemma Hackathon (Afrique du Nord)",
-    titleEn: "1st Place – Google Build with Gemma Hackathon (North Africa)",
-    organization: "AI Crafters & GDG on Campus ENSA Berrechid",
-    location: "Afrique du Nord",
-    type: "experience",
-    categoryLabel: "DISTINCTION & HACKATHON",
-    categoryLabelEn: "HONOR & HACKATHON",
-    award: "1ère Place Régionale",
-    tags: ["Google Gemma 2", "Fine-Tuning", "Intelligence Artificielle"],
-  },
-];
+function renderAwardBadge(award?: string, awardColor?: string, isSmall = false) {
+  if (!award) return null;
+  const isCustom = awardColor && awardColor.startsWith("#");
+  return (
+    <span
+      style={
+        isCustom
+          ? {
+              color: awardColor,
+              borderColor: `${awardColor}40`,
+              backgroundColor: `${awardColor}15`,
+            }
+          : undefined
+      }
+      className={`inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 font-semibold text-amber-300 w-max shadow-sm ${
+        isSmall ? "px-2.5 py-0.5 text-[10px] mb-2" : "px-3 py-0.5 text-[11px]"
+      }`}
+    >
+      <Award className="size-3" />
+      <span>{award}</span>
+    </span>
+  );
+}
 
-export default function JourneyScene({ locale }: JourneySceneProps) {
+export default function JourneyScene({
+  locale,
+  timelineItems,
+}: JourneySceneProps) {
+  const items = timelineItems && timelineItems.length > 0 ? timelineItems : DEFAULT_JOURNEY_TIMELINE;
   const containerRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
 
@@ -204,7 +190,7 @@ export default function JourneyScene({ locale }: JourneySceneProps) {
 
           {/* Timeline Nodes List */}
           <div className="space-y-16 sm:space-y-24">
-            {timelineData.map((item, index) => {
+            {items.map((item, index) => {
               const isEven = index % 2 === 0;
               const isEducation = item.type === "education";
               const title = locale === "fr" ? item.title : item.titleEn;
@@ -238,21 +224,9 @@ export default function JourneyScene({ locale }: JourneySceneProps) {
                         {item.organization}
                       </span>
                     </div>
-                    {item.award && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-300 mb-2 w-max">
-                        <Award className="size-3" />
-                        <span>{item.award}</span>
-                      </span>
-                    )}
+                    {renderAwardBadge(item.award, item.awardColor, true)}
                     <div className="flex flex-wrap gap-1.5 pt-1">
-                      {item.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-md border border-white/[0.08] bg-[#0E161A]/80 px-2 py-0.5 text-[10px] text-[#f3f1f7]/80"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                      {item.tags.map((tag, tIdx) => renderJourneyTag(tag, tIdx, true))}
                     </div>
                   </div>
 
@@ -280,22 +254,12 @@ export default function JourneyScene({ locale }: JourneySceneProps) {
 
                         {item.award && (
                           <div className="flex justify-end">
-                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-0.5 text-[11px] font-semibold text-amber-300">
-                              <Award className="size-3" />
-                              <span>{item.award}</span>
-                            </span>
+                            {renderAwardBadge(item.award, item.awardColor, false)}
                           </div>
                         )}
 
                         <div className="flex flex-wrap justify-end gap-1.5 pt-1">
-                          {item.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-md border border-white/[0.08] bg-[#0E161A]/80 px-2.5 py-0.5 text-xs text-[#f3f1f7]/70"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                          {item.tags.map((tag, tIdx) => renderJourneyTag(tag, tIdx, false))}
                         </div>
                       </div>
                     ) : (
@@ -335,22 +299,12 @@ export default function JourneyScene({ locale }: JourneySceneProps) {
 
                         {item.award && (
                           <div className="flex justify-start">
-                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-0.5 text-[11px] font-semibold text-amber-300">
-                              <Award className="size-3" />
-                              <span>{item.award}</span>
-                            </span>
+                            {renderAwardBadge(item.award, item.awardColor, false)}
                           </div>
                         )}
 
                         <div className="flex flex-wrap justify-start gap-1.5 pt-1">
-                          {item.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-md border border-white/[0.08] bg-[#0E161A]/80 px-2.5 py-0.5 text-xs text-[#f3f1f7]/70"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                          {item.tags.map((tag, tIdx) => renderJourneyTag(tag, tIdx, false))}
                         </div>
                       </div>
                     ) : (

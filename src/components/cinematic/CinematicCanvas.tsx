@@ -13,6 +13,7 @@ import type { PortfolioProject } from "@/types/content";
 import type { PublicJourneyEntry, PublicCertification } from "@/features/portfolio/data";
 import type { HomeDynamicCopy } from "@/content/dynamic-copy";
 import type { GitHubStats, GitHubActivity } from "@/lib/github";
+import type { JourneyTimelineItem } from "@/types/journey";
 
 interface CinematicCanvasProps {
   locale: Locale;
@@ -21,6 +22,7 @@ interface CinematicCanvasProps {
   introduction?: string;
   projects: PortfolioProject[];
   journey?: PublicJourneyEntry[];
+  timelineItems?: JourneyTimelineItem[];
   certifications?: PublicCertification[];
   showGitHub?: boolean;
   githubData?: { stats: GitHubStats; activity: GitHubActivity };
@@ -39,6 +41,7 @@ export default function CinematicCanvas({
   introduction,
   projects,
   journey,
+  timelineItems,
   certifications,
   showGitHub,
   githubData,
@@ -65,7 +68,6 @@ export default function CinematicCanvas({
         locale={locale}
         siteName={siteName}
         introduction={dynamicCopy?.introduction || introduction || ""}
-        roleBadge={dynamicCopy?.roleBadge}
         headline={dynamicCopy?.headline}
         contactLinks={contactLinks}
       />
@@ -85,14 +87,13 @@ export default function CinematicCanvas({
       <SelectedWorkScene locale={locale} projects={projects} />
 
       {/* Scene 05: Experience & Journey Timeline (Alternating Glowing Central Line) */}
-      <JourneyScene locale={locale} journey={journey} />
+      <JourneyScene locale={locale} journey={journey} timelineItems={timelineItems} />
 
       {/* Scene 06: GitHub & Open Source Activity (Real-time Code & Live Contributions) */}
       {showGitHub !== false && githubData && (
         <GitHubContributionsScene
           locale={locale}
           stats={githubData.stats}
-          activity={githubData.activity}
           githubUrl={contactLinks.github}
         />
       )}

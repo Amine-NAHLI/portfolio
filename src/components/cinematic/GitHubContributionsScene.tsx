@@ -1,28 +1,33 @@
 "use client";
 
-import { useRef, useMemo } from "react";
-import Link from "next/link";
-import { ArrowUpRight, FolderGit2, GitCommit, GitFork, Star, Terminal } from "lucide-react";
+import { useRef, useEffect } from "react";
+import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
-import type { GitHubStats, GitHubActivity } from "@/lib/github";
+import type { GitHubStats } from "@/lib/github";
 
 interface GitHubContributionsSceneProps {
   locale: Locale;
   stats: GitHubStats;
-  activity: GitHubActivity;
   githubUrl?: string;
 }
 
 export default function GitHubContributionsScene({
   locale,
   stats,
-  activity,
   githubUrl = "https://github.com/Amine-NAHLI",
 }: GitHubContributionsSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const matrixScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Automatically position to the latest commits on load/mobile
+    if (matrixScrollRef.current) {
+      matrixScrollRef.current.scrollLeft = matrixScrollRef.current.scrollWidth;
+    }
+  }, [stats.calendarWeeks]);
 
   useGSAP(
     () => {
@@ -33,7 +38,7 @@ export default function GitHubContributionsScene({
       if (cards.length > 0) {
         gsap.fromTo(
           cards,
-          { opacity: 0.2, y: 35 },
+          { opacity: 0.2, y: 30 },
           {
             opacity: 1,
             y: 0,
@@ -52,57 +57,16 @@ export default function GitHubContributionsScene({
     { scope: containerRef }
   );
 
-  // Generate a realistic 52-week x 7-day contribution matrix with high-activity clusters
-  const contributionGrid = useMemo(() => {
-    const weeks = 52;
-    const days = 7;
-    const grid: number[][] = [];
-
-    // Seeded pseudo-random generator for consistent deterministic rendering
-    let seed = 42;
-    const pseudoRandom = () => {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    };
-
-    for (let w = 0; w < weeks; w++) {
-      const col: number[] = [];
-      for (let d = 0; d < days; d++) {
-        // Higher intensity for recent weeks and engineering sprint bursts
-        const r = pseudoRandom();
-        if (r > 0.72) {
-          col.push(4); // peak
-        } else if (r > 0.52) {
-          col.push(3); // high
-        } else if (r > 0.32) {
-          col.push(2); // medium
-        } else if (r > 0.15) {
-          col.push(1); // light
-        } else {
-          col.push(0); // empty
-        }
-      }
-      grid.push(col);
-    }
-    return grid;
-  }, []);
-
-  const getCellColor = (level: number) => {
-    switch (level) {
-      case 4:
-        return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]";
-      case 3:
-        return "bg-emerald-500/80";
-      case 2:
-        return "bg-emerald-600/50";
-      case 1:
-        return "bg-emerald-900/40";
-      default:
-        return "bg-white/[0.04]";
-    }
+  const getDayColor = (count: number) => {
+    if (count === 0) return "bg-white/[0.04]";
+    if (count <= 3) return "bg-emerald-900/60";
+    if (count <= 7) return "bg-emerald-600/70";
+    if (count <= 14) return "bg-emerald-500/90";
+    return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]";
   };
 
   const topLanguages = stats.languages.slice(0, 5);
+  const realWeeks = stats.calendarWeeks && stats.calendarWeeks.length > 0 ? stats.calendarWeeks : null;
 
   return (
     <section
@@ -126,56 +90,40 @@ export default function GitHubContributionsScene({
 
       <div className="mx-auto max-w-7xl relative z-10">
         
-        {/* Section Header */}
+        {/* Clean, Non-AI Header */}
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-emerald-400 mb-4">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{locale === "fr" ? "Activité Open-Source & Code Réel" : "Open-Source & Real-Time Code"}</span>
-            </div>
+            <span className="font-mono text-xs uppercase tracking-wider text-[#9A71FF] block mb-3">
+              {locale === "fr" ? "// ACTIVITÉ GITHUB & CODE OUVERT" : "// GITHUB TELEMETRY & OPEN SOURCE"}
+            </span>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
               {locale === "fr" ? "Code en Continu. Contributions Publiques." : "Continuous Code. Public Activity."}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-[#797681] leading-relaxed max-w-2xl">
               {locale === "fr"
-                ? "Le partage de code et la transparence technique sont les piliers de ma pratique d'ingénieur. Retrouvez ici mes commits, mes dépôts et mon activité en temps réel."
-                : "Code sharing and technical transparency are central to my engineering philosophy. Explore my daily commits, public repositories, and live GitHub telemetry."}
+                ? "Le partage de code et la transparence technique sont au cœur de ma pratique d'ingénieur. Retrouvez ici mes commits et mes dépôts en temps réel."
+                : "Code sharing and technical transparency are fundamental to my engineering workflow. Explore real-time commit telemetry and public repositories."}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start md:self-end">
-            <Link
-              href={`/${locale}/open-source`}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0B0510] px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] backdrop-blur-md transition-all duration-200 hover:border-[#9A71FF] hover:bg-[#9A71FF] hover:text-[#000000]"
-            >
-              <Terminal className="size-3.5 text-[#9A71FF]" />
-              <span>{locale === "fr" ? "Statistiques détaillées" : "Detailed Telemetry"}</span>
-            </Link>
-
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-[#f3f1f7] px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-[#101015] shadow-lg transition-all duration-200 hover:bg-white hover:scale-[1.02]"
-            >
-              <span>GitHub @Amine-NAHLI</span>
-              <ArrowUpRight className="size-3.5" />
-            </a>
-          </div>
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-white/10 bg-[#0B0510] px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] backdrop-blur-md transition-all duration-300 hover:border-[#9A71FF] hover:bg-[#9A71FF] hover:text-[#000000] hover:shadow-[0_0_25px_rgba(154,113,255,0.25)]"
+          >
+            <span>GitHub / Amine-NAHLI</span>
+            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
         </div>
 
-        {/* Top 3 High-Impact Metric Dossier Cards */}
+        {/* 3 Clean Architectural Metric Cards (No artificial icon pills) */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           
-          {/* Card 1: Total Contributions */}
+          {/* Card 1: Real Total Contributions */}
           <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-7 shadow-xl">
-            <div className="flex items-center justify-between text-xs text-[#797681] mb-6">
-              <span className="font-mono uppercase tracking-wider">
-                {locale === "fr" ? "Volume Annuel" : "Annual Volume"}
-              </span>
-              <div className="flex size-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-                <GitCommit className="size-5" />
-              </div>
+            <div className="text-xs font-mono uppercase tracking-wider text-[#797681] mb-5">
+              {locale === "fr" ? "Volume Annuel" : "Annual Volume"}
             </div>
 
             <div className="flex items-baseline gap-3">
@@ -190,19 +138,14 @@ export default function GitHubContributionsScene({
             <p className="mt-3 text-xs text-[#797681] leading-relaxed">
               {locale === "fr"
                 ? "Commits validés, revues de code et pull requests documentées sur l'année écoulée."
-                : "Verified commits, pull requests, and peer code reviews over the past 365 days."}
+                : "Verified commits, pull requests, and code reviews over the past 365 days."}
             </p>
           </div>
 
-          {/* Card 2: Public Repositories */}
+          {/* Card 2: Real Public Repositories */}
           <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-7 shadow-xl">
-            <div className="flex items-center justify-between text-xs text-[#797681] mb-6">
-              <span className="font-mono uppercase tracking-wider">
-                {locale === "fr" ? "Dépôts Publics" : "Public Repositories"}
-              </span>
-              <div className="flex size-9 items-center justify-center rounded-xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 text-[#9A71FF]">
-                <FolderGit2 className="size-5" />
-              </div>
+            <div className="text-xs font-mono uppercase tracking-wider text-[#797681] mb-5">
+              {locale === "fr" ? "Dépôts Publics" : "Public Repositories"}
             </div>
 
             <div className="flex items-baseline gap-3">
@@ -210,26 +153,22 @@ export default function GitHubContributionsScene({
                 {stats.totalRepositories}
               </span>
               <span className="text-xs font-mono text-[#9A71FF] font-bold uppercase tracking-wider">
-                {locale === "fr" ? "Projets Open" : "Open Repos"}
+                {locale === "fr" ? "Projets Ouverts" : "Open Repos"}
               </span>
             </div>
 
             <p className="mt-3 text-xs text-[#797681] leading-relaxed">
               {locale === "fr"
-                ? "Applications autonomes, bibliothèques d'outils, scripts de cybersécurité et modules d'IA."
-                : "Self-contained applications, security auditing tools, and machine learning pipelines."}
+                ? "Systèmes logiciels, modules d'IA et outils d'ingénierie disponibles publiquement."
+                : "Software architectures, machine learning pipelines, and public engineering tools."}
             </p>
           </div>
 
-          {/* Card 3: Dominant Stack Distribution */}
+          {/* Card 3: Real Dominant Stack Distribution */}
           <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-7 shadow-xl">
-            <div className="flex items-center justify-between text-xs text-[#797681] mb-4">
-              <span className="font-mono uppercase tracking-wider">
-                {locale === "fr" ? "Stack Dominante" : "Core Tech Stack"}
-              </span>
-              <span className="font-mono text-xs text-[#f3f1f7]">
-                {stats.topLanguage?.name || "TypeScript"}
-              </span>
+            <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#797681] mb-4">
+              <span>{locale === "fr" ? "Stack Dominante" : "Core Tech Stack"}</span>
+              <span className="text-[#f3f1f7] font-semibold">{stats.topLanguage?.name || "Python"}</span>
             </div>
 
             {/* Language distribution bar */}
@@ -266,117 +205,71 @@ export default function GitHubContributionsScene({
           </div>
         </div>
 
-        {/* Interactive GitHub Contribution Heatmap Card */}
-        <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-8 shadow-2xl mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <h3 className="font-display text-lg sm:text-xl font-bold text-[#f3f1f7]">
-                {locale === "fr" ? "Matrice d'Activité Annuelle" : "Annual Activity Heatmap"}
-              </h3>
-              <p className="text-xs text-[#797681]">
-                {locale === "fr"
-                  ? "Fréquence et densité de push sur le graphe de code de 52 semaines."
-                  : "Daily push frequency and commit telemetry over a 52-week horizon."}
-              </p>
-            </div>
-
-            {/* Heatmap Legend */}
-            <div className="flex items-center gap-2 text-xs font-mono text-[#797681] self-start sm:self-auto">
-              <span>{locale === "fr" ? "Moins" : "Less"}</span>
-              <div className="flex items-center gap-1">
-                <span className="size-2.5 rounded-[2px] bg-white/[0.04]" />
-                <span className="size-2.5 rounded-[2px] bg-emerald-900/40" />
-                <span className="size-2.5 rounded-[2px] bg-emerald-600/50" />
-                <span className="size-2.5 rounded-[2px] bg-emerald-500/80" />
-                <span className="size-2.5 rounded-[2px] bg-emerald-400" />
+        {/* 100% Real GitHub Contribution Heatmap Matrix (Only shown when real GitHub data exists) */}
+        {realWeeks && (
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-8 shadow-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="font-display text-lg sm:text-xl font-bold text-[#f3f1f7]">
+                  {locale === "fr" ? "Matrice de Contributions Réelle (GitHub API)" : "Live GitHub Contribution Matrix"}
+                </h3>
+                <p className="text-xs text-[#797681]">
+                  {locale === "fr"
+                    ? `Activité enregistrée jour par jour sur les ${realWeeks.length} dernières semaines (@Amine-NAHLI).`
+                    : `Verified daily commit history over the past ${realWeeks.length} weeks (@Amine-NAHLI).`}
+                </p>
               </div>
-              <span>{locale === "fr" ? "Plus" : "More"}</span>
-            </div>
-          </div>
 
-          {/* Matrix Grid Container */}
-          <div className="overflow-x-auto pb-2 -mx-2 px-2 no-scrollbar">
-            <div className="min-w-[720px] flex gap-[3.5px]">
-              {contributionGrid.map((week, wIdx) => (
-                <div key={wIdx} className="flex flex-col gap-[3.5px]">
-                  {week.map((level, dIdx) => (
-                    <div
-                      key={dIdx}
-                      className={`size-[11px] rounded-[2.5px] transition-all duration-200 hover:scale-125 cursor-pointer ${getCellColor(
-                        level
-                      )}`}
-                      title={locale === "fr" ? `Activité semaine ${wIdx + 1}` : `Activity week ${wIdx + 1}`}
-                    />
-                  ))}
+              {/* Heatmap Legend */}
+              <div className="flex items-center gap-2 text-xs font-mono text-[#797681] self-start sm:self-auto">
+                <span>{locale === "fr" ? "Moins" : "Less"}</span>
+                <div className="flex items-center gap-1">
+                  <span className="size-2.5 rounded-[2px] bg-white/[0.04]" />
+                  <span className="size-2.5 rounded-[2px] bg-emerald-900/60" />
+                  <span className="size-2.5 rounded-[2px] bg-emerald-600/70" />
+                  <span className="size-2.5 rounded-[2px] bg-emerald-500/90" />
+                  <span className="size-2.5 rounded-[2px] bg-emerald-400" />
                 </div>
-              ))}
+                <span>{locale === "fr" ? "Plus" : "More"}</span>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Featured Public Repositories Grid */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-display text-lg sm:text-xl font-bold text-[#f3f1f7]">
-              {locale === "fr" ? "Dépôts Récents Clés" : "Key Featured Repositories"}
-            </h3>
-            <span className="text-xs font-mono text-[#797681]">
-              {locale === "fr" ? "Code source ouvert & documenté" : "Open & Documented Source"}
-            </span>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {activity.recentRepositories.slice(0, 4).map((repo) => (
-              <a
-                key={repo.name}
-                href={repo.url}
-                target="_blank"
-                rel="noreferrer"
-                className="github-anim-card group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0B0510] p-5 transition-all duration-300 hover:border-[#9A71FF]/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#9A71FF]/10"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-xs text-[#797681] mb-3">
-                    <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors">
-                      <FolderGit2 className="size-3.5 text-[#9A71FF]" />
-                      <span className="truncate max-w-[140px]">{repo.name}</span>
-                    </span>
-                    <ArrowUpRight className="size-3.5 text-[#797681] group-hover:text-white transition-colors" />
-                  </div>
-
-                  <p className="text-xs text-[#797681] leading-relaxed line-clamp-3 mb-4">
-                    {repo.description || (locale === "fr" ? "Dépôt d'ingénierie logicielle." : "Software engineering repository.")}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-white/[0.06] text-[11px] font-mono text-[#797681]">
-                  {repo.primaryLanguage && (
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="size-2 rounded-full"
-                        style={{ backgroundColor: repo.primaryLanguage.color || "#9A71FF" }}
+            {/* Real Matrix Grid Container (Scrollable on mobile with focus on recent weeks) */}
+            <div
+              ref={matrixScrollRef}
+              className="overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 touch-pan-x overscroll-x-contain scrollbar-thin scrollbar-thumb-emerald-500/30 scrollbar-track-white/[0.03]"
+            >
+              <div className="min-w-[760px] flex gap-[3.5px] py-1">
+                {realWeeks.map((week, wIdx) => (
+                  <div key={wIdx} className="flex flex-col gap-[3.5px]">
+                    {week.contributionDays.map((day) => (
+                      <div
+                        key={day.date}
+                        className={`size-[11.5px] rounded-[2.5px] transition-all duration-200 hover:scale-125 cursor-pointer ${getDayColor(
+                          day.contributionCount
+                        )}`}
+                        title={
+                          locale === "fr"
+                            ? `${day.contributionCount} contribution${day.contributionCount > 1 ? "s" : ""} le ${day.date}`
+                            : `${day.contributionCount} contribution${day.contributionCount > 1 ? "s" : ""} on ${day.date}`
+                        }
                       />
-                      <span className="text-[#f3f1f7]/80">{repo.primaryLanguage.name}</span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center gap-1">
-                      <Star className="size-3 text-amber-400" />
-                      <span>{repo.stargazerCount}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <GitFork className="size-3" />
-                      <span>1</span>
-                    </span>
+                    ))}
                   </div>
-                </div>
-              </a>
-            ))}
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Touch Helper */}
+            <div className="flex sm:hidden items-center justify-between text-[11px] font-mono text-[#797681] mt-2 pt-2 border-t border-white/[0.05]">
+              <span>← Semaines passées</span>
+              <span className="text-emerald-400 font-medium">Glisser pour explorer (53 sem.)</span>
+              <span>Récentes →</span>
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </section>
   );
 }
-

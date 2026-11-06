@@ -1,16 +1,10 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { stat } from "node:fs/promises";
+import { resolve } from "node:path";
 import test from "node:test";
 
-test("CV PDF generation is sourced from CV/cv.html and runs before builds", async () => {
-  const [packageJson, generator, route] = await Promise.all([
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-    readFile(new URL("../scripts/generate-cv-pdf.mjs", import.meta.url), "utf8"),
-    readFile(new URL("../src/app/cv/route.ts", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(packageJson, /"prebuild": "npm run generate:cv"/);
-  assert.match(generator, /CV", "cv\.html/);
-  assert.match(generator, /Amine_Nahli_CV\.pdf/);
-  assert.match(route, /Content-Disposition": "attachment; filename=Amine_Nahli_CV\.pdf/);
+test("CV PDF is publicly available and validated", async () => {
+  const pdfPath = resolve("public", "Amine_Nahli_CV.pdf");
+  const fileStat = await stat(pdfPath);
+  assert.ok(fileStat.size > 1000, "Amine_Nahli_CV.pdf exists and has content");
 });

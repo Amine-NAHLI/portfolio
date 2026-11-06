@@ -5,6 +5,7 @@ import { getHomeCopy } from "@/content/dynamic-copy";
 import {
   getPublicContactLinks,
   getPublicJourney,
+  getPublicJourneyTimeline,
   getPublicCertifications,
   getFeaturedHomeProjectSlugs,
   getFeaturedHomeCertificationIds,
@@ -37,6 +38,7 @@ export default async function HomePage({ params }: HomePageProps) {
   const [
     allProjects,
     journey,
+    timelineItems,
     contactLinks,
     allCertifications,
     featuredSlugs,
@@ -46,6 +48,7 @@ export default async function HomePage({ params }: HomePageProps) {
   ] = await Promise.all([
     getPublishedProjects(locale as Locale),
     getPublicJourney(locale as Locale),
+    getPublicJourneyTimeline(),
     getPublicContactLinks(),
     getPublicCertifications(locale as Locale),
     getFeaturedHomeProjectSlugs(),
@@ -126,6 +129,7 @@ export default async function HomePage({ params }: HomePageProps) {
         dynamicCopy={copy}
         projects={projects}
         journey={journey}
+        timelineItems={timelineItems}
         certifications={certifications}
         showGitHub={sectionsVisibility.github}
         githubData={githubData}

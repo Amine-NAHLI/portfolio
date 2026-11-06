@@ -9,16 +9,21 @@ type PageIntroProps = {
 
 export default function PageIntro({ eyebrow, title, description, children }: PageIntroProps) {
   return (
-    <section className="relative overflow-hidden border-b border-border py-10 sm:py-14 lg:py-16">
-      {/* Spotlight Effect (Option A) */}
-      <div aria-hidden="true" className="pointer-events-none absolute right-0 top-1/2 -z-10 h-[30rem] w-[40rem] -translate-y-1/2 translate-x-1/3 rounded-[100%] bg-accent/15 blur-[100px]" />
+    <section className="relative overflow-hidden bg-[#101015] border-b border-white/[0.08] py-12 sm:py-16 lg:py-20 text-[#f3f1f7]">
+      {/* Subtle Ambient Violet Spotlight */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 top-1/2 -z-10 h-[28rem] w-[36rem] -translate-y-1/2 translate-x-1/3 rounded-full bg-[#9A71FF]/10 blur-[140px]"
+      />
       
       <Container>
-        <p className="system-label">{"// "}{eyebrow}</p>
-        <h1 className="mt-4 max-w-4xl text-balance font-display text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl lg:text-6xl">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block mb-3">
+          {eyebrow}
+        </span>
+        <h1 className="max-w-4xl font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
           {title}
         </h1>
-        <p className="mt-6 max-w-2xl text-pretty text-base leading-7 text-text-secondary sm:text-lg">
+        <p className="mt-4 max-w-2xl text-base text-[#797681] leading-relaxed font-normal">
           {description}
         </p>
         {children && (

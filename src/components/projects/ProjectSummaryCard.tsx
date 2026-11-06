@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Badge from "@/components/ui/Badge";
-import { projectCategoryLabels, publicCopy } from "@/content/copy";
+import { publicCopy } from "@/content/copy";
+import { getCategoryLabel, normalizeProjectCategories } from "@/lib/project-categories";
 import type { Locale } from "@/i18n/config";
-import type { PortfolioProject, ProjectCategory } from "@/types/content";
+import type { PortfolioProject } from "@/types/content";
 import SkillIcon from "@/components/ui/SkillIcon";
 import TiltCard from "@/components/ui/TiltCard";
 import Magnetic from "@/components/ui/Magnetic";
@@ -39,8 +40,8 @@ export default function ProjectSummaryCard({ project, locale, cta }: ProjectSumm
           
           {/* Categories over image */}
           <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5 z-10">
-            {project.categories.slice(0, 3).map((category) => {
-              const label = projectCategoryLabels[category as ProjectCategory]?.[locale] || category;
+            {normalizeProjectCategories(project.categories).slice(0, 3).map((category) => {
+              const label = getCategoryLabel(category, locale);
               return (
                 <Badge key={category} className="bg-surface-raised/80 backdrop-blur-md border-border/50 text-text-primary text-[10px] px-2 py-0.5">
                   {label}

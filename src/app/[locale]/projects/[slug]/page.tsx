@@ -1,159 +1,356 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, CheckCircle2 } from "lucide-react";
-import Badge from "@/components/ui/Badge";
+import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowUpRight, Check, ExternalLink } from "lucide-react";
 import Container from "@/components/ui/Container";
 import JsonLd from "@/components/ui/JsonLd";
-import TechnicalFrame from "@/components/ui/TechnicalFrame";
-import { projectCategoryLabels, publicCopy } from "@/content/copy";
-import { getPublishedProject, getProjectGallery } from "@/features/projects/data";
+import ProjectGallery from "@/components/ui/ProjectGallery";
+import SkillIcon from "@/components/ui/SkillIcon";
+import { GithubIcon } from "@/components/ui/Icons";
+import { publicCopy } from "@/content/copy";
+import { getCategoryLabel, normalizeProjectCategories } from "@/lib/project-categories";
+import { getPublishedProject, getPublishedProjects, getProjectGallery } from "@/features/projects/data";
 import { isLocale } from "@/i18n/config";
 import { createPageMetadata } from "@/lib/seo";
-import { getSiteUrl } from "@/config/site";
-import { notFound } from "next/navigation";
-import SkillIcon from "@/components/ui/SkillIcon";
-import ProjectGallery from "@/components/ui/ProjectGallery";
 
-type ProjectPageProps = { params: Promise<{ locale: string; slug: string }> };
+type SingleProjectPageProps = {
+  params: Promise<{ locale: string; slug: string }>;
+};
 
-export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+export async function generateStaticParams() {
+  const [frProjects, enProjects] = await Promise.all([
+    getPublishedProjects("fr"),
+    getPublishedProjects("en"),
+  ]);
+  return [
+    ...frProjects.map((project) => ({ locale: "fr", slug: project.slug })),
+    ...enProjects.map((project) => ({ locale: "en", slug: project.slug })),
+  ];
+}
+
+export async function generateMetadata({ params }: SingleProjectPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
   const project = await getPublishedProject(locale, slug);
   if (!project) return {};
-  return createPageMetadata({ locale, title: project.title, description: project.summary[locale], path: `/projects/${slug}` });
+
+  return createPageMetadata({
+    locale,
+    title: project.title,
+    description: project.summary[locale],
+    path: `/projects/${project.slug}`,
+  });
 }
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
+export default async function SingleProjectPage({ params }: SingleProjectPageProps) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
+
   const project = await getPublishedProject(locale, slug);
   if (!project) notFound();
-  const gallery = await getProjectGallery(slug);
+
   const copy = publicCopy[locale].projects;
+  const gallery = await getProjectGallery(project.slug);
+  const normalizedCategories = normalizeProjectCategories(project.categories);
 
   return (
     <>
-      <JsonLd data={{
-        "@context": "https://schema.org",
-        "@type": "SoftwareSourceCode",
-        name: project.title,
-        description: project.summary[locale],
-        programmingLanguage: project.technologies,
-        url: new URL(`/${locale}/projects/${project.slug}`, getSiteUrl()).toString(),
-        codeRepository: project.githubUrl,
-        sameAs: [project.githubUrl, project.demoUrl].filter(Boolean),
-        author: { "@type": "Person", name: "Amine Nahli" },
-      }} />
-      <article>
-        <header className="relative overflow-hidden border-b border-border py-14 sm:py-20 lg:py-28">
-          <Container>
-            <Link href={`/${locale}/projects`} className="inline-flex min-h-11 items-center gap-2 rounded-lg text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-              <ArrowLeft aria-hidden="true" className="size-4" />{copy.back}
-            </Link>
-            <div className="mt-8 flex flex-wrap gap-2">
-              {project.categories.map((category) => {
-                const label = projectCategoryLabels[category]?.[locale] || category;
-                return <Badge key={category}>{label}</Badge>;
-              })}
-            </div>
-            <h1 className="mt-6 text-balance font-display text-5xl font-semibold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">{project.title}</h1>
-            <p className="mt-4 text-xl font-medium text-accent sm:text-2xl">{project.subtitle[locale]}</p>
-            
-            {gallery && gallery.length > 0 && (
-              <div className="mt-12 rounded-xl border border-border/50 bg-surface/30 p-2 shadow-2xl backdrop-blur-sm sm:p-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="overflow-hidden rounded-lg">
-                  <ProjectGallery images={gallery} locale={locale} />
-                </div>
-              </div>
-            )}
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: project.title,
+          description: project.summary[locale],
+          applicationCategory: project.categories.join(", "),
+          operatingSystem: "Web",
+        }}
+      />
 
-            <p className="mt-12 max-w-3xl text-pretty text-lg leading-8 text-text-secondary">{project.summary[locale]}</p>
+      <article className="min-h-screen bg-[#000000] text-[#f3f1f7] pb-32">
+        {/* Subtle Ambient Accent Glow */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed right-[-10%] top-20 size-[600px] rounded-full bg-[#9A71FF]/5 blur-[180px] -z-10"
+        />
+
+        {/* Hero Editorial Header */}
+        <header className="relative pt-24 sm:pt-32 pb-14 border-b border-white/[0.08] bg-gradient-to-b from-[#0B0510]/60 via-[#060605] to-[#000000]">
+          <Container className="max-w-6xl">
+            {/* Back Link */}
+            <div className="mb-8">
+              <Link
+                href={`/${locale}/projects`}
+                className="inline-flex items-center gap-2 text-xs font-mono font-medium text-[#797681] hover:text-[#9A71FF] transition-colors"
+              >
+                <ArrowLeft className="size-3.5" />
+                <span>{locale === "fr" ? "Retour à tous les projets" : "Back to all projects"}</span>
+              </Link>
+            </div>
+
+            {/* Categories & Verified Badge */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-5">
+              {normalizedCategories.map((category) => (
+                <span
+                  key={category}
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#9A71FF]"
+                >
+                  {getCategoryLabel(category, locale)}
+                </span>
+              ))}
+
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-400">
+                <span className="size-1.5 rounded-full bg-emerald-400" />
+                <span>{locale === "fr" ? "Étude d'ingénierie vérifiée" : "Verified engineering case"}</span>
+              </span>
+            </div>
+
+            {/* Monumental Title */}
+            <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#f3f1f7] leading-tight max-w-4xl">
+              {project.title}
+            </h1>
+
+            {/* Subtitle */}
+            <p className="mt-3 text-lg sm:text-xl font-medium text-[#9A71FF]/90 max-w-3xl leading-relaxed">
+              {project.subtitle[locale]}
+            </p>
+
+            {/* Humanized Executive Overview */}
+            <p className="mt-6 text-base sm:text-lg leading-relaxed text-[#797681] max-w-3xl font-normal">
+              {project.summary[locale]}
+            </p>
+
+            {/* Action CTAs */}
+            <div className="mt-8 flex flex-wrap items-center gap-3 pt-6 border-t border-white/[0.08]">
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/[0.08] hover:border-white/20 transition-all"
+                >
+                  <GithubIcon size={15} />
+                  <span>{copy.sourceCode}</span>
+                  <ArrowUpRight className="size-3 text-[#797681]" />
+                </a>
+              )}
+              {project.demoUrl && (
+                <a
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#9A71FF] px-5 py-2.5 text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-all shadow-lg shadow-[#9A71FF]/20"
+                >
+                  <ExternalLink className="size-3.5" />
+                  <span>{copy.liveDemo}</span>
+                </a>
+              )}
+            </div>
+
+            {/* Visual Media Showcase */}
+            {gallery && gallery.length > 0 ? (
+              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#0B0510] p-2 sm:p-3 shadow-2xl">
+                <ProjectGallery images={gallery} locale={locale} />
+              </div>
+            ) : project.coverImage ? (
+              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#0B0510] shadow-2xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={project.coverImage}
+                  alt={project.title}
+                  className="w-full aspect-[21/9] object-cover"
+                />
+              </div>
+            ) : null}
           </Container>
         </header>
 
-        <Container className="grid gap-14 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-20">
-          <div className="space-y-14">
-            {project.problem[locale] !== project.summary[locale] ? (
-              <>
-                <section aria-labelledby="problem-heading">
-                  <p className="eyebrow">01</p>
-                  <h2 id="problem-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.problem}</h2>
-                  <p className="mt-5 text-base leading-8 text-text-secondary">{project.problem[locale]}</p>
-                </section>
-                <section aria-labelledby="objectives-heading">
-                  <p className="eyebrow">02</p>
-                  <h2 id="objectives-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.objectives}</h2>
-                  <ul className="mt-6 grid gap-3">
-                    {project.objectives.map((objective) => (
-                      <li key={objective[locale]} className="flex gap-3 text-base leading-7 text-text-secondary">
-                        <CheckCircle2 aria-hidden="true" className="mt-1 size-4 shrink-0 text-accent" />{objective[locale]}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-                <section aria-labelledby="solution-heading">
-                  <p className="eyebrow">03</p>
-                  <h2 id="solution-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.solution}</h2>
-                  <p className="mt-5 text-base leading-8 text-text-secondary">{project.solution[locale]}</p>
-                </section>
-                <section aria-labelledby="architecture-heading">
-                  <p className="eyebrow">04</p>
-                  <h2 id="architecture-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.architecture}</h2>
-                  <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {project.architecture.map((item) => (
-                      <li key={item[locale]} className="flex gap-3 border border-border bg-surface p-4 text-sm leading-6 text-text-secondary">
-                        <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />{item[locale]}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-                <section aria-labelledby="results-heading">
-                  <p className="eyebrow">05</p>
-                  <h2 id="results-heading" className="mt-3 text-3xl font-semibold text-text-primary">{copy.documentedResults}</h2>
-                  <ul className="mt-6 space-y-3">
-                    {project.results.map((result) => (
-                      <li key={result[locale]} className="flex gap-3 text-base leading-7 text-text-secondary">
-                        <span aria-hidden="true" className="mt-3 size-1.5 shrink-0 rounded-full bg-accent" />{result[locale]}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              </>
-            ) : (
-              <section aria-labelledby="description-heading">
-                <h2 id="description-heading" className="text-3xl font-semibold text-text-primary">
-                  {locale === "fr" ? "Description" : "Description"}
-                </h2>
-                <p className="mt-5 whitespace-pre-wrap text-base leading-8 text-text-secondary">
-                  {project.summary[locale]}
-                </p>
-              </section>
-            )}
-          </div>
-
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <TechnicalFrame as="div" index="//" label="Project system" className="p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-text-muted">{copy.technologies}</h2>
-              <ul className="mt-5 flex flex-wrap gap-2">
-                {project.technologies.map((technology) => (
-                  <li key={technology}>
-                    <Badge className="flex items-center gap-1.5 px-3 py-1.5">
-                      <SkillIcon name={technology} className="text-[16px]" />
-                      <span>{technology}</span>
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
-              {project.githubUrl || project.demoUrl ? (
-                <div className="mt-6 grid gap-2 border-t border-border pt-5">
-                  {project.githubUrl ? <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="button-secondary"><ArrowUpRight aria-hidden="true" className="size-4" />{copy.sourceCode}</a> : null}
-                  {project.demoUrl ? <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="button-primary"><ArrowUpRight aria-hidden="true" className="size-4" />{copy.liveDemo}</a> : null}
+        {/* Engineering Case Study Body */}
+        <Container className="max-w-6xl mt-16">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-16 items-start">
+            
+            {/* Main Narrative Column (8 Cols) */}
+            <div className="lg:col-span-8 space-y-16">
+              
+              {/* Section 1: The Engineering Problem / Challenge */}
+              <section className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                    {locale === "fr" ? "01. Contexte & Problématique" : "01. Context & Challenge"}
+                  </span>
                 </div>
-              ) : null}
-            </TechnicalFrame>
-            <p className="mt-5 text-xs leading-5 text-text-muted">{copy.sourceNote}</p>
-          </aside>
+                <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#f3f1f7]">
+                  {copy.problem}
+                </h2>
+                <div className="border-l-2 border-[#9A71FF]/50 pl-5 sm:pl-6 py-1">
+                  <p className="text-base sm:text-lg leading-relaxed text-[#f3f1f7]/90 font-normal">
+                    {project.problem[locale]}
+                  </p>
+                </div>
+              </section>
+
+              {/* Section 2: Key Objectives */}
+              {project.objectives && project.objectives.length > 0 && (
+                <section className="space-y-6 pt-4 border-t border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                      {locale === "fr" ? "02. Objectifs d'Ingénierie" : "02. Engineering Goals"}
+                    </span>
+                  </div>
+                  <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#f3f1f7]">
+                    {copy.objectives}
+                  </h2>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {project.objectives.map((obj, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-[#0B0510] p-4 transition-colors hover:border-[#9A71FF]/30"
+                      >
+                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#9A71FF]/10 text-[#9A71FF] mt-0.5">
+                          <Check className="size-3 stroke-[3]" />
+                        </span>
+                        <span className="text-sm text-[#f3f1f7]/90 leading-snug">
+                          {obj[locale]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Section 3: Technical Architecture & System Solution */}
+              <section className="space-y-6 pt-4 border-t border-white/[0.08]">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                    {locale === "fr" ? "03. Architecture & Implémentation" : "03. Architecture & System"}
+                  </span>
+                </div>
+                <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#f3f1f7]">
+                  {copy.architecture}
+                </h2>
+
+                {project.solution[locale] && (
+                  <p className="text-base sm:text-lg leading-relaxed text-[#797681]">
+                    {project.solution[locale]}
+                  </p>
+                )}
+
+                {project.architecture && project.architecture.length > 0 && (
+                  <div className="rounded-2xl border border-white/10 bg-[#060605] p-5 sm:p-6 space-y-3 font-mono text-xs">
+                    <div className="text-[#797681] pb-2 border-b border-white/[0.06] text-[11px] uppercase tracking-wider">
+                      {locale === "fr" ? "Composants architecturaux & pipeline" : "Architectural components & pipeline"}
+                    </div>
+                    {project.architecture.map((item, i) => (
+                      <div key={i} className="flex items-start gap-2.5 text-[#f3f1f7]/90 leading-relaxed">
+                        <span className="text-[#9A71FF] select-none font-bold">›</span>
+                        <span>{item[locale]}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              {/* Section 4: Documented Results & Verification */}
+              {project.results && project.results.length > 0 && (
+                <section className="space-y-6 pt-4 border-t border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                      {locale === "fr" ? "04. Métriques & Résultats" : "04. Metrics & Outcomes"}
+                    </span>
+                  </div>
+                  <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#f3f1f7]">
+                    {copy.documentedResults}
+                  </h2>
+                  <div className="space-y-3">
+                    {project.results.map((res, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-[#0B0510] p-4"
+                      >
+                        <span className="size-2 rounded-full bg-emerald-400 mt-2 shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+                        <span className="text-sm text-[#f3f1f7]/90 leading-relaxed font-medium">
+                          {res[locale]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+
+            {/* Right Technical Stack Sidebar (4 Cols) */}
+            <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
+              <div className="rounded-2xl border border-white/10 bg-[#0B0510] p-6 shadow-xl space-y-6">
+                <div>
+                  <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
+                    {copy.technologies}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.technologies.map((technology) => (
+                      <span
+                        key={technology}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.02] px-2.5 py-1 text-xs font-medium text-[#f3f1f7]"
+                      >
+                        <SkillIcon name={technology} className="text-[13px]" />
+                        <span>{technology}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* External Repository Links */}
+                {(project.githubUrl || project.demoUrl) && (
+                  <div className="space-y-2 pt-4 border-t border-white/[0.08]">
+                    {project.githubUrl && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <GithubIcon size={14} className="text-[#9A71FF]" />
+                          <span>{copy.sourceCode}</span>
+                        </span>
+                        <ArrowUpRight className="size-3.5 text-[#797681]" />
+                      </a>
+                    )}
+                    {project.demoUrl && (
+                      <a
+                        href={project.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex w-full items-center justify-between rounded-xl bg-[#9A71FF] px-4 py-2.5 text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <ExternalLink className="size-3.5" />
+                          <span>{copy.liveDemo}</span>
+                        </span>
+                        <ArrowUpRight className="size-3.5" />
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                {/* Direct Discussion CTA */}
+                <div className="pt-4 border-t border-white/[0.08] space-y-2">
+                  <p className="text-xs font-semibold text-[#f3f1f7]">
+                    {locale === "fr" ? "Question sur cette architecture ?" : "Questions on this system?"}
+                  </p>
+                  <p className="text-[11px] text-[#797681] leading-relaxed">
+                    {locale === "fr"
+                      ? "Échangeons sur les choix de conception, de sécurité ou d'IA."
+                      : "Let's discuss design tradeoffs, security constraints, or model inference."}
+                  </p>
+                  <Link
+                    href={`/${locale}/contact`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A71FF] hover:underline pt-1"
+                  >
+                    <span>{locale === "fr" ? "Ouvrir une discussion →" : "Start a discussion →"}</span>
+                  </Link>
+                </div>
+              </div>
+            </aside>
+          </div>
         </Container>
       </article>
     </>

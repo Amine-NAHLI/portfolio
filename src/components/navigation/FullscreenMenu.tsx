@@ -106,7 +106,7 @@ export default function FullscreenMenu({
       role="dialog"
       aria-modal="true"
       style={{ display: "none" }}
-      className="fixed inset-0 z-50 flex flex-col justify-between bg-[#101015]/98 px-6 sm:px-12 lg:px-20 py-10 backdrop-blur-3xl text-[#f3f1f7]"
+      className="fixed inset-0 z-50 flex flex-col justify-between bg-[#060605]/98 px-6 sm:px-12 lg:px-20 py-10 backdrop-blur-3xl text-[#f3f1f7]"
     >
       {/* Top Bar inside Menu */}
       <div className="flex items-center justify-between border-b border-white/10 pb-6">

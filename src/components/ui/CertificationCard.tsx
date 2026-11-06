@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { Award, Calendar, Download, ArrowUpRight, X, LoaderCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { Award, Calendar, Download, ExternalLink, LoaderCircle, Maximize2, ShieldCheck, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Certification = {
   id: string;
@@ -25,34 +27,53 @@ type CertificationCardProps = {
 };
 
 export default function CertificationCard({ certification, locale, copy }: CertificationCardProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (open && !dialog.open) {
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll on modal open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = "";
     }
   }, [open]);
 
+  const formattedDate = certification.issuedOn
+    ? new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
+        year: "numeric",
+        month: "long",
+      })
+    : null;
+
   return (
     <>
-      <button 
+      {/* Interactive Trigger Card */}
+      <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group relative flex flex-col text-left overflow-hidden rounded-[1.75rem] border border-white/10 bg-surface/80 backdrop-blur-xl transition-all duration-500 hover:border-accent/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full h-full"
+        className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-white/10 bg-[#17161e] transition-all duration-300 hover:border-[#9A71FF]/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#9A71FF]/10 w-full h-full cursor-pointer"
       >
         {/* Document Preview Frame */}
-        <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-deep/90 border-b border-white/5 flex items-center justify-center">
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#101015] border-b border-white/[0.06] flex items-center justify-center">
           {/* Loading Skeleton */}
           {!isLoaded && !hasError && certification.hasDocument && certification.documentMimeType?.startsWith("image/") && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised animate-pulse">
-              <LoaderCircle className="size-8 animate-spin text-accent/60" />
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#17161e] animate-pulse">
+              <LoaderCircle className="size-7 animate-spin text-[#9A71FF]/60" />
             </div>
           )}
 
@@ -60,11 +81,13 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             certification.documentMimeType?.startsWith("image/") ? (
               <img
                 src={`/api/certifications/${certification.id}/document`}
-                alt={`Preview of ${certification.name}`}
+                alt={`Aperçu de ${certification.name}`}
                 loading="lazy"
                 onLoad={() => setIsLoaded(true)}
                 onError={() => setHasError(true)}
-                className={`h-full w-full object-contain p-2 transition-all duration-700 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                className={`h-full w-full object-contain p-2.5 transition-all duration-700 group-hover:scale-105 ${
+                  isLoaded ? "opacity-100" : "opacity-0"
+                }`}
               />
             ) : (
               <div className="relative h-full w-full overflow-hidden bg-white">
@@ -73,156 +96,208 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                   loading="lazy"
                   className="pointer-events-none absolute -top-1 -left-1 w-[calc(100%+36px)] h-[calc(100%+16px)] border-0 transition-transform duration-700 group-hover:scale-105"
                   tabIndex={-1}
-                  title={`Preview of ${certification.name}`}
+                  title={`Aperçu de ${certification.name}`}
                 />
                 <div className="absolute inset-0 z-10" aria-hidden="true" />
               </div>
             )
           ) : (
-            <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-surface to-surface-deep p-6 text-center">
-              <div className="grid size-14 place-items-center rounded-2xl border border-accent/20 bg-accent/10 text-accent mb-2 group-hover:scale-110 transition-transform">
-                <Award className="size-7 text-accent" />
+            <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#17161e] to-[#101015] p-6 text-center">
+              <div className="grid size-12 place-items-center rounded-2xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 text-[#9A71FF] mb-2 group-hover:scale-110 transition-transform">
+                <Award className="size-6 text-[#9A71FF]" />
               </div>
-              <span className="font-mono text-[0.65rem] font-bold uppercase tracking-widest text-text-muted">
-                {certification.issuer || "Certification"}
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#797681]">
+                {certification.issuer || "Certification Officielle"}
               </span>
             </div>
           )}
 
-          {/* Issuer Pill Badge on top corner of preview */}
+          {/* Issuer Pill Badge */}
           {certification.issuer && (
-            <div className="absolute top-3 right-3 z-20 rounded-full border border-white/10 bg-black/70 px-2.5 py-1 backdrop-blur-md text-[0.68rem] font-mono font-semibold text-accent shadow-lg">
+            <div className="absolute top-3 right-3 z-20 rounded-full border border-white/10 bg-[#101015]/80 px-2.5 py-1 backdrop-blur-md text-[11px] font-semibold text-[#9A71FF] shadow-lg">
               {certification.issuer}
             </div>
           )}
         </div>
-        
-        {/* Dedicated Info Content Container Below Image */}
-        <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-surface-subtle/50">
+
+        {/* Info Content Container */}
+        <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-[#17161e]">
           <div>
-            <h2 className="text-lg sm:text-xl font-display font-bold leading-snug text-text-primary group-hover:text-white transition-colors line-clamp-2">
+            <h3 className="text-base sm:text-lg font-display font-bold leading-snug text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors line-clamp-2">
               {certification.name}
-            </h2>
+            </h3>
           </div>
 
-          <div className="mt-4 flex items-center justify-between pt-3 border-t border-white/5">
-            <span className="text-xs font-mono text-text-muted flex items-center gap-1.5">
-              <Calendar className="size-3.5 opacity-60" />
-              {certification.issuedOn 
-                ? new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "short" }) 
-                : "—"}
+          <div className="mt-4 flex items-center justify-between pt-3 border-t border-white/[0.06]">
+            <span className="text-xs font-mono text-[#797681] flex items-center gap-1.5">
+              <Calendar className="size-3.5 opacity-60 text-[#9A71FF]" />
+              {formattedDate || "—"}
             </span>
 
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent group-hover:translate-x-0.5 transition-transform">
-              {locale === "fr" ? "Voir" : "View"}
-              <ArrowUpRight className="size-3.5" />
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#9A71FF] group-hover:text-white transition-colors">
+              {locale === "fr" ? "Inspecter" : "Inspect"}
+              <Maximize2 className="size-3.5" />
             </span>
           </div>
         </div>
       </button>
 
-      {/* Verification & Full Document Viewer Dialog */}
-      <dialog 
-        ref={dialogRef} 
-        className="m-auto w-[92vw] max-w-4xl rounded-2xl border border-white/10 bg-bg-page p-0 text-text-primary backdrop:bg-black/85 backdrop:backdrop-blur-md open:animate-in open:fade-in-0 open:zoom-in-95 shadow-2xl"
-        onClose={() => setOpen(false)}
-        onCancel={() => setOpen(false)}
-      >
-        <div className="flex flex-col p-5 sm:p-7 max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
-                <Award className="size-6" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary">
-                  {certification.name}
-                </h2>
-                {certification.issuer && (
-                  <p className="text-sm text-accent font-medium mt-0.5">
-                    {certification.issuer}
-                    {certification.issuedOn && (
-                      <span className="text-text-muted font-normal ml-2">
-                        · {new Date(certification.issuedOn).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long" })}
-                      </span>
-                    )}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <button 
-              type="button" 
-              onClick={() => setOpen(false)}
-              className="inline-grid size-9 shrink-0 place-items-center rounded-full border border-white/10 bg-surface-raised text-text-muted hover:bg-surface hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label="Close dialog"
-            >
-              <X className="size-5" />
-            </button>
-          </div>
-
-          {certification.description && (
-            <p className="mt-4 text-xs sm:text-sm leading-relaxed text-text-secondary border-t border-white/5 pt-3">
-              {certification.description}
-            </p>
-          )}
-
-          {/* FULL CERTIFICATE DOCUMENT VISUALIZER */}
-          {certification.hasDocument ? (
-            <div className="mt-5 w-full overflow-hidden rounded-xl border border-white/10 bg-surface-deep/90 flex items-center justify-center shadow-inner">
-              {certification.documentMimeType?.startsWith("image/") ? (
-                <img
-                  src={`/api/certifications/${certification.id}/document`}
-                  alt={certification.name}
-                  className="w-full max-h-[65vh] object-contain p-2 rounded-xl"
+      {/* High-End Credential Dossier Inspector Modal rendered via Portal to escape any transformed container */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 lg:p-10">
+                {/* Backdrop Blur Overlay */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setOpen(false)}
+                  className="absolute inset-0 bg-black/85 backdrop-blur-xl"
                 />
-              ) : (
-                <div className="relative w-full h-[65vh] overflow-hidden rounded-xl bg-white">
-                  <iframe
-                    src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                    className="absolute -top-1 -left-1 w-[calc(100%+36px)] h-[calc(100%+16px)] border-0"
-                    title={`Document ${certification.name}`}
-                  />
-                </div>
-              )}
-            </div>
-          ) : certification.verificationUrl ? (
-            <div className="mt-5 w-full overflow-hidden rounded-xl border border-white/10 bg-surface-deep/90 p-8 text-center flex flex-col items-center justify-center">
-              <Award className="size-12 text-accent mb-3 opacity-80" />
-              <p className="text-sm text-text-secondary mb-4 max-w-md">
-                Cette certification est enregistrée et vérifiable directement auprès de l&apos;organisme d&apos;émission.
-              </p>
-            </div>
-          ) : null}
 
-          {/* Footer CTAs */}
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-white/10">
-            {certification.verificationUrl && (
-              <a 
-                href={certification.verificationUrl} 
-                target="_blank" 
-                rel="noreferrer" 
-                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-semibold text-text-on-accent shadow-lg shadow-accent/20 transition-all hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                {copy.verify} <ArrowUpRight className="size-4" />
-              </a>
+                {/* Modal Dialog Card */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="relative z-10 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] text-[#f3f1f7] shadow-2xl"
+                >
+                  {/* Header Bar */}
+                  <div className="flex items-center justify-between border-b border-white/10 bg-[#120A1C] px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 text-[#9A71FF]">
+                        <ShieldCheck className="size-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-emerald-400">
+                            {locale === "fr" ? "CRÉDENTIEL ACCRÉDITÉ" : "VERIFIED CREDENTIAL"}
+                          </span>
+                          <span className="text-white/20">·</span>
+                          <span className="text-xs font-medium text-[#797681]">
+                            {certification.issuer || "Organisme Agréé"}
+                          </span>
+                        </div>
+                        <h2 className="font-display text-lg sm:text-xl font-bold text-[#f3f1f7] truncate max-w-md sm:max-w-xl">
+                          {certification.name}
+                        </h2>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setOpen(false)}
+                        aria-label="Fermer"
+                        className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:bg-white/[0.08] hover:text-[#f3f1f7] transition-colors cursor-pointer"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Main Content Body (Scrollable if necessary) */}
+                  <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
+                    {/* Full Document Viewer Container */}
+                    <div className="relative w-full rounded-2xl border border-white/10 bg-[#060605] p-2 flex items-center justify-center min-h-[340px] max-h-[62vh] overflow-hidden shadow-inner">
+                      {certification.hasDocument ? (
+                        certification.documentMimeType?.startsWith("image/") ? (
+                          <img
+                            src={`/api/certifications/${certification.id}/document`}
+                            alt={certification.name}
+                            className="max-h-[58vh] w-auto max-w-full object-contain rounded-xl shadow-lg"
+                          />
+                        ) : (
+                          <div className="relative w-full h-[58vh] overflow-hidden rounded-xl bg-white">
+                            <iframe
+                              src={`/api/certifications/${certification.id}/document#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                              className="size-full border-0"
+                              title={certification.name}
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-12 text-center">
+                          <div className="size-16 rounded-2xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 flex items-center justify-center text-[#9A71FF] mb-4">
+                            <Award className="size-8" />
+                          </div>
+                          <h3 className="font-display text-xl font-bold text-[#f3f1f7] mb-2">
+                            {certification.name}
+                          </h3>
+                          <p className="text-xs text-[#797681] max-w-md mb-2">
+                            {certification.issuer}
+                          </p>
+                          {formattedDate && (
+                            <span className="text-xs font-mono text-[#9A71FF]">
+                              {locale === "fr" ? `Délivré en ${formattedDate}` : `Issued ${formattedDate}`}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Description & Competencies Verified */}
+                    {certification.description && (
+                      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+                        <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#9A71FF] mb-2 block">
+                          {locale === "fr" ? "Objectifs & Compétences Validées" : "Verified Objectives & Skills"}
+                        </span>
+                        <p className="text-xs sm:text-sm leading-relaxed text-[#797681]">
+                          {certification.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer Actions */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 bg-[#120A1C] px-6 py-4 text-xs">
+                    <div className="text-[#797681] font-mono">
+                      {formattedDate ? `${locale === "fr" ? "Date d'obtention :" : "Issue Date:"} ${formattedDate}` : ""}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {certification.hasDocument && (
+                        <a
+                          href={`/api/certifications/${certification.id}/document`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-semibold text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
+                        >
+                          <Download className="size-3.5 text-[#9A71FF]" />
+                          <span>{locale === "fr" ? "Télécharger le document" : "Download Document"}</span>
+                        </a>
+                      )}
+
+                      {certification.verificationUrl && (
+                        <a
+                          href={certification.verificationUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#9A71FF] px-4 py-2 font-semibold text-[#000000] hover:bg-[#b08dff] transition-colors shadow-lg shadow-[#9A71FF]/20"
+                        >
+                          <span>{copy.verify}</span>
+                          <ExternalLink className="size-3.5" />
+                        </a>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => setOpen(false)}
+                        className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.02] px-4 py-2 font-semibold text-[#797681] hover:text-[#f3f1f7] hover:border-white/20 transition-colors cursor-pointer"
+                      >
+                        {copy.close || (locale === "fr" ? "Fermer" : "Close")}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
             )}
-            
-            {certification.hasDocument && (
-              <a 
-                href={`/api/certifications/${certification.id}/document`} 
-                target="_blank" 
-                rel="noreferrer" 
-                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-white/10 bg-surface-raised px-5 py-2.5 text-xs font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                <Download className="size-4" />
-                <span>Télécharger le Document</span>
-              </a>
-            )}
-          </div>
-        </div>
-      </dialog>
+          </AnimatePresence>,
+          document.body
+        )}
     </>
   );
 }

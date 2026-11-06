@@ -31,8 +31,8 @@ export default function TechnicalFrame({
   return (
     <Component 
       className={cn(
-        "technical-frame relative overflow-hidden", 
-        "backdrop-blur-md bg-surface-subtle/40 dark:bg-surface-subtle/20 border border-border/50",
+        "technical-frame relative overflow-hidden rounded-2xl", 
+        "backdrop-blur-md bg-surface-subtle/40 dark:bg-surface-subtle/20 border border-white/10",
         `technical-frame--${tone}`, 
         className
       )}
@@ -45,13 +45,16 @@ export default function TechnicalFrame({
         className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(0, 218, 243, 0.1), transparent 40%)`
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(154, 113, 255, 0.12), transparent 40%)`
         }}
       />
-      {(index || label) ? <div className="technical-frame__meta relative z-10" aria-hidden="true"><span>{index ?? "//"}</span><span>{label}</span></div> : null}
+      {(index || label) ? (
+        <div className="technical-frame__meta relative z-10 flex items-center justify-between text-xs text-[#797681] mb-4 pb-2 border-b border-white/[0.06]" aria-hidden="true">
+          <span className="font-semibold text-[#9A71FF]">{index}</span>
+          <span>{label}</span>
+        </div>
+      ) : null}
       <div className="relative z-10">{children}</div>
-      <span className="technical-frame__node technical-frame__node--start" aria-hidden="true" />
-      <span className="technical-frame__node technical-frame__node--end" aria-hidden="true" />
     </Component>
   );
 }

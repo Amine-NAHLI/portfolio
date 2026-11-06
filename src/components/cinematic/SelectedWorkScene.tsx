@@ -270,9 +270,6 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
               ("categories" in project && Array.isArray(project.categories) && project.categories[0]) ||
               ("category" in project && typeof (project as DisplayProjectItem).category === "string" && (project as DisplayProjectItem).category) ||
               "PROJET INGÉNIEUR";
-            const projectYear =
-              ("year" in project && typeof (project as DisplayProjectItem).year === "string" && (project as DisplayProjectItem).year) ||
-              "2024 — 2026";
 
             return (
               <div

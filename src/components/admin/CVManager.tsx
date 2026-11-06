@@ -293,4 +293,7 @@ export function CVManager() {
           subtitle="Version officielle servie sur /en et /en/cv"
           defaultFilename="Amine_Nahli_CV_EN.pdf"
         />
-  
+      </div>
+    </div>
+  );
+}

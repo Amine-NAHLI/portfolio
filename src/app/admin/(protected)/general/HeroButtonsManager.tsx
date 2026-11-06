@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Plus, Trash2, ArrowUp, ArrowDown, Save } from "lucide-react";
-import type { HeroActionButton } from "@/content/dynamic-copy";
-import { DEFAULT_HERO_BUTTONS } from "@/content/dynamic-copy";
+import type { HeroActionButton } from "@/content/hero-buttons";
+import { DEFAULT_HERO_BUTTONS } from "@/content/hero-buttons";
 import { saveHeroButtons } from "./actions";
 
 interface Props {

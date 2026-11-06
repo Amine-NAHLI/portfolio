@@ -7,8 +7,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
-import type { HeroActionButton } from "@/content/dynamic-copy";
-import { DEFAULT_HERO_BUTTONS } from "@/content/dynamic-copy";
+import type { HeroActionButton } from "@/content/hero-buttons";
+import { DEFAULT_HERO_BUTTONS } from "@/content/hero-buttons";
 
 interface HeroSceneProps {
   locale: Locale;

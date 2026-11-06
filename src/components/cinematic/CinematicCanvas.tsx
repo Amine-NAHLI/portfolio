@@ -38,7 +38,6 @@ export default function CinematicCanvas({
   locale,
   siteName,
   dynamicCopy,
-  introduction,
   projects,
   journey,
   timelineItems,

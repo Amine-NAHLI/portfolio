@@ -32,6 +32,11 @@ export default function SmoothScroll() {
         clearTimeout(t1);
         clearTimeout(t2);
       };
+    } else {
+      window.scrollTo(0, 0);
+      if (window.__lenis) {
+        window.__lenis.scrollTo(0, { immediate: true });
+      }
     }
   }, [pathname]);
 
@@ -44,6 +49,11 @@ export default function SmoothScroll() {
     // Prevent browser native jump from fighting Lenis on page load/refresh
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
+    }
+
+    // Force window to top immediately if no anchor hash is specified
+    if (!window.location.hash) {
+      window.scrollTo(0, 0);
     }
 
     const lenis = new Lenis({
@@ -103,6 +113,12 @@ export default function SmoothScroll() {
 
     // Make lenis globally accessible for navbar and in-page anchor links
     window.__lenis = lenis;
+
+    // Reset scroll to top immediately if no anchor hash in URL
+    if (!window.location.hash) {
+      window.scrollTo(0, 0);
+      lenis.scrollTo(0, { immediate: true });
+    }
 
     // Synchronize Lenis scroll event with ScrollTrigger calculations
     lenis.on("scroll", ScrollTrigger.update);

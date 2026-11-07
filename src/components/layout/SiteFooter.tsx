@@ -117,6 +117,21 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-[#797681]">
           <p>© {year} {siteConfig.name}. {dictionary.footer.rights}</p>
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/${locale === "fr" ? "en" : "fr"}`}
+              className="hover:text-[#f3f1f7] transition-colors"
+            >
+              {locale === "fr" ? "English version" : "Version française"}
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link
+              href="/admin"
+              className="hover:text-[#f3f1f7] transition-colors"
+            >
+              {locale === "fr" ? "Console d’administration" : "Admin console"}
+            </Link>
+          </div>
           <p className="flex items-center gap-2">
             <span>Next.js</span>
             <span className="text-white/20">·</span>

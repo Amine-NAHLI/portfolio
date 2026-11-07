@@ -75,7 +75,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
     <section
       ref={containerRef}
       id="contact"
-      className="relative min-h-[85svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-between overflow-hidden scroll-mt-24"
+      className="relative min-h-[80svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-center overflow-hidden scroll-mt-24"
     >
       {/* Background Ambient Glow */}
       <div
@@ -187,22 +187,6 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
               </div>
             </a>
           )}
-        </div>
-      </div>
-
-      {/* Minimal Footer Strip */}
-      <div className="relative z-10 mx-auto max-w-7xl w-full pt-16 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.08] text-xs text-[#797681]">
-        <div>
-          © {new Date().getFullYear()} Amine Nahli · Portfolio Ingénieur
-        </div>
-        <div className="flex items-center gap-6">
-          <Link href={`/${locale === "fr" ? "en" : "fr"}`} className="hover:text-white transition-colors">
-            {locale === "fr" ? "English version" : "Version française"}
-          </Link>
-          <span className="text-white/20">/</span>
-          <Link href="/admin" className="hover:text-white transition-colors">
-            Console d&apos;administration
-          </Link>
         </div>
       </div>
     </section>

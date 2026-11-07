@@ -99,7 +99,7 @@ export function GlobalLoader() {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[99999] pointer-events-none flex flex-col items-center justify-center bg-bg-page"
+      className="fixed inset-0 z-[99999] pointer-events-auto flex flex-col items-center justify-center bg-bg-page"
       initial={{ opacity: 1 }}
       exit={{ 
         opacity: 0, 

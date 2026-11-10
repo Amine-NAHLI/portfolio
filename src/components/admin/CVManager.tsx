@@ -50,7 +50,7 @@ function SingleCVCard({
     exists: true,
     size: 0,
     updatedAt: null,
-    url: `/${defaultFilename}`,
+    url: `/cv?locale=${locale}&disposition=inline`,
     filename: defaultFilename,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -83,8 +83,8 @@ function SingleCVCard({
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      setErrorMessage("Le fichier est trop lourd (maximum 15 Mo).");
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMessage("Le fichier est trop lourd (maximum 5 Mo).");
       return;
     }
 
@@ -186,7 +186,7 @@ function SingleCVCard({
         </div>
 
         <a
-          href={cvInfo.url}
+          href={cvInfo.updatedAt ? `${cvInfo.url}${cvInfo.url.includes("?") ? "&" : "?"}v=${encodeURIComponent(cvInfo.updatedAt)}` : cvInfo.url}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs font-mono text-[#f3f1f7] hover:border-[#9A71FF] hover:text-[#9A71FF] transition-colors shrink-0"
@@ -240,7 +240,7 @@ function SingleCVCard({
             Glissez-déposez le fichier PDF ici, ou <span className="text-[#9A71FF] underline underline-offset-2">parcourez vos fichiers</span>
           </p>
           <p className="text-[11px] text-[#797681]">
-            Format PDF uniquement · Taille max 15 Mo
+            Format PDF uniquement · Taille max 5 Mo
           </p>
         </div>
 
@@ -290,7 +290,7 @@ export function CVManager() {
         <SingleCVCard
           locale="en"
           title="Resume / CV (English)"
-          subtitle="Version officielle servie sur /en et /en/cv"
+          subtitle="Version officielle servie sur /en et /cv?locale=en"
           defaultFilename="Amine_Nahli_CV_EN.pdf"
         />
       </div>

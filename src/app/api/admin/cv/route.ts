@@ -1,82 +1,95 @@
-import { NextResponse } from "next/server";
-import { stat, writeFile } from "node:fs/promises";
+import { NextResponse, type NextRequest } from "next/server";
+import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminContext } from "@/lib/auth/admin";
+import { acceptsSameOriginMutation } from "@/lib/security/request";
+import { CV_MAX_FILE_BYTES, CV_MAX_REQUEST_BYTES, getCvAssetInfo } from "@/features/cv/config";
+import {
+  getActiveCvStatus,
+  hasSupabaseServerStorage,
+  syncLocalPublicCvIfWritable,
+  uploadCvToStorage,
+} from "@/features/cv/storage";
 
-function getCvDetails(locale: string | null) {
-  const isEn = locale === "en";
-  const filename = isEn ? "Amine_Nahli_CV_EN.pdf" : "Amine_Nahli_CV.pdf";
-  return {
-    filename,
-    filePath: resolve("public", filename),
-    url: `/${filename}`,
-  };
+export const runtime = "nodejs";
+
+function fail(error: string, status: number) {
+  return NextResponse.json({ error }, { status, headers: { "Cache-Control": "private, no-store" } });
 }
 
-const MAX_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
-
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const locale = searchParams.get("locale");
-    const { filename, filePath, url } = getCvDetails(locale);
-
-    const fileStat = await stat(filePath);
-    return NextResponse.json({
-      exists: true,
-      size: fileStat.size,
-      updatedAt: fileStat.mtime.toISOString(),
-      url,
-      filename,
-    });
-  } catch {
-    const { searchParams } = new URL(req.url);
-    const locale = searchParams.get("locale");
-    const { filename, url } = getCvDetails(locale);
-
-    return NextResponse.json({
-      exists: false,
-      size: 0,
-      updatedAt: null,
-      url,
-      filename,
-    });
+export async function GET(req: NextRequest) {
+  const context = await getAdminContext();
+  if (!context) {
+    return fail("Non autorisé. Accès administrateur requis.", 401);
   }
+
+  const { searchParams } = new URL(req.url);
+  const info = getCvAssetInfo(searchParams.get("locale"));
+  const status = await getActiveCvStatus(info);
+
+  return NextResponse.json(status, { headers: { "Cache-Control": "private, no-store" } });
 }
 
-export async function POST(req: Request) {
-  try {
-    const admin = await getAdminContext();
-    if (!admin) {
-      return NextResponse.json({ error: "Non autorisé. Accès administrateur requis." }, { status: 401 });
-    }
+export async function POST(req: NextRequest) {
+  if (!acceptsSameOriginMutation(req)) {
+    return fail("Requête refusée.", 403);
+  }
 
+  const contentLength = Number(req.headers.get("content-length") ?? "0");
+  if (!Number.isFinite(contentLength) || contentLength < 0 || contentLength > CV_MAX_REQUEST_BYTES) {
+    return fail("Le fichier dépasse la taille maximale autorisée (5 Mo).", 413);
+  }
+
+  if (!req.headers.get("content-type")?.toLowerCase().startsWith("multipart/form-data;")) {
+    return fail("Format de requête invalide.", 415);
+  }
+
+  const context = await getAdminContext();
+  if (!context) {
+    return fail("Non autorisé. Accès administrateur requis.", 401);
+  }
+
+  try {
     const formData = await req.formData();
     const file = formData.get("file");
-    const locale = formData.get("locale")?.toString() || "fr";
-    const { filename, filePath, url } = getCvDetails(locale);
+    const info = getCvAssetInfo(formData.get("locale")?.toString());
 
-    if (!file || typeof file === "string") {
-      return NextResponse.json({ error: "Aucun fichier PDF fourni." }, { status: 400 });
+    if (!(file instanceof File)) {
+      return fail("Aucun fichier PDF fourni.", 400);
     }
 
-    const blob = file as File;
-
-    if (!blob.name.toLowerCase().endsWith(".pdf") && blob.type !== "application/pdf") {
-      return NextResponse.json({ error: "Format non valide. Seuls les fichiers PDF (.pdf) sont acceptés." }, { status: 400 });
+    if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
+      return fail("Format non valide. Seuls les fichiers PDF (.pdf) sont acceptés.", 400);
     }
 
-    if (blob.size > MAX_SIZE_BYTES) {
-      return NextResponse.json({ error: "Le fichier dépasse la taille maximale autorisée (15 Mo)." }, { status: 400 });
+    if (file.size <= 0 || file.size > CV_MAX_FILE_BYTES) {
+      return fail("Le fichier dépasse la taille maximale autorisée (5 Mo).", 400);
     }
 
-    const bytes = await blob.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const headerSignature = new TextDecoder().decode(await file.slice(0, 5).arrayBuffer());
+    if (headerSignature !== "%PDF-") {
+      return fail("Le contenu du fichier n’est pas un document PDF valide.", 422);
+    }
 
-    await writeFile(filePath, buffer);
+    const bytes = new Uint8Array(await file.arrayBuffer());
 
-    // Revalidate paths & tags
+    if (hasSupabaseServerStorage()) {
+      await uploadCvToStorage(info, bytes);
+      // Best-effort local mirror in dev; ignored on read-only serverless filesystems
+      await syncLocalPublicCvIfWritable(info.filename, bytes);
+    } else {
+      await writeFile(resolve("public", info.filename), bytes);
+    }
+
+    await context.supabase.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "update",
+      entity_type: "cv_document",
+      entity_id: info.filename,
+      details: { locale: info.locale, size_bytes: file.size },
+    });
+
     try {
       revalidatePath("/cv");
       revalidatePath("/");
@@ -88,20 +101,22 @@ export async function POST(req: Request) {
       console.warn("Revalidation error after CV upload:", e);
     }
 
-    return NextResponse.json({
-      success: true,
-      size: blob.size,
-      updatedAt: new Date().toISOString(),
-      url,
-      filename,
-      message: `Curriculum Vitae (${locale.toUpperCase()}) mis à jour avec succès !`,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        size: file.size,
+        updatedAt: new Date().toISOString(),
+        url: info.previewUrl,
+        filename: info.filename,
+        message: `Curriculum Vitae (${info.locale.toUpperCase()}) mis à jour avec succès !`,
+      },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
   } catch (error) {
     console.error("CV upload error:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Erreur interne lors du téléchargement du CV." },
-      { status: 500 }
+    return fail(
+      error instanceof Error ? error.message : "Erreur interne lors de la publication du CV.",
+      500,
     );
   }
 }
-

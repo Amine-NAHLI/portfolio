@@ -6,6 +6,7 @@ import { X, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import type { Locale } from "@/i18n/config";
+import { getCvDownloadProps } from "@/lib/utils";
 
 interface FullscreenMenuProps {
   isOpen: boolean;
@@ -198,14 +199,14 @@ export default function FullscreenMenu({
                 LINKEDIN
               </a>
             )}
-            <Link
-              href={contactLinks.resume}
-              target="_blank"
-              rel="noreferrer"
+            <a
+              {...getCvDownloadProps(contactLinks.resume, locale)}
+              data-analytics-event="cv_open"
+              onClick={onClose}
               className="hover:text-white transition-colors text-[#9A71FF]"
             >
-              CV OFFICIEL [PDF]
-            </Link>
+              {locale === "fr" ? "TÉLÉCHARGER CV [PDF]" : "DOWNLOAD CV [PDF]"}
+            </a>
           </div>
         </div>
       </div>

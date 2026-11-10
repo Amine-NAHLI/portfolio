@@ -2,13 +2,14 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, FileText, Briefcase, Mail, Award, Compass } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Download, Briefcase, Mail, Award, Compass } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
 import type { HeroActionButton } from "@/content/hero-buttons";
 import { DEFAULT_HERO_BUTTONS } from "@/content/hero-buttons";
+import { getCvDownloadProps } from "@/lib/utils";
 
 interface HeroSceneProps {
   locale: Locale;
@@ -83,7 +84,7 @@ export default function HeroScene({
   const getButtonIcon = (id: string) => {
     switch (id) {
       case "cv":
-        return <FileText className="size-4 text-[#9A71FF]" />;
+        return <Download className="size-4 text-[#9A71FF]" />;
       case "projects":
         return <ArrowUpRight className="size-4" />;
       case "contact":
@@ -97,8 +98,11 @@ export default function HeroScene({
     }
   };
 
+  const isCvButton = (btn: HeroActionButton) =>
+    btn.id === "cv" || btn.url === "/cv" || btn.url.startsWith("/cv?");
+
   const resolveButtonUrl = (btn: HeroActionButton) => {
-    if (btn.id === "cv") {
+    if (isCvButton(btn)) {
       return contactLinks.resume;
     }
     if (btn.url.startsWith("#")) {
@@ -158,33 +162,49 @@ export default function HeroScene({
           {activeButtons.map((btn) => {
             const label = locale === "fr" ? btn.labelFr : btn.labelEn;
             const targetUrl = resolveButtonUrl(btn);
-            const isExternal = btn.id === "cv" || targetUrl.startsWith("http");
+            const isCv = isCvButton(btn);
+            const isPrimary = btn.style === "primary";
+            const buttonClassName = isPrimary
+              ? "inline-flex items-center gap-2 rounded-full bg-[#f3f1f7] px-6 py-3 text-xs sm:text-sm font-bold text-[#101015] shadow-lg transition-all duration-200 hover:bg-white hover:scale-[1.02] active:scale-[0.98]"
+              : "inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-xs sm:text-sm font-semibold text-[#f3f1f7] transition-all duration-200 hover:bg-white/[0.08]";
 
-            if (btn.style === "primary") {
+            const content = isPrimary ? (
+              <>
+                <span>{label}</span>
+                {getButtonIcon(btn.id)}
+              </>
+            ) : (
+              <>
+                {getButtonIcon(btn.id)}
+                <span>{label}</span>
+              </>
+            );
+
+            if (isCv) {
+              const cvProps = getCvDownloadProps(targetUrl, locale);
               return (
-                <Link
+                <a
                   key={btn.id}
-                  href={targetUrl}
-                  target={isExternal ? "_blank" : undefined}
-                  rel={isExternal ? "noreferrer" : undefined}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#f3f1f7] px-6 py-3 text-xs sm:text-sm font-bold text-[#101015] shadow-lg transition-all duration-200 hover:bg-white hover:scale-[1.02] active:scale-[0.98]"
+                  href={cvProps.href}
+                  download={cvProps.download}
+                  data-analytics-event="cv_open"
+                  className={buttonClassName}
                 >
-                  <span>{label}</span>
-                  {getButtonIcon(btn.id)}
-                </Link>
+                  {content}
+                </a>
               );
             }
 
+            const isExternal = targetUrl.startsWith("http");
             return (
               <Link
                 key={btn.id}
                 href={targetUrl}
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noreferrer" : undefined}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-xs sm:text-sm font-semibold text-[#f3f1f7] transition-all duration-200 hover:bg-white/[0.08]"
+                className={buttonClassName}
               >
-                {getButtonIcon(btn.id)}
-                <span>{label}</span>
+                {content}
               </Link>
             );
           })}

@@ -4,7 +4,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   outputFileTracingIncludes: {
-    "/cv": ["./CV/cv.html"],
+    "/cv": [
+      "./public/Amine_Nahli_CV.pdf",
+      "./public/Amine_Nahli_CV_EN.pdf",
+      "./CV/cv.html",
+    ],
   },
   async headers() {
     return [

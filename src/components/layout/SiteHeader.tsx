@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, Languages, Menu, Search, X } from "lucide-react";
+import { Download, Languages, Menu, Search, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getAlternateLocale, type Locale } from "@/i18n/config";
-import { cn } from "@/lib/utils";
+import { cn, getCvDownloadProps } from "@/lib/utils";
 import Magnetic from "@/components/ui/Magnetic";
 
 type SiteHeaderProps = { 
@@ -191,15 +191,13 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
             </Magnetic>
 
             <Magnetic intensity={0.1}>
-              <Link 
-                href={resumeLink} 
-                target="_blank" 
-                rel="noreferrer" 
+              <a 
+                {...getCvDownloadProps(resumeLink, locale)} 
                 data-analytics-event="cv_open" 
                 className="hidden h-9 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/15 px-4 font-sans text-xs font-semibold text-accent shadow-[0_0_15px_rgba(59,130,246,0.15)] transition-all hover:bg-accent hover:text-bg-page hover:shadow-[0_0_25px_rgba(59,130,246,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex"
               >
                 {dictionary.nav.resume}
-              </Link>
+              </a>
             </Magnetic>
 
             <button 
@@ -234,9 +232,9 @@ export default function SiteHeader({ locale, dictionary, resumeLink, sectionsVis
             })}
           </nav>
           <div className="mt-10 grid gap-3 border-t border-border pt-6">
-            <Link href={resumeLink} target="_blank" rel="noreferrer" data-analytics-event="cv_open" onClick={closeMenu} className="button-primary rounded-full">
-              {dictionary.nav.resume}<ArrowUpRight aria-hidden="true" className="size-4" />
-            </Link>
+            <a {...getCvDownloadProps(resumeLink, locale)} data-analytics-event="cv_open" onClick={closeMenu} className="button-primary rounded-full">
+              {dictionary.nav.resume}<Download aria-hidden="true" className="size-4" />
+            </a>
             <Link href={alternatePath} hrefLang={alternateLocale} onClick={() => { rememberLocale(); closeMenu(); }} data-analytics-event="language_change" className="button-secondary rounded-full">
               <Languages aria-hidden="true" className="size-4" />{dictionary.alternateLanguageName}
             </Link>

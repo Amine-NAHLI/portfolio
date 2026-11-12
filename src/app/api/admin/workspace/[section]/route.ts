@@ -4,6 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminContext, type AdminContext } from "@/lib/auth/admin";
 import { acceptsSameOriginMutation, readJsonObject } from "@/lib/security/request";
 import { normalizeProjectCategories } from "@/lib/project-categories";
+import { parseAiJson, requestChatbotCompletion } from "@/lib/ai/chatbot-client";
 
 export const runtime = "nodejs";
 
@@ -27,47 +28,33 @@ function client(context: AdminContext): UntypedClient {
 
 async function filterCoreTechnologies(technologies: string[]): Promise<string[]> {
   if (!technologies.length) return [];
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) return technologies; // fallback to all if no key
 
   const systemPrompt = `You are a technical expert.
 I will give you a list of technologies. You must filter this list.
 Keep ONLY programming languages, major frameworks, and main dev tools (e.g., Python, React, Tailwind CSS, Docker, SQLite).
 Remove ALL specific libraries, modules, and minor packages (e.g., pandas, numpy, scikit-learn, psutil, joblib, random forest).
 
-Output strict JSON:
+Output strict JSON only (no markdown fences):
 {
   "core": ["kept_tech1", "kept_tech2"]
 }`;
 
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        temperature: 0,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Technologies: ${JSON.stringify(technologies)}` },
-        ],
-      }),
-      signal: AbortSignal.timeout(15_000),
+    const completion = await requestChatbotCompletion({
+      temperature: 0,
+      timeoutMs: 15_000,
+      jsonMode: true,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Technologies: ${JSON.stringify(technologies)}` },
+      ],
     });
-
-    if (response.ok) {
-      const payload = await response.json();
-      const content = payload.choices?.[0]?.message?.content;
-      if (content) {
-        const result = JSON.parse(content);
-        if (Array.isArray(result.core)) {
-          return result.core;
-        }
-      }
+    const result = parseAiJson<{ core?: unknown }>(completion.content);
+    if (Array.isArray(result.core)) {
+      return result.core.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
     }
   } catch (error) {
-    console.error("Groq core tech filtering failed:", error);
+    console.error("AI core tech filtering failed:", error);
   }
   return technologies; // fallback
 }
@@ -493,30 +480,17 @@ async function updateRecord(context: AdminContext, section: Section, id: string,
     if (fetchError || !testimonial) throw fetchError ?? new Error("Avis introuvable.");
 
     if (status === "approved" && testimonial.status !== "approved") {
-      const apiKey = process.env.GROQ_API_KEY;
-      if (!apiKey) throw new Error("Clé API Groq manquante.");
-
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          temperature: 0,
-          response_format: { type: "json_object" },
-          messages: [
-            { role: "system", content: "You are a bilingual language classifier and translator. Analyze the following testimonial message. First, detect if it's in French ('fr') or English ('en'). Second, translate the message to the OTHER language. Return ONLY a valid JSON object strictly matching this format: {\"detected_lang\":\"fr\",\"translated_lang\":\"en\",\"translated_message\":\"...\"}. Do not wrap it in markdown." },
-            { role: "user", content: testimonial.message },
-          ],
-        }),
-        signal: AbortSignal.timeout(20_000),
+      const completion = await requestChatbotCompletion({
+        temperature: 0,
+        timeoutMs: 20_000,
+        jsonMode: true,
+        messages: [
+          { role: "system", content: "You are a bilingual language classifier and translator. Analyze the following testimonial message. First, detect if it's in French ('fr') or English ('en'). Second, translate the message to the OTHER language. Return ONLY a valid JSON object strictly matching this format: {\"detected_lang\":\"fr\",\"translated_lang\":\"en\",\"translated_message\":\"...\"}. Do not wrap it in markdown." },
+          { role: "user", content: testimonial.message },
+        ],
       });
 
-      if (!response.ok) throw new Error("Erreur de l'API de traduction.");
-      const payload = await response.json();
-      const content = payload.choices?.[0]?.message?.content;
-      if (!content) throw new Error("Réponse de traduction invalide.");
-      
-      const parsed = JSON.parse(content) as { detected_lang: string; translated_lang: string; translated_message: string };
+      const parsed = parseAiJson<{ detected_lang: string; translated_lang: string; translated_message: string }>(completion.content);
       
       const { error: updateError } = await db.from("testimonials").update({ 
         status, 

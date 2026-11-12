@@ -3,13 +3,7 @@ import { NextResponse } from "next/server";
 import { getPublishedProjects } from "@/features/projects/data";
 import { getPublicJourney, getPublicCertifications, getPublicSkillGroups, getPublicContactLinks } from "@/features/portfolio/data";
 import { Locale } from "@/i18n/config";
-
-const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const NVIDIA_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b";
-const NVIDIA_API_KEY =
-  process.env.NVIDIA_API_KEY || "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";
-
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+import { streamChatbotCompletion } from "@/lib/ai/chatbot-client";
 
 function buildSystemPrompt(locale: Locale, data: any, currentPath: string) {
   const allowedProjectLinks = data.projects && data.projects.length > 0
@@ -64,61 +58,17 @@ export async function POST(req: Request) {
     );
 
     const nvidiaMessages = [
-      { role: "system", content: systemPrompt },
-      ...messages.map((m: any) => ({ role: m.role, content: m.content })),
+      { role: "system" as const, content: systemPrompt },
+      ...messages.map((m: any) => ({ role: m.role as "user" | "assistant" | "system", content: String(m.content ?? "") })),
     ];
 
-    let response: Response | null = null;
-
-    try {
-      response = await fetch(NVIDIA_API_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${NVIDIA_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: NVIDIA_MODEL,
-          messages: nvidiaMessages,
-          temperature: 0.7,
-          top_p: 0.95,
-          max_tokens: 2048,
-          chat_template_kwargs: { enable_thinking: false },
-          stream: true,
-        }),
-        signal: AbortSignal.timeout(30000),
-      });
-    } catch (e) {
-      console.warn("NVIDIA fetch failed or timed out:", e);
-    }
-
-    if (!response || !response.ok) {
-      const errText = response ? await response.text() : "Timeout / Network failure";
-      console.warn("NVIDIA Nemotron error or failed, falling back to Groq:", errText);
-      const groqKey = process.env.GROQ_API_KEY_CHATBOOT || process.env.GROQ_API_KEY;
-      if (groqKey) {
-        response = await fetch(GROQ_API_URL, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${groqKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: nvidiaMessages,
-            temperature: 0.3,
-            max_tokens: 1024,
-            stream: true,
-          }),
-        });
-      }
-    }
-
-    if (!response || !response.ok) {
-      const err = response ? await response.text() : "No AI backend available";
-      console.error("AI API Error:", err);
-      return NextResponse.json({ error: "Failed to generate response", details: err }, { status: 500 });
-    }
+    const { response } = await streamChatbotCompletion({
+      messages: nvidiaMessages,
+      temperature: 0.7,
+      topP: 0.95,
+      maxTokens: 2048,
+      timeoutMs: 30_000,
+    });
 
     // Return the stream directly to the client
     return new Response(response.body, {

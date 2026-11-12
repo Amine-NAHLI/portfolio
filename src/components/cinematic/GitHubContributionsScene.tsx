@@ -81,11 +81,11 @@ export default function GitHubContributionsScene({
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full bg-[#0B0510] opacity-80 blur-[190px]"
+        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full bg-[#070A09] opacity-80 blur-[190px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#9A71FF]/5 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#8FB3A2]/5 blur-[160px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
@@ -93,7 +93,7 @@ export default function GitHubContributionsScene({
         {/* Clean, Non-AI Header */}
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <span className="font-mono text-xs uppercase tracking-wider text-[#9A71FF] block mb-3">
+            <span className="font-mono text-xs uppercase tracking-wider text-[#8FB3A2] block mb-3">
               {locale === "fr" ? "// ACTIVITÉ GITHUB & CODE OUVERT" : "// GITHUB TELEMETRY & OPEN SOURCE"}
             </span>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
@@ -110,7 +110,7 @@ export default function GitHubContributionsScene({
             href={githubUrl}
             target="_blank"
             rel="noreferrer"
-            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-white/10 bg-[#0B0510] px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] backdrop-blur-md transition-all duration-300 hover:border-[#9A71FF] hover:bg-[#9A71FF] hover:text-[#000000] hover:shadow-[0_0_25px_rgba(154,113,255,0.25)]"
+            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-white/10 bg-[#070A09] px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] backdrop-blur-md transition-all duration-300 hover:border-[#8FB3A2] hover:bg-[#8FB3A2] hover:text-[#000000] hover:shadow-[0_0_25px_rgba(143, 179, 162,0.25)]"
           >
             <span>GitHub / Amine-NAHLI</span>
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -121,7 +121,7 @@ export default function GitHubContributionsScene({
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           
           {/* Card 1: Real Total Contributions */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-7 shadow-xl">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-7 shadow-xl">
             <div className="text-xs font-mono uppercase tracking-wider text-[#797681] mb-5">
               {locale === "fr" ? "Volume Annuel" : "Annual Volume"}
             </div>
@@ -143,7 +143,7 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 2: Real Public Repositories */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-7 shadow-xl">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-7 shadow-xl">
             <div className="text-xs font-mono uppercase tracking-wider text-[#797681] mb-5">
               {locale === "fr" ? "Dépôts Publics" : "Public Repositories"}
             </div>
@@ -152,7 +152,7 @@ export default function GitHubContributionsScene({
               <span className="font-display text-4xl sm:text-5xl font-black text-[#f3f1f7] tracking-tight">
                 {stats.totalRepositories}
               </span>
-              <span className="text-xs font-mono text-[#9A71FF] font-bold uppercase tracking-wider">
+              <span className="text-xs font-mono text-[#8FB3A2] font-bold uppercase tracking-wider">
                 {locale === "fr" ? "Projets Ouverts" : "Open Repos"}
               </span>
             </div>
@@ -165,7 +165,7 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 3: Real Dominant Stack Distribution */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-7 shadow-xl">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-7 shadow-xl">
             <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#797681] mb-4">
               <span>{locale === "fr" ? "Stack Dominante" : "Core Tech Stack"}</span>
               <span className="text-[#f3f1f7] font-semibold">{stats.topLanguage?.name || "Python"}</span>
@@ -178,7 +178,7 @@ export default function GitHubContributionsScene({
                   key={lang.name}
                   style={{
                     width: `${lang.percentage}%`,
-                    backgroundColor: lang.color || "#9A71FF",
+                    backgroundColor: lang.color || "#8FB3A2",
                   }}
                   className="h-full transition-all duration-500"
                   title={`${lang.name}: ${lang.percentage.toFixed(1)}%`}
@@ -195,7 +195,7 @@ export default function GitHubContributionsScene({
                 >
                   <span
                     className="size-2 rounded-full"
-                    style={{ backgroundColor: lang.color || "#9A71FF" }}
+                    style={{ backgroundColor: lang.color || "#8FB3A2" }}
                   />
                   <span>{lang.name}</span>
                   <span className="text-[#797681] font-mono">{lang.percentage.toFixed(0)}%</span>
@@ -207,7 +207,7 @@ export default function GitHubContributionsScene({
 
         {/* 100% Real GitHub Contribution Heatmap Matrix (Only shown when real GitHub data exists) */}
         {realWeeks && (
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] p-6 sm:p-8 shadow-2xl">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-8 shadow-2xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
                 <h3 className="font-display text-lg sm:text-xl font-bold text-[#f3f1f7]">

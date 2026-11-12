@@ -134,12 +134,12 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
       className="relative w-full bg-[#101015] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/5 overflow-hidden"
     >
       {/* Kinetic Typography Marquee Banner */}
-      <div className="relative mb-20 -mx-4 sm:-mx-8 lg:-mx-14 border-y border-white/10 bg-[#17161e]/40 py-5 overflow-hidden whitespace-nowrap backdrop-blur-md">
+      <div className="relative mb-20 -mx-4 sm:-mx-8 lg:-mx-14 border-y border-white/10 bg-[#0C100E]/40 py-5 overflow-hidden whitespace-nowrap backdrop-blur-md">
         <div ref={marqueeRef} className="flex gap-12 font-mono text-xs sm:text-sm font-semibold tracking-widest text-[#f3f1f7]/60 uppercase will-change-transform">
           {[...marqueeKeywords, ...marqueeKeywords].map((word, i) => (
             <div key={i} className="flex items-center gap-12">
-              <span className="hover:text-[#9A71FF] transition-colors">{word}</span>
-              <span className="text-[#9A71FF]/50">✦</span>
+              <span className="hover:text-[#8FB3A2] transition-colors">{word}</span>
+              <span className="text-[#8FB3A2]/50">✦</span>
             </div>
           ))}
         </div>
@@ -149,7 +149,7 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
         {/* Header */}
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div>
-            <div className="inline-flex items-center gap-2 font-mono text-xs font-semibold text-[#9A71FF] uppercase tracking-widest mb-3">
+            <div className="inline-flex items-center gap-2 font-mono text-xs font-semibold text-[#8FB3A2] uppercase tracking-widest mb-3">
               <Wrench className="size-3.5" />
               <span>{"//"} 07 — EXPERTISE & DOMAINS</span>
             </div>
@@ -173,14 +173,14 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
             return (
               <div
                 key={cat.id}
-                className="skill-block group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-[#17161e]/60 p-7 backdrop-blur-xl transition-all duration-300 hover:border-[#9A71FF]/40 hover:bg-[#17161e]"
+                className="skill-block group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-[#0C100E]/60 p-7 backdrop-blur-xl transition-all duration-300 hover:border-[#8FB3A2]/40 hover:bg-[#0C100E]"
               >
                 <div>
                   <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
                     <h3 className="font-display text-lg font-bold text-[#f3f1f7] group-hover:text-white">
                       {title}
                     </h3>
-                    <Icon className="size-5 text-[#9A71FF]" />
+                    <Icon className="size-5 text-[#8FB3A2]" />
                   </div>
 
                   <ul className="space-y-4">
@@ -199,7 +199,7 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
 
                 <div className="pt-6 mt-6 border-t border-white/5 flex items-center justify-between font-mono text-[10px] text-[#797681]">
                   <span>VÉRIFIÉ</span>
-                  <span className="text-[#9A71FF]">● ACTIF</span>
+                  <span className="text-[#8FB3A2]">● ACTIF</span>
                 </div>
               </div>
             );
@@ -209,7 +209,7 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
         <div className="mt-14 flex items-center justify-between border-t border-white/10 pt-6">
           <Link
             href={`/${locale}/skills`}
-            className="inline-flex items-center gap-2 font-mono text-xs font-semibold tracking-wider text-[#f3f1f7] hover:text-[#9A71FF] transition-colors"
+            className="inline-flex items-center gap-2 font-mono text-xs font-semibold tracking-wider text-[#f3f1f7] hover:text-[#8FB3A2] transition-colors"
           >
             <span>{locale === "fr" ? "VOIR TOUTES LES COMPÉTENCES & CERTIFICATIONS" : "VIEW DETAILED SKILLS & EVIDENCE"}</span>
             <ArrowUpRight className="size-4" />

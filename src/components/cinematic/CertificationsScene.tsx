@@ -105,14 +105,14 @@ export default function CertificationsScene({
       {/* Background Accent Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full bg-[#9A71FF]/10 blur-[150px]"
+        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full bg-[#8FB3A2]/10 blur-[150px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Header */}
         <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3 block">
               {locale === "fr" ? "Diplômes & Accréditations" : "Verified Credentials"}
             </span>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7]">
@@ -149,7 +149,7 @@ export default function CertificationsScene({
         <div className="mt-12 flex items-center justify-between border-t border-white/[0.08] pt-6">
           <Link
             href={`/${locale}/certifications`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A71FF] hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#8FB3A2] hover:text-white transition-colors"
           >
             <span>
               {locale === "fr"

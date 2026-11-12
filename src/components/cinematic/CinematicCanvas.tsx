@@ -47,15 +47,15 @@ export default function CinematicCanvas({
   contactLinks,
 }: CinematicCanvasProps) {
   return (
-    <div className="relative w-full bg-[#000000] text-[#f3f1f7] selection:bg-[#9A71FF]/30 selection:text-white">
-      {/* Background Mixed Atmospheric Lighting: Black Pearl (#0E161A), Black Magic (#0B0510), Asphalt (#0C0404) */}
+    <div className="relative w-full bg-[#000000] text-[#f3f1f7] selection:bg-[#8FB3A2]/30 selection:text-white">
+      {/* Background Mixed Atmospheric Lighting: Black Pearl (#0E161A), Black Magic (#070A09), Asphalt (#0C0404) */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full bg-[#0E161A] opacity-60 blur-[200px] -z-10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full bg-[#0B0510] opacity-70 blur-[220px] -z-10"
+        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full bg-[#070A09] opacity-70 blur-[220px] -z-10"
       />
       <div
         aria-hidden="true"

@@ -256,7 +256,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
       {/* Background Ambient Lighting: Violet Neon & Obsidian */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full bg-[#9A71FF]/8 blur-[180px] -z-10"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full bg-[#8FB3A2]/8 blur-[180px] -z-10"
       />
       <div
         aria-hidden="true"
@@ -267,7 +267,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
         
         {/* Centered Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-2 sm:mb-4 shrink-0">
-          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-[#9A71FF] block mb-1.5 font-bold">
+          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-[#8FB3A2] block mb-1.5 font-bold">
             {locale === "fr" ? "// SÉLECTION DE RÉALISATIONS" : "// FEATURED WORK"}
           </span>
           <h2 className="font-display text-2xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-[#f3f1f7] leading-tight">
@@ -313,22 +313,22 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     backfaceVisibility: "hidden",
                     zIndex: (count - index) * 10,
                   }}
-                  className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br from-[#12091D] via-[#0B0510] to-[#06030A] px-5 py-4 sm:px-8 sm:py-6 transition-[border-color,box-shadow] duration-300 will-change-[transform,opacity] ${
+                  className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br from-[#0C1210] via-[#070A09] to-[#040605] px-5 py-4 sm:px-8 sm:py-6 transition-[border-color,box-shadow] duration-300 will-change-[transform,opacity] ${
                     isCurrent
-                      ? "pointer-events-auto border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.9),0_0_45px_rgba(154,113,255,0.1)] hover:border-[#9A71FF]/55 hover:shadow-[0_30px_95px_rgba(154,113,255,0.18)]"
+                      ? "pointer-events-auto border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.9),0_0_45px_rgba(143, 179, 162,0.1)] hover:border-[#8FB3A2]/55 hover:shadow-[0_30px_95px_rgba(143, 179, 162,0.18)]"
                       : isNextPeek
-                        ? "pointer-events-auto cursor-pointer border-white/10 shadow-[0_20px_55px_rgba(0,0,0,0.85)] hover:border-[#9A71FF]/35"
+                        ? "pointer-events-auto cursor-pointer border-white/10 shadow-[0_20px_55px_rgba(0,0,0,0.85)] hover:border-[#8FB3A2]/35"
                         : "pointer-events-none border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
                   }`}
                 >
                   {/* Subtle top ambient sheen & inner corner highlight */}
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9A71FF]/50 to-transparent"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8FB3A2]/50 to-transparent"
                   />
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#9A71FF]/10 blur-3xl"
+                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#8FB3A2]/10 blur-3xl"
                   />
 
                   {/* Top Card Bar */}
@@ -338,7 +338,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     }`}
                   >
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                      <span className="font-mono text-xs font-bold text-[#9A71FF] bg-[#9A71FF]/10 border border-[#9A71FF]/30 px-2.5 py-0.5 rounded-full shrink-0">
+                      <span className="font-mono text-xs font-bold text-[#8FB3A2] bg-[#8FB3A2]/10 border border-[#8FB3A2]/30 px-2.5 py-0.5 rounded-full shrink-0">
                         0{index + 1}
                       </span>
                       <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#797681] truncate">
@@ -354,7 +354,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                           rel="noopener noreferrer"
                           tabIndex={isCurrent ? 0 : -1}
                           aria-label="GitHub Repository"
-                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer relative z-30 ${
+                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#8FB3A2]/50 hover:bg-[#8FB3A2]/20 transition-all cursor-pointer relative z-30 ${
                             isCurrent ? "pointer-events-auto" : "pointer-events-none"
                           }`}
                           onClick={(e) => e.stopPropagation()}
@@ -371,7 +371,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                           rel="noopener noreferrer"
                           tabIndex={isCurrent ? 0 : -1}
                           aria-label="Live Demo"
-                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer relative z-30 ${
+                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#8FB3A2]/50 hover:bg-[#8FB3A2]/20 transition-all cursor-pointer relative z-30 ${
                             isCurrent ? "pointer-events-auto" : "pointer-events-none"
                           }`}
                           onClick={(e) => e.stopPropagation()}
@@ -389,7 +389,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     </h3>
 
                     {projectSubtitle && (
-                      <p className="text-xs sm:text-sm font-medium text-[#9A71FF] line-clamp-1">
+                      <p className="text-xs sm:text-sm font-medium text-[#8FB3A2] line-clamp-1">
                         {projectSubtitle}
                       </p>
                     )}
@@ -420,7 +420,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     <Link
                       href={`/${locale}/projects/${project.slug}`}
                       tabIndex={isCurrent ? 0 : -1}
-                      className={`inline-flex items-center gap-2 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-4 py-1.5 sm:px-5 sm:py-2 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm cursor-pointer relative z-30 ${
+                      className={`inline-flex items-center gap-2 rounded-full border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 px-4 py-1.5 sm:px-5 sm:py-2 text-xs font-mono font-semibold text-[#8FB3A2] hover:bg-[#8FB3A2] hover:text-black transition-all shadow-sm cursor-pointer relative z-30 ${
                         isCurrent ? "pointer-events-auto" : "pointer-events-none"
                       }`}
                       onClick={(e) => e.stopPropagation()}
@@ -449,7 +449,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
             
             {/* Step Counter */}
             <div className="flex items-center gap-2">
-              <Layers className="size-3.5 text-[#9A71FF]" />
+              <Layers className="size-3.5 text-[#8FB3A2]" />
               <span className="font-mono text-xs font-bold text-[#f3f1f7]">
                 0{activeIndex + 1}
               </span>
@@ -483,7 +483,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     aria-label={`Aller au projet ${dotIdx + 1}`}
                     className={`rounded-full transition-all cursor-pointer ${
                       dotIdx === activeIndex
-                        ? "w-6 h-2 bg-[#9A71FF] shadow-[0_0_10px_rgba(154,113,255,0.6)]"
+                        ? "w-6 h-2 bg-[#8FB3A2] shadow-[0_0_10px_rgba(143, 179, 162,0.6)]"
                         : "size-2 bg-white/20 hover:bg-white/40"
                     }`}
                   />
@@ -513,7 +513,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
 
           {/* Scroll Guide Indicator */}
           <div className="text-[11px] font-mono text-[#797681] flex items-center gap-2 text-center">
-            <span className="size-1.5 rounded-full bg-[#9A71FF] animate-pulse shrink-0" />
+            <span className="size-1.5 rounded-full bg-[#8FB3A2] animate-pulse shrink-0" />
             <span>
               {locale === "fr"
                 ? "Défilez ou utilisez les flèches pour passer d'un projet à l'autre"

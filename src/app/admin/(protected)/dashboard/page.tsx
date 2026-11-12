@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
       {/* Executive Welcome Hero Banner */}
       <section className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-surface/70 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl">
         <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-accent/15 blur-3xl" />
-        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-purple-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-[#8FB3A2]/10 blur-3xl" />
         
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>

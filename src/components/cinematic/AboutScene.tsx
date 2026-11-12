@@ -84,7 +84,7 @@ export default function AboutScene({
           {/* Left Column: Clean Editorial Portrait */}
           <div ref={imageRef} className="lg:col-span-5 flex justify-center">
             <div className="relative w-full max-w-[340px] sm:max-w-[390px]">
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-[#17161e] shadow-2xl">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-[#0C100E] shadow-2xl">
                 <Image
                   src="/nahli.png"
                   alt="Amine Nahli"
@@ -100,7 +100,7 @@ export default function AboutScene({
 
           {/* Right Column: Editorial Narrative */}
           <div ref={textRef} className="lg:col-span-7 flex flex-col justify-center">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3">
               {locale === "fr" ? "Profil & Vision" : "Profile & Vision"}
             </span>
 
@@ -109,11 +109,11 @@ export default function AboutScene({
                 <span>{aboutTitle}</span>
               ) : locale === "fr" ? (
                 <>
-                  Bâtir des solutions fiables, <span className="text-[#9A71FF]">sécurisées dès la conception.</span>
+                  Bâtir des solutions fiables, <span className="text-[#8FB3A2]">sécurisées dès la conception.</span>
                 </>
               ) : (
                 <>
-                  Engineering resilient systems, <span className="text-[#9A71FF]">secure by design.</span>
+                  Engineering resilient systems, <span className="text-[#8FB3A2]">secure by design.</span>
                 </>
               )}
             </h2>
@@ -177,7 +177,7 @@ export default function AboutScene({
             <div className="mt-7">
               <Link
                 href={`/${locale}#journey`}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-[#9A71FF] hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-[#8FB3A2] hover:text-white transition-colors"
               >
                 <span>{locale === "fr" ? "Découvrir mon parcours complet" : "Explore full journey"}</span>
                 <ArrowUpRight className="size-4" />

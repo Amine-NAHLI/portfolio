@@ -80,10 +80,10 @@ export function HeroButtonsManager({ initialButtons }: Props) {
   };
 
   return (
-    <section className="technical-frame mt-8 p-0 flex flex-col rounded-3xl border border-white/10 bg-[#0B0510] overflow-hidden shadow-2xl">
+    <section className="technical-frame mt-8 p-0 flex flex-col rounded-3xl border border-white/10 bg-[#070A09] overflow-hidden shadow-2xl">
       <div className="border-b border-white/10 px-6 py-5 bg-[#060605] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#9A71FF]">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#8FB3A2]">
             Configuration Visuelle
           </span>
           <h2 className="text-lg font-bold text-[#f3f1f7]">Boutons d&apos;Action de l&apos;Accueil (Hero)</h2>
@@ -94,7 +94,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
         <button
           type="button"
           onClick={addButton}
-          className="inline-flex items-center gap-2 rounded-xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-4 py-2 text-xs font-bold text-[#9A71FF] hover:bg-[#9A71FF]/20 transition-all cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-2 rounded-xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 px-4 py-2 text-xs font-bold text-[#8FB3A2] hover:bg-[#8FB3A2]/20 transition-all cursor-pointer self-start sm:self-auto"
         >
           <Plus className="size-4" />
           <span>Ajouter un bouton</span>
@@ -131,7 +131,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                       type="checkbox"
                       checked={btn.enabled}
                       onChange={() => toggleEnabled(index)}
-                      className="size-4 rounded accent-[#9A71FF] cursor-pointer"
+                      className="size-4 rounded accent-[#8FB3A2] cursor-pointer"
                     />
                     <span className="text-xs font-bold text-[#f3f1f7]">
                       {btn.enabled ? "Affiché sur l'accueil" : "Masqué"}
@@ -179,7 +179,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                     type="text"
                     value={btn.labelFr}
                     onChange={(e) => updateField(index, "labelFr", e.target.value)}
-                    className="rounded-xl border border-white/10 bg-[#0B0510] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                     required
                   />
                 </label>
@@ -190,7 +190,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                     type="text"
                     value={btn.labelEn}
                     onChange={(e) => updateField(index, "labelEn", e.target.value)}
-                    className="rounded-xl border border-white/10 bg-[#0B0510] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                     required
                   />
                 </label>
@@ -202,7 +202,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                     value={btn.url}
                     onChange={(e) => updateField(index, "url", e.target.value)}
                     placeholder="#work, /cv, #contact..."
-                    className="rounded-xl border border-white/10 bg-[#0B0510] min-h-10 px-3 text-xs text-[#f3f1f7] font-mono focus:border-[#9A71FF] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] font-mono focus:border-[#8FB3A2] focus:outline-none"
                     required
                   />
                 </label>
@@ -214,7 +214,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                     onChange={(e) =>
                       updateField(index, "style", e.target.value as "primary" | "secondary")
                     }
-                    className="rounded-xl border border-white/10 bg-[#0B0510] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                   >
                     <option value="primary">Principal (Bouton Blanc Mis en Avant)</option>
                     <option value="secondary">Secondaire (Bouton Verre / Bordure)</option>
@@ -230,7 +230,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
             type="button"
             onClick={handleSave}
             disabled={pending}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#9A71FF] px-6 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#9A71FF]/20"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#8FB3A2] px-6 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#A8C8B9] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#8FB3A2]/20"
           >
             {pending ? (
               <span>Enregistrement en cours...</span>

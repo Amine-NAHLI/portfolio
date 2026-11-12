@@ -20,7 +20,7 @@ import type { JourneyTimelineItem, JourneyTag } from "@/types/journey";
 const COLOR_PRESETS = [
   { label: "Or / Ambre", value: "#F59E0B" },
   { label: "Émeraude", value: "#10B981" },
-  { label: "Violet Néon", value: "#9A71FF" },
+  { label: "Céladon Minéral", value: "#8FB3A2" },
   { label: "Cyan Électrique", value: "#00F0FF" },
   { label: "Rose Rubis", value: "#F43F5E" },
   { label: "Bleu Cobalt", value: "#3B82F6" },
@@ -38,7 +38,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
   // New tag inputs per item
   const [newTagName, setNewTagName] = useState("");
   const [newTagMode, setNewTagMode] = useState<"standard" | "custom">("standard");
-  const [newTagColor, setNewTagColor] = useState("#9A71FF");
+  const [newTagColor, setNewTagColor] = useState("#8FB3A2");
 
   const activeItem = items[activeItemIndex] || items[0];
 
@@ -158,9 +158,9 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
   return (
     <div className="space-y-8">
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/10 bg-[#0B0510]/60 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/10 bg-[#070A09]/60 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-[#9A71FF]/10 border border-[#9A71FF]/20 text-[#9A71FF]">
+          <div className="p-2.5 rounded-lg bg-[#8FB3A2]/10 border border-[#8FB3A2]/20 text-[#8FB3A2]">
             <Milestone className="size-5" />
           </div>
           <div>
@@ -177,9 +177,9 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
           <button
             type="button"
             onClick={handleAddNewItem}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-mono font-medium text-[#f3f1f7] hover:border-[#9A71FF] hover:bg-[#9A71FF]/10 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-mono font-medium text-[#f3f1f7] hover:border-[#8FB3A2] hover:bg-[#8FB3A2]/10 transition-colors cursor-pointer"
           >
-            <Plus className="size-4 text-[#9A71FF]" />
+            <Plus className="size-4 text-[#8FB3A2]" />
             <span>Ajouter une étape</span>
           </button>
 
@@ -187,7 +187,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#9A71FF] px-5 py-2 font-mono text-xs font-bold text-black hover:bg-[#a882ff] transition-all shadow-md shadow-[#9A71FF]/20 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#8FB3A2] px-5 py-2 font-mono text-xs font-bold text-black hover:bg-[#a882ff] transition-all shadow-md shadow-[#8FB3A2]/20 disabled:opacity-50 cursor-pointer"
           >
             {isSaving ? (
               <>
@@ -237,12 +237,12 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onClick={() => setActiveItemIndex(index)}
                   className={`group relative p-3.5 rounded-xl border transition-all cursor-pointer text-left ${
                     isSelected
-                      ? "border-[#9A71FF] bg-[#9A71FF]/10 shadow-lg shadow-[#9A71FF]/5"
-                      : "border-white/10 bg-[#0B0510]/40 hover:border-white/20 hover:bg-[#0B0510]/80"
+                      ? "border-[#8FB3A2] bg-[#8FB3A2]/10 shadow-lg shadow-[#8FB3A2]/5"
+                      : "border-white/10 bg-[#070A09]/40 hover:border-white/20 hover:bg-[#070A09]/80"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="font-mono text-[10px] font-bold text-[#9A71FF] uppercase tracking-wider">
+                    <span className="font-mono text-[10px] font-bold text-[#8FB3A2] uppercase tracking-wider">
                       {item.year || "Période"}
                     </span>
                     <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[#797681]">
@@ -250,7 +250,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                     </span>
                   </div>
 
-                  <h4 className="font-display text-sm font-bold text-[#f3f1f7] line-clamp-1 group-hover:text-[#9A71FF] transition-colors">
+                  <h4 className="font-display text-sm font-bold text-[#f3f1f7] line-clamp-1 group-hover:text-[#8FB3A2] transition-colors">
                     {item.title}
                   </h4>
                   <p className="text-xs text-[#797681] line-clamp-1 mt-0.5">
@@ -290,11 +290,11 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
         {/* Right Active Item Editor */}
         {activeItem && (
-          <div className="lg:col-span-8 space-y-6 rounded-2xl border border-white/10 bg-[#0B0510]/50 p-6 backdrop-blur-xl">
+          <div className="lg:col-span-8 space-y-6 rounded-2xl border border-white/10 bg-[#070A09]/50 p-6 backdrop-blur-xl">
             {/* Header with reordering & delete */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-[#9A71FF] uppercase tracking-wider">
+                <span className="font-mono text-xs font-bold text-[#8FB3A2] uppercase tracking-wider">
                   Étape #{activeItemIndex + 1}
                 </span>
                 <span className="text-white/20">|</span>
@@ -341,7 +341,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   type="text"
                   value={activeItem.title}
                   onChange={(e) => updateItemField(activeItemIndex, "title", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 />
               </div>
 
@@ -353,7 +353,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   type="text"
                   value={activeItem.titleEn}
                   onChange={(e) => updateItemField(activeItemIndex, "titleEn", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 />
               </div>
 
@@ -365,7 +365,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   type="text"
                   value={activeItem.organization}
                   onChange={(e) => updateItemField(activeItemIndex, "organization", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 />
               </div>
 
@@ -377,7 +377,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   type="text"
                   value={activeItem.year}
                   onChange={(e) => updateItemField(activeItemIndex, "year", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 />
               </div>
 
@@ -389,7 +389,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   type="text"
                   value={activeItem.location}
                   onChange={(e) => updateItemField(activeItemIndex, "location", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 />
               </div>
 
@@ -402,7 +402,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onChange={(e) =>
                     updateItemField(activeItemIndex, "type", e.target.value as "education" | "experience")
                   }
-                  className="w-full rounded-lg border border-white/10 bg-[#0B0510] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none cursor-pointer"
+                  className="w-full rounded-lg border border-white/10 bg-[#070A09] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
                 >
                   <option value="experience">Expérience Professionnelle / Compétition</option>
                   <option value="education">Formation / Diplôme</option>
@@ -418,7 +418,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onChange={(e) =>
                     updateItemField(activeItemIndex, "status", e.target.value as "completed" | "in_progress")
                   }
-                  className="w-full rounded-lg border border-white/10 bg-[#0B0510] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none cursor-pointer"
+                  className="w-full rounded-lg border border-white/10 bg-[#070A09] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
                 >
                   <option value="completed">Terminé / Effectué</option>
                   <option value="in_progress">En cours actuellement</option>
@@ -468,7 +468,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-display text-base font-bold text-[#f3f1f7] flex items-center gap-2">
-                    <Sparkles className="size-4 text-[#9A71FF]" />
+                    <Sparkles className="size-4 text-[#8FB3A2]" />
                     <span>Tags & Compétences de cette étape</span>
                   </h3>
                   <p className="font-mono text-xs text-[#797681]">
@@ -523,8 +523,8 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               </div>
 
               {/* Tag Builder (Input + Mode + Color Presets) */}
-              <div className="p-4 rounded-xl border border-white/10 bg-[#0B0510]/80 space-y-4">
-                <div className="font-mono text-xs uppercase tracking-wider text-[#9A71FF] font-bold">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#070A09]/80 space-y-4">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#8FB3A2] font-bold">
                   {"// Nouveau Tag"}
                 </div>
 
@@ -544,7 +544,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                           handleAddTag(activeItemIndex);
                         }
                       }}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                     />
                   </div>
 
@@ -555,7 +555,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                     <select
                       value={newTagMode}
                       onChange={(e) => setNewTagMode(e.target.value as "standard" | "custom")}
-                      className="w-full rounded-lg border border-white/10 bg-[#0B0510] px-3 py-2 text-xs font-mono text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none cursor-pointer"
+                      className="w-full rounded-lg border border-white/10 bg-[#070A09] px-3 py-2 text-xs font-mono text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
                     >
                       <option value="standard">⚪ Standard (Simple)</option>
                       <option value="custom">🎨 Personnalisé</option>
@@ -566,7 +566,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                     <button
                       type="button"
                       onClick={() => handleAddTag(activeItemIndex)}
-                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#9A71FF]/40 bg-[#9A71FF]/15 px-4 py-2 font-mono text-xs font-bold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#8FB3A2]/40 bg-[#8FB3A2]/15 px-4 py-2 font-mono text-xs font-bold text-[#8FB3A2] hover:bg-[#8FB3A2] hover:text-black transition-all cursor-pointer"
                     >
                       <Plus className="size-3.5" />
                       <span>Ajouter le tag</span>
@@ -578,7 +578,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 {newTagMode === "custom" && (
                   <div className="pt-2 border-t border-white/[0.06] space-y-3">
                     <div className="flex items-center gap-2">
-                      <Palette className="size-3.5 text-[#9A71FF]" />
+                      <Palette className="size-3.5 text-[#8FB3A2]" />
                       <span className="font-mono text-xs text-[#797681]">
                         Choisissez une couleur vibrante prédéfinie ou libre :
                       </span>

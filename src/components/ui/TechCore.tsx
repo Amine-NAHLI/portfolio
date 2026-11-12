@@ -41,7 +41,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
         
         {/* Subtle Background Glow */}
         <div className="pointer-events-none absolute -top-32 -left-32 size-80 rounded-full bg-accent/5 blur-[100px]" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 size-80 rounded-full bg-purple-500/5 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 size-80 rounded-full bg-[#8FB3A2]/5 blur-[100px]" />
 
         {/* HEADER STRIP */}
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-white/10">
@@ -116,7 +116,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
               Cybersécurité & Audit
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-purple-400" />
+              <span className="size-1.5 rounded-full bg-[#8FB3A2]" />
               Intelligence Artificielle
             </span>
             <span className="flex items-center gap-1.5">

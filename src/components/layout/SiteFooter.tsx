@@ -19,12 +19,12 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
       <Container>
         <div className="grid gap-10 border-b border-white/[0.08] pb-10 md:grid-cols-[1.5fr_1fr_1fr] md:gap-16">
           <div className="max-w-md">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block mb-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block mb-2">
               Portfolio Ingénieur
             </span>
             <Link
               href={`/${locale}`}
-              className="font-display text-2xl font-bold tracking-tight text-[#f3f1f7] hover:text-[#9A71FF] transition-colors"
+              className="font-display text-2xl font-bold tracking-tight text-[#f3f1f7] hover:text-[#8FB3A2] transition-colors"
             >
               {siteConfig.name}
             </Link>
@@ -86,7 +86,7 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
                   rel="noreferrer"
                 >
                   <span>GitHub</span>
-                  <ArrowUpRight className="size-3.5 text-[#9A71FF]" />
+                  <ArrowUpRight className="size-3.5 text-[#8FB3A2]" />
                 </a>
               </li>
               <li>
@@ -97,7 +97,7 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
                   rel="noreferrer"
                 >
                   <span>LinkedIn</span>
-                  <ArrowUpRight className="size-3.5 text-[#9A71FF]" />
+                  <ArrowUpRight className="size-3.5 text-[#8FB3A2]" />
                 </a>
               </li>
               <li>
@@ -108,7 +108,7 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
                   rel="noreferrer"
                 >
                   <span>TryHackMe</span>
-                  <ArrowUpRight className="size-3.5 text-[#9A71FF]" />
+                  <ArrowUpRight className="size-3.5 text-[#8FB3A2]" />
                 </a>
               </li>
             </ul>

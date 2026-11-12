@@ -105,10 +105,10 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
     <div className="space-y-10">
       {/* Overview Stats & Bilingual Status */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 bg-[#0B0510] p-5 shadow-lg">
+        <div className="rounded-2xl border border-white/10 bg-[#070A09] p-5 shadow-lg">
           <div className="flex items-center justify-between text-xs text-[#797681]">
             <span className="font-mono uppercase tracking-wider">Projets Bilingues</span>
-            <FolderKanban className="size-4 text-[#9A71FF]" />
+            <FolderKanban className="size-4 text-[#8FB3A2]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-display text-3xl font-bold text-[#f3f1f7]">{stats.projectsCount}</span>
@@ -117,10 +117,10 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
           <p className="mt-1 text-xs text-[#797681]">Titres, résumés et études de cas traduits</p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#0B0510] p-5 shadow-lg">
+        <div className="rounded-2xl border border-white/10 bg-[#070A09] p-5 shadow-lg">
           <div className="flex items-center justify-between text-xs text-[#797681]">
             <span className="font-mono uppercase tracking-wider">Jalons du Parcours</span>
-            <Milestone className="size-4 text-[#9A71FF]" />
+            <Milestone className="size-4 text-[#8FB3A2]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-display text-3xl font-bold text-[#f3f1f7]">{stats.journeyCount}</span>
@@ -129,10 +129,10 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
           <p className="mt-1 text-xs text-[#797681]">Formations, stages et distinctions</p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#0B0510] p-5 shadow-lg">
+        <div className="rounded-2xl border border-white/10 bg-[#070A09] p-5 shadow-lg">
           <div className="flex items-center justify-between text-xs text-[#797681]">
             <span className="font-mono uppercase tracking-wider">Certifications</span>
-            <Award className="size-4 text-[#9A71FF]" />
+            <Award className="size-4 text-[#8FB3A2]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-display text-3xl font-bold text-[#f3f1f7]">{stats.certificationsCount}</span>
@@ -143,10 +143,10 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
       </div>
 
       {/* AI Translation Workbench */}
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] shadow-2xl">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] shadow-2xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 bg-[#120A1C] px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 text-[#9A71FF]">
+            <div className="flex size-10 items-center justify-center rounded-xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 text-[#8FB3A2]">
               <Sparkles className="size-5" />
             </div>
             <div>
@@ -165,7 +165,7 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
             className="inline-flex items-center gap-2 self-start sm:self-auto rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
           >
             <span>{direction === "fr-to-en" ? "Français ➔ Anglais" : "Anglais ➔ Français"}</span>
-            <ArrowRightLeft className="size-3.5 text-[#9A71FF]" />
+            <ArrowRightLeft className="size-3.5 text-[#8FB3A2]" />
           </button>
         </div>
 
@@ -181,7 +181,7 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
                   key={snippet.label}
                   type="button"
                   onClick={() => setInputText(snippet.text)}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-[#797681] hover:text-[#f3f1f7] hover:border-[#9A71FF]/40 transition-colors"
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-[#797681] hover:text-[#f3f1f7] hover:border-[#8FB3A2]/40 transition-colors"
                 >
                   {snippet.label}
                 </button>
@@ -208,13 +208,13 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
                     ? "Collez ici un texte en français à traduire (titre de projet, description de stage, défi technique...)"
                     : "Paste English text here to translate into French..."
                 }
-                className="w-full rounded-2xl border border-white/10 bg-[#060605] p-4 text-sm text-[#f3f1f7] placeholder:text-[#797681]/60 focus:border-[#9A71FF] focus:outline-none transition-colors"
+                className="w-full rounded-2xl border border-white/10 bg-[#060605] p-4 text-sm text-[#f3f1f7] placeholder:text-[#797681]/60 focus:border-[#8FB3A2] focus:outline-none transition-colors"
               />
               <button
                 type="button"
                 onClick={handleTranslate}
                 disabled={loading || !inputText.trim()}
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#9A71FF] px-6 py-3 text-xs font-bold text-[#000000] shadow-lg shadow-[#9A71FF]/20 transition-all hover:bg-[#b08dff] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#8FB3A2] px-6 py-3 text-xs font-bold text-[#000000] shadow-lg shadow-[#8FB3A2]/20 transition-all hover:bg-[#A8C8B9] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -240,7 +240,7 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A71FF] hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#8FB3A2] hover:text-white transition-colors"
                   >
                     {copied ? (
                       <>
@@ -285,20 +285,20 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/admin/general"
-            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0B0510] p-5 transition-all hover:border-[#9A71FF]/40 hover:-translate-y-1 hover:shadow-xl"
+            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#070A09] p-5 transition-all hover:border-[#8FB3A2]/40 hover:-translate-y-1 hover:shadow-xl"
           >
             <div>
-              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#9A71FF] mb-3 group-hover:bg-[#9A71FF]/10 group-hover:border-[#9A71FF]/30 transition-colors">
+              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#8FB3A2] mb-3 group-hover:bg-[#8FB3A2]/10 group-hover:border-[#8FB3A2]/30 transition-colors">
                 <FileText className="size-5" />
               </div>
-              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors">
+              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors">
                 Infos Générales
               </h4>
               <p className="mt-1 text-xs text-[#797681]">
                 Role badge, headline hero, biographie et chiffres clés en FR & EN.
               </p>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#9A71FF]">
+            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#8FB3A2]">
               <span>Éditer les textes</span>
               <ExternalLink className="size-3" />
             </div>
@@ -306,20 +306,20 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
 
           <Link
             href="/admin/projects"
-            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0B0510] p-5 transition-all hover:border-[#9A71FF]/40 hover:-translate-y-1 hover:shadow-xl"
+            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#070A09] p-5 transition-all hover:border-[#8FB3A2]/40 hover:-translate-y-1 hover:shadow-xl"
           >
             <div>
-              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#9A71FF] mb-3 group-hover:bg-[#9A71FF]/10 group-hover:border-[#9A71FF]/30 transition-colors">
+              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#8FB3A2] mb-3 group-hover:bg-[#8FB3A2]/10 group-hover:border-[#8FB3A2]/30 transition-colors">
                 <FolderKanban className="size-5" />
               </div>
-              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors">
+              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors">
                 Projets Techniques
               </h4>
               <p className="mt-1 text-xs text-[#797681]">
                 Titres, résumés, études de cas complètes (Défis, Solutions, Résultats) en FR & EN.
               </p>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#9A71FF]">
+            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#8FB3A2]">
               <span>Gérer les projets</span>
               <ExternalLink className="size-3" />
             </div>
@@ -327,20 +327,20 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
 
           <Link
             href="/admin/journey"
-            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0B0510] p-5 transition-all hover:border-[#9A71FF]/40 hover:-translate-y-1 hover:shadow-xl"
+            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#070A09] p-5 transition-all hover:border-[#8FB3A2]/40 hover:-translate-y-1 hover:shadow-xl"
           >
             <div>
-              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#9A71FF] mb-3 group-hover:bg-[#9A71FF]/10 group-hover:border-[#9A71FF]/30 transition-colors">
+              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#8FB3A2] mb-3 group-hover:bg-[#8FB3A2]/10 group-hover:border-[#8FB3A2]/30 transition-colors">
                 <Milestone className="size-5" />
               </div>
-              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors">
+              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors">
                 Parcours & Expériences
               </h4>
               <p className="mt-1 text-xs text-[#797681]">
                 Titres de diplômes, postes de stages, distinctions et compétences associées en FR & EN.
               </p>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#9A71FF]">
+            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#8FB3A2]">
               <span>Gérer le parcours</span>
               <ExternalLink className="size-3" />
             </div>
@@ -348,20 +348,20 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
 
           <Link
             href="/admin/certifications"
-            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0B0510] p-5 transition-all hover:border-[#9A71FF]/40 hover:-translate-y-1 hover:shadow-xl"
+            className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#070A09] p-5 transition-all hover:border-[#8FB3A2]/40 hover:-translate-y-1 hover:shadow-xl"
           >
             <div>
-              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#9A71FF] mb-3 group-hover:bg-[#9A71FF]/10 group-hover:border-[#9A71FF]/30 transition-colors">
+              <div className="size-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#8FB3A2] mb-3 group-hover:bg-[#8FB3A2]/10 group-hover:border-[#8FB3A2]/30 transition-colors">
                 <Award className="size-5" />
               </div>
-              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors">
+              <h4 className="font-semibold text-sm text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors">
                 Certifications
               </h4>
               <p className="mt-1 text-xs text-[#797681]">
                 Noms, organismes, descriptions d&apos;objectifs validés et documents officiels.
               </p>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#9A71FF]">
+            <div className="mt-4 flex items-center gap-1 text-[11px] font-semibold text-[#8FB3A2]">
               <span>Gérer les certifs</span>
               <ExternalLink className="size-3" />
             </div>
@@ -370,9 +370,9 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
       </div>
 
       {/* Global UI Dictionary Reference Table */}
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] shadow-xl">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] shadow-xl">
         <div className="border-b border-white/10 bg-[#120A1C] px-6 py-4 flex items-center gap-3">
-          <BookOpen className="size-5 text-[#9A71FF]" />
+          <BookOpen className="size-5 text-[#8FB3A2]" />
           <div>
             <h3 className="font-display text-base font-bold text-[#f3f1f7]">
               Dictionnaire & Libellés Globaux de l&apos;Interface
@@ -385,7 +385,7 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-white/10 bg-white/[0.02] font-mono uppercase tracking-wider text-[#9A71FF]">
+            <thead className="border-b border-white/10 bg-white/[0.02] font-mono uppercase tracking-wider text-[#8FB3A2]">
               <tr>
                 <th className="py-3 px-6">Élément d&apos;interface</th>
                 <th className="py-3 px-6">Version Française (FR)</th>
@@ -397,7 +397,7 @@ export default function TranslationsClient({ stats }: TranslationsClientProps) {
                 <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
                   <td className="py-3 px-6 font-mono text-[11px] text-[#797681]">{item.category}</td>
                   <td className="py-3 px-6 font-medium">{item.fr}</td>
-                  <td className="py-3 px-6 text-[#9A71FF] font-medium">{item.en}</td>
+                  <td className="py-3 px-6 text-[#8FB3A2] font-medium">{item.en}</td>
                 </tr>
               ))}
             </tbody>

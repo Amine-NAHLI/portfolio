@@ -84,19 +84,19 @@ export default function CertificationCard({ certification, locale, copy }: Certi
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-white/10 bg-[#17161e] transition-all duration-300 hover:border-[#9A71FF]/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#9A71FF]/10 w-full h-full cursor-pointer"
+        className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-white/10 bg-[#0C100E] transition-all duration-300 hover:border-[#8FB3A2]/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8FB3A2]/10 w-full h-full cursor-pointer"
       >
         {/* Document Preview Frame: Framed presentation with subtle ambient gradient */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-gradient-to-b from-[#181224] via-[#0f0a18] to-[#0a0710] border-b border-white/[0.06] flex items-center justify-center p-3 sm:p-3.5">
           {/* Loading Skeleton */}
           {!isLoaded && !hasError && certification.hasDocument && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#17161e] animate-pulse">
-              <LoaderCircle className="size-7 animate-spin text-[#9A71FF]/60" />
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0C100E] animate-pulse">
+              <LoaderCircle className="size-7 animate-spin text-[#8FB3A2]/60" />
             </div>
           )}
 
           {certification.hasDocument && !hasError ? (
-            <div className="relative h-full w-full flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:border-[#9A71FF]/40 transition-colors bg-[#08050e]">
+            <div className="relative h-full w-full flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:border-[#8FB3A2]/40 transition-colors bg-[#08050e]">
               <img
                 src={previewUrl}
                 alt={`Aperçu de ${certification.name}`}
@@ -111,9 +111,9 @@ export default function CertificationCard({ certification, locale, copy }: Certi
               />
             </div>
           ) : (
-            <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#17161e] to-[#101015] p-6 text-center">
-              <div className="grid size-12 place-items-center rounded-2xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 text-[#9A71FF] mb-2 group-hover:scale-110 transition-transform">
-                <Award className="size-6 text-[#9A71FF]" />
+            <div className="relative flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#0C100E] to-[#101015] p-6 text-center">
+              <div className="grid size-12 place-items-center rounded-2xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 text-[#8FB3A2] mb-2 group-hover:scale-110 transition-transform">
+                <Award className="size-6 text-[#8FB3A2]" />
               </div>
               <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#797681]">
                 {certification.issuer || "Certification Officielle"}
@@ -123,27 +123,27 @@ export default function CertificationCard({ certification, locale, copy }: Certi
 
           {/* Issuer Pill Badge */}
           {certification.issuer && (
-            <div className="absolute top-2.5 right-2.5 z-20 rounded-full border border-white/10 bg-[#0d0916]/85 px-2.5 py-1 backdrop-blur-md text-[10px] font-mono font-semibold text-[#9A71FF] shadow-lg">
+            <div className="absolute top-2.5 right-2.5 z-20 rounded-full border border-white/10 bg-[#0d0916]/85 px-2.5 py-1 backdrop-blur-md text-[10px] font-mono font-semibold text-[#8FB3A2] shadow-lg">
               {certification.issuer}
             </div>
           )}
         </div>
 
         {/* Info Content Container */}
-        <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-[#17161e]">
+        <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-[#0C100E]">
           <div>
-            <h3 className="text-base sm:text-lg font-display font-bold leading-snug text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors line-clamp-2">
+            <h3 className="text-base sm:text-lg font-display font-bold leading-snug text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors line-clamp-2">
               {certification.name}
             </h3>
           </div>
 
           <div className="mt-4 flex items-center justify-between pt-3 border-t border-white/[0.06]">
             <span className="text-xs font-mono text-[#797681] flex items-center gap-1.5">
-              <Calendar className="size-3.5 opacity-60 text-[#9A71FF]" />
+              <Calendar className="size-3.5 opacity-60 text-[#8FB3A2]" />
               {formattedDate || "—"}
             </span>
 
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#9A71FF] group-hover:text-white transition-colors">
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#8FB3A2] group-hover:text-white transition-colors">
               {locale === "fr" ? "Inspecter" : "Inspect"}
               <Maximize2 className="size-3.5" />
             </span>
@@ -191,12 +191,12 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                   data-lenis-prevent-touch="true"
                   onWheel={(e) => e.stopPropagation()}
                   onTouchMove={(e) => e.stopPropagation()}
-                  className="relative z-10 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0B0510] text-[#f3f1f7] shadow-2xl overscroll-contain select-text"
+                  className="relative z-10 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] text-[#f3f1f7] shadow-2xl overscroll-contain select-text"
                 >
                   {/* Compact Header Bar */}
                   <div className="flex items-center justify-between border-b border-white/10 bg-[#120A1C] px-5 sm:px-6 py-3.5 shrink-0">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#9A71FF]/10 border border-[#9A71FF]/30 text-[#9A71FF]">
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#8FB3A2]/10 border border-[#8FB3A2]/30 text-[#8FB3A2]">
                         <ShieldCheck className="size-4" />
                       </div>
                       <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                         {certification.issuer && (
                           <>
                             <span className="text-white/20">·</span>
-                            <span className="text-xs font-semibold text-[#9A71FF]">
+                            <span className="text-xs font-semibold text-[#8FB3A2]">
                               {certification.issuer}
                             </span>
                           </>
@@ -248,7 +248,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                           </div>
                         ) : (
                           <div className="flex flex-col items-center justify-center p-8 text-center">
-                            <div className="size-14 rounded-2xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 flex items-center justify-center text-[#9A71FF] mb-3">
+                            <div className="size-14 rounded-2xl bg-[#8FB3A2]/10 border border-[#8FB3A2]/30 flex items-center justify-center text-[#8FB3A2] mb-3">
                               <Award className="size-7" />
                             </div>
                             <h3 className="font-display text-lg font-bold text-[#f3f1f7] mb-1">
@@ -256,7 +256,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                             </h3>
                             <p className="text-xs text-[#797681] max-w-sm mb-1">{certification.issuer}</p>
                             {formattedDate && (
-                              <span className="text-xs font-mono text-[#9A71FF]">{formattedDate}</span>
+                              <span className="text-xs font-mono text-[#8FB3A2]">{formattedDate}</span>
                             )}
                           </div>
                         )}
@@ -272,7 +272,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                         </h2>
                         {formattedDate && (
                           <div className="mt-2 flex items-center gap-1.5 text-xs font-mono text-[#797681]">
-                            <Calendar className="size-3.5 text-[#9A71FF]" />
+                            <Calendar className="size-3.5 text-[#8FB3A2]" />
                             <span>
                               {locale === "fr" ? `Obtenu en : ${formattedDate}` : `Issued: ${formattedDate}`}
                             </span>
@@ -289,7 +289,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                           onWheel={(e) => e.stopPropagation()}
                           className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 flex-1 overflow-y-auto max-h-[220px] overscroll-contain"
                         >
-                          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9A71FF] mb-2 flex items-center gap-1.5">
+                          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#8FB3A2] mb-2 flex items-center gap-1.5">
                             <ShieldCheck className="size-3.5" />
                             {locale === "fr" ? "Objectifs & Compétences Validées" : "Verified Objectives & Skills"}
                           </span>
@@ -317,7 +317,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                               rel="noreferrer"
                               className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
                             >
-                              <Download className="size-3.5 text-[#9A71FF]" />
+                              <Download className="size-3.5 text-[#8FB3A2]" />
                               <span>{locale === "fr" ? "Télécharger le PDF" : "Download PDF"}</span>
                             </a>
                           )}
@@ -327,7 +327,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                               href={certification.verificationUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-[#9A71FF] px-4 py-2.5 text-xs font-semibold text-[#000000] hover:bg-[#b08dff] transition-colors shadow-lg shadow-[#9A71FF]/20"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-[#8FB3A2] px-4 py-2.5 text-xs font-semibold text-[#000000] hover:bg-[#A8C8B9] transition-colors shadow-lg shadow-[#8FB3A2]/20"
                             >
                               <span>{copy.verify}</span>
                               <ExternalLink className="size-3.5" />

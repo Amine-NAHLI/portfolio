@@ -43,13 +43,13 @@ export default function FluidBackground() {
       { cx: 0.85, cy: 0.65, rx: 0.3, ry: 0.35, speed: 0.00028, phase: 3.7, driftX: 0.05, driftY: 0.05 },
     ];
 
-    // Color palettes mixed from requested colors: Black (#000000), Asphalt (#0C0404), Black Hole (#060605), Black Magic (#0B0510), Black Pearl (#0E161A)
+    // Color palettes mixed from requested colors: Black (#000000), Asphalt (#0C0404), Black Hole (#060605), Black Magic (#070A09), Black Pearl (#0E161A)
     const darkColors = [
       ["rgba(14, 22, 26, 0.6)", "rgba(14, 22, 26, 0)"],   // Black Pearl #0E161A (left cool slate/teal depth)
-      ["rgba(11, 5, 16, 0.7)", "rgba(11, 5, 16, 0)"],     // Black Magic #0B0510 (right violet/indigo depth)
+      ["rgba(7, 10, 9, 0.7)", "rgba(7, 10, 9, 0)"],     // Black Magic #070A09 (right violet/indigo depth)
       ["rgba(12, 4, 4, 0.45)", "rgba(12, 4, 4, 0)"],     // Asphalt #0C0404 (warm dark undertone)
       ["rgba(6, 6, 5, 0.6)", "rgba(6, 6, 5, 0)"],         // Black Hole #060605
-      ["rgba(154, 113, 255, 0.08)", "rgba(154, 113, 255, 0)"], // Subtle accent glow
+      ["rgba(143, 179, 162, 0.08)", "rgba(143, 179, 162, 0)"], // Subtle accent glow
     ];
 
     function draw(time: number) {

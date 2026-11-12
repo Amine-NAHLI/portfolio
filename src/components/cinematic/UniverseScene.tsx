@@ -258,14 +258,14 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
       {/* Background Radial Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#9A71FF]/8 blur-[160px]"
+        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#8FB3A2]/8 blur-[160px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3 block">
               {locale === "fr" ? "Expertise & Pôles d'Ingénierie" : "Engineering Disciplines"}
             </span>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7]">
@@ -293,15 +293,15 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                 onClick={() => setActiveTab(d.id)}
                 className={`group relative flex items-center gap-3.5 rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 cursor-pointer ${
                   isSelected
-                    ? "border-[#9A71FF] bg-[#17161e] shadow-[0_0_25px_rgba(154,113,255,0.15)] ring-1 ring-[#9A71FF]/40"
-                    : "border-white/10 bg-[#17161e]/50 hover:border-white/20 hover:bg-[#17161e]"
+                    ? "border-[#8FB3A2] bg-[#0C100E] shadow-[0_0_25px_rgba(143, 179, 162,0.15)] ring-1 ring-[#8FB3A2]/40"
+                    : "border-white/10 bg-[#0C100E]/50 hover:border-white/20 hover:bg-[#0C100E]"
                 }`}
               >
                 <div
                   className={`size-10 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
                     isSelected
-                      ? "bg-[#9A71FF] text-[#101015]"
-                      : "bg-white/[0.04] text-[#9A71FF] group-hover:bg-white/[0.08]"
+                      ? "bg-[#8FB3A2] text-[#101015]"
+                      : "bg-white/[0.04] text-[#8FB3A2] group-hover:bg-white/[0.08]"
                   }`}
                 >
                   <TabIcon className="size-5" />
@@ -313,7 +313,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                     </span>
                     <span
                       className={`text-xs font-mono font-semibold uppercase tracking-wider ${
-                        isSelected ? "text-[#9A71FF]" : "text-[#797681]"
+                        isSelected ? "text-[#8FB3A2]" : "text-[#797681]"
                       }`}
                     >
                       {locale === "fr" ? d.statusFr : d.status}
@@ -329,18 +329,18 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
         </div>
 
         {/* Innovative Engineering Cockpit Console */}
-        <div className="universe-console rounded-3xl border border-white/10 bg-[#17161e] p-6 sm:p-10 shadow-2xl transition-all duration-500">
+        <div className="universe-console rounded-3xl border border-white/10 bg-[#0C100E] p-6 sm:p-10 shadow-2xl transition-all duration-500">
           <div className="grid gap-10 lg:grid-cols-12 items-start">
             
             {/* Left 7 Columns: In-depth Technical Spec */}
             <div className="lg:col-span-7 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-11 rounded-xl bg-[#9A71FF]/10 border border-[#9A71FF]/30 flex items-center justify-center text-[#9A71FF]">
+                  <div className="size-11 rounded-xl bg-[#8FB3A2]/10 border border-[#8FB3A2]/30 flex items-center justify-center text-[#8FB3A2]">
                     <Icon className="size-6" />
                   </div>
                   <div>
-                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#9A71FF]">
+                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#8FB3A2]">
                       {current.codePrefix} · {locale === "fr" ? current.statusFr : current.status}
                     </span>
                     <h3 className="font-display text-2xl sm:text-3xl font-bold text-[#f3f1f7]">
@@ -376,7 +376,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
 
                 {/* Technical Competencies Breakdown */}
                 <div className="space-y-4 mb-8">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block">
                     {locale === "fr" ? "Compétences d'Ingénierie Spécialisées" : "Specialized Engineering Capabilities"}
                   </span>
                   {current.competencies.map((comp, idx) => (
@@ -385,7 +385,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                       className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:border-white/10"
                     >
                       <div className="flex items-center gap-2 mb-1.5">
-                        <CheckCircle2 className="size-4 text-[#9A71FF] shrink-0" />
+                        <CheckCircle2 className="size-4 text-[#8FB3A2] shrink-0" />
                         <h4 className="text-sm font-bold text-[#f3f1f7]">
                           {locale === "fr" ? comp.nameFr : comp.name}
                         </h4>
@@ -407,7 +407,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                   {current.techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#f3f1f7] hover:border-[#9A71FF]/40 hover:text-[#9A71FF] transition-colors"
+                      className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#f3f1f7] hover:border-[#8FB3A2]/40 hover:text-[#8FB3A2] transition-colors"
                     >
                       {tech}
                     </span>
@@ -429,7 +429,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                       {current.liveCodeSnippet.filename}
                     </span>
                   </div>
-                  <span className="font-mono text-[10px] text-[#9A71FF] uppercase tracking-wider">
+                  <span className="font-mono text-[10px] text-[#8FB3A2] uppercase tracking-wider">
                     {current.liveCodeSnippet.language}
                   </span>
                 </div>
@@ -441,7 +441,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                       <span className="w-6 shrink-0 text-[#797681]/50 select-none text-right pr-3">
                         {idx + 1}
                       </span>
-                      <span className={line.startsWith("#") ? "text-[#797681]" : line.includes("def ") || line.includes("interface ") ? "text-[#9A71FF] font-semibold" : ""}>
+                      <span className={line.startsWith("#") ? "text-[#797681]" : line.includes("def ") || line.includes("interface ") ? "text-[#8FB3A2] font-semibold" : ""}>
                         {line}
                       </span>
                     </div>
@@ -452,7 +452,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
               {/* Connected Real-World Project Card */}
               <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-mono text-[#9A71FF] uppercase tracking-wider font-semibold">
+                  <span className="text-[11px] font-mono text-[#8FB3A2] uppercase tracking-wider font-semibold">
                     {locale === "fr" ? "Projet & Cas d'Application" : "Applied Engineering Case"}
                   </span>
                   <Terminal className="size-4 text-[#797681]" />
@@ -462,7 +462,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                 </h4>
                 <Link
                   href={`/${locale}/projects`}
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#9A71FF] hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#8FB3A2] hover:text-white transition-colors"
                 >
                   <span>{locale === "fr" ? "Consulter les projets associés" : "Explore related work"}</span>
                   <ArrowUpRight className="size-4" />

@@ -71,7 +71,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
             className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#f3f1f7]"
           >
             <span>Amine Nahli</span>
-            <span className="size-1.5 rounded-full bg-[#9A71FF]" />
+            <span className="size-1.5 rounded-full bg-[#8FB3A2]" />
           </Link>
 
           {/* Center: Desktop Navigation Links (1:1 synced with FullscreenMenu) */}
@@ -108,7 +108,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
               className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
               aria-label="Changer de langue"
             >
-              <Globe className="size-3 text-[#9A71FF]" />
+              <Globe className="size-3 text-[#8FB3A2]" />
               <span>{locale === "fr" ? "EN" : "FR"}</span>
             </Link>
 

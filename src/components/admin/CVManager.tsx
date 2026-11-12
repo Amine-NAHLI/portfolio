@@ -154,7 +154,7 @@ function SingleCVCard({
     <div className="flex flex-col rounded-2xl border border-white/10 bg-[#060605] overflow-hidden p-6 gap-6">
       <div className="flex items-center justify-between border-b border-white/10 pb-4">
         <div className="flex items-center gap-3">
-          <span className="grid size-9 rounded-lg bg-[#9A71FF]/10 text-[#9A71FF] border border-[#9A71FF]/30 place-items-center text-xs font-bold font-mono">
+          <span className="grid size-9 rounded-lg bg-[#8FB3A2]/10 text-[#8FB3A2] border border-[#8FB3A2]/30 place-items-center text-xs font-bold font-mono">
             {locale.toUpperCase()}
           </span>
           <div>
@@ -165,9 +165,9 @@ function SingleCVCard({
       </div>
 
       {/* Current file status */}
-      <div className="p-4 rounded-xl border border-white/10 bg-[#0B0510] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-xl border border-white/10 bg-[#070A09] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-[#9A71FF]/10 border border-[#9A71FF]/20 text-[#9A71FF]">
+          <div className="p-2.5 rounded-lg bg-[#8FB3A2]/10 border border-[#8FB3A2]/20 text-[#8FB3A2]">
             <FileText className="size-5" />
           </div>
           <div>
@@ -189,7 +189,7 @@ function SingleCVCard({
           href={cvInfo.updatedAt ? `${cvInfo.url}${cvInfo.url.includes("?") ? "&" : "?"}v=${encodeURIComponent(cvInfo.updatedAt)}` : cvInfo.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs font-mono text-[#f3f1f7] hover:border-[#9A71FF] hover:text-[#9A71FF] transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs font-mono text-[#f3f1f7] hover:border-[#8FB3A2] hover:text-[#8FB3A2] transition-colors shrink-0"
         >
           <span>Consulter le PDF</span>
           <ExternalLink className="size-3.5" />
@@ -219,7 +219,7 @@ function SingleCVCard({
         onClick={() => fileInputRef.current?.click()}
         className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-3 ${
           isDragging
-            ? "border-[#9A71FF] bg-[#9A71FF]/10"
+            ? "border-[#8FB3A2] bg-[#8FB3A2]/10"
             : "border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.04]"
         }`}
       >
@@ -232,12 +232,12 @@ function SingleCVCard({
         />
 
         <div className="p-3 rounded-full bg-white/5 border border-white/10 text-[#797681]">
-          <UploadCloud className="size-6 text-[#9A71FF]" />
+          <UploadCloud className="size-6 text-[#8FB3A2]" />
         </div>
 
         <div className="space-y-1">
           <p className="text-xs font-medium text-[#f3f1f7]">
-            Glissez-déposez le fichier PDF ici, ou <span className="text-[#9A71FF] underline underline-offset-2">parcourez vos fichiers</span>
+            Glissez-déposez le fichier PDF ici, ou <span className="text-[#8FB3A2] underline underline-offset-2">parcourez vos fichiers</span>
           </p>
           <p className="text-[11px] text-[#797681]">
             Format PDF uniquement · Taille max 5 Mo
@@ -245,7 +245,7 @@ function SingleCVCard({
         </div>
 
         {selectedFile && (
-          <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#9A71FF]/15 border border-[#9A71FF]/30 text-xs text-[#9A71FF] font-mono">
+          <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#8FB3A2]/15 border border-[#8FB3A2]/30 text-xs text-[#8FB3A2] font-mono">
             <FileText className="size-3.5" />
             <span className="font-semibold">{selectedFile.name}</span>
             <span className="text-[#797681]">({formatBytes(selectedFile.size)})</span>
@@ -258,7 +258,7 @@ function SingleCVCard({
           type="button"
           onClick={handleUpload}
           disabled={isUploading}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#9A71FF] px-5 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#9A71FF]/20"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#8FB3A2] px-5 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#A8C8B9] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#8FB3A2]/20"
         >
           {isUploading ? (
             <>

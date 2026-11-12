@@ -80,14 +80,14 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
       {/* Background Ambient Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-[#9A71FF]/10 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-[#8FB3A2]/10 blur-[160px]"
       />
 
       {/* Main Centered Content */}
       <div className="relative z-10 mx-auto max-w-5xl w-full my-auto flex flex-col items-center text-center">
         
         {/* Eyebrow */}
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] mb-4 block">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-4 block">
           {locale === "fr" ? "Contact & Échange" : "Get in Touch"}
         </span>
 
@@ -98,11 +98,11 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
         >
           {locale === "fr" ? (
             <>
-              Construisons quelque chose de <span className="text-[#9A71FF]">significatif.</span>
+              Construisons quelque chose de <span className="text-[#8FB3A2]">significatif.</span>
             </>
           ) : (
             <>
-              Let&apos;s build something that <span className="text-[#9A71FF]">matters.</span>
+              Let&apos;s build something that <span className="text-[#8FB3A2]">matters.</span>
             </>
           )}
         </h2>
@@ -122,13 +122,13 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
           {/* Card 1: Formulaire Sécurisé */}
           <Link
             href={`/${locale}/contact`}
-            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-[#9A71FF]/30 bg-[#9A71FF]/10 p-6 backdrop-blur-xl transition-all duration-300 hover:bg-[#9A71FF] hover:text-[#101015] hover:border-[#9A71FF] hover:scale-[1.02]"
+            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 p-6 backdrop-blur-xl transition-all duration-300 hover:bg-[#8FB3A2] hover:text-[#101015] hover:border-[#8FB3A2] hover:scale-[1.02]"
           >
             <div className="flex items-center justify-between pb-8">
-              <div className="size-10 rounded-xl bg-white/[0.08] flex items-center justify-center text-[#9A71FF] group-hover:bg-[#101015]/10 group-hover:text-[#101015] transition-colors">
+              <div className="size-10 rounded-xl bg-white/[0.08] flex items-center justify-center text-[#8FB3A2] group-hover:bg-[#101015]/10 group-hover:text-[#101015] transition-colors">
                 <Send className="size-5" />
               </div>
-              <ArrowUpRight className="size-4 text-[#9A71FF] group-hover:text-[#101015] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="size-4 text-[#8FB3A2] group-hover:text-[#101015] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
             <div>
               <span className="text-xs uppercase tracking-wider text-[#f3f1f7]/70 group-hover:text-[#101015]/80 font-medium block">
@@ -143,7 +143,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
           {/* Card 2: Email Direct */}
           <a
             href={`mailto:${emailAddress}`}
-            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#17161e] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
+            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0C100E] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
           >
             <div className="flex items-center justify-between pb-8">
               <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#797681] group-hover:text-white transition-colors">
@@ -167,7 +167,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
               href={contactLinks.linkedin}
               target="_blank"
               rel="noreferrer"
-              className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#17161e] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
+              className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0C100E] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
             >
               <div className="flex items-center justify-between pb-8">
                 <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#797681] group-hover:text-white transition-colors">

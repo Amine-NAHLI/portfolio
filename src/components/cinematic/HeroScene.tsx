@@ -84,15 +84,15 @@ export default function HeroScene({
   const getButtonIcon = (id: string) => {
     switch (id) {
       case "cv":
-        return <Download className="size-4 text-[#9A71FF]" />;
+        return <Download className="size-4 text-[#8FB3A2]" />;
       case "projects":
         return <ArrowUpRight className="size-4" />;
       case "contact":
-        return <Mail className="size-4 text-[#9A71FF]" />;
+        return <Mail className="size-4 text-[#8FB3A2]" />;
       case "journey":
-        return <Compass className="size-4 text-[#9A71FF]" />;
+        return <Compass className="size-4 text-[#8FB3A2]" />;
       case "certifications":
-        return <Award className="size-4 text-[#9A71FF]" />;
+        return <Award className="size-4 text-[#8FB3A2]" />;
       default:
         return <Briefcase className="size-4" />;
     }
@@ -126,11 +126,11 @@ export default function HeroScene({
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-1/4 top-1/2 translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#0B0510] opacity-80 blur-[180px]"
+        className="pointer-events-none absolute right-1/4 top-1/2 translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#070A09] opacity-80 blur-[180px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[550px] rounded-full bg-[#9A71FF]/8 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[550px] rounded-full bg-[#8FB3A2]/8 blur-[160px]"
       />
 
       {/* Main Centered Content Canvas */}
@@ -246,7 +246,7 @@ export default function HeroScene({
         <span>{locale === "fr" ? "Université Privée de Fès" : "Private University of Fez"}</span>
         <div className="flex items-center gap-1.5 text-white/50">
           <span className="text-[11px] uppercase tracking-wider">{locale === "fr" ? "Défiler" : "Scroll"}</span>
-          <ArrowDown className="size-3 text-[#9A71FF]" />
+          <ArrowDown className="size-3 text-[#8FB3A2]" />
         </div>
         <span>{locale === "fr" ? "Fès, Maroc" : "Fez, Morocco"}</span>
       </div>

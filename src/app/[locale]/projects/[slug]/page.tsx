@@ -70,17 +70,17 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
         {/* Subtle Ambient Accent Glow */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed right-[-10%] top-20 size-[600px] rounded-full bg-[#9A71FF]/5 blur-[180px] -z-10"
+          className="pointer-events-none fixed right-[-10%] top-20 size-[600px] rounded-full bg-[#8FB3A2]/5 blur-[180px] -z-10"
         />
 
         {/* Hero Editorial Header */}
-        <header className="relative pt-24 sm:pt-32 pb-14 border-b border-white/[0.08] bg-gradient-to-b from-[#0B0510]/60 via-[#060605] to-[#000000]">
+        <header className="relative pt-24 sm:pt-32 pb-14 border-b border-white/[0.08] bg-gradient-to-b from-[#070A09]/60 via-[#060605] to-[#000000]">
           <Container className="max-w-6xl">
             {/* Back Link */}
             <div className="mb-8">
               <Link
                 href={`/${locale}/projects`}
-                className="inline-flex items-center gap-2 text-xs font-mono font-medium text-[#797681] hover:text-[#9A71FF] transition-colors"
+                className="inline-flex items-center gap-2 text-xs font-mono font-medium text-[#797681] hover:text-[#8FB3A2] transition-colors"
               >
                 <ArrowLeft className="size-3.5" />
                 <span>{locale === "fr" ? "Retour à tous les projets" : "Back to all projects"}</span>
@@ -92,7 +92,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               {normalizedCategories.map((category) => (
                 <span
                   key={category}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#9A71FF]"
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#8FB3A2]"
                 >
                   {getCategoryLabel(category, locale)}
                 </span>
@@ -110,7 +110,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
             </h1>
 
             {/* Subtitle */}
-            <p className="mt-3 text-lg sm:text-xl font-medium text-[#9A71FF]/90 max-w-3xl leading-relaxed">
+            <p className="mt-3 text-lg sm:text-xl font-medium text-[#8FB3A2]/90 max-w-3xl leading-relaxed">
               {project.subtitle[locale]}
             </p>
 
@@ -138,7 +138,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#9A71FF] px-5 py-2.5 text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-all shadow-lg shadow-[#9A71FF]/20"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#8FB3A2] px-5 py-2.5 text-xs font-bold text-[#000000] hover:bg-[#A8C8B9] transition-all shadow-lg shadow-[#8FB3A2]/20"
                 >
                   <ExternalLink className="size-3.5" />
                   <span>{copy.liveDemo}</span>
@@ -148,11 +148,11 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
 
             {/* Visual Media Showcase */}
             {gallery && gallery.length > 0 ? (
-              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#0B0510] p-2 sm:p-3 shadow-2xl">
+              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#070A09] p-2 sm:p-3 shadow-2xl">
                 <ProjectGallery images={gallery} locale={locale} />
               </div>
             ) : project.coverImage ? (
-              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#0B0510] shadow-2xl">
+              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#070A09] shadow-2xl">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={project.coverImage}
@@ -174,14 +174,14 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               {/* Section 1: The Engineering Problem / Challenge */}
               <section className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#8FB3A2]">
                     {locale === "fr" ? "01. Contexte & Problématique" : "01. Context & Challenge"}
                   </span>
                 </div>
                 <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#f3f1f7]">
                   {copy.problem}
                 </h2>
-                <div className="border-l-2 border-[#9A71FF]/50 pl-5 sm:pl-6 py-1">
+                <div className="border-l-2 border-[#8FB3A2]/50 pl-5 sm:pl-6 py-1">
                   <p className="text-base sm:text-lg leading-relaxed text-[#f3f1f7]/90 font-normal">
                     {project.problem[locale]}
                   </p>
@@ -192,7 +192,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               {project.objectives && project.objectives.length > 0 && (
                 <section className="space-y-6 pt-4 border-t border-white/[0.08]">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#8FB3A2]">
                       {locale === "fr" ? "02. Objectifs d'Ingénierie" : "02. Engineering Goals"}
                     </span>
                   </div>
@@ -203,9 +203,9 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                     {project.objectives.map((obj, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-[#0B0510] p-4 transition-colors hover:border-[#9A71FF]/30"
+                        className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-[#070A09] p-4 transition-colors hover:border-[#8FB3A2]/30"
                       >
-                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#9A71FF]/10 text-[#9A71FF] mt-0.5">
+                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#8FB3A2]/10 text-[#8FB3A2] mt-0.5">
                           <Check className="size-3 stroke-[3]" />
                         </span>
                         <span className="text-sm text-[#f3f1f7]/90 leading-snug">
@@ -220,7 +220,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               {/* Section 3: Technical Architecture & System Solution */}
               <section className="space-y-6 pt-4 border-t border-white/[0.08]">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#8FB3A2]">
                     {locale === "fr" ? "03. Architecture & Implémentation" : "03. Architecture & System"}
                   </span>
                 </div>
@@ -241,7 +241,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                     </div>
                     {project.architecture.map((item, i) => (
                       <div key={i} className="flex items-start gap-2.5 text-[#f3f1f7]/90 leading-relaxed">
-                        <span className="text-[#9A71FF] select-none font-bold">›</span>
+                        <span className="text-[#8FB3A2] select-none font-bold">›</span>
                         <span>{item[locale]}</span>
                       </div>
                     ))}
@@ -253,7 +253,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               {project.results && project.results.length > 0 && (
                 <section className="space-y-6 pt-4 border-t border-white/[0.08]">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#9A71FF]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#8FB3A2]">
                       {locale === "fr" ? "04. Métriques & Résultats" : "04. Metrics & Outcomes"}
                     </span>
                   </div>
@@ -264,7 +264,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                     {project.results.map((res, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-[#0B0510] p-4"
+                        className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-[#070A09] p-4"
                       >
                         <span className="size-2 rounded-full bg-emerald-400 mt-2 shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
                         <span className="text-sm text-[#f3f1f7]/90 leading-relaxed font-medium">
@@ -279,9 +279,9 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
 
             {/* Right Technical Stack Sidebar (4 Cols) */}
             <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
-              <div className="rounded-2xl border border-white/10 bg-[#0B0510] p-6 shadow-xl space-y-6">
+              <div className="rounded-2xl border border-white/10 bg-[#070A09] p-6 shadow-xl space-y-6">
                 <div>
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#9A71FF] mb-3 block">
+                  <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3 block">
                     {copy.technologies}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -308,7 +308,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                         className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
                       >
                         <span className="flex items-center gap-2">
-                          <GithubIcon size={14} className="text-[#9A71FF]" />
+                          <GithubIcon size={14} className="text-[#8FB3A2]" />
                           <span>{copy.sourceCode}</span>
                         </span>
                         <ArrowUpRight className="size-3.5 text-[#797681]" />
@@ -319,7 +319,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                         href={project.demoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex w-full items-center justify-between rounded-xl bg-[#9A71FF] px-4 py-2.5 text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-colors"
+                        className="flex w-full items-center justify-between rounded-xl bg-[#8FB3A2] px-4 py-2.5 text-xs font-bold text-[#000000] hover:bg-[#A8C8B9] transition-colors"
                       >
                         <span className="flex items-center gap-2">
                           <ExternalLink className="size-3.5" />
@@ -343,7 +343,7 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                   </p>
                   <Link
                     href={`/${locale}/contact`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A71FF] hover:underline pt-1"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#8FB3A2] hover:underline pt-1"
                   >
                     <span>{locale === "fr" ? "Ouvrir une discussion →" : "Start a discussion →"}</span>
                   </Link>

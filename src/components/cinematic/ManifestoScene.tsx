@@ -18,7 +18,7 @@ const statements = [
     tagline: "High-performance software and scalable digital architectures that solve real-world problems.",
     taglineFr: "Des logiciels haute performance et des architectures scalables résolvant des problèmes concrets.",
     accent: "#f3f1f7",
-    color: "#9A71FF",
+    color: "#8FB3A2",
   },
   {
     prefix: "02",
@@ -112,13 +112,13 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         {/* Subtle Ambient Glow */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#9A71FF]/10 blur-[150px]"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#8FB3A2]/10 blur-[150px]"
         />
 
         {/* Top Header */}
         <div className="relative z-10 flex items-center justify-between border-b border-white/[0.08] pb-6">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2]">
               {locale === "fr" ? "Philosophie & Vision" : "Philosophy & Vision"}
             </span>
             <span className="hidden sm:inline-block size-1 rounded-full bg-white/30" />

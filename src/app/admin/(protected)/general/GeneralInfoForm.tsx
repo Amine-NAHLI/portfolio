@@ -45,10 +45,10 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
   }
 
   return (
-    <section className="technical-frame p-0 flex flex-col rounded-3xl border border-white/10 bg-[#0B0510] overflow-hidden shadow-2xl">
+    <section className="technical-frame p-0 flex flex-col rounded-3xl border border-white/10 bg-[#070A09] overflow-hidden shadow-2xl">
       <div className="border-b border-white/10 px-6 py-5 bg-[#060605] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 rounded-xl bg-[#9A71FF]/10 text-[#9A71FF] border border-[#9A71FF]/30 place-items-center text-sm font-bold">
+          <span className="grid size-10 rounded-xl bg-[#8FB3A2]/10 text-[#8FB3A2] border border-[#8FB3A2]/30 place-items-center text-sm font-bold">
             {locale.toUpperCase()}
           </span>
           <div>
@@ -71,7 +71,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
 
         {/* Hero Section Texts */}
         <div className="space-y-4 pb-6 border-b border-white/[0.08]">
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#9A71FF] block">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#8FB3A2] block">
             1. Section Accueil (Hero)
           </span>
 
@@ -85,7 +85,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
                   ? "Élève Ingénieur en Génie Informatique · UPF / Cyber · IA · Software"
                   : "Computer Engineering Student · UPF / Cyber · AI · Software")
               }
-              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
               required
             />
           </label>
@@ -100,7 +100,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
                   ? "Concevoir des architectures logicielles fiables, sécurisées et intelligentes."
                   : "Engineering robust, secure, and intelligent systems.")
               }
-              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
               required
             />
           </label>
@@ -111,7 +111,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
               name="introduction"
               defaultValue={defaultValues.introduction}
               rows={3}
-              className="rounded-xl border border-white/10 bg-[#060605] px-3.5 py-2.5 text-xs text-[#f3f1f7] resize-y focus:border-[#9A71FF] focus:outline-none leading-relaxed"
+              className="rounded-xl border border-white/10 bg-[#060605] px-3.5 py-2.5 text-xs text-[#f3f1f7] resize-y focus:border-[#8FB3A2] focus:outline-none leading-relaxed"
               required
             />
           </label>
@@ -119,7 +119,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
 
         {/* About Section Texts */}
         <div className="space-y-4 pb-6 border-b border-white/[0.08]">
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#9A71FF] block">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#8FB3A2] block">
             2. Section Profil & Vision (About)
           </span>
 
@@ -133,7 +133,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
                   ? "Bâtir des solutions fiables, sécurisées dès la conception."
                   : "Engineering resilient systems, secure by design.")
               }
-              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
               required
             />
           </label>
@@ -149,7 +149,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
                   : "Fourth-year computer engineering student at Université Privée de Fès (UPF), I build full-stack digital systems where security is not a late addition, but the core foundation of architecture. My experience at IntelTrust and hands-on work in defensive cybersecurity taught me how to enforce Zero-Trust access and eliminate attack vectors.")
               }
               rows={4}
-              className="rounded-xl border border-white/10 bg-[#060605] px-3.5 py-2.5 text-xs text-[#f3f1f7] resize-y focus:border-[#9A71FF] focus:outline-none leading-relaxed"
+              className="rounded-xl border border-white/10 bg-[#060605] px-3.5 py-2.5 text-xs text-[#f3f1f7] resize-y focus:border-[#8FB3A2] focus:outline-none leading-relaxed"
               required
             />
           </label>
@@ -157,7 +157,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
 
         {/* Quick Facts */}
         <div className="space-y-4">
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#9A71FF] block">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#8FB3A2] block">
             3. Métadonnées & Repères
           </span>
 
@@ -167,7 +167,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
               <input
                 name="formation"
                 defaultValue={defaultValues.formation}
-                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 required
               />
             </label>
@@ -176,7 +176,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
               <input
                 name="experience"
                 defaultValue={defaultValues.experience}
-                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
                 required
               />
             </label>
@@ -188,7 +188,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
               <select
                 name="experienceStatus"
                 defaultValue={defaultValues.experienceStatus || "completed"}
-                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none cursor-pointer"
+                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
               >
                 <option value="completed">
                   {locale === "fr" ? "Terminée (Affiche: Dernière expérience)" : "Completed (Displays: Recent Experience)"}
@@ -213,7 +213,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
                     : (locale === "fr" ? "Dernière expérience" : "Recent Experience")
                 }
                 defaultValue={defaultValues.experienceTitle || ""}
-                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+                className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
               />
             </label>
           </div>
@@ -223,7 +223,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
             <input
               name="languages"
               defaultValue={defaultValues.languages}
-              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#9A71FF] focus:outline-none"
+              className="rounded-xl border border-white/10 bg-[#060605] min-h-11 px-3.5 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
               required
             />
           </label>
@@ -233,7 +233,7 @@ export function GeneralInfoForm({ locale, title, defaultValues }: Props) {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-xl bg-[#9A71FF] px-6 py-3.5 font-mono text-xs font-bold text-[#000000] hover:bg-[#b08dff] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#9A71FF]/20"
+            className="w-full rounded-xl bg-[#8FB3A2] px-6 py-3.5 font-mono text-xs font-bold text-[#000000] hover:bg-[#A8C8B9] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#8FB3A2]/20"
           >
             {pending ? "Enregistrement en cours..." : `Enregistrer les modifications (${locale.toUpperCase()})`}
           </button>

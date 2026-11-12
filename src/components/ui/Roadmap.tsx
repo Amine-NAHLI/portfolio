@@ -47,29 +47,29 @@ export default function Roadmap({ entries, labels, variant = "default" }: Roadma
                 ref={(el) => {
                   pinRefs.current[index] = el;
                 }}
-                className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex size-9 sm:size-10 md:size-11 items-center justify-center rounded-full border border-[#9A71FF]/45 bg-[#0A090E] text-[#9A71FF] shadow-[0_0_14px_rgba(154,113,255,0.16)] transition-[transform,border-color,box-shadow] duration-300 group-hover:scale-110 group-hover:border-[#9A71FF]/80 group-hover:shadow-[0_0_20px_rgba(154,113,255,0.3)] ${
+                className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex size-9 sm:size-10 md:size-11 items-center justify-center rounded-full border border-[#8FB3A2]/45 bg-[#080B0A] text-[#8FB3A2] shadow-[0_0_14px_rgba(143, 179, 162,0.16)] transition-[transform,border-color,box-shadow] duration-300 group-hover:scale-110 group-hover:border-[#8FB3A2]/80 group-hover:shadow-[0_0_20px_rgba(143, 179, 162,0.3)] ${
                   isEven ? "left-[88%] md:left-[62%]" : "left-[12%] md:left-[38%]"
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute -inset-1.5 rounded-full border border-[#9A71FF]/15"
+                  className="pointer-events-none absolute -inset-1.5 rounded-full border border-[#8FB3A2]/15"
                 />
                 <Icon className="h-4 w-4" />
               </div>
 
-              {/* Mobile Layout: alternating left/right cards matching desktop S-curve road */}
+              {/* Mobile Layout: alternating left/right frameless milestones */}
               <div
-                className={`flex flex-col md:hidden w-[72%] ${
+                className={`flex flex-col md:hidden w-[72%] py-1 ${
                   isEven ? "mr-auto" : "ml-auto"
                 }`}
               >
-                <div className="rounded-2xl border border-white/10 bg-[#17161e]/90 p-3.5 sm:p-5 backdrop-blur-sm transition-all duration-300 hover:border-[#9A71FF]/35">
-                  <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-white/[0.06]">
-                    <span className="text-xs font-semibold text-[#9A71FF]">{typeLabel}</span>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold text-[#8FB3A2]">{typeLabel}</span>
                     <span className="text-xs font-mono text-[#797681]">{entry.eventDate}</span>
                   </div>
-                  <h3 className="text-base sm:text-lg font-bold text-[#f3f1f7] mb-3">{entry.title}</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors">{entry.title}</h3>
                   {variant !== "minimal" && (
                     <p className="text-sm leading-relaxed text-[#797681]">{entry.description}</p>
                   )}
@@ -79,16 +79,12 @@ export default function Roadmap({ entries, labels, variant = "default" }: Roadma
               {/* Desktop Left Side */}
               <div
                 className={`hidden md:flex md:flex-col ${
-                  isEven ? "w-[50%] pr-4 lg:pr-6 items-end text-left" : "w-[30%] pr-4 lg:pr-6 items-end text-right"
+                  isEven ? "w-[50%] pr-4 lg:pr-6 items-end text-right" : "w-[30%] pr-4 lg:pr-6 items-end text-right"
                 }`}
               >
                 {isEven ? (
-                  <div className="w-full rounded-2xl border border-white/10 bg-[#17161e]/90 p-6 text-left backdrop-blur-sm transition-all duration-300 hover:border-[#9A71FF]/40 hover:bg-[#1b1925]">
-                    <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-white/[0.06]">
-                      <span className="text-xs font-semibold text-[#9A71FF]">{typeLabel}</span>
-                      <span className="text-xs font-mono text-[#797681]">{entry.eventDate}</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-[#f3f1f7] mb-3 group-hover:text-[#9A71FF] transition-colors">
+                  <div className="w-full py-1 text-right">
+                    <h3 className="text-xl font-bold text-[#f3f1f7] mb-2 group-hover:text-[#8FB3A2] transition-colors">
                       {entry.title}
                     </h3>
                     {variant !== "minimal" && (
@@ -97,7 +93,7 @@ export default function Roadmap({ entries, labels, variant = "default" }: Roadma
                   </div>
                 ) : (
                   <div className="py-4 w-full">
-                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block mb-1">
+                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block mb-1">
                       {typeLabel}
                     </span>
                     <span className="font-mono text-sm font-medium text-[#797681]">
@@ -114,12 +110,8 @@ export default function Roadmap({ entries, labels, variant = "default" }: Roadma
                 }`}
               >
                 {!isEven ? (
-                  <div className="w-full rounded-2xl border border-white/10 bg-[#17161e]/90 p-6 text-left backdrop-blur-sm transition-all duration-300 hover:border-[#9A71FF]/40 hover:bg-[#1b1925]">
-                    <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-white/[0.06]">
-                      <span className="text-xs font-semibold text-[#9A71FF]">{typeLabel}</span>
-                      <span className="text-xs font-mono text-[#797681]">{entry.eventDate}</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-[#f3f1f7] mb-3 group-hover:text-[#9A71FF] transition-colors">
+                  <div className="w-full py-1 text-left">
+                    <h3 className="text-xl font-bold text-[#f3f1f7] mb-2 group-hover:text-[#8FB3A2] transition-colors">
                       {entry.title}
                     </h3>
                     {variant !== "minimal" && (
@@ -128,7 +120,7 @@ export default function Roadmap({ entries, labels, variant = "default" }: Roadma
                   </div>
                 ) : (
                   <div className="py-4 w-full">
-                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block mb-1">
+                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block mb-1">
                       {typeLabel}
                     </span>
                     <span className="font-mono text-sm font-medium text-[#797681]">

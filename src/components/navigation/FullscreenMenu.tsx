@@ -110,14 +110,14 @@ export default function FullscreenMenu({
       <div className="min-h-full flex flex-col justify-between max-w-6xl mx-auto w-full">
         {/* Top Bar inside Menu */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4 sm:pb-5">
-          <div className="font-mono text-xs font-semibold text-[#9A71FF] tracking-widest uppercase">
+          <div className="font-mono text-xs font-semibold text-[#8FB3A2] tracking-widest uppercase">
             NAHLI.DEV / NAVIGATION
           </div>
 
           <button
             onClick={onClose}
             aria-label="Fermer le menu"
-            className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-mono text-xs text-[#f3f1f7] hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 hover:text-white transition-all cursor-pointer"
+            className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-mono text-xs text-[#f3f1f7] hover:border-[#8FB3A2]/50 hover:bg-[#8FB3A2]/20 hover:text-white transition-all cursor-pointer"
           >
             <span>FERMER</span>
             <X className="size-4 transition-transform group-hover:rotate-90" />
@@ -147,13 +147,13 @@ export default function FullscreenMenu({
                         }, 150);
                       }
                     }}
-                    className="menu-item group flex items-baseline gap-3 sm:gap-6 font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#f3f1f7] transition-all duration-300 hover:text-[#9A71FF] hover:translate-x-3 will-change-transform"
+                    className="menu-item group flex items-baseline gap-3 sm:gap-6 font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#f3f1f7] transition-all duration-300 hover:text-[#8FB3A2] hover:translate-x-3 will-change-transform"
                   >
-                    <span className="font-mono text-xs sm:text-base lg:text-lg font-bold text-[#797681] group-hover:text-[#9A71FF] transition-colors">
+                    <span className="font-mono text-xs sm:text-base lg:text-lg font-bold text-[#797681] group-hover:text-[#8FB3A2] transition-colors">
                       {item.id}
                     </span>
                     <span>{label}</span>
-                    <ArrowUpRight className="size-5 sm:size-6 lg:size-7 opacity-0 -translate-x-3 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-[#9A71FF]" />
+                    <ArrowUpRight className="size-5 sm:size-6 lg:size-7 opacity-0 -translate-x-3 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-[#8FB3A2]" />
                   </Link>
                 </div>
               );
@@ -192,7 +192,7 @@ export default function FullscreenMenu({
               {...getCvDownloadProps(contactLinks.resume, locale)}
               data-analytics-event="cv_open"
               onClick={onClose}
-              className="hover:text-white transition-colors text-[#9A71FF]"
+              className="hover:text-white transition-colors text-[#8FB3A2]"
             >
               {locale === "fr" ? "TÉLÉCHARGER CV [PDF]" : "DOWNLOAD CV [PDF]"}
             </a>

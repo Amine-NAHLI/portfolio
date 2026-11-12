@@ -13,11 +13,11 @@ export default function PageIntro({ eyebrow, title, description, children }: Pag
       {/* Subtle Ambient Violet Spotlight */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-1/2 -z-10 h-[28rem] w-[36rem] -translate-y-1/2 translate-x-1/3 rounded-full bg-[#9A71FF]/10 blur-[140px]"
+        className="pointer-events-none absolute right-0 top-1/2 -z-10 h-[28rem] w-[36rem] -translate-y-1/2 translate-x-1/3 rounded-full bg-[#8FB3A2]/10 blur-[140px]"
       />
       
       <Container>
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#9A71FF] block mb-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block mb-3">
           {eyebrow}
         </span>
         <h1 className="max-w-4xl font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#f3f1f7] leading-tight">

@@ -27,7 +27,7 @@ export default async function AdminTranslationsPage() {
     <div className="max-w-6xl">
       <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end border-b border-white/10 pb-6 mb-10">
         <div className="max-w-3xl">
-          <p className="font-mono text-xs text-[#9A71FF] uppercase tracking-wider">{"// Système Linguistique & IA"}</p>
+          <p className="font-mono text-xs text-[#8FB3A2] uppercase tracking-wider">{"// Système Linguistique & IA"}</p>
           <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl text-[#f3f1f7]">
             Traductions & Multilinguisme
           </h1>

@@ -315,19 +315,32 @@ async function saveProject(db: UntypedClient, context: AdminContext, id: string 
   }
   
   if (Array.isArray(input.new_gallery_media_ids) && input.new_gallery_media_ids.length > 0) {
-    const { error: deleteError } = await db.from("project_media").delete().eq("project_id", projectId);
-    if (deleteError) throw deleteError;
+    const newIds = input.new_gallery_media_ids.filter((val): val is string => typeof val === "string" && val.length > 0);
+    if (newIds.length > 0) {
+      const { data: existingMedia } = await db
+        .from("project_media")
+        .select("media_id, sort_order")
+        .eq("project_id", projectId)
+        .order("sort_order", { ascending: false });
 
-    const mediaRows = input.new_gallery_media_ids.map((mediaId, index) => ({
-      project_id: projectId,
-      media_id: mediaId,
-      sort_order: index
-    }));
-    const { error: mediaError } = await db.from("project_media").insert(mediaRows);
-    if (mediaError) throw mediaError;
+      const existingIdSet = new Set((existingMedia ?? []).map((item: { media_id: string }) => item.media_id));
+      const maxSortOrder = (existingMedia?.[0]?.sort_order ?? -1) as number;
+      const toInsert = newIds
+        .filter((mediaId) => !existingIdSet.has(mediaId))
+        .map((mediaId, index) => ({
+          project_id: projectId,
+          media_id: mediaId,
+          sort_order: maxSortOrder + 1 + index,
+        }));
 
-    for (const mediaId of input.new_gallery_media_ids) {
-      await db.from("media_assets").update({ publication_status: "published" }).eq("id", mediaId);
+      if (toInsert.length > 0) {
+        const { error: mediaError } = await db.from("project_media").insert(toInsert);
+        if (mediaError) throw mediaError;
+      }
+
+      for (const mediaId of newIds) {
+        await db.from("media_assets").update({ publication_status: "published" }).eq("id", mediaId);
+      }
     }
   }
   

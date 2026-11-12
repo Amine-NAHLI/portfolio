@@ -148,16 +148,16 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
 
             {/* Visual Media Showcase */}
             {gallery && gallery.length > 0 ? (
-              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#070A09] p-2 sm:p-3 shadow-2xl">
-                <ProjectGallery images={gallery} locale={locale} />
+              <div className="mt-10">
+                <ProjectGallery images={gallery} locale={locale} projectTitle={project.title} />
               </div>
             ) : project.coverImage ? (
-              <div className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#070A09] shadow-2xl">
+              <div className="mt-10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={project.coverImage}
                   alt={project.title}
-                  className="w-full aspect-[21/9] object-cover"
+                  className="block max-h-[480px] w-auto max-w-full rounded-xl object-contain ring-1 ring-white/10 shadow-[0_18px_48px_rgba(0,0,0,0.55)]"
                 />
               </div>
             ) : null}

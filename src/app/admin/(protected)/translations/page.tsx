@@ -27,11 +27,11 @@ export default async function AdminTranslationsPage() {
     <div className="max-w-6xl">
       <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end border-b border-white/10 pb-6 mb-10">
         <div className="max-w-3xl">
-          <p className="font-mono text-xs text-[#8FB3A2] uppercase tracking-wider">{"// Système Linguistique & IA"}</p>
-          <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl text-[#f3f1f7]">
+          <p className="font-mono text-xs text-[#C8F122] uppercase tracking-wider">{"// Système Linguistique & IA"}</p>
+          <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl text-[#FFFFFF]">
             Traductions & Multilinguisme
           </h1>
-          <p className="mt-2 text-sm leading-6 text-[#797681]">
+          <p className="mt-2 text-sm leading-6 text-[#A1A1AA]">
             Supervisez la couverture bilingue (Français / Anglais), traduisez du contenu technique avec l&apos;IA LLaMA 3.3 et accédez rapidement à la gestion bilingue de chaque section.
           </p>
         </div>

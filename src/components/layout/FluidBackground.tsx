@@ -43,17 +43,17 @@ export default function FluidBackground() {
       { cx: 0.85, cy: 0.65, rx: 0.3, ry: 0.35, speed: 0.00028, phase: 3.7, driftX: 0.05, driftY: 0.05 },
     ];
 
-    // Color palettes mixed from requested colors: Black (#000000), Asphalt (#0C0404), Black Hole (#060605), Black Magic (#070A09), Black Pearl (#0E161A)
+    // Midnight Lime neutral charcoal & olive atmospheric layers (#0B0B0C base + subtle #C8F122 ambient whisper)
     const darkColors = [
-      ["rgba(14, 22, 26, 0.6)", "rgba(14, 22, 26, 0)"],   // Black Pearl #0E161A (left cool slate/teal depth)
-      ["rgba(7, 10, 9, 0.7)", "rgba(7, 10, 9, 0)"],     // Black Magic #070A09 (right violet/indigo depth)
-      ["rgba(12, 4, 4, 0.45)", "rgba(12, 4, 4, 0)"],     // Asphalt #0C0404 (warm dark undertone)
-      ["rgba(6, 6, 5, 0.6)", "rgba(6, 6, 5, 0)"],         // Black Hole #060605
-      ["rgba(143, 179, 162, 0.08)", "rgba(143, 179, 162, 0)"], // Subtle accent glow
+      ["rgba(18, 19, 22, 0.65)", "rgba(18, 19, 22, 0)"],
+      ["rgba(15, 16, 19, 0.7)", "rgba(15, 16, 19, 0)"],
+      ["rgba(22, 26, 14, 0.35)", "rgba(22, 26, 14, 0)"],
+      ["rgba(11, 11, 12, 0.6)", "rgba(11, 11, 12, 0)"],
+      ["rgba(200, 241, 34, 0.05)", "rgba(200, 241, 34, 0)"],
     ];
 
     function draw(time: number) {
-      ctx!.fillStyle = "#000000";
+      ctx!.fillStyle = "#0B0B0C";
       ctx!.fillRect(0, 0, width, height);
 
       const colors = darkColors;

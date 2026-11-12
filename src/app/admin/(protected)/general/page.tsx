@@ -59,9 +59,9 @@ export default async function GeneralInfoPage() {
     <div className="max-w-6xl">
       <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end border-b border-white/10 pb-6 mb-10">
         <div className="max-w-3xl">
-          <p className="font-mono text-xs text-[#8FB3A2] uppercase tracking-wider">{"// Administration Bilingue"}</p>
-          <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl text-[#f3f1f7]">Textes & Identité du Portfolio</h1>
-          <p className="mt-2 text-sm leading-6 text-[#797681]">Modifiez tous les textes de la page d&apos;accueil, les slogans, la bio, le statut de votre expérience et configurez les boutons d&apos;action en français et en anglais.</p>
+          <p className="font-mono text-xs text-[#C8F122] uppercase tracking-wider">{"// Administration Bilingue"}</p>
+          <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl text-[#FFFFFF]">Textes & Identité du Portfolio</h1>
+          <p className="mt-2 text-sm leading-6 text-[#A1A1AA]">Modifiez tous les textes de la page d&apos;accueil, les slogans, la bio, le statut de votre expérience et configurez les boutons d&apos;action en français et en anglais.</p>
         </div>
       </header>
 

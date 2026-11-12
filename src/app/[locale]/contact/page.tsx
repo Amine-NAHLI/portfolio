@@ -48,15 +48,15 @@ export default async function ContactPage({ params }: ContactPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000] text-[#f3f1f7] pb-32">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-32">
       {/* Background ambient lighting */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full bg-[#0E161A] opacity-60 blur-[180px] -z-10"
+        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full bg-[#17191E] opacity-60 blur-[180px] -z-10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-[#070A09] opacity-70 blur-[180px] -z-10"
+        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-[#121316] opacity-70 blur-[180px] -z-10"
       />
 
       <Container className="pt-28 sm:pt-36">
@@ -65,13 +65,13 @@ export default async function ContactPage({ params }: ContactPageProps) {
           {/* Left Column (Sticky Overview & Channels) */}
           <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8">
             <div>
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3 block">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-3 block">
                 {copy.eyebrow}
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-[#f3f1f7] leading-tight mb-5">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-[#FFFFFF] leading-tight mb-5">
                 {copy.title}
               </h1>
-              <p className="text-base text-[#797681] leading-relaxed max-w-md font-normal">
+              <p className="text-base text-[#A1A1AA] leading-relaxed max-w-md font-normal">
                 {copy.description}
               </p>
             </div>
@@ -85,20 +85,20 @@ export default async function ContactPage({ params }: ContactPageProps) {
                   target={external ? "_blank" : undefined}
                   rel={external ? "noreferrer" : undefined}
                   data-analytics-event={href === contactLinks.github ? "github_click" : undefined}
-                  className="group relative flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-[#070A09] transition-all duration-300 hover:border-[#8FB3A2]/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#8FB3A2]/10 cursor-pointer"
+                  className="group relative flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-[#121316] transition-all duration-300 hover:border-[#C8F122]/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#C8F122]/10 cursor-pointer"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="flex items-center justify-center size-11 rounded-xl bg-[#060605] border border-white/10 group-hover:border-[#8FB3A2]/50 text-[#8FB3A2] transition-all">
-                      <Icon aria-hidden="true" className="size-4 text-[#8FB3A2]" />
+                    <div className="flex items-center justify-center size-11 rounded-xl bg-[#0B0B0C] border border-white/10 group-hover:border-[#C8F122]/50 text-[#C8F122] transition-all">
+                      <Icon aria-hidden="true" className="size-4 text-[#C8F122]" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[#f3f1f7] group-hover:text-[#8FB3A2] transition-colors">
+                      <p className="text-xs font-semibold text-[#FFFFFF] group-hover:text-[#C8F122] transition-colors">
                         {label}
                       </p>
-                      <p className="text-xs font-mono text-[#797681] mt-0.5">{value}</p>
+                      <p className="text-xs font-mono text-[#A1A1AA] mt-0.5">{value}</p>
                     </div>
                   </div>
-                  <ArrowUpRight className="size-4 text-[#797681] group-hover:text-[#8FB3A2] transition-colors" />
+                  <ArrowUpRight className="size-4 text-[#A1A1AA] group-hover:text-[#C8F122] transition-colors" />
                 </a>
               ))}
             </div>

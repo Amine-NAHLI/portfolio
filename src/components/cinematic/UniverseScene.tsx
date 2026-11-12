@@ -253,26 +253,26 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
     <section
       ref={containerRef}
       id="disciplines"
-      className="relative w-full bg-[#101015] py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden"
+      className="relative w-full bg-[#0B0B0C] py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden"
     >
       {/* Background Radial Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#8FB3A2]/8 blur-[160px]"
+        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#C8F122]/8 blur-[160px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3 block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-3 block">
               {locale === "fr" ? "Expertise & Pôles d'Ingénierie" : "Engineering Disciplines"}
             </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7]">
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#FFFFFF]">
               {locale === "fr" ? "Trois Domaines. Une Même Exigence." : "Three Disciplines. One Standard."}
             </h2>
           </div>
-          <p className="max-w-md text-sm text-[#797681] leading-relaxed">
+          <p className="max-w-md text-sm text-[#A1A1AA] leading-relaxed">
             {locale === "fr"
               ? "Une vision holistique reliant sécurité offensive/défensive, ingénierie logicielle avancée et intelligence artificielle appliquée."
               : "A holistic engineering synergy connecting cybersecurity, resilient software systems, and applied computer vision."}
@@ -293,33 +293,33 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                 onClick={() => setActiveTab(d.id)}
                 className={`group relative flex items-center gap-3.5 rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 cursor-pointer ${
                   isSelected
-                    ? "border-[#8FB3A2] bg-[#0C100E] shadow-[0_0_25px_rgba(143, 179, 162,0.15)] ring-1 ring-[#8FB3A2]/40"
-                    : "border-white/10 bg-[#0C100E]/50 hover:border-white/20 hover:bg-[#0C100E]"
+                    ? "border-[#C8F122] bg-[#141518] shadow-[0_0_25px_rgba(200,241,34,0.15)] ring-1 ring-[#C8F122]/40"
+                    : "border-white/10 bg-[#141518]/50 hover:border-white/20 hover:bg-[#141518]"
                 }`}
               >
                 <div
                   className={`size-10 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
                     isSelected
-                      ? "bg-[#8FB3A2] text-[#101015]"
-                      : "bg-white/[0.04] text-[#8FB3A2] group-hover:bg-white/[0.08]"
+                      ? "bg-[#C8F122] text-[#0B0B0C]"
+                      : "bg-white/[0.04] text-[#C8F122] group-hover:bg-white/[0.08]"
                   }`}
                 >
                   <TabIcon className="size-5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] font-bold text-[#797681]">
+                    <span className="font-mono text-[10px] font-bold text-[#A1A1AA]">
                       {d.codePrefix}
                     </span>
                     <span
                       className={`text-xs font-mono font-semibold uppercase tracking-wider ${
-                        isSelected ? "text-[#8FB3A2]" : "text-[#797681]"
+                        isSelected ? "text-[#C8F122]" : "text-[#A1A1AA]"
                       }`}
                     >
                       {locale === "fr" ? d.statusFr : d.status}
                     </span>
                   </div>
-                  <h3 className="font-display text-sm sm:text-base font-bold text-[#f3f1f7] truncate mt-0.5">
+                  <h3 className="font-display text-sm sm:text-base font-bold text-[#FFFFFF] truncate mt-0.5">
                     {title}
                   </h3>
                 </div>
@@ -329,31 +329,31 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
         </div>
 
         {/* Innovative Engineering Cockpit Console */}
-        <div className="universe-console rounded-3xl border border-white/10 bg-[#0C100E] p-6 sm:p-10 shadow-2xl transition-all duration-500">
+        <div className="universe-console rounded-3xl border border-white/10 bg-[#141518] p-6 sm:p-10 shadow-2xl transition-all duration-500">
           <div className="grid gap-10 lg:grid-cols-12 items-start">
             
             {/* Left 7 Columns: In-depth Technical Spec */}
             <div className="lg:col-span-7 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-11 rounded-xl bg-[#8FB3A2]/10 border border-[#8FB3A2]/30 flex items-center justify-center text-[#8FB3A2]">
+                  <div className="size-11 rounded-xl bg-[#C8F122]/10 border border-[#C8F122]/30 flex items-center justify-center text-[#C8F122]">
                     <Icon className="size-6" />
                   </div>
                   <div>
-                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#8FB3A2]">
+                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#C8F122]">
                       {current.codePrefix} · {locale === "fr" ? current.statusFr : current.status}
                     </span>
-                    <h3 className="font-display text-2xl sm:text-3xl font-bold text-[#f3f1f7]">
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold text-[#FFFFFF]">
                       {locale === "fr" ? current.titleFr : current.title}
                     </h3>
                   </div>
                 </div>
 
-                <p className="text-sm sm:text-base text-[#f3f1f7]/90 leading-relaxed font-medium mb-4">
+                <p className="text-sm sm:text-base text-[#FFFFFF]/90 leading-relaxed font-medium mb-4">
                   {locale === "fr" ? current.taglineFr : current.tagline}
                 </p>
 
-                <p className="text-sm text-[#797681] leading-relaxed mb-8">
+                <p className="text-sm text-[#A1A1AA] leading-relaxed mb-8">
                   {locale === "fr" ? current.statementFr : current.statement}
                 </p>
 
@@ -364,10 +364,10 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                       key={i}
                       className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5"
                     >
-                      <span className="text-[11px] uppercase tracking-wider text-[#797681] font-mono block mb-1">
+                      <span className="text-[11px] uppercase tracking-wider text-[#A1A1AA] font-mono block mb-1">
                         {locale === "fr" ? m.labelFr : m.label}
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-[#f3f1f7]">
+                      <span className="text-xs sm:text-sm font-bold text-[#FFFFFF]">
                         {m.value}
                       </span>
                     </div>
@@ -376,7 +376,7 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
 
                 {/* Technical Competencies Breakdown */}
                 <div className="space-y-4 mb-8">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122] block">
                     {locale === "fr" ? "Compétences d'Ingénierie Spécialisées" : "Specialized Engineering Capabilities"}
                   </span>
                   {current.competencies.map((comp, idx) => (
@@ -385,12 +385,12 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
                       className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:border-white/10"
                     >
                       <div className="flex items-center gap-2 mb-1.5">
-                        <CheckCircle2 className="size-4 text-[#8FB3A2] shrink-0" />
-                        <h4 className="text-sm font-bold text-[#f3f1f7]">
+                        <CheckCircle2 className="size-4 text-[#C8F122] shrink-0" />
+                        <h4 className="text-sm font-bold text-[#FFFFFF]">
                           {locale === "fr" ? comp.nameFr : comp.name}
                         </h4>
                       </div>
-                      <p className="text-xs text-[#797681] leading-relaxed pl-6">
+                      <p className="text-xs text-[#A1A1AA] leading-relaxed pl-6">
                         {locale === "fr" ? comp.descFr : comp.desc}
                       </p>
                     </div>
@@ -400,14 +400,14 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
 
               {/* Technologies Badges */}
               <div className="pt-6 border-t border-white/[0.08]">
-                <span className="text-xs uppercase tracking-wider text-[#797681] font-mono mb-3 block">
+                <span className="text-xs uppercase tracking-wider text-[#A1A1AA] font-mono mb-3 block">
                   {locale === "fr" ? "Stack & Outils Vérifiés" : "Verified Stack & Tooling"}
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {current.techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#f3f1f7] hover:border-[#8FB3A2]/40 hover:text-[#8FB3A2] transition-colors"
+                      className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#FFFFFF] hover:border-[#C8F122]/40 hover:text-[#C8F122] transition-colors"
                     >
                       {tech}
                     </span>
@@ -418,30 +418,30 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
 
             {/* Right 5 Columns: Live Architecture Terminal / Code Simulator */}
             <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
-              <div className="rounded-2xl border border-white/10 bg-[#101015] overflow-hidden shadow-2xl">
+              <div className="rounded-2xl border border-white/10 bg-[#0B0B0C] overflow-hidden shadow-2xl">
                 {/* Terminal Title Bar */}
                 <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="size-2.5 rounded-full bg-rose-500/80" />
                     <span className="size-2.5 rounded-full bg-amber-500/80" />
                     <span className="size-2.5 rounded-full bg-emerald-500/80" />
-                    <span className="ml-2 font-mono text-xs text-[#797681]">
+                    <span className="ml-2 font-mono text-xs text-[#A1A1AA]">
                       {current.liveCodeSnippet.filename}
                     </span>
                   </div>
-                  <span className="font-mono text-[10px] text-[#8FB3A2] uppercase tracking-wider">
+                  <span className="font-mono text-[10px] text-[#C8F122] uppercase tracking-wider">
                     {current.liveCodeSnippet.language}
                   </span>
                 </div>
 
                 {/* Code Window */}
-                <div className="p-4 sm:p-5 font-mono text-xs text-[#f3f1f7]/90 leading-relaxed overflow-x-auto space-y-1">
+                <div className="p-4 sm:p-5 font-mono text-xs text-[#FFFFFF]/90 leading-relaxed overflow-x-auto space-y-1">
                   {current.liveCodeSnippet.lines.map((line, idx) => (
                     <div key={idx} className="flex">
-                      <span className="w-6 shrink-0 text-[#797681]/50 select-none text-right pr-3">
+                      <span className="w-6 shrink-0 text-[#A1A1AA]/50 select-none text-right pr-3">
                         {idx + 1}
                       </span>
-                      <span className={line.startsWith("#") ? "text-[#797681]" : line.includes("def ") || line.includes("interface ") ? "text-[#8FB3A2] font-semibold" : ""}>
+                      <span className={line.startsWith("#") ? "text-[#A1A1AA]" : line.includes("def ") || line.includes("interface ") ? "text-[#C8F122] font-semibold" : ""}>
                         {line}
                       </span>
                     </div>
@@ -452,17 +452,17 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
               {/* Connected Real-World Project Card */}
               <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-mono text-[#8FB3A2] uppercase tracking-wider font-semibold">
+                  <span className="text-[11px] font-mono text-[#C8F122] uppercase tracking-wider font-semibold">
                     {locale === "fr" ? "Projet & Cas d'Application" : "Applied Engineering Case"}
                   </span>
-                  <Terminal className="size-4 text-[#797681]" />
+                  <Terminal className="size-4 text-[#A1A1AA]" />
                 </div>
-                <h4 className="font-display text-base font-bold text-[#f3f1f7] mb-4">
+                <h4 className="font-display text-base font-bold text-[#FFFFFF] mb-4">
                   {current.linkedProject.title}
                 </h4>
                 <Link
                   href={`/${locale}/projects`}
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#8FB3A2] hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#C8F122] hover:text-white transition-colors"
                 >
                   <span>{locale === "fr" ? "Consulter les projets associés" : "Explore related work"}</span>
                   <ArrowUpRight className="size-4" />

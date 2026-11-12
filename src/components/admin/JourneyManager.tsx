@@ -20,7 +20,7 @@ import type { JourneyTimelineItem, JourneyTag } from "@/types/journey";
 const COLOR_PRESETS = [
   { label: "Or / Ambre", value: "#F59E0B" },
   { label: "Émeraude", value: "#10B981" },
-  { label: "Céladon Minéral", value: "#8FB3A2" },
+  { label: "Céladon Minéral", value: "#C8F122" },
   { label: "Cyan Électrique", value: "#00F0FF" },
   { label: "Rose Rubis", value: "#F43F5E" },
   { label: "Bleu Cobalt", value: "#3B82F6" },
@@ -38,7 +38,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
   // New tag inputs per item
   const [newTagName, setNewTagName] = useState("");
   const [newTagMode, setNewTagMode] = useState<"standard" | "custom">("standard");
-  const [newTagColor, setNewTagColor] = useState("#8FB3A2");
+  const [newTagColor, setNewTagColor] = useState("#C8F122");
 
   const activeItem = items[activeItemIndex] || items[0];
 
@@ -158,16 +158,16 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
   return (
     <div className="space-y-8">
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/10 bg-[#070A09]/60 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/10 bg-[#121316]/60 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-[#8FB3A2]/10 border border-[#8FB3A2]/20 text-[#8FB3A2]">
+          <div className="p-2.5 rounded-lg bg-[#C8F122]/10 border border-[#C8F122]/20 text-[#C8F122]">
             <Milestone className="size-5" />
           </div>
           <div>
-            <h2 className="font-display text-base font-bold text-[#f3f1f7]">
+            <h2 className="font-display text-base font-bold text-[#FFFFFF]">
               Étapes du Parcours ({items.length})
             </h2>
-            <p className="font-mono text-xs text-[#797681]">
+            <p className="font-mono text-xs text-[#A1A1AA]">
               Gérez les formations, expériences et personnalisez les tags avec leurs couleurs
             </p>
           </div>
@@ -177,9 +177,9 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
           <button
             type="button"
             onClick={handleAddNewItem}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-mono font-medium text-[#f3f1f7] hover:border-[#8FB3A2] hover:bg-[#8FB3A2]/10 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-mono font-medium text-[#FFFFFF] hover:border-[#C8F122] hover:bg-[#C8F122]/10 transition-colors cursor-pointer"
           >
-            <Plus className="size-4 text-[#8FB3A2]" />
+            <Plus className="size-4 text-[#C8F122]" />
             <span>Ajouter une étape</span>
           </button>
 
@@ -187,7 +187,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#8FB3A2] px-5 py-2 font-mono text-xs font-bold text-black hover:bg-[#a882ff] transition-all shadow-md shadow-[#8FB3A2]/20 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#C8F122] px-5 py-2 font-mono text-xs font-bold text-black hover:bg-[#a882ff] transition-all shadow-md shadow-[#C8F122]/20 disabled:opacity-50 cursor-pointer"
           >
             {isSaving ? (
               <>
@@ -224,7 +224,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
         
         {/* Left List of Timeline Items */}
         <div className="lg:col-span-4 space-y-2">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-[#797681] px-1 mb-2">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] px-1 mb-2">
             Chronologie ({items.length})
           </div>
 
@@ -237,23 +237,23 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onClick={() => setActiveItemIndex(index)}
                   className={`group relative p-3.5 rounded-xl border transition-all cursor-pointer text-left ${
                     isSelected
-                      ? "border-[#8FB3A2] bg-[#8FB3A2]/10 shadow-lg shadow-[#8FB3A2]/5"
-                      : "border-white/10 bg-[#070A09]/40 hover:border-white/20 hover:bg-[#070A09]/80"
+                      ? "border-[#C8F122] bg-[#C8F122]/10 shadow-lg shadow-[#C8F122]/5"
+                      : "border-white/10 bg-[#121316]/40 hover:border-white/20 hover:bg-[#121316]/80"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="font-mono text-[10px] font-bold text-[#8FB3A2] uppercase tracking-wider">
+                    <span className="font-mono text-[10px] font-bold text-[#C8F122] uppercase tracking-wider">
                       {item.year || "Période"}
                     </span>
-                    <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[#797681]">
+                    <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[#A1A1AA]">
                       {item.type === "experience" ? "Expérience" : "Formation"}
                     </span>
                   </div>
 
-                  <h4 className="font-display text-sm font-bold text-[#f3f1f7] line-clamp-1 group-hover:text-[#8FB3A2] transition-colors">
+                  <h4 className="font-display text-sm font-bold text-[#FFFFFF] line-clamp-1 group-hover:text-[#C8F122] transition-colors">
                     {item.title}
                   </h4>
-                  <p className="text-xs text-[#797681] line-clamp-1 mt-0.5">
+                  <p className="text-xs text-[#A1A1AA] line-clamp-1 mt-0.5">
                     {item.organization}
                   </p>
 
@@ -269,7 +269,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                         }
                         className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
                           tag.color === "standard" || !tag.color
-                            ? "border-white/10 bg-white/[0.04] text-[#797681]"
+                            ? "border-white/10 bg-white/[0.04] text-[#A1A1AA]"
                             : ""
                         }`}
                       >
@@ -277,7 +277,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                       </span>
                     ))}
                     {item.tags.length > 3 && (
-                      <span className="text-[9px] font-mono text-[#797681] self-center">
+                      <span className="text-[9px] font-mono text-[#A1A1AA] self-center">
                         +{item.tags.length - 3}
                       </span>
                     )}
@@ -290,15 +290,15 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
         {/* Right Active Item Editor */}
         {activeItem && (
-          <div className="lg:col-span-8 space-y-6 rounded-2xl border border-white/10 bg-[#070A09]/50 p-6 backdrop-blur-xl">
+          <div className="lg:col-span-8 space-y-6 rounded-2xl border border-white/10 bg-[#121316]/50 p-6 backdrop-blur-xl">
             {/* Header with reordering & delete */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-[#8FB3A2] uppercase tracking-wider">
+                <span className="font-mono text-xs font-bold text-[#C8F122] uppercase tracking-wider">
                   Étape #{activeItemIndex + 1}
                 </span>
                 <span className="text-white/20">|</span>
-                <span className="text-xs text-[#797681]">{activeItem.id}</span>
+                <span className="text-xs text-[#A1A1AA]">{activeItem.id}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -307,7 +307,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onClick={() => handleMoveItem(activeItemIndex, "up")}
                   disabled={activeItemIndex === 0}
                   title="Monter dans le parcours"
-                  className="p-1.5 rounded-lg border border-white/10 text-[#797681] hover:text-[#f3f1f7] hover:border-white/20 disabled:opacity-30 cursor-pointer"
+                  className="p-1.5 rounded-lg border border-white/10 text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/20 disabled:opacity-30 cursor-pointer"
                 >
                   <ArrowUp className="size-4" />
                 </button>
@@ -316,7 +316,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onClick={() => handleMoveItem(activeItemIndex, "down")}
                   disabled={activeItemIndex === items.length - 1}
                   title="Descendre dans le parcours"
-                  className="p-1.5 rounded-lg border border-white/10 text-[#797681] hover:text-[#f3f1f7] hover:border-white/20 disabled:opacity-30 cursor-pointer"
+                  className="p-1.5 rounded-lg border border-white/10 text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/20 disabled:opacity-30 cursor-pointer"
                 >
                   <ArrowDown className="size-4" />
                 </button>
@@ -334,67 +334,67 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
             {/* General Info Form */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Titre Français *
                 </label>
                 <input
                   type="text"
                   value={activeItem.title}
                   onChange={(e) => updateItemField(activeItemIndex, "title", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Titre Anglais (EN) *
                 </label>
                 <input
                   type="text"
                   value={activeItem.titleEn}
                   onChange={(e) => updateItemField(activeItemIndex, "titleEn", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Organisation / Entreprise / École *
                 </label>
                 <input
                   type="text"
                   value={activeItem.organization}
                   onChange={(e) => updateItemField(activeItemIndex, "organization", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Période / Année (ex: 2023 — EN COURS) *
                 </label>
                 <input
                   type="text"
                   value={activeItem.year}
                   onChange={(e) => updateItemField(activeItemIndex, "year", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Lieu (ex: Fès, Maroc)
                 </label>
                 <input
                   type="text"
                   value={activeItem.location}
                   onChange={(e) => updateItemField(activeItemIndex, "location", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Type
                 </label>
                 <select
@@ -402,7 +402,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onChange={(e) =>
                     updateItemField(activeItemIndex, "type", e.target.value as "education" | "experience")
                   }
-                  className="w-full rounded-lg border border-white/10 bg-[#070A09] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
+                  className="w-full rounded-lg border border-white/10 bg-[#121316] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
                 >
                   <option value="experience">Expérience Professionnelle / Compétition</option>
                   <option value="education">Formation / Diplôme</option>
@@ -410,7 +410,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#797681]">
+                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Statut de l&apos;étape (En cours vs Terminé)
                 </label>
                 <select
@@ -418,7 +418,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   onChange={(e) =>
                     updateItemField(activeItemIndex, "status", e.target.value as "completed" | "in_progress")
                   }
-                  className="w-full rounded-lg border border-white/10 bg-[#070A09] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
+                  className="w-full rounded-lg border border-white/10 bg-[#121316] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
                 >
                   <option value="completed">Terminé / Effectué</option>
                   <option value="in_progress">En cours actuellement</option>
@@ -440,18 +440,18 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                       placeholder="Distinction en français (ex: 3ème Prix National...)"
                       value={activeItem.award || ""}
                       onChange={(e) => updateItemField(activeItemIndex, "award", e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
                     />
                     <input
                       type="text"
                       placeholder="Distinction en anglais (ex: 3rd National Prize, 1st Regional Place...)"
                       value={activeItem.awardEn || ""}
                       onChange={(e) => updateItemField(activeItemIndex, "awardEn", e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-[#797681]">Couleur :</span>
+                    <span className="font-mono text-xs text-[#A1A1AA]">Couleur :</span>
                     <input
                       type="color"
                       value={activeItem.awardColor || "#F59E0B"}
@@ -467,11 +467,11 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
             <div className="space-y-4 pt-4 border-t border-white/10">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-display text-base font-bold text-[#f3f1f7] flex items-center gap-2">
-                    <Sparkles className="size-4 text-[#8FB3A2]" />
+                  <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
+                    <Sparkles className="size-4 text-[#C8F122]" />
                     <span>Tags & Compétences de cette étape</span>
                   </h3>
-                  <p className="font-mono text-xs text-[#797681]">
+                  <p className="font-mono text-xs text-[#A1A1AA]">
                     Ajoutez des tags et choisissez soit la couleur standard neutre, soit vos couleurs personnalisées
                   </p>
                 </div>
@@ -480,7 +480,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               {/* Current Tags Chips */}
               <div className="flex flex-wrap gap-2 p-3.5 rounded-xl border border-white/10 bg-white/[0.02] min-h-[50px] items-center">
                 {activeItem.tags.length === 0 ? (
-                  <span className="text-xs font-mono text-[#797681] italic">
+                  <span className="text-xs font-mono text-[#A1A1AA] italic">
                     Aucun tag pour le moment. Ajoutez-en ci-dessous.
                   </span>
                 ) : (
@@ -500,7 +500,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                         }
                         className={`group/chip inline-flex items-center gap-2 rounded-lg border px-3 py-1 font-mono text-xs transition-all ${
                           !isCustom
-                            ? "border-white/10 bg-white/[0.04] text-[#f3f1f7]/80 hover:border-white/25"
+                            ? "border-white/10 bg-white/[0.04] text-[#FFFFFF]/80 hover:border-white/25"
                             : "shadow-sm"
                         }`}
                       >
@@ -511,7 +511,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                         <button
                           type="button"
                           onClick={() => handleRemoveTag(activeItemIndex, tagIdx)}
-                          className="size-4 rounded-full flex items-center justify-center text-[#797681] hover:text-red-400 hover:bg-red-400/10 transition-colors ml-1 cursor-pointer"
+                          className="size-4 rounded-full flex items-center justify-center text-[#A1A1AA] hover:text-red-400 hover:bg-red-400/10 transition-colors ml-1 cursor-pointer"
                           title="Supprimer ce tag"
                         >
                           ×
@@ -523,14 +523,14 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               </div>
 
               {/* Tag Builder (Input + Mode + Color Presets) */}
-              <div className="p-4 rounded-xl border border-white/10 bg-[#070A09]/80 space-y-4">
-                <div className="font-mono text-xs uppercase tracking-wider text-[#8FB3A2] font-bold">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/80 space-y-4">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#C8F122] font-bold">
                   {"// Nouveau Tag"}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                   <div className="sm:col-span-6 space-y-1.5">
-                    <label className="font-mono text-[11px] text-[#797681] uppercase tracking-wider">
+                    <label className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
                       Intitulé du Tag
                     </label>
                     <input
@@ -544,18 +544,18 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                           handleAddTag(activeItemIndex);
                         }
                       }}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                     />
                   </div>
 
                   <div className="sm:col-span-3 space-y-1.5">
-                    <label className="font-mono text-[11px] text-[#797681] uppercase tracking-wider">
+                    <label className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
                       Style de Couleur
                     </label>
                     <select
                       value={newTagMode}
                       onChange={(e) => setNewTagMode(e.target.value as "standard" | "custom")}
-                      className="w-full rounded-lg border border-white/10 bg-[#070A09] px-3 py-2 text-xs font-mono text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none cursor-pointer"
+                      className="w-full rounded-lg border border-white/10 bg-[#121316] px-3 py-2 text-xs font-mono text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
                     >
                       <option value="standard">⚪ Standard (Simple)</option>
                       <option value="custom">🎨 Personnalisé</option>
@@ -566,7 +566,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                     <button
                       type="button"
                       onClick={() => handleAddTag(activeItemIndex)}
-                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#8FB3A2]/40 bg-[#8FB3A2]/15 px-4 py-2 font-mono text-xs font-bold text-[#8FB3A2] hover:bg-[#8FB3A2] hover:text-black transition-all cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#C8F122]/40 bg-[#C8F122]/15 px-4 py-2 font-mono text-xs font-bold text-[#C8F122] hover:bg-[#C8F122] hover:text-black transition-all cursor-pointer"
                     >
                       <Plus className="size-3.5" />
                       <span>Ajouter le tag</span>
@@ -578,8 +578,8 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 {newTagMode === "custom" && (
                   <div className="pt-2 border-t border-white/[0.06] space-y-3">
                     <div className="flex items-center gap-2">
-                      <Palette className="size-3.5 text-[#8FB3A2]" />
-                      <span className="font-mono text-xs text-[#797681]">
+                      <Palette className="size-3.5 text-[#C8F122]" />
+                      <span className="font-mono text-xs text-[#A1A1AA]">
                         Choisissez une couleur vibrante prédéfinie ou libre :
                       </span>
                     </div>
@@ -614,13 +614,13 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                           className="size-6 rounded border-0 bg-transparent cursor-pointer"
                           title="Sélecteur hexadécimal libre"
                         />
-                        <span className="font-mono text-xs text-[#f3f1f7] uppercase">{newTagColor}</span>
+                        <span className="font-mono text-xs text-[#FFFFFF] uppercase">{newTagColor}</span>
                       </div>
                     </div>
 
                     {/* Live Badge Preview */}
                     <div className="flex items-center gap-3 pt-2">
-                      <span className="font-mono text-[11px] text-[#797681]">Aperçu du rendu :</span>
+                      <span className="font-mono text-[11px] text-[#A1A1AA]">Aperçu du rendu :</span>
                       <span
                         style={{
                           color: newTagColor,

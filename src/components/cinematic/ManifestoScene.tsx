@@ -17,8 +17,8 @@ const statements = [
     actionFr: "JE CONSTRUIS",
     tagline: "High-performance software and scalable digital architectures that solve real-world problems.",
     taglineFr: "Des logiciels haute performance et des architectures scalables résolvant des problèmes concrets.",
-    accent: "#f3f1f7",
-    color: "#8FB3A2",
+    accent: "#FFFFFF",
+    color: "#C8F122",
   },
   {
     prefix: "02",
@@ -103,7 +103,7 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
   return (
     <section
       ref={containerRef}
-      className="relative w-full bg-transparent text-[#f3f1f7] overflow-hidden"
+      className="relative w-full bg-transparent text-[#FFFFFF] overflow-hidden"
     >
       <div
         ref={pinRef}
@@ -112,21 +112,21 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         {/* Subtle Ambient Glow */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#8FB3A2]/10 blur-[150px]"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#C8F122]/10 blur-[150px]"
         />
 
         {/* Top Header */}
         <div className="relative z-10 flex items-center justify-between border-b border-white/[0.08] pb-6">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122]">
               {locale === "fr" ? "Philosophie & Vision" : "Philosophy & Vision"}
             </span>
             <span className="hidden sm:inline-block size-1 rounded-full bg-white/30" />
-            <span className="hidden sm:inline-block text-xs text-[#797681]">
+            <span className="hidden sm:inline-block text-xs text-[#A1A1AA]">
               {locale === "fr" ? "Exigence d'ingénierie logicielle" : "Software Engineering Standards"}
             </span>
           </div>
-          <span className="text-xs text-[#797681]">Amine Nahli</span>
+          <span className="text-xs text-[#A1A1AA]">Amine Nahli</span>
         </div>
 
         {/* Center: Overlapping Kinetic Statements */}
@@ -143,16 +143,16 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
                 }}
                 className="absolute inset-0 flex flex-col items-center justify-center text-center max-w-4xl mx-auto will-change-transform"
               >
-                <div className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-[#797681] uppercase mb-4">
+                <div className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-[#A1A1AA] uppercase mb-4">
                   [ STEP {item.prefix} ]
                 </div>
 
-                <h2 className="font-display text-5xl sm:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-[#f3f1f7] leading-none mb-6">
+                <h2 className="font-display text-5xl sm:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-[#FFFFFF] leading-none mb-6">
                   {actionText}
                   <span style={{ color: item.color }}>.</span>
                 </h2>
 
-                <p className="font-sans text-base sm:text-xl lg:text-2xl text-[#f3f1f7]/80 max-w-2xl font-light leading-relaxed">
+                <p className="font-sans text-base sm:text-xl lg:text-2xl text-[#FFFFFF]/80 max-w-2xl font-light leading-relaxed">
                   {taglineText}
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="relative z-10 flex items-center justify-between border-t border-white/[0.08] pt-6 text-xs text-[#797681]">
+        <div className="relative z-10 flex items-center justify-between border-t border-white/[0.08] pt-6 text-xs text-[#A1A1AA]">
           <span>{locale === "fr" ? "Architectures logicielles & Sécurité" : "Software Architectures & Security"}</span>
           <span>{locale === "fr" ? "Cycle d'Ingénieur UPF" : "UPF Engineering Cycle"}</span>
         </div>

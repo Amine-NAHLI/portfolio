@@ -21,7 +21,7 @@ export default function TechCard({
     mouseY.set(e.clientY - top);
   }
 
-  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(143, 179, 162,0.1), transparent 80%)`;
+  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(200,241,34,0.1), transparent 80%)`;
 
   return (
     <div

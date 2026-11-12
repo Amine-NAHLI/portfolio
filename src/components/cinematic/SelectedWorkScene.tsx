@@ -256,24 +256,24 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
       {/* Background Ambient Lighting: Violet Neon & Obsidian */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full bg-[#8FB3A2]/8 blur-[180px] -z-10"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full bg-[#C8F122]/8 blur-[180px] -z-10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/4 top-1/3 h-[450px] w-[450px] rounded-full bg-[#0E161A] opacity-70 blur-[160px] -z-10"
+        className="pointer-events-none absolute left-1/4 top-1/3 h-[450px] w-[450px] rounded-full bg-[#17191E] opacity-70 blur-[160px] -z-10"
       />
 
       <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-between h-full min-h-0">
         
         {/* Centered Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-2 sm:mb-4 shrink-0">
-          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-[#8FB3A2] block mb-1.5 font-bold">
+          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-[#C8F122] block mb-1.5 font-bold">
             {locale === "fr" ? "// SÉLECTION DE RÉALISATIONS" : "// FEATURED WORK"}
           </span>
-          <h2 className="font-display text-2xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-[#f3f1f7] leading-tight">
+          <h2 className="font-display text-2xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-[#FFFFFF] leading-tight">
             {locale === "fr" ? "Projets Phares." : "Work that Speaks."}
           </h2>
-          <p className="mt-1.5 text-xs sm:text-sm text-[#797681] leading-relaxed max-w-xl mx-auto line-clamp-2">
+          <p className="mt-1.5 text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-xl mx-auto line-clamp-2">
             {locale === "fr"
               ? "Chaque projet est conçu comme un système complet : problème réel identifié, architecture rigoureuse, métriques mesurées et code source documenté."
               : "Each project is engineered as a robust system: verified problem space, rigorous architecture, measured outcomes, and documented source code."}
@@ -313,22 +313,22 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     backfaceVisibility: "hidden",
                     zIndex: (count - index) * 10,
                   }}
-                  className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br from-[#0C1210] via-[#070A09] to-[#040605] px-5 py-4 sm:px-8 sm:py-6 transition-[border-color,box-shadow] duration-300 will-change-[transform,opacity] ${
+                  className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br from-[#141519] via-[#121316] to-[#0B0B0C] px-5 py-4 sm:px-8 sm:py-6 transition-[border-color,box-shadow] duration-300 will-change-[transform,opacity] ${
                     isCurrent
-                      ? "pointer-events-auto border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.9),0_0_45px_rgba(143, 179, 162,0.1)] hover:border-[#8FB3A2]/55 hover:shadow-[0_30px_95px_rgba(143, 179, 162,0.18)]"
+                      ? "pointer-events-auto border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.9),0_0_45px_rgba(200,241,34,0.1)] hover:border-[#C8F122]/55 hover:shadow-[0_30px_95px_rgba(200,241,34,0.18)]"
                       : isNextPeek
-                        ? "pointer-events-auto cursor-pointer border-white/10 shadow-[0_20px_55px_rgba(0,0,0,0.85)] hover:border-[#8FB3A2]/35"
+                        ? "pointer-events-auto cursor-pointer border-white/10 shadow-[0_20px_55px_rgba(0,0,0,0.85)] hover:border-[#C8F122]/35"
                         : "pointer-events-none border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
                   }`}
                 >
                   {/* Subtle top ambient sheen & inner corner highlight */}
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8FB3A2]/50 to-transparent"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C8F122]/50 to-transparent"
                   />
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#8FB3A2]/10 blur-3xl"
+                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#C8F122]/10 blur-3xl"
                   />
 
                   {/* Top Card Bar */}
@@ -338,10 +338,10 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     }`}
                   >
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                      <span className="font-mono text-xs font-bold text-[#8FB3A2] bg-[#8FB3A2]/10 border border-[#8FB3A2]/30 px-2.5 py-0.5 rounded-full shrink-0">
+                      <span className="font-mono text-xs font-bold text-[#C8F122] bg-[#C8F122]/10 border border-[#C8F122]/30 px-2.5 py-0.5 rounded-full shrink-0">
                         0{index + 1}
                       </span>
-                      <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#797681] truncate">
+                      <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#A1A1AA] truncate">
                         {categoryBadge}
                       </span>
                     </div>
@@ -354,7 +354,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                           rel="noopener noreferrer"
                           tabIndex={isCurrent ? 0 : -1}
                           aria-label="GitHub Repository"
-                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#8FB3A2]/50 hover:bg-[#8FB3A2]/20 transition-all cursor-pointer relative z-30 ${
+                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#A1A1AA] hover:text-white hover:border-[#C8F122]/50 hover:bg-[#C8F122]/20 transition-all cursor-pointer relative z-30 ${
                             isCurrent ? "pointer-events-auto" : "pointer-events-none"
                           }`}
                           onClick={(e) => e.stopPropagation()}
@@ -371,7 +371,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                           rel="noopener noreferrer"
                           tabIndex={isCurrent ? 0 : -1}
                           aria-label="Live Demo"
-                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#8FB3A2]/50 hover:bg-[#8FB3A2]/20 transition-all cursor-pointer relative z-30 ${
+                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#A1A1AA] hover:text-white hover:border-[#C8F122]/50 hover:bg-[#C8F122]/20 transition-all cursor-pointer relative z-30 ${
                             isCurrent ? "pointer-events-auto" : "pointer-events-none"
                           }`}
                           onClick={(e) => e.stopPropagation()}
@@ -384,17 +384,17 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
 
                   {/* Main Card Content */}
                   <div className="py-2 sm:py-3 flex-1 flex flex-col justify-center min-h-0 gap-1.5 sm:gap-2">
-                    <h3 className="font-display text-lg sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-[#f3f1f7] leading-snug line-clamp-2">
+                    <h3 className="font-display text-lg sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-[#FFFFFF] leading-snug line-clamp-2">
                       {projectTitle}
                     </h3>
 
                     {projectSubtitle && (
-                      <p className="text-xs sm:text-sm font-medium text-[#8FB3A2] line-clamp-1">
+                      <p className="text-xs sm:text-sm font-medium text-[#C8F122] line-clamp-1">
                         {projectSubtitle}
                       </p>
                     )}
 
-                    <p className="text-xs sm:text-sm text-[#797681] leading-relaxed line-clamp-2 sm:line-clamp-3 font-normal">
+                    <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed line-clamp-2 sm:line-clamp-3 font-normal">
                       {projectSummary}
                     </p>
 
@@ -403,7 +403,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                       {techList.slice(0, 6).map((tech: string) => (
                         <span
                           key={tech}
-                          className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] sm:text-[11px] text-[#f3f1f7]/80 hover:border-white/25 transition-colors"
+                          className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] sm:text-[11px] text-[#FFFFFF]/80 hover:border-white/25 transition-colors"
                         >
                           {tech}
                         </span>
@@ -420,7 +420,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     <Link
                       href={`/${locale}/projects/${project.slug}`}
                       tabIndex={isCurrent ? 0 : -1}
-                      className={`inline-flex items-center gap-2 rounded-full border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 px-4 py-1.5 sm:px-5 sm:py-2 text-xs font-mono font-semibold text-[#8FB3A2] hover:bg-[#8FB3A2] hover:text-black transition-all shadow-sm cursor-pointer relative z-30 ${
+                      className={`inline-flex items-center gap-2 rounded-full border border-[#C8F122]/30 bg-[#C8F122]/10 px-4 py-1.5 sm:px-5 sm:py-2 text-xs font-mono font-semibold text-[#C8F122] hover:bg-[#C8F122] hover:text-black transition-all shadow-sm cursor-pointer relative z-30 ${
                         isCurrent ? "pointer-events-auto" : "pointer-events-none"
                       }`}
                       onClick={(e) => e.stopPropagation()}
@@ -430,7 +430,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     </Link>
 
                     {"year" in project && typeof (project as DisplayProjectItem).year === "string" && (
-                      <span className="font-mono text-[11px] text-[#797681]">
+                      <span className="font-mono text-[11px] text-[#A1A1AA]">
                         {(project as DisplayProjectItem).year}
                       </span>
                     )}
@@ -449,15 +449,15 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
             
             {/* Step Counter */}
             <div className="flex items-center gap-2">
-              <Layers className="size-3.5 text-[#8FB3A2]" />
-              <span className="font-mono text-xs font-bold text-[#f3f1f7]">
+              <Layers className="size-3.5 text-[#C8F122]" />
+              <span className="font-mono text-xs font-bold text-[#FFFFFF]">
                 0{activeIndex + 1}
               </span>
               <span className="text-white/20 font-mono text-xs">/</span>
-              <span className="font-mono text-xs text-[#797681]">
+              <span className="font-mono text-xs text-[#A1A1AA]">
                 0{count}
               </span>
-              <span className="hidden sm:inline font-mono text-[11px] text-[#797681] ml-2">
+              <span className="hidden sm:inline font-mono text-[11px] text-[#A1A1AA] ml-2">
                 {locale === "fr" ? "· Deck 3D spatial au défilement" : "· Spatial 3D deck on scroll"}
               </span>
             </div>
@@ -469,7 +469,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 onClick={() => scrollToStep(Math.max(0, activeIndex - 1))}
                 disabled={activeIndex === 0}
                 aria-label="Projet précédent"
-                className="size-7 rounded-full border border-white/10 flex items-center justify-center text-[#797681] hover:text-[#f3f1f7] hover:border-white/25 disabled:opacity-30 cursor-pointer transition-all"
+                className="size-7 rounded-full border border-white/10 flex items-center justify-center text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/25 disabled:opacity-30 cursor-pointer transition-all"
               >
                 <ChevronLeft className="size-3.5" />
               </button>
@@ -483,7 +483,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     aria-label={`Aller au projet ${dotIdx + 1}`}
                     className={`rounded-full transition-all cursor-pointer ${
                       dotIdx === activeIndex
-                        ? "w-6 h-2 bg-[#8FB3A2] shadow-[0_0_10px_rgba(143, 179, 162,0.6)]"
+                        ? "w-6 h-2 bg-[#C8F122] shadow-[0_0_10px_rgba(200,241,34,0.6)]"
                         : "size-2 bg-white/20 hover:bg-white/40"
                     }`}
                   />
@@ -495,7 +495,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 onClick={() => scrollToStep(Math.min(count - 1, activeIndex + 1))}
                 disabled={activeIndex === count - 1}
                 aria-label="Projet suivant"
-                className="size-7 rounded-full border border-white/10 flex items-center justify-center text-[#797681] hover:text-[#f3f1f7] hover:border-white/25 disabled:opacity-30 cursor-pointer transition-all"
+                className="size-7 rounded-full border border-white/10 flex items-center justify-center text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/25 disabled:opacity-30 cursor-pointer transition-all"
               >
                 <ChevronRight className="size-3.5" />
               </button>
@@ -504,7 +504,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
             {/* Link to all projects */}
             <Link
               href={`/${locale}/projects`}
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[#797681] hover:text-[#f3f1f7] transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[#A1A1AA] hover:text-[#FFFFFF] transition-colors"
             >
               <span>{locale === "fr" ? "Tous les projets" : "All projects"}</span>
               <ArrowUpRight className="size-3.5" />
@@ -512,8 +512,8 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
           </div>
 
           {/* Scroll Guide Indicator */}
-          <div className="text-[11px] font-mono text-[#797681] flex items-center gap-2 text-center">
-            <span className="size-1.5 rounded-full bg-[#8FB3A2] animate-pulse shrink-0" />
+          <div className="text-[11px] font-mono text-[#A1A1AA] flex items-center gap-2 text-center">
+            <span className="size-1.5 rounded-full bg-[#C8F122] animate-pulse shrink-0" />
             <span>
               {locale === "fr"
                 ? "Défilez ou utilisez les flèches pour passer d'un projet à l'autre"

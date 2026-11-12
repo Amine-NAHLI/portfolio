@@ -45,12 +45,12 @@ export default function TechnicalFrame({
         className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(143, 179, 162, 0.12), transparent 40%)`
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(200,241,34, 0.12), transparent 40%)`
         }}
       />
       {(index || label) ? (
-        <div className="technical-frame__meta relative z-10 flex items-center justify-between text-xs text-[#797681] mb-4 pb-2 border-b border-white/[0.06]" aria-hidden="true">
-          <span className="font-semibold text-[#8FB3A2]">{index}</span>
+        <div className="technical-frame__meta relative z-10 flex items-center justify-between text-xs text-[#A1A1AA] mb-4 pb-2 border-b border-white/[0.06]" aria-hidden="true">
+          <span className="font-semibold text-[#C8F122]">{index}</span>
           <span>{label}</span>
         </div>
       ) : null}

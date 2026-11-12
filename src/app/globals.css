@@ -33,45 +33,45 @@
 
 @layer base {
   :root {
-    /* Palette requested by user: Black (#000000), Black Hole (#060605), Black Magic (#070A09), Asphalt (#0C0404), Black Pearl (#0E161A) */
-    --bg-page: #060605;
-    --bg-gradient: radial-gradient(circle at 18% 20%, rgba(14, 22, 26, 0.7) 0%, transparent 45%), radial-gradient(circle at 82% 80%, rgba(7, 10, 9, 0.8) 0%, transparent 50%), #000000;
-    --surface-subtle: #0C0404;
-    --surface: #070A09;
-    --surface-raised: #0E161A;
-    --surface-deep: #000000;
-    --border: rgba(243, 241, 247, 0.08);
-    --border-strong: rgba(243, 241, 247, 0.15);
+    /* Midnight Lime Palette: Midnight Black (#0B0B0C), Pure White (#FFFFFF), Lime Green (#C8F122) */
+    --bg-page: #0B0B0C;
+    --bg-gradient: radial-gradient(circle at 50% 22%, rgba(200, 241, 34, 0.05) 0%, transparent 45%), radial-gradient(circle at 82% 80%, rgba(18, 19, 22, 0.9) 0%, transparent 50%), #0B0B0C;
+    --surface-subtle: #0F1013;
+    --surface: #121316;
+    --surface-raised: #17191E;
+    --surface-deep: #0B0B0C;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
     /* Cinematic Palette */
-    --cinematic-bg: #060605;
-    --cinematic-surface: #070A09;
-    --cinematic-secondary: #0E161A;
-    --cinematic-accent: #8FB3A2;
-    --cinematic-accent-glow: rgba(143, 179, 162, 0.25);
-    --cinematic-text: #f3f1f7;
-    --cinematic-muted: #797681;
-    --cinematic-border: rgba(243, 241, 247, 0.08);
-    --text-primary: #f3f1f7;
-    --text-secondary: #8b8796;
-    --text-muted: #5e5b66;
-    --text-on-accent: #000000;
-    --accent: #8FB3A2;
-    --accent-hover: #A8C8B9;
-    --accent-soft: rgba(143, 179, 162, 0.12);
+    --cinematic-bg: #0B0B0C;
+    --cinematic-surface: #121316;
+    --cinematic-secondary: #17191E;
+    --cinematic-accent: #C8F122;
+    --cinematic-accent-glow: rgba(200, 241, 34, 0.22);
+    --cinematic-text: #FFFFFF;
+    --cinematic-muted: #A1A1AA;
+    --cinematic-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #FFFFFF;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
+    --text-on-accent: #0B0B0C;
+    --accent: #C8F122;
+    --accent-hover: #D9FB52;
+    --accent-soft: rgba(200, 241, 34, 0.12);
     --amber: #f59e0b;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #f43f5e;
-    --info: #8FB3A2;
+    --info: #C8F122;
     --radius-sm: 0.25rem;
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
     --pointer-x: 50vw;
     --pointer-y: 20vh;
-    --ambient-cyan: rgba(143, 179, 162, 0.08);
+    --ambient-cyan: rgba(200, 241, 34, 0.08);
     --ambient-amber: rgba(245, 158, 11, 0.04);
-    --shadow-soft: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
+    --shadow-soft: 0 1.5rem 4rem rgba(0, 0, 0, 0.65);
     color-scheme: dark;
   }
 

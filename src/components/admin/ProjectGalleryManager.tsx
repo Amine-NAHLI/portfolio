@@ -532,7 +532,7 @@ export function ProjectGalleryManager({ projects: initialProjects, initialProjec
                       )}
                     >
                       {/* Thumbnail preview */}
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#040605]">
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0B0B0C]">
                         <img
                           src={photo.url}
                           alt={photo.altFr || photo.originalName}
@@ -651,7 +651,7 @@ export function ProjectGalleryManager({ projects: initialProjects, initialProjec
           onClick={() => setPreviewPhoto(null)}
         >
           <div
-            className="relative max-h-[90vh] max-w-5xl overflow-hidden rounded-2xl border border-white/15 bg-[#070A09] p-3 shadow-2xl"
+            className="relative max-h-[90vh] max-w-5xl overflow-hidden rounded-2xl border border-white/15 bg-[#121316] p-3 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-2 flex items-center justify-between gap-4 px-2 py-1">

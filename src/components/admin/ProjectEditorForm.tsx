@@ -119,10 +119,10 @@ export default function ProjectEditorForm({
   return (
     <div className="grid gap-6 sm:col-span-2">
       {/* Top Bar: GitHub URL Extractor & Skill-Driven AI Auto-Fill */}
-      <section className="rounded-2xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/[0.06] p-4 sm:p-5 space-y-3">
+      <section className="rounded-2xl border border-[#C8F122]/30 bg-[#C8F122]/[0.06] p-4 sm:p-5 space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#8FB3A2] font-semibold">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#C8F122] font-semibold">
               <GitBranch className="size-3.5" />
               <span>Import GitHub + Skill IA (Chatbot AI)</span>
             </div>
@@ -139,14 +139,14 @@ export default function ProjectEditorForm({
             onChange={(event) => setField("github_url", event.target.value)}
             onKeyDown={handleGitHubInputKeyDown}
             placeholder="https://github.com/Amine-NAHLI/nom-du-projet"
-            className="min-h-11 flex-1 rounded-xl border border-white/15 bg-surface px-3.5 text-sm font-normal text-text-primary placeholder:text-text-muted focus:border-[#8FB3A2]/60 focus:outline-none"
+            className="min-h-11 flex-1 rounded-xl border border-white/15 bg-surface px-3.5 text-sm font-normal text-text-primary placeholder:text-text-muted focus:border-[#C8F122]/60 focus:outline-none"
             aria-label="Lien GitHub du projet"
           />
           <button
             type="button"
             onClick={() => void handleExtractFromGitHub()}
             disabled={extracting}
-            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#8FB3A2] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#000000] shadow-lg shadow-[#8FB3A2]/20 transition-all hover:bg-[#a1c4b4] disabled:opacity-60 cursor-pointer"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#C8F122] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#000000] shadow-lg shadow-[#C8F122]/20 transition-all hover:bg-[#a1c4b4] disabled:opacity-60 cursor-pointer"
           >
             {extracting ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
             <span>{extracting ? "Extraction & IA en cours…" : "Extraire & Remplir avec l'IA"}</span>
@@ -160,11 +160,11 @@ export default function ProjectEditorForm({
         ) : null}
 
         {extractMeta ? (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#8FB3A2]/30 bg-surface/70 px-3.5 py-2.5 text-xs text-text-secondary">
-            <CheckCircle2 className="size-4 shrink-0 text-[#8FB3A2]" />
+          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#C8F122]/30 bg-surface/70 px-3.5 py-2.5 text-xs text-text-secondary">
+            <CheckCircle2 className="size-4 shrink-0 text-[#C8F122]" />
             <span>
               <strong className="text-text-primary">{extractMeta.repoFullName}</strong> extrait ({extractMeta.readmeChars.toLocaleString("fr-FR")} car. README, {extractMeta.inspectedManifests.length} manifest(s)) via{" "}
-              <span className="font-mono text-[#8FB3A2]">{extractMeta.provider}</span>. Vérifiez et modifiez les sections ci-dessous avant d&apos;enregistrer.
+              <span className="font-mono text-[#C8F122]">{extractMeta.provider}</span>. Vérifiez et modifiez les sections ci-dessous avant d&apos;enregistrer.
             </span>
           </div>
         ) : null}
@@ -195,7 +195,7 @@ export default function ProjectEditorForm({
           type="button"
           onClick={() => void translateAllFrToEn()}
           disabled={Boolean(translating)}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 px-3.5 py-2 text-xs font-semibold text-[#8FB3A2] hover:bg-[#8FB3A2]/20 transition-colors disabled:opacity-50 cursor-pointer"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-[#C8F122]/30 bg-[#C8F122]/10 px-3.5 py-2 text-xs font-semibold text-[#C8F122] hover:bg-[#C8F122]/20 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <Languages className="size-3.5" />
           <span>{translating ? "Traduction en cours…" : "Traduire FR → EN avec l'IA"}</span>
@@ -207,8 +207,8 @@ export default function ProjectEditorForm({
         {/* FRENCH SECTION */}
         <section className="grid content-start gap-4 rounded-2xl border border-white/10 bg-surface/55 p-4 sm:p-5">
           <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <span className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-[#8FB3A2]">
-              <span className="size-2 rounded-full bg-[#8FB3A2]" />
+            <span className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-[#C8F122]">
+              <span className="size-2 rounded-full bg-[#C8F122]" />
               Section Française (FR)
             </span>
           </div>

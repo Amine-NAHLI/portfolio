@@ -12,7 +12,7 @@ export function AdminShell({ children, email }: AdminShellProps) {
     <div className="relative min-h-screen bg-bg-page font-body text-text-primary selection:bg-accent selection:text-text-on-accent flex overflow-x-hidden">
       {/* Ambient Radial Spotlights (matching portfolio hero aesthetic) */}
       <div className="pointer-events-none fixed -top-40 -left-40 size-[500px] rounded-full bg-accent/10 blur-[120px]" />
-      <div className="pointer-events-none fixed top-1/3 -right-40 size-[450px] rounded-full bg-[#8FB3A2]/10 blur-[140px]" />
+      <div className="pointer-events-none fixed top-1/3 -right-40 size-[450px] rounded-full bg-[#C8F122]/10 blur-[140px]" />
       <div className="pointer-events-none fixed -bottom-40 left-1/3 size-[500px] rounded-full bg-emerald-500/10 blur-[140px]" />
 
       {/* Sidebar Navigation */}

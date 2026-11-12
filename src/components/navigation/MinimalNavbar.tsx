@@ -60,7 +60,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
-            ? "bg-[#060605]/90 py-3.5 backdrop-blur-xl border-b border-white/[0.08] shadow-lg"
+            ? "bg-[#0B0B0C]/90 py-3.5 backdrop-blur-xl border-b border-white/[0.08] shadow-lg"
             : "bg-transparent py-5 sm:py-6"
         }`}
       >
@@ -68,10 +68,10 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
           {/* Left: Brand Monogram */}
           <Link
             href={`/${locale}`}
-            className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#f3f1f7]"
+            className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#FFFFFF]"
           >
             <span>Amine Nahli</span>
-            <span className="size-1.5 rounded-full bg-[#8FB3A2]" />
+            <span className="size-1.5 rounded-full bg-[#C8F122]" />
           </Link>
 
           {/* Center: Desktop Navigation Links (1:1 synced with FullscreenMenu) */}
@@ -91,8 +91,8 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
                   onClick={(e) => handleNavClick(e, item)}
                   className={`whitespace-nowrap text-xs font-medium transition-colors ${
                     isActive
-                      ? "text-[#f3f1f7]"
-                      : "text-[#797681] hover:text-[#f3f1f7]"
+                      ? "text-[#FFFFFF]"
+                      : "text-[#A1A1AA] hover:text-[#FFFFFF]"
                   }`}
                 >
                   {item.label[locale]}
@@ -105,10 +105,10 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
           <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
             <Link
               href={localeSwitchHref}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#FFFFFF] hover:bg-white/[0.08] transition-colors"
               aria-label="Changer de langue"
             >
-              <Globe className="size-3 text-[#8FB3A2]" />
+              <Globe className="size-3 text-[#C8F122]" />
               <span>{locale === "fr" ? "EN" : "FR"}</span>
             </Link>
 
@@ -116,10 +116,10 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
               type="button"
               onClick={() => setIsMenuOpen(true)}
               aria-label="Ouvrir le menu de navigation"
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[#f3f1f7] hover:bg-white/10 transition-colors cursor-pointer"
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[#FFFFFF] hover:bg-white/10 transition-colors cursor-pointer"
             >
               <span>Menu</span>
-              <Menu className="size-3.5 text-[#797681]" />
+              <Menu className="size-3.5 text-[#A1A1AA]" />
             </button>
           </div>
         </div>

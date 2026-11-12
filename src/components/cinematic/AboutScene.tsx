@@ -84,7 +84,7 @@ export default function AboutScene({
           {/* Left Column: Clean Editorial Portrait */}
           <div ref={imageRef} className="lg:col-span-5 flex justify-center">
             <div className="relative w-full max-w-[340px] sm:max-w-[390px]">
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-[#0C100E] shadow-2xl">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-white/10 bg-[#141518] shadow-2xl">
                 <Image
                   src="/nahli.png"
                   alt="Amine Nahli"
@@ -93,34 +93,34 @@ export default function AboutScene({
                   className="object-cover object-top transition-transform duration-500 hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 390px"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#101015]/40 via-transparent to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B0B0C]/40 via-transparent to-transparent" />
               </div>
             </div>
           </div>
 
           {/* Right Column: Editorial Narrative */}
           <div ref={textRef} className="lg:col-span-7 flex flex-col justify-center">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-3">
               {locale === "fr" ? "Profil & Vision" : "Profile & Vision"}
             </span>
 
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight mb-6">
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#FFFFFF] leading-tight mb-6">
               {aboutTitle ? (
                 <span>{aboutTitle}</span>
               ) : locale === "fr" ? (
                 <>
-                  Bâtir des solutions fiables, <span className="text-[#8FB3A2]">sécurisées dès la conception.</span>
+                  Bâtir des solutions fiables, <span className="text-[#C8F122]">sécurisées dès la conception.</span>
                 </>
               ) : (
                 <>
-                  Engineering resilient systems, <span className="text-[#8FB3A2]">secure by design.</span>
+                  Engineering resilient systems, <span className="text-[#C8F122]">secure by design.</span>
                 </>
               )}
             </h2>
 
-            <div className="space-y-5 text-sm sm:text-base text-[#797681] leading-relaxed">
+            <div className="space-y-5 text-sm sm:text-base text-[#A1A1AA] leading-relaxed">
               {aboutBio ? (
-                <p className="about-paragraph whitespace-pre-line leading-relaxed text-[#f3f1f7]/90 font-normal">
+                <p className="about-paragraph whitespace-pre-line leading-relaxed text-[#FFFFFF]/90 font-normal">
                   {aboutBio}
                 </p>
               ) : (
@@ -149,26 +149,26 @@ export default function AboutScene({
             {/* Quick Facts Strip */}
             <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08]">
               <div>
-                <span className="text-xs text-[#797681] block">
+                <span className="text-xs text-[#A1A1AA] block">
                   {proofItems?.[0]?.[0] || (locale === "fr" ? "Formation" : "Education")}
                 </span>
-                <span className="text-sm font-semibold text-[#f3f1f7] mt-0.5 block">
+                <span className="text-sm font-semibold text-[#FFFFFF] mt-0.5 block">
                   {proofItems?.[0]?.[1] || "UPF Fès (Génie Info)"}
                 </span>
               </div>
               <div>
-                <span className="text-xs text-[#797681] block">
+                <span className="text-xs text-[#A1A1AA] block">
                   {proofItems?.[1]?.[0] || (locale === "fr" ? "Expérience" : "Experience")}
                 </span>
-                <span className="text-sm font-semibold text-[#f3f1f7] mt-0.5 block">
+                <span className="text-sm font-semibold text-[#FFFFFF] mt-0.5 block">
                   {proofItems?.[1]?.[1] || "Stage IntelTrust"}
                 </span>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <span className="text-xs text-[#797681] block">
+                <span className="text-xs text-[#A1A1AA] block">
                   {proofItems?.[2]?.[0] || (locale === "fr" ? "Langues" : "Languages")}
                 </span>
-                <span className="text-sm font-semibold text-[#f3f1f7] mt-0.5 block">
+                <span className="text-sm font-semibold text-[#FFFFFF] mt-0.5 block">
                   {proofItems?.[2]?.[1] || "Français · Anglais · Arabe"}
                 </span>
               </div>
@@ -177,7 +177,7 @@ export default function AboutScene({
             <div className="mt-7">
               <Link
                 href={`/${locale}#journey`}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-[#8FB3A2] hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-[#C8F122] hover:text-white transition-colors"
               >
                 <span>{locale === "fr" ? "Découvrir mon parcours complet" : "Explore full journey"}</span>
                 <ArrowUpRight className="size-4" />

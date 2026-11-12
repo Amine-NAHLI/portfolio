@@ -45,7 +45,7 @@ export default function BentoCard({
     rotateY.set(0);
   }
 
-  const background = useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(143, 179, 162,0.1), transparent 80%)`;
+  const background = useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(200,241,34,0.1), transparent 80%)`;
 
   return (
     <motion.div
@@ -58,7 +58,7 @@ export default function BentoCard({
         transformStyle: "preserve-3d",
       }}
       className={cn(
-        "group relative flex flex-col rounded-[2rem] border border-white/10 bg-surface/70 p-6 sm:p-7 backdrop-blur-2xl shadow-2xl transition-all duration-500 hover:border-accent/40 hover:shadow-[0_10px_30px_rgba(143, 179, 162,0.15)] overflow-hidden",
+        "group relative flex flex-col rounded-[2rem] border border-white/10 bg-surface/70 p-6 sm:p-7 backdrop-blur-2xl shadow-2xl transition-all duration-500 hover:border-accent/40 hover:shadow-[0_10px_30px_rgba(200,241,34,0.15)] overflow-hidden",
         className
       )}
     >

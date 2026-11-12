@@ -22,14 +22,14 @@ export default function SpotlightCard({
     mouseY.set(e.clientY - top);
   }
 
-  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(143, 179, 162,0.12), transparent 80%)`;
-  const borderBackground = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(143, 179, 162,0.4), transparent 80%)`;
+  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(200,241,34,0.12), transparent 80%)`;
+  const borderBackground = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(200,241,34,0.4), transparent 80%)`;
 
   return (
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
-      className={`group relative overflow-hidden rounded-xl bg-surface-subtle/40 backdrop-blur-xl border border-border/40 transition-all duration-300 hover:shadow-[0_0_30px_rgba(143, 179, 162,0.1)] ${className}`}
+      className={`group relative overflow-hidden rounded-xl bg-surface-subtle/40 backdrop-blur-xl border border-border/40 transition-all duration-300 hover:shadow-[0_0_30px_rgba(200,241,34,0.1)] ${className}`}
     >
       {/* Animated Border Glow */}
       <motion.div

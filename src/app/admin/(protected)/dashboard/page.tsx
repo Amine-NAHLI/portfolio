@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
       {/* Executive Welcome Hero Banner */}
       <section className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-surface/70 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl">
         <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-accent/15 blur-3xl" />
-        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-[#8FB3A2]/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-[#C8F122]/10 blur-3xl" />
         
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
@@ -51,13 +51,13 @@ export default async function AdminDashboardPage() {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <Link 
               href="/admin/featured-projects" 
-              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-sans text-xs font-semibold text-accent hover:bg-accent hover:text-white transition-all shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-sans text-xs font-semibold text-accent hover:bg-accent hover:text-text-on-accent transition-all shadow-md"
             >
               <Layers className="size-4" /> Projets Accueil (4)
             </Link>
             <Link 
               href="/admin/featured-certifications" 
-              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-sans text-xs font-semibold text-accent hover:bg-accent hover:text-white transition-all shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-sans text-xs font-semibold text-accent hover:bg-accent hover:text-text-on-accent transition-all shadow-md"
             >
               <Award className="size-4" /> Certifications Accueil (3)
             </Link>

@@ -59,10 +59,10 @@ export default function GitHubContributionsScene({
 
   const getDayColor = (count: number) => {
     if (count === 0) return "bg-white/[0.04]";
-    if (count <= 3) return "bg-emerald-900/60";
-    if (count <= 7) return "bg-emerald-600/70";
-    if (count <= 14) return "bg-emerald-500/90";
-    return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]";
+    if (count <= 3) return "bg-[#C8F122]/20";
+    if (count <= 7) return "bg-[#C8F122]/45";
+    if (count <= 14) return "bg-[#C8F122]/75";
+    return "bg-[#C8F122] shadow-[0_0_8px_rgba(200,241,34,0.45)]";
   };
 
   const topLanguages = stats.languages.slice(0, 5);
@@ -72,20 +72,20 @@ export default function GitHubContributionsScene({
     <section
       ref={containerRef}
       id="github"
-      className="relative w-full bg-[#000000] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden scroll-mt-24"
+      className="relative w-full bg-[#0B0B0C] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden scroll-mt-24"
     >
-      {/* Ambient Depth Spotlights: Emerald & Cool Slate (#0E161A) */}
+      {/* Ambient Depth Spotlights: Olive-Lime & Midnight Black (#17191E) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-8%] top-1/3 h-[600px] w-[600px] rounded-full bg-emerald-950/20 blur-[180px]"
+        className="pointer-events-none absolute left-[-8%] top-1/3 h-[600px] w-[600px] rounded-full bg-[#C8F122]/[0.04] blur-[180px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full bg-[#070A09] opacity-80 blur-[190px]"
+        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full bg-[#121316] opacity-80 blur-[190px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#8FB3A2]/5 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#C8F122]/5 blur-[160px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
@@ -93,13 +93,13 @@ export default function GitHubContributionsScene({
         {/* Clean, Non-AI Header */}
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
-            <span className="font-mono text-xs uppercase tracking-wider text-[#8FB3A2] block mb-3">
+            <span className="font-mono text-xs uppercase tracking-wider text-[#C8F122] block mb-3">
               {locale === "fr" ? "// ACTIVITÉ GITHUB & CODE OUVERT" : "// GITHUB TELEMETRY & OPEN SOURCE"}
             </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#FFFFFF] leading-tight">
               {locale === "fr" ? "Code en Continu. Contributions Publiques." : "Continuous Code. Public Activity."}
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-[#797681] leading-relaxed max-w-2xl">
+            <p className="mt-3 text-sm sm:text-base text-[#A1A1AA] leading-relaxed max-w-2xl">
               {locale === "fr"
                 ? "Le partage de code et la transparence technique sont au cœur de ma pratique d'ingénieur. Retrouvez ici mes commits et mes dépôts en temps réel."
                 : "Code sharing and technical transparency are fundamental to my engineering workflow. Explore real-time commit telemetry and public repositories."}
@@ -110,7 +110,7 @@ export default function GitHubContributionsScene({
             href={githubUrl}
             target="_blank"
             rel="noreferrer"
-            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-white/10 bg-[#070A09] px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] backdrop-blur-md transition-all duration-300 hover:border-[#8FB3A2] hover:bg-[#8FB3A2] hover:text-[#000000] hover:shadow-[0_0_25px_rgba(143, 179, 162,0.25)]"
+            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-white/10 bg-[#121316] px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-[#FFFFFF] backdrop-blur-md transition-all duration-300 hover:border-[#C8F122] hover:bg-[#C8F122] hover:text-[#0B0B0C] hover:shadow-[0_0_25px_rgba(200,241,34,0.25)]"
           >
             <span>GitHub / Amine-NAHLI</span>
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -121,21 +121,21 @@ export default function GitHubContributionsScene({
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           
           {/* Card 1: Real Total Contributions */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-7 shadow-xl">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#797681] mb-5">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#121316] p-6 sm:p-7 shadow-xl">
+            <div className="text-xs font-mono uppercase tracking-wider text-[#A1A1AA] mb-5">
               {locale === "fr" ? "Volume Annuel" : "Annual Volume"}
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="font-display text-4xl sm:text-5xl font-black text-[#f3f1f7] tracking-tight">
+              <span className="font-display text-4xl sm:text-5xl font-black text-[#FFFFFF] tracking-tight">
                 {stats.totalContributions}
               </span>
-              <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">
+              <span className="text-xs font-mono text-[#C8F122] font-bold uppercase tracking-wider">
                 {locale === "fr" ? "Contributions" : "Contributions"}
               </span>
             </div>
 
-            <p className="mt-3 text-xs text-[#797681] leading-relaxed">
+            <p className="mt-3 text-xs text-[#A1A1AA] leading-relaxed">
               {locale === "fr"
                 ? "Commits validés, revues de code et pull requests documentées sur l'année écoulée."
                 : "Verified commits, pull requests, and code reviews over the past 365 days."}
@@ -143,21 +143,21 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 2: Real Public Repositories */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-7 shadow-xl">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#797681] mb-5">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#121316] p-6 sm:p-7 shadow-xl">
+            <div className="text-xs font-mono uppercase tracking-wider text-[#A1A1AA] mb-5">
               {locale === "fr" ? "Dépôts Publics" : "Public Repositories"}
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="font-display text-4xl sm:text-5xl font-black text-[#f3f1f7] tracking-tight">
+              <span className="font-display text-4xl sm:text-5xl font-black text-[#FFFFFF] tracking-tight">
                 {stats.totalRepositories}
               </span>
-              <span className="text-xs font-mono text-[#8FB3A2] font-bold uppercase tracking-wider">
+              <span className="text-xs font-mono text-[#C8F122] font-bold uppercase tracking-wider">
                 {locale === "fr" ? "Projets Ouverts" : "Open Repos"}
               </span>
             </div>
 
-            <p className="mt-3 text-xs text-[#797681] leading-relaxed">
+            <p className="mt-3 text-xs text-[#A1A1AA] leading-relaxed">
               {locale === "fr"
                 ? "Systèmes logiciels, modules d'IA et outils d'ingénierie disponibles publiquement."
                 : "Software architectures, machine learning pipelines, and public engineering tools."}
@@ -165,10 +165,10 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 3: Real Dominant Stack Distribution */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-7 shadow-xl">
-            <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#797681] mb-4">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#121316] p-6 sm:p-7 shadow-xl">
+            <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#A1A1AA] mb-4">
               <span>{locale === "fr" ? "Stack Dominante" : "Core Tech Stack"}</span>
-              <span className="text-[#f3f1f7] font-semibold">{stats.topLanguage?.name || "Python"}</span>
+              <span className="text-[#FFFFFF] font-semibold">{stats.topLanguage?.name || "Python"}</span>
             </div>
 
             {/* Language distribution bar */}
@@ -178,7 +178,7 @@ export default function GitHubContributionsScene({
                   key={lang.name}
                   style={{
                     width: `${lang.percentage}%`,
-                    backgroundColor: lang.color || "#8FB3A2",
+                    backgroundColor: lang.color || "#C8F122",
                   }}
                   className="h-full transition-all duration-500"
                   title={`${lang.name}: ${lang.percentage.toFixed(1)}%`}
@@ -191,14 +191,14 @@ export default function GitHubContributionsScene({
               {topLanguages.map((lang) => (
                 <div
                   key={lang.name}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 text-[11px] text-[#f3f1f7]/80"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 text-[11px] text-[#FFFFFF]/80"
                 >
                   <span
                     className="size-2 rounded-full"
-                    style={{ backgroundColor: lang.color || "#8FB3A2" }}
+                    style={{ backgroundColor: lang.color || "#C8F122" }}
                   />
                   <span>{lang.name}</span>
-                  <span className="text-[#797681] font-mono">{lang.percentage.toFixed(0)}%</span>
+                  <span className="text-[#A1A1AA] font-mono">{lang.percentage.toFixed(0)}%</span>
                 </div>
               ))}
             </div>
@@ -207,13 +207,13 @@ export default function GitHubContributionsScene({
 
         {/* 100% Real GitHub Contribution Heatmap Matrix (Only shown when real GitHub data exists) */}
         {realWeeks && (
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#070A09] p-6 sm:p-8 shadow-2xl">
+          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#121316] p-6 sm:p-8 shadow-2xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
-                <h3 className="font-display text-lg sm:text-xl font-bold text-[#f3f1f7]">
+                <h3 className="font-display text-lg sm:text-xl font-bold text-[#FFFFFF]">
                   {locale === "fr" ? "Matrice de Contributions Réelle (GitHub API)" : "Live GitHub Contribution Matrix"}
                 </h3>
-                <p className="text-xs text-[#797681]">
+                <p className="text-xs text-[#A1A1AA]">
                   {locale === "fr"
                     ? `Activité enregistrée jour par jour sur les ${realWeeks.length} dernières semaines (@Amine-NAHLI).`
                     : `Verified daily commit history over the past ${realWeeks.length} weeks (@Amine-NAHLI).`}
@@ -221,14 +221,14 @@ export default function GitHubContributionsScene({
               </div>
 
               {/* Heatmap Legend */}
-              <div className="flex items-center gap-2 text-xs font-mono text-[#797681] self-start sm:self-auto">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#A1A1AA] self-start sm:self-auto">
                 <span>{locale === "fr" ? "Moins" : "Less"}</span>
                 <div className="flex items-center gap-1">
                   <span className="size-2.5 rounded-[2px] bg-white/[0.04]" />
-                  <span className="size-2.5 rounded-[2px] bg-emerald-900/60" />
-                  <span className="size-2.5 rounded-[2px] bg-emerald-600/70" />
-                  <span className="size-2.5 rounded-[2px] bg-emerald-500/90" />
-                  <span className="size-2.5 rounded-[2px] bg-emerald-400" />
+                  <span className="size-2.5 rounded-[2px] bg-[#C8F122]/20" />
+                  <span className="size-2.5 rounded-[2px] bg-[#C8F122]/45" />
+                  <span className="size-2.5 rounded-[2px] bg-[#C8F122]/75" />
+                  <span className="size-2.5 rounded-[2px] bg-[#C8F122]" />
                 </div>
                 <span>{locale === "fr" ? "Plus" : "More"}</span>
               </div>
@@ -240,7 +240,7 @@ export default function GitHubContributionsScene({
               data-lenis-prevent="true"
               data-lenis-prevent-wheel="true"
               data-lenis-prevent-touch="true"
-              className="overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 touch-pan-x overscroll-x-contain scrollbar-thin scrollbar-thumb-emerald-500/30 scrollbar-track-white/[0.03]"
+              className="overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 touch-pan-x overscroll-x-contain scrollbar-thin scrollbar-thumb-[#C8F122]/30 scrollbar-track-white/[0.03]"
             >
               <div className="min-w-[760px] flex gap-[3.5px] py-1">
                 {realWeeks.map((week, wIdx) => (
@@ -264,9 +264,9 @@ export default function GitHubContributionsScene({
             </div>
 
             {/* Mobile Touch Helper */}
-            <div className="flex sm:hidden items-center justify-between text-[11px] font-mono text-[#797681] mt-2 pt-2 border-t border-white/[0.05]">
+            <div className="flex sm:hidden items-center justify-between text-[11px] font-mono text-[#A1A1AA] mt-2 pt-2 border-t border-white/[0.05]">
               <span>← Semaines passées</span>
-              <span className="text-emerald-400 font-medium">Glisser pour explorer (53 sem.)</span>
+              <span className="text-[#C8F122] font-medium">Glisser pour explorer (53 sem.)</span>
               <span>Récentes →</span>
             </div>
           </div>

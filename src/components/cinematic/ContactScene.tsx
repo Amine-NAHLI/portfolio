@@ -80,35 +80,35 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
       {/* Background Ambient Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-[#8FB3A2]/10 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-[#C8F122]/10 blur-[160px]"
       />
 
       {/* Main Centered Content */}
       <div className="relative z-10 mx-auto max-w-5xl w-full my-auto flex flex-col items-center text-center">
         
         {/* Eyebrow */}
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] mb-4 block">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-4 block">
           {locale === "fr" ? "Contact & Échange" : "Get in Touch"}
         </span>
 
         {/* Centered Headline */}
         <h2
           ref={textRef}
-          className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#f3f1f7] leading-tight mb-6 max-w-3xl mx-auto"
+          className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#FFFFFF] leading-tight mb-6 max-w-3xl mx-auto"
         >
           {locale === "fr" ? (
             <>
-              Construisons quelque chose de <span className="text-[#8FB3A2]">significatif.</span>
+              Construisons quelque chose de <span className="text-[#C8F122]">significatif.</span>
             </>
           ) : (
             <>
-              Let&apos;s build something that <span className="text-[#8FB3A2]">matters.</span>
+              Let&apos;s build something that <span className="text-[#C8F122]">matters.</span>
             </>
           )}
         </h2>
 
         {/* Centered Subtitle */}
-        <p className="text-sm sm:text-base text-[#797681] leading-relaxed max-w-xl mx-auto mb-12 font-normal">
+        <p className="text-sm sm:text-base text-[#A1A1AA] leading-relaxed max-w-xl mx-auto mb-12 font-normal">
           {locale === "fr"
             ? "Disponible pour des opportunités de stage PFE, projets d'ingénierie logicielle avancée et missions de cybersécurité."
             : "Available for engineering internship opportunities, advanced software systems engineering, and cybersecurity audits."}
@@ -122,19 +122,19 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
           {/* Card 1: Formulaire Sécurisé */}
           <Link
             href={`/${locale}/contact`}
-            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 p-6 backdrop-blur-xl transition-all duration-300 hover:bg-[#8FB3A2] hover:text-[#101015] hover:border-[#8FB3A2] hover:scale-[1.02]"
+            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-[#C8F122]/30 bg-[#C8F122]/10 p-6 backdrop-blur-xl transition-all duration-300 hover:bg-[#C8F122] hover:text-[#0B0B0C] hover:border-[#C8F122] hover:scale-[1.02]"
           >
             <div className="flex items-center justify-between pb-8">
-              <div className="size-10 rounded-xl bg-white/[0.08] flex items-center justify-center text-[#8FB3A2] group-hover:bg-[#101015]/10 group-hover:text-[#101015] transition-colors">
+              <div className="size-10 rounded-xl bg-white/[0.08] flex items-center justify-center text-[#C8F122] group-hover:bg-[#0B0B0C]/10 group-hover:text-[#0B0B0C] transition-colors">
                 <Send className="size-5" />
               </div>
-              <ArrowUpRight className="size-4 text-[#8FB3A2] group-hover:text-[#101015] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="size-4 text-[#C8F122] group-hover:text-[#0B0B0C] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
             <div>
-              <span className="text-xs uppercase tracking-wider text-[#f3f1f7]/70 group-hover:text-[#101015]/80 font-medium block">
+              <span className="text-xs uppercase tracking-wider text-[#FFFFFF]/70 group-hover:text-[#0B0B0C]/80 font-medium block">
                 {locale === "fr" ? "Formulaire sécurisé" : "Secure Form"}
               </span>
-              <h3 className="font-display text-xl font-bold text-[#f3f1f7] group-hover:text-[#101015] mt-1">
+              <h3 className="font-display text-xl font-bold text-[#FFFFFF] group-hover:text-[#0B0B0C] mt-1">
                 {locale === "fr" ? "M'écrire" : "Send Message"}
               </h3>
             </div>
@@ -143,19 +143,19 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
           {/* Card 2: Email Direct */}
           <a
             href={`mailto:${emailAddress}`}
-            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0C100E] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
+            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#141518] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
           >
             <div className="flex items-center justify-between pb-8">
-              <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#797681] group-hover:text-white transition-colors">
+              <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#A1A1AA] group-hover:text-white transition-colors">
                 <Mail className="size-5" />
               </div>
-              <ArrowUpRight className="size-4 text-[#797681] group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="size-4 text-[#A1A1AA] group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
             <div>
-              <span className="text-xs uppercase tracking-wider text-[#797681] font-medium block">
+              <span className="text-xs uppercase tracking-wider text-[#A1A1AA] font-medium block">
                 Email Direct
               </span>
-              <h3 className="font-display text-base sm:text-lg font-bold text-[#f3f1f7] mt-1 truncate" title={emailAddress}>
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#FFFFFF] mt-1 truncate" title={emailAddress}>
                 {emailAddress}
               </h3>
             </div>
@@ -167,21 +167,21 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
               href={contactLinks.linkedin}
               target="_blank"
               rel="noreferrer"
-              className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0C100E] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
+              className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#141518] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
             >
               <div className="flex items-center justify-between pb-8">
-                <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#797681] group-hover:text-white transition-colors">
+                <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#A1A1AA] group-hover:text-white transition-colors">
                   <svg className="size-5 fill-current" viewBox="0 0 24 24">
                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                   </svg>
                 </div>
-                <ArrowUpRight className="size-4 text-[#797681] group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowUpRight className="size-4 text-[#A1A1AA] group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </div>
               <div>
-                <span className="text-xs uppercase tracking-wider text-[#797681] font-medium block">
+                <span className="text-xs uppercase tracking-wider text-[#A1A1AA] font-medium block">
                   Réseau Professionnel
                 </span>
-                <h3 className="font-display text-xl font-bold text-[#f3f1f7] mt-1">
+                <h3 className="font-display text-xl font-bold text-[#FFFFFF] mt-1">
                   LinkedIn
                 </h3>
               </div>

@@ -80,21 +80,21 @@ export function HeroButtonsManager({ initialButtons }: Props) {
   };
 
   return (
-    <section className="technical-frame mt-8 p-0 flex flex-col rounded-3xl border border-white/10 bg-[#070A09] overflow-hidden shadow-2xl">
-      <div className="border-b border-white/10 px-6 py-5 bg-[#060605] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <section className="technical-frame mt-8 p-0 flex flex-col rounded-3xl border border-white/10 bg-[#121316] overflow-hidden shadow-2xl">
+      <div className="border-b border-white/10 px-6 py-5 bg-[#0B0B0C] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#8FB3A2]">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#C8F122]">
             Configuration Visuelle
           </span>
-          <h2 className="text-lg font-bold text-[#f3f1f7]">Boutons d&apos;Action de l&apos;Accueil (Hero)</h2>
-          <p className="text-xs text-[#797681]">
+          <h2 className="text-lg font-bold text-[#FFFFFF]">Boutons d&apos;Action de l&apos;Accueil (Hero)</h2>
+          <p className="text-xs text-[#A1A1AA]">
             Activez, réordonnez et personnalisez les boutons affichés au centre sous votre nom (FR / EN).
           </p>
         </div>
         <button
           type="button"
           onClick={addButton}
-          className="inline-flex items-center gap-2 rounded-xl border border-[#8FB3A2]/30 bg-[#8FB3A2]/10 px-4 py-2 text-xs font-bold text-[#8FB3A2] hover:bg-[#8FB3A2]/20 transition-all cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-2 rounded-xl border border-[#C8F122]/30 bg-[#C8F122]/10 px-4 py-2 text-xs font-bold text-[#C8F122] hover:bg-[#C8F122]/20 transition-all cursor-pointer self-start sm:self-auto"
         >
           <Plus className="size-4" />
           <span>Ajouter un bouton</span>
@@ -120,8 +120,8 @@ export function HeroButtonsManager({ initialButtons }: Props) {
               key={btn.id}
               className={`rounded-2xl border p-4 sm:p-5 transition-all flex flex-col gap-4 ${
                 btn.enabled
-                  ? "border-white/15 bg-[#060605]/80"
-                  : "border-white/5 bg-[#060605]/30 opacity-60"
+                  ? "border-white/15 bg-[#0B0B0C]/80"
+                  : "border-white/5 bg-[#0B0B0C]/30 opacity-60"
               }`}
             >
               <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-3">
@@ -131,13 +131,13 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                       type="checkbox"
                       checked={btn.enabled}
                       onChange={() => toggleEnabled(index)}
-                      className="size-4 rounded accent-[#8FB3A2] cursor-pointer"
+                      className="size-4 rounded accent-[#C8F122] cursor-pointer"
                     />
-                    <span className="text-xs font-bold text-[#f3f1f7]">
+                    <span className="text-xs font-bold text-[#FFFFFF]">
                       {btn.enabled ? "Affiché sur l'accueil" : "Masqué"}
                     </span>
                   </label>
-                  <span className="text-[10px] font-mono text-[#797681]">ID: {btn.id}</span>
+                  <span className="text-[10px] font-mono text-[#A1A1AA]">ID: {btn.id}</span>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -145,7 +145,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                     type="button"
                     onClick={() => moveButton(index, "up")}
                     disabled={index === 0}
-                    className="p-1.5 rounded-lg text-[#797681] hover:text-[#f3f1f7] hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-lg text-[#A1A1AA] hover:text-[#FFFFFF] hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Monter"
                   >
                     <ArrowUp className="size-3.5" />
@@ -154,7 +154,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
                     type="button"
                     onClick={() => moveButton(index, "down")}
                     disabled={index === buttons.length - 1}
-                    className="p-1.5 rounded-lg text-[#797681] hover:text-[#f3f1f7] hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-lg text-[#A1A1AA] hover:text-[#FFFFFF] hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Descendre"
                   >
                     <ArrowDown className="size-3.5" />
@@ -173,48 +173,48 @@ export function HeroButtonsManager({ initialButtons }: Props) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                <label className="grid gap-1 font-semibold text-[#f3f1f7]">
-                  <span className="text-[11px] text-[#797681]">Texte en Français</span>
+                <label className="grid gap-1 font-semibold text-[#FFFFFF]">
+                  <span className="text-[11px] text-[#A1A1AA]">Texte en Français</span>
                   <input
                     type="text"
                     value={btn.labelFr}
                     onChange={(e) => updateField(index, "labelFr", e.target.value)}
-                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#121316] min-h-10 px-3 text-xs text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                     required
                   />
                 </label>
 
-                <label className="grid gap-1 font-semibold text-[#f3f1f7]">
-                  <span className="text-[11px] text-[#797681]">Texte en Anglais</span>
+                <label className="grid gap-1 font-semibold text-[#FFFFFF]">
+                  <span className="text-[11px] text-[#A1A1AA]">Texte en Anglais</span>
                   <input
                     type="text"
                     value={btn.labelEn}
                     onChange={(e) => updateField(index, "labelEn", e.target.value)}
-                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#121316] min-h-10 px-3 text-xs text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                     required
                   />
                 </label>
 
-                <label className="grid gap-1 font-semibold text-[#f3f1f7]">
-                  <span className="text-[11px] text-[#797681]">Lien / Ancre</span>
+                <label className="grid gap-1 font-semibold text-[#FFFFFF]">
+                  <span className="text-[11px] text-[#A1A1AA]">Lien / Ancre</span>
                   <input
                     type="text"
                     value={btn.url}
                     onChange={(e) => updateField(index, "url", e.target.value)}
                     placeholder="#work, /cv, #contact..."
-                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] font-mono focus:border-[#8FB3A2] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#121316] min-h-10 px-3 text-xs text-[#FFFFFF] font-mono focus:border-[#C8F122] focus:outline-none"
                     required
                   />
                 </label>
 
-                <label className="grid gap-1 font-semibold text-[#f3f1f7]">
-                  <span className="text-[11px] text-[#797681]">Style Visuel</span>
+                <label className="grid gap-1 font-semibold text-[#FFFFFF]">
+                  <span className="text-[11px] text-[#A1A1AA]">Style Visuel</span>
                   <select
                     value={btn.style}
                     onChange={(e) =>
                       updateField(index, "style", e.target.value as "primary" | "secondary")
                     }
-                    className="rounded-xl border border-white/10 bg-[#070A09] min-h-10 px-3 text-xs text-[#f3f1f7] focus:border-[#8FB3A2] focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-[#121316] min-h-10 px-3 text-xs text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
                   >
                     <option value="primary">Principal (Bouton Blanc Mis en Avant)</option>
                     <option value="secondary">Secondaire (Bouton Verre / Bordure)</option>
@@ -230,7 +230,7 @@ export function HeroButtonsManager({ initialButtons }: Props) {
             type="button"
             onClick={handleSave}
             disabled={pending}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#8FB3A2] px-6 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#A8C8B9] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#8FB3A2]/20"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#C8F122] px-6 py-3 font-mono text-xs font-bold text-[#000000] hover:bg-[#D9FB52] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-[#C8F122]/20"
           >
             {pending ? (
               <span>Enregistrement en cours...</span>

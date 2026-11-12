@@ -1036,7 +1036,7 @@ export default function ChatWidget() {
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
           onClick={(e) => e.stopPropagation()}
-          className="text-[#b698ff] underline decoration-[#8FB3A2]/60 underline-offset-2 hover:text-white hover:decoration-white transition-colors"
+          className="text-[#b698ff] underline decoration-[#C8F122]/60 underline-offset-2 hover:text-white hover:decoration-white transition-colors"
         >
           {match[1]}
         </a>
@@ -1086,15 +1086,15 @@ export default function ChatWidget() {
             {/* Terminal Window Header */}
             <div className="flex items-center justify-between border-b border-white/10 bg-[#0C0B10] px-3.5 py-2 select-none">
               <div className="flex items-center gap-2 text-[11px] text-[#a29fb0]">
-                <span className="inline-block size-2 rounded-sm bg-[#8FB3A2]" />
+                <span className="inline-block size-2 rounded-sm bg-[#C8F122]" />
                 <span className="font-semibold text-[#e6e4ee]">
                   visitor@nahli.dev:{virtualPath}
                 </span>
                 <span className="hidden sm:inline text-white/25">—</span>
-                <span className="hidden sm:inline text-[#797681]">zsh (tty1)</span>
+                <span className="hidden sm:inline text-[#A1A1AA]">zsh (tty1)</span>
               </div>
 
-              <div className="flex items-center gap-1 text-[#797681]">
+              <div className="flex items-center gap-1 text-[#A1A1AA]">
                 <button
                   type="button"
                   onClick={() => setSoundEnabled(!soundEnabled)}
@@ -1155,11 +1155,11 @@ export default function ChatWidget() {
                     <div key={entry.id} className="flex flex-wrap items-baseline gap-x-1.5 pt-1">
                       <span className="shrink-0 select-none">
                         <span className="text-emerald-400">visitor@nahli.dev</span>
-                        <span className="text-[#797681]">:</span>
-                        <span className="text-[#8FB3A2]">{entry.cwd || "/"}</span>
-                        <span className="text-[#797681]">$</span>
+                        <span className="text-[#A1A1AA]">:</span>
+                        <span className="text-[#C8F122]">{entry.cwd || "/"}</span>
+                        <span className="text-[#A1A1AA]">$</span>
                       </span>
-                      <span className="text-[#f3f1f7] break-all">{entry.content}</span>
+                      <span className="text-[#FFFFFF] break-all">{entry.content}</span>
                     </div>
                   );
                 }
@@ -1179,7 +1179,7 @@ export default function ChatWidget() {
                   return (
                     <pre
                       key={entry.id}
-                      className="whitespace-pre-wrap font-mono text-[11px] text-[#797681]"
+                      className="whitespace-pre-wrap font-mono text-[11px] text-[#A1A1AA]"
                     >
                       {entry.content}
                     </pre>
@@ -1195,11 +1195,11 @@ export default function ChatWidget() {
                       <>
                         {renderTerminalLineContent(entry.content)}
                         {isLoading && entry.id === entries[entries.length - 1]?.id && (
-                          <span className="inline-block w-2 h-3.5 bg-[#8FB3A2] align-middle ml-0.5 animate-pulse" />
+                          <span className="inline-block w-2 h-3.5 bg-[#C8F122] align-middle ml-0.5 animate-pulse" />
                         )}
                       </>
                     ) : (
-                      <span className="inline-block w-2 h-3.5 bg-[#8FB3A2] align-middle animate-pulse" />
+                      <span className="inline-block w-2 h-3.5 bg-[#C8F122] align-middle animate-pulse" />
                     )}
                   </pre>
                 );
@@ -1210,19 +1210,19 @@ export default function ChatWidget() {
                 <div className="relative flex flex-wrap items-baseline gap-x-1.5 pt-1">
                   <span className="shrink-0 select-none">
                     <span className="text-emerald-400">visitor@nahli.dev</span>
-                    <span className="text-[#797681]">:</span>
-                    <span className="text-[#8FB3A2]">{virtualPath}</span>
-                    <span className="text-[#797681]">$</span>
+                    <span className="text-[#A1A1AA]">:</span>
+                    <span className="text-[#C8F122]">{virtualPath}</span>
+                    <span className="text-[#A1A1AA]">$</span>
                   </span>
 
-                  <span className="text-[#f3f1f7] whitespace-pre-wrap break-all font-mono text-[12px]">
+                  <span className="text-[#FFFFFF] whitespace-pre-wrap break-all font-mono text-[12px]">
                     {inputValue.slice(0, safeCursor)}
                     <span
                       aria-hidden="true"
                       className={`inline-block min-w-[7px] px-[0.5px] leading-[1.3] align-baseline ${
                         isFocused
-                          ? "bg-[#8FB3A2] text-[#050507] animate-[pulse_1.1s_steps(2,start)_infinite]"
-                          : "border border-[#8FB3A2]/65 text-[#f3f1f7]"
+                          ? "bg-[#C8F122] text-[#050507] animate-[pulse_1.1s_steps(2,start)_infinite]"
+                          : "border border-[#C8F122]/65 text-[#FFFFFF]"
                       }`}
                     >
                       {inputValue[safeCursor] ?? "\u00A0"}
@@ -1265,9 +1265,9 @@ export default function ChatWidget() {
             </div>
 
             {/* Minimal tmux-style TTY Statusline */}
-            <div className="flex items-center justify-between border-t border-white/10 bg-[#080B0A] px-3.5 py-1.5 text-[10px] text-[#797681] select-none">
+            <div className="flex items-center justify-between border-t border-white/10 bg-[#0B0B0C] px-3.5 py-1.5 text-[10px] text-[#A1A1AA] select-none">
               <div className="flex items-center gap-2 truncate">
-                <span className="text-[#8FB3A2] font-semibold">[tty1:{virtualPath}]</span>
+                <span className="text-[#C8F122] font-semibold">[tty1:{virtualPath}]</span>
                 <span className="truncate">Tab: complete · ↑↓: history · Ctrl+L: clear · Ctrl+C: abort</span>
               </div>
               <span className={`shrink-0 font-semibold ${isLoading ? "text-amber-300" : "text-emerald-400/90"}`}>
@@ -1283,7 +1283,7 @@ export default function ChatWidget() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative flex h-11 w-11 hover:w-auto items-center justify-center rounded-full border border-white/15 bg-[#070A09]/95 px-3 text-[#f3f1f7] shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 ease-out hover:border-[#8FB3A2]/60 hover:shadow-[0_0_30px_rgba(143, 179, 162,0.3)] cursor-pointer overflow-hidden"
+        className="group relative flex h-11 w-11 hover:w-auto items-center justify-center rounded-full border border-white/15 bg-[#121316]/95 px-3 text-[#FFFFFF] shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 ease-out hover:border-[#C8F122]/60 hover:shadow-[0_0_30px_rgba(200,241,34,0.3)] cursor-pointer overflow-hidden"
         aria-label="Ouvrir le terminal CLI"
       >
         <span className="relative flex size-2 shrink-0">
@@ -1291,9 +1291,9 @@ export default function ChatWidget() {
           <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
         </span>
 
-        <Terminal className="size-4 text-[#8FB3A2] shrink-0 ml-1.5 transition-transform duration-300 group-hover:rotate-6" />
+        <Terminal className="size-4 text-[#C8F122] shrink-0 ml-1.5 transition-transform duration-300 group-hover:rotate-6" />
 
-        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 font-mono text-xs font-semibold tracking-wider text-[#f3f1f7]">
+        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 font-mono text-xs font-semibold tracking-wider text-[#FFFFFF]">
           {isOpen ? "EXIT" : "tty1 · CLI"}
         </span>
       </motion.button>

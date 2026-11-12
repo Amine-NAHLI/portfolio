@@ -249,7 +249,7 @@ export default function WindingRoadOverlay({
         ref={measurePathRef}
         d={geometry.d}
         fill="none"
-        stroke="#080B0A"
+        stroke="#0B0B0C"
         strokeWidth={asphaltWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -270,7 +270,7 @@ export default function WindingRoadOverlay({
         ref={progressPathRef}
         d={geometry.d}
         fill="none"
-        stroke="rgba(143, 179, 162, 0.58)"
+        stroke="rgba(200, 241, 34, 0.55)"
         strokeWidth={traceWidth}
         strokeLinecap="round"
       />
@@ -280,7 +280,7 @@ export default function WindingRoadOverlay({
         ref={corePathRef}
         d={geometry.d}
         fill="none"
-        stroke="rgba(214, 226, 220, 0.68)"
+        stroke="rgba(255, 255, 255, 0.72)"
         strokeWidth={coreWidth}
         strokeLinecap="round"
       />
@@ -289,14 +289,14 @@ export default function WindingRoadOverlay({
       <g ref={beaconRef} style={{ opacity: 0 }}>
         <circle
           r={isMobile ? 5.5 : 7}
-          fill="rgba(143, 179, 162, 0.16)"
-          stroke="rgba(143, 179, 162, 0.42)"
+          fill="rgba(200, 241, 34, 0.16)"
+          stroke="rgba(200, 241, 34, 0.45)"
           strokeWidth="1"
         />
         <circle
           r={isMobile ? 2.5 : 3}
-          fill="#D6E2DC"
-          stroke="#080B0A"
+          fill="#C8F122"
+          stroke="#0B0B0C"
           strokeWidth="1.2"
         />
       </g>

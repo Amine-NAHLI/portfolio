@@ -126,7 +126,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
           <button
             type="button"
             onClick={() => setLightboxOpen(true)}
-            className="absolute right-2.5 top-2.5 z-20 grid size-9 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#8FB3A2]/60 hover:bg-black/80 hover:text-[#8FB3A2] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+            className="absolute right-2.5 top-2.5 z-20 grid size-9 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#C8F122]/60 hover:bg-black/80 hover:text-[#C8F122] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
             aria-label={locale === "fr" ? "Agrandir l'image" : "Expand image"}
           >
             <Maximize2 className="size-4" />
@@ -138,7 +138,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
               <button
                 type="button"
                 onClick={prevImage}
-                className="absolute left-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#8FB3A2]/60 hover:bg-black/80 hover:text-[#8FB3A2] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                className="absolute left-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#C8F122]/60 hover:bg-black/80 hover:text-[#C8F122] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={locale === "fr" ? "Image précédente" : "Previous image"}
               >
                 <ChevronLeft className="size-4" />
@@ -146,7 +146,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
               <button
                 type="button"
                 onClick={nextImage}
-                className="absolute right-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#8FB3A2]/60 hover:bg-black/80 hover:text-[#8FB3A2] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                className="absolute right-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#C8F122]/60 hover:bg-black/80 hover:text-[#C8F122] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={locale === "fr" ? "Image suivante" : "Next image"}
               >
                 <ChevronRight className="size-4" />
@@ -174,7 +174,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                     className={cn(
                       "group/thumb relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border transition-all sm:h-14 sm:w-24",
                       isActive
-                        ? "border-[#8FB3A2] ring-2 ring-[#8FB3A2]/30 opacity-100"
+                        ? "border-[#C8F122] ring-2 ring-[#C8F122]/30 opacity-100"
                         : "border-white/10 opacity-50 hover:border-white/30 hover:opacity-90"
                     )}
                   >
@@ -188,7 +188,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                 );
               })}
             </div>
-            <span className="shrink-0 font-mono text-xs font-medium text-[#8FB3A2]/80">
+            <span className="shrink-0 font-mono text-xs font-medium text-[#C8F122]/80">
               {formattedIndex} / {formattedTotal}
             </span>
           </div>
@@ -210,10 +210,10 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
           {/* Lightbox header */}
           <div className="flex items-center justify-between gap-4 text-white">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="rounded-md border border-[#8FB3A2]/30 bg-[#8FB3A2]/15 px-2.5 py-1 font-mono text-xs font-semibold text-[#8FB3A2]">
+              <span className="rounded-md border border-[#C8F122]/30 bg-[#C8F122]/15 px-2.5 py-1 font-mono text-xs font-semibold text-[#C8F122]">
                 {formattedIndex} / {formattedTotal}
               </span>
-              <span className="truncate text-sm text-[#D6E2DC]">{getAlt(activeImage, safeIndex)}</span>
+              <span className="truncate text-sm text-[#E4E4E7]">{getAlt(activeImage, safeIndex)}</span>
             </div>
             <button
               type="button"
@@ -243,7 +243,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                 <button
                   type="button"
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-[#8FB3A2]/50 hover:text-[#8FB3A2] sm:left-4 sm:size-12"
+                  className="absolute left-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-[#C8F122]/50 hover:text-[#C8F122] sm:left-4 sm:size-12"
                   aria-label={locale === "fr" ? "Image précédente" : "Previous image"}
                 >
                   <ChevronLeft className="size-6" />
@@ -251,7 +251,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                 <button
                   type="button"
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-[#8FB3A2]/50 hover:text-[#8FB3A2] sm:right-4 sm:size-12"
+                  className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-[#C8F122]/50 hover:text-[#C8F122] sm:right-4 sm:size-12"
                   aria-label={locale === "fr" ? "Image suivante" : "Next image"}
                 >
                   <ChevronRight className="size-6" />
@@ -262,7 +262,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
 
           {/* Lightbox thumbnail strip */}
           {images.length > 1 && (
-            <div className="mx-auto flex max-w-full items-center gap-2 overflow-x-auto rounded-xl border border-white/10 bg-[#070A09]/90 p-2 no-scrollbar">
+            <div className="mx-auto flex max-w-full items-center gap-2 overflow-x-auto rounded-xl border border-white/10 bg-[#121316]/90 p-2 no-scrollbar">
               {images.map((img, index) => (
                 <button
                   key={img.mediaId}
@@ -272,7 +272,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                   className={cn(
                     "relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border transition-all",
                     index === safeIndex
-                      ? "border-[#8FB3A2] ring-2 ring-[#8FB3A2]/35 opacity-100"
+                      ? "border-[#C8F122] ring-2 ring-[#C8F122]/35 opacity-100"
                       : "border-white/10 opacity-50 hover:opacity-85"
                   )}
                 >

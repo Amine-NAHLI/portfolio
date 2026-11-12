@@ -162,7 +162,7 @@ export function FeaturedCertificationsManager({
             type="button"
             onClick={handleSave}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/25 hover:bg-accent/90 transition-all active:scale-[0.98] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-text-on-accent shadow-lg shadow-accent/25 hover:bg-accent/90 transition-all active:scale-[0.98] disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="size-4 animate-spin" />
@@ -373,7 +373,7 @@ export function FeaturedCertificationsManager({
                         type="button"
                         onClick={() => handleAddCert(cert.id)}
                         disabled={selectedIds.length >= 3}
-                        className="inline-flex items-center gap-1 rounded-lg bg-accent/20 border border-accent/40 px-2.5 py-1 font-mono text-xs font-bold text-accent hover:bg-accent hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
+                        className="inline-flex items-center gap-1 rounded-lg bg-accent/20 border border-accent/40 px-2.5 py-1 font-mono text-xs font-bold text-accent hover:bg-accent hover:text-text-on-accent transition-all disabled:opacity-30 disabled:pointer-events-none"
                       >
                         <Plus className="size-3.5" />
                         <span>Choisir</span>

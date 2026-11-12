@@ -172,7 +172,7 @@ export function FeaturedProjectsManager({
             type="button"
             onClick={handleSave}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/25 hover:bg-accent/90 transition-all active:scale-[0.98] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-text-on-accent shadow-lg shadow-accent/25 hover:bg-accent/90 transition-all active:scale-[0.98] disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="size-4 animate-spin" />
@@ -375,7 +375,7 @@ export function FeaturedProjectsManager({
             onClick={() => setSelectedCategory("all")}
             className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition-all ${
               selectedCategory === "all"
-                ? "bg-accent text-white shadow-md shadow-accent/20"
+                ? "bg-accent text-text-on-accent shadow-md shadow-accent/20"
                 : "border border-white/10 bg-surface-raised text-text-secondary hover:text-text-primary hover:bg-white/10"
             }`}
           >
@@ -388,7 +388,7 @@ export function FeaturedProjectsManager({
               onClick={() => setSelectedCategory(cat)}
               className={`rounded-full px-3 py-1 font-mono text-xs font-semibold capitalize transition-all ${
                 selectedCategory === cat
-                  ? "bg-accent text-white shadow-md shadow-accent/20"
+                  ? "bg-accent text-text-on-accent shadow-md shadow-accent/20"
                   : "border border-white/10 bg-surface-raised text-text-secondary hover:text-text-primary hover:bg-white/10"
               }`}
             >
@@ -442,7 +442,7 @@ export function FeaturedProjectsManager({
                         type="button"
                         onClick={() => handleAddProject(project.slug)}
                         disabled={selectedSlugs.length >= 4}
-                        className="inline-flex items-center gap-1 rounded-lg bg-accent/20 border border-accent/40 px-2.5 py-1 font-mono text-xs font-bold text-accent hover:bg-accent hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
+                        className="inline-flex items-center gap-1 rounded-lg bg-accent/20 border border-accent/40 px-2.5 py-1 font-mono text-xs font-bold text-accent hover:bg-accent hover:text-text-on-accent transition-all disabled:opacity-30 disabled:pointer-events-none"
                       >
                         <Plus className="size-3.5" />
                         <span>Choisir</span>

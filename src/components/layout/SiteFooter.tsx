@@ -15,32 +15,32 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/[0.08] bg-[#101015] py-14 sm:py-18 text-[#797681]">
+    <footer className="border-t border-white/[0.08] bg-[#0B0B0C] py-14 sm:py-18 text-[#A1A1AA]">
       <Container>
         <div className="grid gap-10 border-b border-white/[0.08] pb-10 md:grid-cols-[1.5fr_1fr_1fr] md:gap-16">
           <div className="max-w-md">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8FB3A2] block mb-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122] block mb-2">
               Portfolio Ingénieur
             </span>
             <Link
               href={`/${locale}`}
-              className="font-display text-2xl font-bold tracking-tight text-[#f3f1f7] hover:text-[#8FB3A2] transition-colors"
+              className="font-display text-2xl font-bold tracking-tight text-[#FFFFFF] hover:text-[#C8F122] transition-colors"
             >
               {siteConfig.name}
             </Link>
-            <p className="mt-3 text-sm text-[#797681] leading-relaxed">
+            <p className="mt-3 text-sm text-[#A1A1AA] leading-relaxed">
               {dictionary.footer.builtWith}
             </p>
           </div>
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] mb-4">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#FFFFFF] mb-4">
               {dictionary.footer.navigation}
             </h2>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link
-                  className="hover:text-[#f3f1f7] transition-colors"
+                  className="hover:text-[#FFFFFF] transition-colors"
                   href={`/${locale}/projects`}
                 >
                   {dictionary.nav.projects}
@@ -48,7 +48,7 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
               </li>
               <li>
                 <Link
-                  className="hover:text-[#f3f1f7] transition-colors"
+                  className="hover:text-[#FFFFFF] transition-colors"
                   href={`/${locale}/journey`}
                 >
                   {dictionary.nav.journey}
@@ -56,7 +56,7 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
               </li>
               <li>
                 <Link
-                  className="hover:text-[#f3f1f7] transition-colors"
+                  className="hover:text-[#FFFFFF] transition-colors"
                   href={`/${locale}/certifications`}
                 >
                   Certifications
@@ -64,7 +64,7 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
               </li>
               <li>
                 <Link
-                  className="hover:text-[#f3f1f7] transition-colors"
+                  className="hover:text-[#FFFFFF] transition-colors"
                   href={`/${locale}/contact`}
                 >
                   {dictionary.nav.contact}
@@ -74,60 +74,60 @@ export default function SiteFooter({ locale, dictionary, contactLinks }: SiteFoo
           </div>
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#f3f1f7] mb-4">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#FFFFFF] mb-4">
               {dictionary.footer.elsewhere}
             </h2>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <a
-                  className="inline-flex items-center gap-1.5 hover:text-[#f3f1f7] transition-colors"
+                  className="inline-flex items-center gap-1.5 hover:text-[#FFFFFF] transition-colors"
                   href={contactLinks.github}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <span>GitHub</span>
-                  <ArrowUpRight className="size-3.5 text-[#8FB3A2]" />
+                  <ArrowUpRight className="size-3.5 text-[#C8F122]" />
                 </a>
               </li>
               <li>
                 <a
-                  className="inline-flex items-center gap-1.5 hover:text-[#f3f1f7] transition-colors"
+                  className="inline-flex items-center gap-1.5 hover:text-[#FFFFFF] transition-colors"
                   href={contactLinks.linkedin}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <span>LinkedIn</span>
-                  <ArrowUpRight className="size-3.5 text-[#8FB3A2]" />
+                  <ArrowUpRight className="size-3.5 text-[#C8F122]" />
                 </a>
               </li>
               <li>
                 <a
-                  className="inline-flex items-center gap-1.5 hover:text-[#f3f1f7] transition-colors"
+                  className="inline-flex items-center gap-1.5 hover:text-[#FFFFFF] transition-colors"
                   href={contactLinks.tryHackMe}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <span>TryHackMe</span>
-                  <ArrowUpRight className="size-3.5 text-[#8FB3A2]" />
+                  <ArrowUpRight className="size-3.5 text-[#C8F122]" />
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-[#797681]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-[#A1A1AA]">
           <p>© {year} {siteConfig.name}. {dictionary.footer.rights}</p>
           <div className="flex items-center gap-4">
             <Link
               href={`/${locale === "fr" ? "en" : "fr"}`}
-              className="hover:text-[#f3f1f7] transition-colors"
+              className="hover:text-[#FFFFFF] transition-colors"
             >
               {locale === "fr" ? "English version" : "Version française"}
             </Link>
             <span className="text-white/20">·</span>
             <Link
               href="/admin"
-              className="hover:text-[#f3f1f7] transition-colors"
+              className="hover:text-[#FFFFFF] transition-colors"
             >
               {locale === "fr" ? "Console d’administration" : "Admin console"}
             </Link>

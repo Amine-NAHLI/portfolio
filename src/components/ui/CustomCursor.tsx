@@ -83,7 +83,7 @@ export default function CustomCursor() {
     <>
       {/* Outer ring */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[9999] h-8 w-8 rounded-full border border-accent shadow-[0_0_12px_rgba(143, 179, 162,0.3)]"
+        className="pointer-events-none fixed top-0 left-0 z-[9999] h-8 w-8 rounded-full border border-accent shadow-[0_0_12px_rgba(200,241,34,0.3)]"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
@@ -93,13 +93,13 @@ export default function CustomCursor() {
         }}
         animate={{
           scale: isPointer ? 1.5 : 1,
-          backgroundColor: isPointer ? "rgba(143, 179, 162, 0.12)" : "transparent",
+          backgroundColor: isPointer ? "rgba(200,241,34, 0.12)" : "transparent",
         }}
         transition={{ duration: 0.15 }}
       />
       {/* Inner dot */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[10000] h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(143, 179, 162,0.8)]"
+        className="pointer-events-none fixed top-0 left-0 z-[10000] h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(200,241,34,0.8)]"
         style={{
           x: cursorX,
           y: cursorY,

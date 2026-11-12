@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import SiteFooter from "@/components/layout/SiteFooter";
 import MinimalNavbar from "@/components/navigation/MinimalNavbar";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -14,6 +13,7 @@ import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import ChatWidget from "@/components/ui/ChatWidget";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import ScrollProgress from "@/components/ui/ScrollProgress";
+import ScrollTextReveal from "@/components/ui/ScrollTextReveal";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -91,6 +91,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <PageLoadWrapper>
       <SmoothScroll />
       <ScrollProgress />
+      <ScrollTextReveal />
       <NoiseOverlay />
       <div className="flex min-h-screen flex-col">
         <LocaleDocumentAttributes locale={candidate} />
@@ -102,7 +103,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <main id="main-content" className="flex-1" tabIndex={-1}>
           {children}
         </main>
-        <SiteFooter locale={candidate} dictionary={dictionary} contactLinks={contactLinks} />
         <ChatWidget />
       </div>
     </PageLoadWrapper>

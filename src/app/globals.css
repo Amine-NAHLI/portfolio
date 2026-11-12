@@ -220,4 +220,24 @@ html.lenis, html.lenis body {
 }
 
 @media (max-width: 63.99rem) { .hero-atelier { min-height: auto; }.hero-atelier::before { right: -15rem; top: 30%; opacity: .72; }.hero-atelier::after { display: none; }.hero-readout { display: none; } }
-@media (prefers-reduced-motion: reduce) { .page-enter > *, .hero-atelier::before, .hero-atelier::after, .hero-monogram::before, .hero-monogram::after, .animate-fluid-blob { animation: none !important; } }
+
+/* Subtle scroll text reveal */
+[data-text-reveal] {
+  transition:
+    opacity 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+[data-text-reveal="hidden"] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+[data-text-reveal="visible"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter > *, .hero-atelier::before, .hero-atelier::after, .hero-monogram::before, .hero-monogram::after, .animate-fluid-blob { animation: none !important; }
+  [data-text-reveal] { transition: none !important; opacity: 1 !important; transform: none !important; }
+}

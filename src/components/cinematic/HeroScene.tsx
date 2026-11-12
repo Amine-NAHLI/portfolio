@@ -118,6 +118,8 @@ export default function HeroScene({
   return (
     <section
       ref={containerRef}
+      id="hero"
+      data-no-text-reveal="true"
       className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-transparent px-4 sm:px-8 lg:px-14 py-20 text-white"
     >
       {/* Calibrated Midnight Lime atmospheric lighting (balanced Glow Dosé Pro) */}

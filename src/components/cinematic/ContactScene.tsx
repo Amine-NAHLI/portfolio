@@ -75,7 +75,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
     <section
       ref={containerRef}
       id="contact"
-      className="relative min-h-[80svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-center overflow-hidden scroll-mt-24"
+      className="relative min-h-[88svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-center overflow-hidden scroll-mt-24"
     >
       {/* Background Ambient Glow */}
       <div
@@ -94,6 +94,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
         {/* Centered Headline */}
         <h2
           ref={textRef}
+          data-no-text-reveal="true"
           className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#FFFFFF] leading-tight mb-6 max-w-3xl mx-auto"
         >
           {locale === "fr" ? (
@@ -143,7 +144,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
           {/* Card 2: Email Direct */}
           <a
             href={`mailto:${emailAddress}`}
-            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#141518] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
+            className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#17191E] hover:scale-[1.02]"
           >
             <div className="flex items-center justify-between pb-8">
               <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#A1A1AA] group-hover:text-white transition-colors">
@@ -167,7 +168,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
               href={contactLinks.linkedin}
               target="_blank"
               rel="noreferrer"
-              className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#141518] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#1f1e29] hover:scale-[1.02]"
+              className="contact-card-btn group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-[#17191E] hover:scale-[1.02]"
             >
               <div className="flex items-center justify-between pb-8">
                 <div className="size-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#A1A1AA] group-hover:text-white transition-colors">

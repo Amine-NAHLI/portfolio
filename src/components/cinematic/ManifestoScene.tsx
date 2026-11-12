@@ -103,6 +103,7 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
   return (
     <section
       ref={containerRef}
+      data-no-text-reveal="true"
       className="relative w-full bg-transparent text-[#FFFFFF] overflow-hidden"
     >
       <div

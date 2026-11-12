@@ -48,7 +48,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-32">
+    <div className="min-h-screen bg-[#0B0B0C] text-[#FFFFFF] pt-20 sm:pt-24 pb-8 flex items-start lg:items-center">
       {/* Background ambient lighting */}
       <div
         aria-hidden="true"
@@ -59,25 +59,25 @@ export default async function ContactPage({ params }: ContactPageProps) {
         className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-[#121316] opacity-70 blur-[180px] -z-10"
       />
 
-      <Container className="pt-28 sm:pt-36">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <Container className="w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start lg:items-center">
           
-          {/* Left Column (Sticky Overview & Channels) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8">
+          {/* Left Column (Overview & Channels) */}
+          <div className="lg:col-span-5 space-y-5">
             <div>
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-3 block">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-2 block">
                 {copy.eyebrow}
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-[#FFFFFF] leading-tight mb-5">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-[#FFFFFF] leading-[1.08] mb-3">
                 {copy.title}
               </h1>
-              <p className="text-base text-[#A1A1AA] leading-relaxed max-w-md font-normal">
+              <p className="text-sm sm:text-base text-[#A1A1AA] leading-relaxed max-w-md font-normal">
                 {copy.description}
               </p>
             </div>
 
             {/* Direct Connect Channels */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               {links.map(({ label, value, href, icon: Icon, external }) => (
                 <a
                   key={href}
@@ -85,10 +85,10 @@ export default async function ContactPage({ params }: ContactPageProps) {
                   target={external ? "_blank" : undefined}
                   rel={external ? "noreferrer" : undefined}
                   data-analytics-event={href === contactLinks.github ? "github_click" : undefined}
-                  className="group relative flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-[#121316] transition-all duration-300 hover:border-[#C8F122]/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#C8F122]/10 cursor-pointer"
+                  className="group relative flex items-center justify-between px-4 py-3 rounded-2xl border border-white/10 bg-[#121316] transition-all duration-300 hover:border-[#C8F122]/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#C8F122]/10 cursor-pointer"
                 >
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex items-center justify-center size-11 rounded-xl bg-[#0B0B0C] border border-white/10 group-hover:border-[#C8F122]/50 text-[#C8F122] transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center size-10 rounded-xl bg-[#0B0B0C] border border-white/10 group-hover:border-[#C8F122]/50 text-[#C8F122] transition-all">
                       <Icon aria-hidden="true" className="size-4 text-[#C8F122]" />
                     </div>
                     <div>

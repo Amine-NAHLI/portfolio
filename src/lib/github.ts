@@ -83,11 +83,104 @@ export const fallbackGitHubData: { stats: GitHubStats; activity: GitHubActivity 
   },
 };
 
+const GITHUB_REVALIDATE_SECONDS = 900;
+
+type CalendarWeek = NonNullable<GitHubStats["calendarWeeks"]>[number];
+
+async function fetchPublicContributionCalendar(username: string): Promise<{
+  totalContributions: number;
+  calendarWeeks: CalendarWeek[];
+} | null> {
+  try {
+    const res = await fetch(`https://github.com/users/${encodeURIComponent(username)}/contributions`, {
+      headers: {
+        "User-Agent": "portfolio-contributions-client",
+        Accept: "text/html",
+      },
+      next: { revalidate: GITHUB_REVALIDATE_SECONDS },
+    });
+
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    const idToDate = new Map<string, string>();
+    const cellRegexA = /data-date="(\d{4}-\d{2}-\d{2})"[^>]*id="([^"]+)"/g;
+    const cellRegexB = /id="([^"]+)"[^>]*data-date="(\d{4}-\d{2}-\d{2})"/g;
+
+    for (const m of html.matchAll(cellRegexA)) {
+      idToDate.set(m[2], m[1]);
+    }
+    for (const m of html.matchAll(cellRegexB)) {
+      if (!idToDate.has(m[1])) {
+        idToDate.set(m[1], m[2]);
+      }
+    }
+
+    if (idToDate.size === 0) return null;
+
+    const tipCountById = new Map<string, number>();
+    const tipRegex = /<tool-tip[^>]*for="([^"]+)"[^>]*>([^<]+)</g;
+    for (const m of html.matchAll(tipRegex)) {
+      const countMatch = m[2].trim().match(/^(\d+)\s+contribution/i);
+      tipCountById.set(m[1], countMatch ? parseInt(countMatch[1], 10) : 0);
+    }
+
+    const sortedDays = Array.from(idToDate.entries())
+      .map(([id, date]) => ({
+        date,
+        contributionCount: tipCountById.get(id) ?? 0,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    const calendarWeeks: CalendarWeek[] = [];
+    let currentWeek: CalendarWeek["contributionDays"] = [];
+
+    for (const day of sortedDays) {
+      const weekday = new Date(`${day.date}T12:00:00Z`).getUTCDay();
+      if (weekday === 0 && currentWeek.length > 0) {
+        calendarWeeks.push({ contributionDays: currentWeek });
+        currentWeek = [];
+      }
+      currentWeek.push(day);
+    }
+    if (currentWeek.length > 0) {
+      calendarWeeks.push({ contributionDays: currentWeek });
+    }
+
+    const headingMatch = html.match(/([\d,]+)\s+contributions?\s+in the last year/i);
+    const summed = sortedDays.reduce((acc, d) => acc + d.contributionCount, 0);
+    const totalContributions = headingMatch
+      ? parseInt(headingMatch[1].replace(/,/g, ""), 10)
+      : summed;
+
+    return { totalContributions, calendarWeeks };
+  } catch (err) {
+    console.warn("Public GitHub calendar fallback failed:", err);
+    return null;
+  }
+}
+
+async function fetchPublicGitHubFallback(): Promise<{ stats: GitHubStats; activity: GitHubActivity }> {
+  const calendar = await fetchPublicContributionCalendar(GITHUB_USERNAME);
+  if (!calendar) {
+    return fallbackGitHubData;
+  }
+
+  return {
+    stats: {
+      ...fallbackGitHubData.stats,
+      totalContributions: calendar.totalContributions,
+      calendarWeeks: calendar.calendarWeeks,
+    },
+    activity: fallbackGitHubData.activity,
+  };
+}
+
 export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity: GitHubActivity }> {
   const token = process.env.GITHUB_ACCESS_TOKEN;
 
   if (!token) {
-    return fallbackGitHubData;
+    return fetchPublicGitHubFallback();
   }
 
   const query = `
@@ -143,8 +236,8 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
         query,
         variables: { username: GITHUB_USERNAME },
       }),
-      // Cache data for 1 hour to prevent rate limiting
-      next: { revalidate: 3600 },
+      // Revalidate every 15 minutes so daily GitHub commits stay fresh
+      next: { revalidate: GITHUB_REVALIDATE_SECONDS },
     });
 
     if (!response.ok) {
@@ -158,7 +251,7 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
     }
 
     const user = data.user;
-    if (!user) return fallbackGitHubData;
+    if (!user) return fetchPublicGitHubFallback();
 
     // --- Process Statistics ---
     const totalContributions = user.contributionsCollection.contributionCalendar.totalContributions;
@@ -220,6 +313,6 @@ export async function fetchGitHubData(): Promise<{ stats: GitHubStats; activity:
     };
   } catch (error) {
     console.error("Error fetching GitHub data:", error);
-    return fallbackGitHubData;
+    return fetchPublicGitHubFallback();
   }
 }

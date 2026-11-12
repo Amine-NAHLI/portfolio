@@ -354,9 +354,7 @@ export default function ChatWidget() {
         try {
           const parsed = JSON.parse(saved) as TerminalEntry[];
           if (Array.isArray(parsed) && parsed.length > 0) {
-            const firstIsSameRoute = parsed[0]?.id === `boot-${virtualPath}`;
-            if (firstIsSameRoute) return parsed;
-            return [...parsed, initBanner];
+            return parsed;
           }
         } catch {
           return [initBanner];
@@ -408,20 +406,11 @@ export default function ChatWidget() {
     }
   };
 
-  // Emit contextual welcome message whenever navigating to a different page
+  // Keep active route context synchronized silently in the background without printing banners
   useEffect(() => {
     if (lastPathRef.current === virtualPath) return;
     lastPathRef.current = virtualPath;
-    const ctx = getPageShellContext(virtualPath, locale);
-    setEntries((prev) => [
-      ...prev,
-      {
-        id: `route-${Date.now()}-${virtualPath}`,
-        role: "banner",
-        content: ctx.welcome,
-      },
-    ]);
-  }, [virtualPath, locale]);
+  }, [virtualPath]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

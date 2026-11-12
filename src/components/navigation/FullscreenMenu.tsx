@@ -5,6 +5,7 @@ import Link from "next/link";
 import { X, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { SITE_NAV_ITEMS, resolveNavHref } from "@/config/navigation";
 import type { Locale } from "@/i18n/config";
 import { getCvDownloadProps } from "@/lib/utils";
 
@@ -19,16 +20,6 @@ interface FullscreenMenuProps {
     email?: string;
   };
 }
-
-const menuItems = [
-  { id: "01", label: "ACCUEIL", labelEn: "HOME", href: "/" },
-  { id: "02", label: "À PROPOS", labelEn: "ABOUT", href: "/#about" },
-  { id: "03", label: "PROJETS", labelEn: "SELECTED WORK", href: "/projects" },
-  { id: "04", label: "PARCOURS", labelEn: "JOURNEY", href: "/journey" },
-  { id: "05", label: "CONTRIBUTIONS GITHUB", labelEn: "GITHUB CONTRIBUTIONS", href: "/#github" },
-  { id: "06", label: "CERTIFICATIONS", labelEn: "CERTIFICATIONS", href: "/certifications" },
-  { id: "07", label: "CONTACT", labelEn: "CONTACT", href: "/contact" },
-];
 
 export default function FullscreenMenu({
   isOpen,
@@ -136,9 +127,9 @@ export default function FullscreenMenu({
         {/* Main Big Links List */}
         <div ref={linksRef} className="py-6 sm:py-8 my-auto">
           <nav className="flex flex-col space-y-2 sm:space-y-3 lg:space-y-4">
-            {menuItems.map((item) => {
-              const label = locale === "fr" ? item.label : item.labelEn;
-              const fullHref = item.href === "/" ? `/${locale}` : `/${locale}${item.href}`;
+            {SITE_NAV_ITEMS.map((item) => {
+              const label = item.label[locale].toUpperCase();
+              const fullHref = resolveNavHref(locale, item.href);
 
               return (
                 <div key={item.id} className="overflow-hidden">
@@ -146,16 +137,14 @@ export default function FullscreenMenu({
                     href={fullHref}
                     onClick={() => {
                       onClose();
-                      if (item.href.includes("#")) {
-                        const hash = item.href.split("#")[1];
-                        if (hash) {
-                          setTimeout(() => {
-                            const target = document.getElementById(hash);
-                            if (target) {
-                              window.__lenis?.scrollTo(target, { offset: -70, duration: 1.2 });
-                            }
-                          }, 150);
-                        }
+                      if (item.hashId) {
+                        const hash = item.hashId;
+                        setTimeout(() => {
+                          const target = document.getElementById(hash);
+                          if (target) {
+                            window.__lenis?.scrollTo(target, { offset: -70, duration: 1.2 });
+                          }
+                        }, 150);
                       }
                     }}
                     className="menu-item group flex items-baseline gap-3 sm:gap-6 font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#f3f1f7] transition-all duration-300 hover:text-[#9A71FF] hover:translate-x-3 will-change-transform"

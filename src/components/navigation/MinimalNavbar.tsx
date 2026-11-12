@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, Globe } from "lucide-react";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
+import { SITE_NAV_ITEMS, resolveNavHref, type SiteNavItem } from "@/config/navigation";
 import type { Locale } from "@/i18n/config";
 
 interface MinimalNavbarProps {
@@ -19,6 +21,7 @@ interface MinimalNavbarProps {
 export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname() || `/${locale}`;
 
   useEffect(() => {
     function handleScroll() {
@@ -28,34 +31,29 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { label: locale === "fr" ? "À Propos" : "About", href: `/${locale}#about`, targetId: "about" },
-    { label: locale === "fr" ? "Projets" : "Projects", href: `/${locale}#work`, targetId: "work" },
-    { label: locale === "fr" ? "Parcours" : "Journey", href: `/${locale}#journey`, targetId: "journey" },
-    { label: locale === "fr" ? "Contributions" : "Contributions", href: `/${locale}#github`, targetId: "github" },
-    { label: locale === "fr" ? "Certifications" : "Certifications", href: `/${locale}#certifications`, targetId: "certifications" },
-    { label: locale === "fr" ? "Contact" : "Contact", href: `/${locale}#contact`, targetId: "contact" },
-  ];
+  const isHomePage =
+    pathname === `/${locale}` || pathname === `/${locale}/` || pathname === "/";
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
-    if (typeof window === "undefined") return;
-    const currentPath = window.location.pathname;
-    const isHomePage = currentPath === `/${locale}` || currentPath === `/${locale}/` || currentPath === "/";
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: SiteNavItem) => {
+    if (typeof window === "undefined" || !item.hashId || !isHomePage) return;
 
-    if (isHomePage) {
-      e.preventDefault();
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        window.history.pushState(null, "", `#${targetId}`);
-        const lenis = window.__lenis;
-        if (lenis) {
-          lenis.scrollTo(targetElement, { offset: -70, duration: 1.2 });
-        } else {
-          targetElement.scrollIntoView({ behavior: "smooth" });
-        }
+    e.preventDefault();
+    const targetElement = document.getElementById(item.hashId);
+    if (targetElement) {
+      window.history.pushState(null, "", `#${item.hashId}`);
+      const lenis = window.__lenis;
+      if (lenis) {
+        lenis.scrollTo(targetElement, { offset: -70, duration: 1.2 });
+      } else {
+        targetElement.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
+
+  const nextLocale: Locale = locale === "fr" ? "en" : "fr";
+  const localeSwitchHref = /^\/(fr|en)(?=\/|$)/.test(pathname)
+    ? pathname.replace(/^\/(fr|en)(?=\/|$)/, `/${nextLocale}`)
+    : `/${nextLocale}`;
 
   return (
     <>
@@ -66,36 +64,47 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
             : "bg-transparent py-5 sm:py-6"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-14">
-          
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-8 lg:px-14">
           {/* Left: Brand Monogram */}
           <Link
             href={`/${locale}`}
-            className="group flex items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#f3f1f7]"
+            className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#f3f1f7]"
           >
             <span>Amine Nahli</span>
             <span className="size-1.5 rounded-full bg-[#9A71FF]" />
           </Link>
 
-          {/* Center: Clean Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.targetId)}
-                className="text-xs font-medium text-[#797681] hover:text-[#f3f1f7] transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Center: Desktop Navigation Links (1:1 synced with FullscreenMenu) */}
+          <nav aria-label="Navigation principale" className="hidden lg:flex items-center gap-6 xl:gap-7">
+            {SITE_NAV_ITEMS.map((item) => {
+              const fullHref = resolveNavHref(locale, item.href);
+              const isActive =
+                item.href === "/"
+                  ? isHomePage
+                  : !item.hashId &&
+                    (pathname === fullHref || pathname.startsWith(`${fullHref}/`));
+
+              return (
+                <Link
+                  key={item.id}
+                  href={fullHref}
+                  onClick={(e) => handleNavClick(e, item)}
+                  className={`whitespace-nowrap text-xs font-medium transition-colors ${
+                    isActive
+                      ? "text-[#f3f1f7]"
+                      : "text-[#797681] hover:text-[#f3f1f7]"
+                  }`}
+                >
+                  {item.label[locale]}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right: Language switch + Menu Button */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Language Switcher */}
+          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
             <Link
-              href={`/${locale === "fr" ? "en" : "fr"}`}
+              href={localeSwitchHref}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#f3f1f7] hover:bg-white/[0.08] transition-colors"
               aria-label="Changer de langue"
             >
@@ -103,7 +112,6 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
               <span>{locale === "fr" ? "EN" : "FR"}</span>
             </Link>
 
-            {/* Menu Trigger */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}

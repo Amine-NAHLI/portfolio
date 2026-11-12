@@ -121,90 +121,109 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
       const cards = cardElementsRef.current.filter((c): c is HTMLDivElement => Boolean(c));
       if (cards.length === 0) return;
 
-      // Initial card setups:
-      // Card 0 is facing the user (rotateY: 0deg, visible)
-      // Cards 1..N are on their back (rotateY: 180deg, invisible)
-      cards.forEach((card, idx) => {
-        if (idx === 0) {
-          gsap.set(card, {
-            rotateY: 0,
-            opacity: 1,
-            zIndex: 30,
-            pointerEvents: "auto",
-          });
-        } else {
-          gsap.set(card, {
-            rotateY: 180,
-            opacity: 0,
-            zIndex: 10 - idx,
-            pointerEvents: "none",
-          });
-        }
-      });
+      let lastIdx = 0;
 
-      // Pin the section while user scrolls to flip each card over to its back to reveal the next!
+      // Shape each [k, k+1] step with brief rest plateaus and a quintic smootherstep curve
+      const shapeDeckProgress = (rawP: number) => {
+        const clamped = Math.max(0, Math.min(count - 1, rawP));
+        const base = Math.floor(clamped);
+        if (base >= count - 1) return count - 1;
+        const frac = clamped - base;
+        if (frac <= 0.12) return base;
+        if (frac >= 0.88) return base + 1;
+        const u = (frac - 0.12) / 0.76;
+        const eased = u * u * u * (u * (u * 6 - 15) + 10);
+        return base + eased;
+      };
+
+      const applyDeckTransforms = (ep: number) => {
+        const currentIdx = Math.min(count - 1, Math.max(0, Math.round(ep)));
+
+        if (currentIdx !== lastIdx) {
+          lastIdx = currentIdx;
+          setActiveIndex(currentIdx);
+        }
+
+        cards.forEach((card, idx) => {
+          const d = idx - ep;
+          const zIndex = (count - idx) * 10;
+
+          if (d < 0) {
+            // Top card peels gracefully off the deck to the left
+            const t = Math.min(1, -d);
+            const opacity = t >= 0.94 ? 0 : Math.max(0, 1 - Math.pow(t, 1.2) * 1.15);
+            const isVisible = opacity > 0.01;
+
+            gsap.set(card, {
+              transformPerspective: 1600,
+              transformOrigin: "center center",
+              force3D: true,
+              xPercent: -t * 58,
+              y: -t * 14,
+              scale: 1 - t * 0.12,
+              rotateY: t * 18,
+              rotateZ: -t * 3.5,
+              opacity,
+              zIndex,
+            });
+            card.style.visibility = isVisible ? "visible" : "hidden";
+          } else {
+            // Active card (d=0) centered; upcoming cards peek in layered 3D depth to the right
+            let opacity = 0;
+            if (d <= 1) {
+              opacity = 1 - d * 0.54;
+            } else if (d <= 2.4) {
+              opacity = Math.max(0, 0.46 - (d - 1) * 0.32);
+            }
+            const isVisible = opacity > 0.01;
+
+            gsap.set(card, {
+              transformPerspective: 1600,
+              transformOrigin: "center center",
+              force3D: true,
+              xPercent: d * 8.5,
+              y: d * 10,
+              scale: Math.max(0.76, 1 - d * 0.065),
+              rotateY: -Math.min(18, d * 6),
+              rotateZ: Math.min(3.5, d * 1.2),
+              opacity,
+              zIndex,
+            });
+            card.style.visibility = isVisible ? "visible" : "hidden";
+          }
+
+          card.style.pointerEvents =
+            idx === currentIdx || idx === currentIdx + 1 ? "auto" : "none";
+        });
+      };
+
+      // Set resting initial stack at progress 0
+      applyDeckTransforms(0);
+
+      const deckState = { progress: 0 };
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           pin: true,
           start: "top top",
-          end: `+=${(count - 1) * 900}`,
-          scrub: 0.8,
+          end: `+=${(count - 1) * 700}`,
+          scrub: 0.65,
           anticipatePin: 1,
-          onUpdate: (self) => {
-            const rawIdx = self.progress * (count - 1);
-            const currentIdx = Math.min(count - 1, Math.round(rawIdx));
-            setActiveIndex(currentIdx);
+          invalidateOnRefresh: true,
+        },
+      });
 
-            cards.forEach((card, idx) => {
-              if (idx === currentIdx) {
-                card.style.pointerEvents = "auto";
-                card.style.zIndex = "30";
-              } else {
-                card.style.pointerEvents = "none";
-                card.style.zIndex = `${10 - idx}`;
-              }
-            });
-          },
+      tl.to(deckState, {
+        progress: count - 1,
+        duration: count - 1,
+        ease: "none",
+        onUpdate: () => {
+          applyDeckTransforms(shapeDeckProgress(deckState.progress));
         },
       });
 
       scrollTriggerInstanceRef.current = tl.scrollTrigger || null;
-
-      // Build the sequential 3D flip transitions:
-      // Card N flips from 0deg to -180deg (flipping to its back)
-      // Card N+1 flips simultaneously from 180deg to 0deg (revealing its face)
-      for (let i = 0; i < cards.length - 1; i++) {
-        const currCard = cards[i];
-        const nextCard = cards[i + 1];
-        const stepTime = i * 1.2;
-
-        // Current card rotates -180deg and fades out at the turn
-        tl.to(
-          currCard,
-          {
-            rotateY: -180,
-            opacity: 0,
-            zIndex: 5,
-            ease: "power2.inOut",
-            duration: 1,
-          },
-          stepTime
-        );
-
-        // Next card rotates from 180deg to 0deg and becomes active
-        tl.to(
-          nextCard,
-          {
-            rotateY: 0,
-            opacity: 1,
-            zIndex: 25,
-            ease: "power2.inOut",
-            duration: 1,
-          },
-          stepTime
-        );
-      }
     },
     { scope: containerRef, dependencies: [count] }
   );
@@ -217,17 +236,22 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
     const progress = count > 1 ? targetIndex / (count - 1) : 0;
     const targetY = start + progress * (end - start);
 
-    window.scrollTo({
-      top: targetY,
-      behavior: "smooth",
-    });
+    const lenis = typeof window !== "undefined" ? window.__lenis : undefined;
+    if (lenis) {
+      lenis.scrollTo(targetY, { duration: 0.85 });
+    } else {
+      window.scrollTo({
+        top: targetY,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
     <section
       ref={containerRef}
       id="work"
-      className="relative w-full min-h-screen bg-[#000000] py-16 sm:py-20 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col justify-between items-center overflow-hidden scroll-mt-20"
+      className="relative w-full h-[100svh] min-h-[600px] bg-[#000000] pt-16 pb-4 sm:pt-[76px] sm:pb-6 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] flex flex-col items-center justify-center overflow-hidden scroll-mt-20"
     >
       {/* Background Ambient Lighting: Violet Neon & Obsidian */}
       <div
@@ -239,153 +263,189 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
         className="pointer-events-none absolute left-1/4 top-1/3 h-[450px] w-[450px] rounded-full bg-[#0E161A] opacity-70 blur-[160px] -z-10"
       />
 
-      <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-between h-full flex-1">
+      <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-between h-full min-h-0">
         
         {/* Centered Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 pt-2">
-          <span className="font-mono text-xs uppercase tracking-wider text-[#9A71FF] block mb-2.5 font-bold">
+        <div className="text-center max-w-2xl mx-auto mb-2 sm:mb-4 shrink-0">
+          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-[#9A71FF] block mb-1.5 font-bold">
             {locale === "fr" ? "// SÉLECTION DE RÉALISATIONS" : "// FEATURED WORK"}
           </span>
-          <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
+          <h2 className="font-display text-2xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-[#f3f1f7] leading-tight">
             {locale === "fr" ? "Projets Phares." : "Work that Speaks."}
           </h2>
-          <p className="mt-2.5 text-xs sm:text-sm text-[#797681] leading-relaxed max-w-xl mx-auto">
+          <p className="mt-1.5 text-xs sm:text-sm text-[#797681] leading-relaxed max-w-xl mx-auto line-clamp-2">
             {locale === "fr"
               ? "Chaque projet est conçu comme un système complet : problème réel identifié, architecture rigoureuse, métriques mesurées et code source documenté."
               : "Each project is engineered as a robust system: verified problem space, rigorous architecture, measured outcomes, and documented source code."}
           </p>
         </div>
 
-        {/* 3D Centered Flipping Stage */}
-        <div
-          style={{ perspective: "1600px" }}
-          className="relative w-full max-w-2xl lg:max-w-3xl h-[520px] sm:h-[490px] my-auto flex items-center justify-center"
-        >
-          {displayProjects.map((project, index) => {
-            const projectTitle = typeof project.title === "string" ? project.title : project.title?.[locale];
-            const projectSubtitle = typeof project.subtitle === "string" ? project.subtitle : project.subtitle?.[locale];
-            const projectSummary = typeof project.summary === "string" ? project.summary : project.summary?.[locale];
-            const techList = project.coreTechnologies || project.technologies || [];
-            const categoryBadge =
-              ("categories" in project && Array.isArray(project.categories) && project.categories[0]) ||
-              ("category" in project && typeof (project as DisplayProjectItem).category === "string" && (project as DisplayProjectItem).category) ||
-              "PROJET INGÉNIEUR";
+        {/* Vertically & Horizontally Centered 3D Stage */}
+        <div className="w-full flex-1 min-h-0 flex items-center justify-center py-2 sm:py-3">
+          <div
+            style={{ perspective: "1600px" }}
+            className="relative mx-auto w-full max-w-2xl lg:max-w-3xl h-[min(410px,100%)] min-h-[290px] flex items-center justify-center"
+          >
+            {displayProjects.map((project, index) => {
+              const projectTitle = typeof project.title === "string" ? project.title : project.title?.[locale];
+              const projectSubtitle = typeof project.subtitle === "string" ? project.subtitle : project.subtitle?.[locale];
+              const projectSummary = typeof project.summary === "string" ? project.summary : project.summary?.[locale];
+              const techList = project.coreTechnologies || project.technologies || [];
+              const categoryBadge =
+                ("categories" in project && Array.isArray(project.categories) && project.categories[0]) ||
+                ("category" in project && typeof (project as DisplayProjectItem).category === "string" && (project as DisplayProjectItem).category) ||
+                "PROJET INGÉNIEUR";
 
-            const isCurrent = index === activeIndex;
+              const isCurrent = index === activeIndex;
+              const isNextPeek = index === activeIndex + 1;
 
-            return (
-              <div
-                key={project.slug || index}
-                ref={(el) => {
-                  cardElementsRef.current[index] = el;
-                }}
-                style={{
-                  transformStyle: "preserve-3d",
-                  backfaceVisibility: "hidden",
-                  zIndex: isCurrent ? 30 : 10 - index,
-                  pointerEvents: isCurrent ? "auto" : "none",
-                }}
-                className={`absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/15 bg-[#0B0510] px-6 py-5 sm:px-8 sm:py-6 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-shadow duration-300 hover:border-[#9A71FF]/50 hover:shadow-[0_25px_90px_rgba(154,113,255,0.15)] will-change-transform ${
-                  isCurrent ? "pointer-events-auto" : "pointer-events-none"
-                }`}
-              >
-                {/* Top Card Bar */}
+              return (
                 <div
-                  style={{ transform: "translateZ(30px)" }}
-                  className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] relative z-30 pointer-events-auto shrink-0"
+                  key={project.slug || index}
+                  ref={(el) => {
+                    cardElementsRef.current[index] = el;
+                  }}
+                  aria-hidden={!isCurrent}
+                  onClick={() => {
+                    if (isNextPeek) scrollToStep(index);
+                  }}
+                  style={{
+                    backfaceVisibility: "hidden",
+                    zIndex: (count - index) * 10,
+                  }}
+                  className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br from-[#12091D] via-[#0B0510] to-[#06030A] px-5 py-4 sm:px-8 sm:py-6 transition-[border-color,box-shadow] duration-300 will-change-[transform,opacity] ${
+                    isCurrent
+                      ? "pointer-events-auto border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.9),0_0_45px_rgba(154,113,255,0.1)] hover:border-[#9A71FF]/55 hover:shadow-[0_30px_95px_rgba(154,113,255,0.18)]"
+                      : isNextPeek
+                        ? "pointer-events-auto cursor-pointer border-white/10 shadow-[0_20px_55px_rgba(0,0,0,0.85)] hover:border-[#9A71FF]/35"
+                        : "pointer-events-none border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs font-bold text-[#9A71FF] bg-[#9A71FF]/10 border border-[#9A71FF]/30 px-2 py-0.5 rounded-full">
-                      0{index + 1}
-                    </span>
-                    <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#797681]">
-                      {categoryBadge}
-                    </span>
-                  </div>
+                  {/* Subtle top ambient sheen & inner corner highlight */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9A71FF]/50 to-transparent"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#9A71FF]/10 blur-3xl"
+                  />
 
-                  <div className="flex items-center gap-2 relative z-30 pointer-events-auto">
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="GitHub Repository"
-                        className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer pointer-events-auto relative z-30"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <svg className="size-4 fill-current" viewBox="0 0 24 24">
-                          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-                        </svg>
-                      </a>
-                    )}
-                    {project.demoUrl && (
-                      <a
-                        href={project.demoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Live Demo"
-                        className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer pointer-events-auto relative z-30"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <ExternalLink className="size-4" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Main Card Content */}
-                <div className="py-2.5 sm:py-3.5 flex-1 flex flex-col justify-center min-h-0">
-                  <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#f3f1f7] mb-1.5 leading-snug">
-                    {projectTitle}
-                  </h3>
-
-                  {projectSubtitle && (
-                    <p className="text-xs sm:text-sm font-medium text-[#9A71FF] mb-2 line-clamp-1">
-                      {projectSubtitle}
-                    </p>
-                  )}
-
-                  <p className="text-xs sm:text-sm text-[#797681] leading-relaxed line-clamp-2 sm:line-clamp-3 mb-3.5 font-normal">
-                    {projectSummary}
-                  </p>
-
-                  {/* Core Technologies Badges */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {techList.slice(0, 6).map((tech: string) => (
-                      <span
-                        key={tech}
-                        className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-[11px] text-[#f3f1f7]/80 hover:border-white/25 transition-colors"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card Footer Bar */}
-                <div
-                  style={{ transform: "translateZ(30px)" }}
-                  className="pt-3.5 border-t border-white/[0.08] flex items-center justify-between relative z-30 pointer-events-auto shrink-0 mt-auto"
-                >
-                  <Link
-                    href={`/${locale}/projects/${project.slug}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-5 py-2 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm cursor-pointer pointer-events-auto relative z-30"
-                    onClick={(e) => e.stopPropagation()}
+                  {/* Top Card Bar */}
+                  <div
+                    className={`flex items-center justify-between pb-3 border-b border-white/[0.08] relative z-30 shrink-0 ${
+                      isCurrent ? "pointer-events-auto" : "pointer-events-none"
+                    }`}
                   >
-                    <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>
-                    <ArrowUpRight className="size-4" />
-                  </Link>
+                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                      <span className="font-mono text-xs font-bold text-[#9A71FF] bg-[#9A71FF]/10 border border-[#9A71FF]/30 px-2.5 py-0.5 rounded-full shrink-0">
+                        0{index + 1}
+                      </span>
+                      <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#797681] truncate">
+                        {categoryBadge}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 relative z-30 shrink-0">
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          tabIndex={isCurrent ? 0 : -1}
+                          aria-label="GitHub Repository"
+                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer relative z-30 ${
+                            isCurrent ? "pointer-events-auto" : "pointer-events-none"
+                          }`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <svg className="size-4 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                          </svg>
+                        </a>
+                      )}
+                      {project.demoUrl && (
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          tabIndex={isCurrent ? 0 : -1}
+                          aria-label="Live Demo"
+                          className={`flex size-8 sm:size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#797681] hover:text-white hover:border-[#9A71FF]/50 hover:bg-[#9A71FF]/20 transition-all cursor-pointer relative z-30 ${
+                            isCurrent ? "pointer-events-auto" : "pointer-events-none"
+                          }`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="size-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Main Card Content */}
+                  <div className="py-2 sm:py-3 flex-1 flex flex-col justify-center min-h-0 gap-1.5 sm:gap-2">
+                    <h3 className="font-display text-lg sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-[#f3f1f7] leading-snug line-clamp-2">
+                      {projectTitle}
+                    </h3>
+
+                    {projectSubtitle && (
+                      <p className="text-xs sm:text-sm font-medium text-[#9A71FF] line-clamp-1">
+                        {projectSubtitle}
+                      </p>
+                    )}
+
+                    <p className="text-xs sm:text-sm text-[#797681] leading-relaxed line-clamp-2 sm:line-clamp-3 font-normal">
+                      {projectSummary}
+                    </p>
+
+                    {/* Core Technologies Badges */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {techList.slice(0, 6).map((tech: string) => (
+                        <span
+                          key={tech}
+                          className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] sm:text-[11px] text-[#f3f1f7]/80 hover:border-white/25 transition-colors"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card Footer Bar */}
+                  <div
+                    className={`pt-3 border-t border-white/[0.08] flex items-center justify-between relative z-30 shrink-0 ${
+                      isCurrent ? "pointer-events-auto" : "pointer-events-none"
+                    }`}
+                  >
+                    <Link
+                      href={`/${locale}/projects/${project.slug}`}
+                      tabIndex={isCurrent ? 0 : -1}
+                      className={`inline-flex items-center gap-2 rounded-full border border-[#9A71FF]/30 bg-[#9A71FF]/10 px-4 py-1.5 sm:px-5 sm:py-2 text-xs font-mono font-semibold text-[#9A71FF] hover:bg-[#9A71FF] hover:text-black transition-all shadow-sm cursor-pointer relative z-30 ${
+                        isCurrent ? "pointer-events-auto" : "pointer-events-none"
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span>{locale === "fr" ? "Étude de cas détaillée" : "View Case Study"}</span>
+                      <ArrowUpRight className="size-4" />
+                    </Link>
+
+                    {"year" in project && typeof (project as DisplayProjectItem).year === "string" && (
+                      <span className="font-mono text-[11px] text-[#797681]">
+                        {(project as DisplayProjectItem).year}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {/* Bottom Interactive Controls & Scroll Indicators */}
-        <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-4 mt-6 pb-2">
+        <div className="w-full max-w-2xl lg:max-w-3xl mx-auto flex flex-col items-center gap-2.5 pt-2 shrink-0">
           
           {/* Flip Stepper Indicator & Buttons */}
-          <div className="flex items-center justify-between w-full border-t border-white/[0.08] pt-4">
+          <div className="flex items-center justify-between w-full border-t border-white/[0.08] pt-3">
             
             {/* Step Counter */}
             <div className="flex items-center gap-2">
@@ -398,7 +458,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                 0{count}
               </span>
               <span className="hidden sm:inline font-mono text-[11px] text-[#797681] ml-2">
-                {locale === "fr" ? "· Carte 3D inversée au défilement" : "· 3D card flips on scroll"}
+                {locale === "fr" ? "· Deck 3D spatial au défilement" : "· Spatial 3D deck on scroll"}
               </span>
             </div>
 
@@ -452,12 +512,12 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
           </div>
 
           {/* Scroll Guide Indicator */}
-          <div className="text-[11px] font-mono text-[#797681] flex items-center gap-2">
-            <span className="size-1.5 rounded-full bg-[#9A71FF] animate-pulse" />
+          <div className="text-[11px] font-mono text-[#797681] flex items-center gap-2 text-center">
+            <span className="size-1.5 rounded-full bg-[#9A71FF] animate-pulse shrink-0" />
             <span>
               {locale === "fr"
-                ? "Défilez pour retourner la carte vers son dos et découvrir le projet suivant"
-                : "Scroll to flip the card over to its back and reveal the next project"}
+                ? "Défilez ou utilisez les flèches pour passer d'un projet à l'autre"
+                : "Scroll or use the arrows to glide smoothly between projects"}
             </span>
           </div>
         </div>

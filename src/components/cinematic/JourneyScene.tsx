@@ -6,6 +6,7 @@ import { ArrowUpRight, Award, Briefcase, GraduationCap, MapPin, Trophy } from "l
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import WindingRoadOverlay from "@/components/ui/WindingRoad";
 import type { Locale } from "@/i18n/config";
 import type { PublicJourneyEntry } from "@/features/portfolio/data";
 import { DEFAULT_JOURNEY_TIMELINE, type JourneyTimelineItem, type JourneyTag } from "@/types/journey";
@@ -81,46 +82,27 @@ export default function JourneyScene({
 }: JourneySceneProps) {
   const items = timelineItems && timelineItems.length > 0 ? timelineItems : DEFAULT_JOURNEY_TIMELINE;
   const containerRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
+  const roadWrapperRef = useRef<HTMLDivElement>(null);
+  const pinRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useGSAP(
     () => {
       if (typeof window === "undefined" || !containerRef.current) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      // Animate line progress as user scrolls through the timeline
-      if (lineRef.current) {
-        gsap.fromTo(
-          lineRef.current,
-          { scaleY: 0 },
-          {
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top 70%",
-              end: "bottom 75%",
-              scrub: 0.6,
-            },
-          }
-        );
-      }
-
-      // Animate timeline nodes
-      const items = containerRef.current.querySelectorAll(".timeline-row");
-      if (items.length > 0) {
-        items.forEach((item) => {
+      const rowNodes = containerRef.current.querySelectorAll(".timeline-row");
+      if (rowNodes.length > 0) {
+        rowNodes.forEach((item) => {
           gsap.fromTo(
             item,
-            { opacity: 0.25, y: 35 },
+            { opacity: 0.2 },
             {
               opacity: 1,
-              y: 0,
-              duration: 0.8,
+              duration: 0.75,
               ease: "power2.out",
               scrollTrigger: {
                 trigger: item,
-                start: "top 85%",
+                start: "top 86%",
                 toggleActions: "play none none none",
               },
             }
@@ -137,7 +119,7 @@ export default function JourneyScene({
       id="journey"
       className="relative w-full bg-[#000000] py-28 px-4 sm:px-8 lg:px-14 border-t border-white/[0.08] overflow-hidden scroll-mt-24"
     >
-      {/* Exact ambient dual lighting requested by user: Black Pearl (#0E161A) on left, Black Magic (#0B0510) on right */}
+      {/* Ambient dual lighting */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-[-10%] top-1/4 h-[700px] w-[650px] rounded-full bg-[#0E161A] opacity-80 blur-[180px]"
@@ -153,8 +135,8 @@ export default function JourneyScene({
 
       <div className="mx-auto max-w-7xl relative z-10">
         
-        {/* Section Header: Title + Subtitle on Left, "TOUT LE PARCOURS →" Button on Right */}
-        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
+        {/* Section Header */}
+        <div className="mb-16 sm:mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
           <div>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#f3f1f7] leading-tight">
               {locale === "fr"
@@ -177,19 +159,17 @@ export default function JourneyScene({
           </Link>
         </div>
 
-        {/* Central Alternating Timeline */}
-        <div className="relative mx-auto max-w-5xl py-6">
-          
-          {/* Central Vertical Line (Desktop: centered at 50%, Mobile: left-8) */}
-          <div className="absolute top-2 bottom-6 left-8 md:left-1/2 md:-ml-[0.5px] w-[1px] bg-white/10">
-            <div
-              ref={lineRef}
-              className="size-full origin-top bg-gradient-to-b from-[#9A71FF] via-[#9A71FF]/80 to-white/10 shadow-[0_0_12px_rgba(154,113,255,0.5)]"
-            />
-          </div>
+        {/* Winding Map Route Timeline */}
+        <div ref={roadWrapperRef} className="relative mx-auto max-w-5xl py-10 sm:py-14">
 
-          {/* Timeline Nodes List */}
-          <div className="space-y-16 sm:space-y-24">
+          <WindingRoadOverlay
+            wrapperRef={roadWrapperRef}
+            pinRefs={pinRefs}
+            itemCount={items.length}
+          />
+
+          {/* Timeline Waypoint Rows */}
+          <div className="relative z-10 space-y-20 sm:space-y-28">
             {items.map((item, index) => {
               const isEven = index % 2 === 0;
               const isEducation = item.type === "education";
@@ -209,20 +189,35 @@ export default function JourneyScene({
                   key={item.id}
                   className="timeline-row group relative flex flex-col md:flex-row md:items-center md:justify-between"
                 >
-                  {/* Central Iconic Glowing Node */}
-                  <div className="absolute left-8 md:left-1/2 top-4 md:top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#9A71FF]/40 bg-[#0B0510] text-[#9A71FF] shadow-[0_0_20px_rgba(154,113,255,0.3)] transition-all duration-300 group-hover:scale-125 group-hover:border-[#9A71FF] group-hover:shadow-[0_0_30px_rgba(154,113,255,0.6)] z-20">
-                    <Icon className="size-5 transition-transform group-hover:rotate-6" />
+                  {/* Map Waypoint Pin positioned directly on the winding road apex */}
+                  <div
+                    ref={(el) => {
+                      pinRefs.current[index] = el;
+                    }}
+                    className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex size-9 sm:size-10 md:size-12 items-center justify-center rounded-full border border-[#9A71FF]/45 bg-[#0A090E] text-[#9A71FF] shadow-[0_0_14px_rgba(154,113,255,0.16)] transition-[transform,border-color,box-shadow] duration-300 group-hover:scale-110 group-hover:border-[#9A71FF]/80 group-hover:shadow-[0_0_20px_rgba(154,113,255,0.3)] ${
+                      isEven ? "left-[88%] md:left-[62%]" : "left-[12%] md:left-[38%]"
+                    }`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -inset-1.5 rounded-full border border-[#9A71FF]/15"
+                    />
+                    <Icon className="size-4 md:size-5 transition-transform group-hover:rotate-6" />
                   </div>
 
-                  {/* Mobile Layout: everything to the right of left-8 line */}
-                  <div className="ml-18 flex flex-col md:hidden pl-3">
+                  {/* Mobile Layout: alternating left/right cards matching desktop S-curve road */}
+                  <div
+                    className={`flex flex-col md:hidden w-[72%] rounded-2xl border border-white/[0.08] bg-[#0B0510]/85 p-3.5 sm:p-4 backdrop-blur-sm ${
+                      isEven ? "mr-auto text-left" : "ml-auto text-left"
+                    }`}
+                  >
                     <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#9A71FF] mb-1">
                       {displayYear}
                     </span>
-                    <h3 className="font-display text-lg font-bold text-[#f3f1f7] leading-snug group-hover:text-[#9A71FF] transition-colors mb-1.5">
+                    <h3 className="font-display text-base sm:text-lg font-bold text-[#f3f1f7] leading-snug group-hover:text-[#9A71FF] transition-colors mb-1.5">
                       {title}
                     </h3>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
                       <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#797681]">
                         {categoryLabel}
                       </span>
@@ -237,16 +232,16 @@ export default function JourneyScene({
                     </div>
                   </div>
 
-                  {/* Desktop Layout: Alternating Sides */}
-                  {/* Left Side Container */}
+                  {/* Desktop Left Side */}
                   <div
-                    className={`hidden w-[calc(50%-3.5rem)] md:flex md:flex-col transition-all duration-300 ${
-                      isEven ? "text-right items-end pr-2" : "text-right items-end pr-2"
+                    className={`hidden md:flex md:flex-col transition-all duration-300 ${
+                      isEven
+                        ? "w-[50%] text-right items-end pr-4 lg:pr-6"
+                        : "w-[30%] text-right items-end pr-4 lg:pr-6"
                     }`}
                   >
                     {isEven ? (
-                      /* Left has Content (when index is even: 0, 2, 4) */
-                      <div className="space-y-2">
+                      <div className="space-y-2 rounded-2xl border border-white/[0.07] bg-[#0B0510]/70 px-6 py-5 backdrop-blur-sm transition-all duration-300 group-hover:border-[#9A71FF]/35 group-hover:bg-[#0F0817]/85">
                         <h3 className="font-display text-xl lg:text-2xl font-bold tracking-tight text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors leading-snug">
                           {title}
                         </h3>
@@ -270,7 +265,6 @@ export default function JourneyScene({
                         </div>
                       </div>
                     ) : (
-                      /* Left has Date (when index is odd: 1, 3) */
                       <div className="py-2">
                         <span className="font-mono text-base lg:text-lg font-bold tracking-wider text-[#9A71FF]">
                           {displayYear}
@@ -283,15 +277,16 @@ export default function JourneyScene({
                     )}
                   </div>
 
-                  {/* Right Side Container */}
+                  {/* Desktop Right Side */}
                   <div
-                    className={`hidden w-[calc(50%-3.5rem)] md:flex md:flex-col transition-all duration-300 ${
-                      !isEven ? "text-left items-start pl-2" : "text-left items-start pl-2"
+                    className={`hidden md:flex md:flex-col transition-all duration-300 ${
+                      !isEven
+                        ? "w-[50%] text-left items-start pl-4 lg:pl-6"
+                        : "w-[30%] text-left items-start pl-4 lg:pl-6"
                     }`}
                   >
                     {!isEven ? (
-                      /* Right has Content (when index is odd: 1, 3) */
-                      <div className="space-y-2">
+                      <div className="space-y-2 rounded-2xl border border-white/[0.07] bg-[#0B0510]/70 px-6 py-5 backdrop-blur-sm transition-all duration-300 group-hover:border-[#9A71FF]/35 group-hover:bg-[#0F0817]/85">
                         <h3 className="font-display text-xl lg:text-2xl font-bold tracking-tight text-[#f3f1f7] group-hover:text-[#9A71FF] transition-colors leading-snug">
                           {title}
                         </h3>
@@ -315,7 +310,6 @@ export default function JourneyScene({
                         </div>
                       </div>
                     ) : (
-                      /* Right has Date (when index is even: 0, 2, 4) */
                       <div className="py-2">
                         <span className="font-mono text-base lg:text-lg font-bold tracking-wider text-[#9A71FF]">
                           {displayYear}

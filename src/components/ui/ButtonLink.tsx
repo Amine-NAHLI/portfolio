@@ -19,8 +19,8 @@ export default function ButtonLink({
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page",
         "active:scale-95",
         variant === "primary" && "bg-accent text-text-on-accent hover:bg-accent-hover shadow-md hover:shadow-accent/25",
-        variant === "secondary" && "bg-surface/80 border border-white/10 text-text-primary hover:border-accent/40 hover:bg-surface hover:text-accent backdrop-blur-md",
-        variant === "quiet" && "bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5",
+        variant === "secondary" && "bg-surface/80 border border-border-strong text-text-primary hover:border-accent/40 hover:bg-surface hover:text-accent backdrop-blur-md",
+        variant === "quiet" && "bg-transparent text-text-secondary hover:text-text-primary hover:bg-text-primary/5",
         className
       )}
       {...props}

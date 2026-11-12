@@ -100,26 +100,26 @@ export default function CertificationsScene({
     <section
       ref={containerRef}
       id="certifications"
-      className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-white/5 overflow-hidden scroll-mt-24"
+      className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
     >
       {/* Background Accent Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full bg-[#C8F122]/10 blur-[150px]"
+        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full bg-accent/10 blur-[150px]"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Header */}
-        <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
+        <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-3 block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-accent mb-3 block">
               {locale === "fr" ? "Diplômes & Accréditations" : "Verified Credentials"}
             </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#FFFFFF]">
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-text-primary">
               {locale === "fr" ? "Certifications Officielles." : "Official Certifications."}
             </h2>
           </div>
-          <p className="max-w-md text-sm text-[#A1A1AA] leading-relaxed">
+          <p className="max-w-md text-sm text-text-secondary leading-relaxed">
             {locale === "fr"
               ? "Apprentissage continu structuré et accrédité par des organismes reconnus, avec justificatifs officiels vérifiables."
               : "Structured continuous learning and technical certifications from recognized industry bodies, with verifiable proof."}
@@ -146,10 +146,10 @@ export default function CertificationsScene({
         </div>
 
         {/* Bottom Explorer Link */}
-        <div className="mt-12 flex items-center justify-between border-t border-white/[0.08] pt-6">
+        <div className="mt-12 flex items-center justify-between border-t border-border pt-6">
           <Link
             href={`/${locale}/certifications`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C8F122] hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-text-primary transition-colors"
           >
             <span>
               {locale === "fr"
@@ -158,7 +158,7 @@ export default function CertificationsScene({
             </span>
             <ArrowUpRight className="size-4" />
           </Link>
-          <div className="flex items-center gap-1.5 text-xs text-emerald-400">
+          <div className="flex items-center gap-1.5 text-xs text-success font-medium">
             <ShieldCheck className="size-3.5" />
             <span>{locale === "fr" ? "Vérification officielle" : "Official verification"}</span>
           </div>

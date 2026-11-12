@@ -1,10 +1,12 @@
 @import "tailwindcss";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
   --color-bg-page: var(--bg-page);
   --color-surface-subtle: var(--surface-subtle);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+  --color-surface-deep: var(--surface-deep);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-text-primary: var(--text-primary);
@@ -32,7 +34,8 @@
 }
 
 @layer base {
-  :root {
+  :root,
+  [data-theme="dark"] {
     /* Midnight Lime Palette: Midnight Black (#0B0B0C), Pure White (#FFFFFF), Lime Green (#C8F122) */
     --bg-page: #0B0B0C;
     --bg-gradient: radial-gradient(circle at 50% 22%, rgba(200, 241, 34, 0.05) 0%, transparent 45%), radial-gradient(circle at 82% 80%, rgba(18, 19, 22, 0.9) 0%, transparent 50%), #0B0B0C;
@@ -73,6 +76,43 @@
     --ambient-amber: rgba(245, 158, 11, 0.04);
     --shadow-soft: 0 1.5rem 4rem rgba(0, 0, 0, 0.65);
     color-scheme: dark;
+  }
+
+  [data-theme="light"] {
+    /* Mineral Ocean Light Palette: Mist Ash (#D3D9D4), Deep Charcoal (#212A31), Steel Slate (#2E3944), Ocean Teal (#124E66), Slate Mist (#748D92) */
+    --bg-page: #D3D9D4;
+    --bg-gradient: radial-gradient(circle at 50% 20%, rgba(18, 78, 102, 0.08) 0%, transparent 48%), radial-gradient(circle at 82% 82%, rgba(116, 141, 146, 0.18) 0%, transparent 52%), #D3D9D4;
+    --surface-subtle: #DCE1DD;
+    --surface: #E4E8E5;
+    --surface-raised: #ECEFEA;
+    --surface-deep: #212A31;
+    --border: rgba(33, 42, 49, 0.13);
+    --border-strong: rgba(33, 42, 49, 0.24);
+    /* Cinematic Palette */
+    --cinematic-bg: #D3D9D4;
+    --cinematic-surface: #E4E8E5;
+    --cinematic-secondary: #ECEFEA;
+    --cinematic-accent: #124E66;
+    --cinematic-accent-glow: rgba(18, 78, 102, 0.18);
+    --cinematic-text: #212A31;
+    --cinematic-muted: #2E3944;
+    --cinematic-border: rgba(33, 42, 49, 0.13);
+    --text-primary: #212A31;
+    --text-secondary: #2E3944;
+    --text-muted: #4C5F68;
+    --text-on-accent: #F4F7F5;
+    --accent: #124E66;
+    --accent-hover: #0E3E52;
+    --accent-soft: rgba(18, 78, 102, 0.12);
+    --amber: #b45309;
+    --success: #047857;
+    --warning: #b45309;
+    --danger: #be123c;
+    --info: #124E66;
+    --ambient-cyan: rgba(18, 78, 102, 0.08);
+    --ambient-amber: rgba(180, 83, 9, 0.05);
+    --shadow-soft: 0 1.25rem 3.25rem rgba(33, 42, 49, 0.14);
+    color-scheme: light;
   }
 
   *, *::before, *::after { box-sizing: border-box; }

@@ -21,13 +21,13 @@ export default function TechCard({
     mouseY.set(e.clientY - top);
   }
 
-  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, rgba(200,241,34,0.1), transparent 80%)`;
+  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, color-mix(in srgb, var(--accent) 12%, transparent), transparent 80%)`;
 
   return (
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
-      className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-surface-subtle/80 backdrop-blur-xl transition-all duration-300 hover:border-accent/40 hover:shadow-xl ${className}`}
+      className={`group relative overflow-hidden rounded-2xl border border-border-strong bg-surface-subtle/85 backdrop-blur-xl transition-all duration-300 hover:border-accent/40 hover:shadow-xl ${className}`}
     >
       {/* Inner Spotlight Glow */}
       <motion.div

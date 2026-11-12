@@ -6,7 +6,7 @@ import "./globals.css";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space", display: "swap" });
 const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
-const themeScript = `document.documentElement.dataset.theme = 'dark'; document.documentElement.style.colorScheme = 'dark'; try { localStorage.setItem('portfolio-theme', 'dark'); } catch (_) {}`;
+const themeScript = `(function(){try{var s=localStorage.getItem('portfolio-theme');var t=(s==='light'||s==='dark')?s:'dark';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t;}catch(_){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark';}})();`;
 
 import { AdminAutoLogout } from "@/components/admin/AdminAutoLogout";
 

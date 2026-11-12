@@ -48,15 +48,15 @@ export default async function ContactPage({ params }: ContactPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0B0B0C] text-[#FFFFFF] pt-20 sm:pt-24 pb-8 flex items-start lg:items-center">
+    <div className="min-h-screen bg-bg-page text-text-primary pt-20 sm:pt-24 pb-8 flex items-start lg:items-center">
       {/* Background ambient lighting */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full bg-[#17191E] opacity-60 blur-[180px] -z-10"
+        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full bg-surface-raised opacity-60 blur-[180px] -z-10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-[#121316] opacity-70 blur-[180px] -z-10"
+        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-surface opacity-70 blur-[180px] -z-10"
       />
 
       <Container className="w-full">
@@ -65,13 +65,13 @@ export default async function ContactPage({ params }: ContactPageProps) {
           {/* Left Column (Overview & Channels) */}
           <div className="lg:col-span-5 space-y-5">
             <div>
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#C8F122] mb-2 block">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-accent mb-2 block">
                 {copy.eyebrow}
               </span>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-[#FFFFFF] leading-[1.08] mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-text-primary leading-[1.08] mb-3">
                 {copy.title}
               </h1>
-              <p className="text-sm sm:text-base text-[#A1A1AA] leading-relaxed max-w-md font-normal">
+              <p className="text-sm sm:text-base text-text-secondary leading-relaxed max-w-md font-normal">
                 {copy.description}
               </p>
             </div>
@@ -85,20 +85,20 @@ export default async function ContactPage({ params }: ContactPageProps) {
                   target={external ? "_blank" : undefined}
                   rel={external ? "noreferrer" : undefined}
                   data-analytics-event={href === contactLinks.github ? "github_click" : undefined}
-                  className="group relative flex items-center justify-between px-4 py-3 rounded-2xl border border-white/10 bg-[#121316] transition-all duration-300 hover:border-[#C8F122]/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#C8F122]/10 cursor-pointer"
+                  className="group relative flex items-center justify-between px-4 py-3 rounded-2xl border border-border-strong bg-surface transition-all duration-300 hover:border-accent/45 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/10 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center size-10 rounded-xl bg-[#0B0B0C] border border-white/10 group-hover:border-[#C8F122]/50 text-[#C8F122] transition-all">
-                      <Icon aria-hidden="true" className="size-4 text-[#C8F122]" />
+                    <div className="flex items-center justify-center size-10 rounded-xl bg-bg-page border border-border group-hover:border-accent/50 text-accent transition-all">
+                      <Icon aria-hidden="true" className="size-4 text-accent" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[#FFFFFF] group-hover:text-[#C8F122] transition-colors">
+                      <p className="text-xs font-semibold text-text-primary group-hover:text-accent transition-colors">
                         {label}
                       </p>
-                      <p className="text-xs font-mono text-[#A1A1AA] mt-0.5">{value}</p>
+                      <p className="text-xs font-mono text-text-secondary mt-0.5">{value}</p>
                     </div>
                   </div>
-                  <ArrowUpRight className="size-4 text-[#A1A1AA] group-hover:text-[#C8F122] transition-colors" />
+                  <ArrowUpRight className="size-4 text-text-muted group-hover:text-accent transition-colors" />
                 </a>
               ))}
             </div>

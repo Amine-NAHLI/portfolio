@@ -238,18 +238,18 @@ export default function WindingRoadOverlay({
       <path
         d={geometry.d}
         fill="none"
-        stroke="rgba(255, 255, 255, 0.08)"
+        stroke="var(--border)"
         strokeWidth={curbWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
 
-      {/* Matte dark tarmac road bed */}
+      {/* Matte road bed matching page surface */}
       <path
         ref={measurePathRef}
         d={geometry.d}
         fill="none"
-        stroke="#0B0B0C"
+        stroke="var(--bg-page)"
         strokeWidth={asphaltWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -259,7 +259,7 @@ export default function WindingRoadOverlay({
       <path
         d={geometry.d}
         fill="none"
-        stroke="rgba(255, 255, 255, 0.16)"
+        stroke="var(--border-strong)"
         strokeWidth={dashWidth}
         strokeDasharray={dashArray}
         strokeLinecap="round"
@@ -270,7 +270,7 @@ export default function WindingRoadOverlay({
         ref={progressPathRef}
         d={geometry.d}
         fill="none"
-        stroke="rgba(200, 241, 34, 0.55)"
+        stroke="color-mix(in srgb, var(--accent) 65%, transparent)"
         strokeWidth={traceWidth}
         strokeLinecap="round"
       />
@@ -280,7 +280,7 @@ export default function WindingRoadOverlay({
         ref={corePathRef}
         d={geometry.d}
         fill="none"
-        stroke="rgba(255, 255, 255, 0.72)"
+        stroke="color-mix(in srgb, var(--text-primary) 72%, transparent)"
         strokeWidth={coreWidth}
         strokeLinecap="round"
       />
@@ -289,14 +289,14 @@ export default function WindingRoadOverlay({
       <g ref={beaconRef} style={{ opacity: 0 }}>
         <circle
           r={isMobile ? 5.5 : 7}
-          fill="rgba(200, 241, 34, 0.16)"
-          stroke="rgba(200, 241, 34, 0.45)"
+          fill="color-mix(in srgb, var(--accent) 18%, transparent)"
+          stroke="color-mix(in srgb, var(--accent) 50%, transparent)"
           strokeWidth="1"
         />
         <circle
           r={isMobile ? 2.5 : 3}
-          fill="#C8F122"
-          stroke="#0B0B0C"
+          fill="var(--accent)"
+          stroke="var(--bg-page)"
           strokeWidth="1.2"
         />
       </g>

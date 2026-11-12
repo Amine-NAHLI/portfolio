@@ -99,9 +99,9 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
           }
         }}
       >
-        {/* Frameless tight image wrapper — hugs image aspect ratio with zero dark filler box */}
+        {/* Frameless tight image wrapper — hugs image aspect ratio with zero filler box */}
         <div
-          className="group relative inline-flex max-w-full items-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 shadow-[0_18px_48px_rgba(0,0,0,0.55)]"
+          className="group relative inline-flex max-w-full items-center justify-center overflow-hidden rounded-xl ring-1 ring-border-strong shadow-[0_18px_48px_rgba(0,0,0,0.28)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.55)]"
           onTouchStart={(event) => {
             touchStartX.current = event.touches[0]?.clientX ?? null;
           }}
@@ -126,7 +126,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
           <button
             type="button"
             onClick={() => setLightboxOpen(true)}
-            className="absolute right-2.5 top-2.5 z-20 grid size-9 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#C8F122]/60 hover:bg-black/80 hover:text-[#C8F122] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+            className="absolute right-2.5 top-2.5 z-20 grid size-9 place-items-center rounded-full border border-border-strong bg-surface/85 text-text-primary backdrop-blur-md transition-all hover:border-accent/60 hover:bg-surface-raised hover:text-accent sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
             aria-label={locale === "fr" ? "Agrandir l'image" : "Expand image"}
           >
             <Maximize2 className="size-4" />
@@ -138,7 +138,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
               <button
                 type="button"
                 onClick={prevImage}
-                className="absolute left-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#C8F122]/60 hover:bg-black/80 hover:text-[#C8F122] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                className="absolute left-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-border-strong bg-surface/85 text-text-primary backdrop-blur-md transition-all hover:border-accent/60 hover:bg-surface-raised hover:text-accent sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={locale === "fr" ? "Image précédente" : "Previous image"}
               >
                 <ChevronLeft className="size-4" />
@@ -146,7 +146,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
               <button
                 type="button"
                 onClick={nextImage}
-                className="absolute right-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/60 text-white/90 backdrop-blur-md transition-all hover:border-[#C8F122]/60 hover:bg-black/80 hover:text-[#C8F122] sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                className="absolute right-2.5 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-border-strong bg-surface/85 text-text-primary backdrop-blur-md transition-all hover:border-accent/60 hover:bg-surface-raised hover:text-accent sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={locale === "fr" ? "Image suivante" : "Next image"}
               >
                 <ChevronRight className="size-4" />
@@ -174,8 +174,8 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                     className={cn(
                       "group/thumb relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border transition-all sm:h-14 sm:w-24",
                       isActive
-                        ? "border-[#C8F122] ring-2 ring-[#C8F122]/30 opacity-100"
-                        : "border-white/10 opacity-50 hover:border-white/30 hover:opacity-90"
+                        ? "border-accent ring-2 ring-accent/30 opacity-100"
+                        : "border-border-strong opacity-60 hover:border-accent/50 hover:opacity-95"
                     )}
                   >
                     <img
@@ -188,7 +188,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                 );
               })}
             </div>
-            <span className="shrink-0 font-mono text-xs font-medium text-[#C8F122]/80">
+            <span className="shrink-0 font-mono text-xs font-medium text-accent">
               {formattedIndex} / {formattedTotal}
             </span>
           </div>
@@ -204,21 +204,21 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
           onClick={(event) => {
             if (event.target === event.currentTarget) setLightboxOpen(false);
           }}
-          className="fixed inset-0 z-[100] m-0 flex h-dvh w-dvw flex-col justify-between bg-black/95 p-4 backdrop-blur-xl sm:p-6 open:animate-in open:fade-in-0"
+          className="fixed inset-0 z-[100] m-0 flex h-dvh w-dvw flex-col justify-between bg-surface-deep/92 p-4 backdrop-blur-xl sm:p-6 open:animate-in open:fade-in-0"
           onClose={() => setLightboxOpen(false)}
         >
           {/* Lightbox header */}
           <div className="flex items-center justify-between gap-4 text-white">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="rounded-md border border-[#C8F122]/30 bg-[#C8F122]/15 px-2.5 py-1 font-mono text-xs font-semibold text-[#C8F122]">
+              <span className="rounded-md border border-accent/40 bg-accent px-2.5 py-1 font-mono text-xs font-semibold text-text-on-accent">
                 {formattedIndex} / {formattedTotal}
               </span>
-              <span className="truncate text-sm text-[#E4E4E7]">{getAlt(activeImage, safeIndex)}</span>
+              <span className="truncate text-sm text-white/90">{getAlt(activeImage, safeIndex)}</span>
             </div>
             <button
               type="button"
               onClick={() => setLightboxOpen(false)}
-              className="grid size-10 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 text-white transition-colors hover:bg-white/20"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
               aria-label={locale === "fr" ? "Fermer" : "Close"}
             >
               <X className="size-5" />
@@ -235,7 +235,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
             <img
               src={activeImage.url}
               alt={getAlt(activeImage, safeIndex)}
-              className="max-h-full max-w-full rounded-xl object-contain shadow-2xl ring-1 ring-white/10"
+              className="max-h-full max-w-full rounded-xl object-contain shadow-2xl ring-1 ring-white/15"
             />
 
             {images.length > 1 && (
@@ -243,7 +243,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                 <button
                   type="button"
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-[#C8F122]/50 hover:text-[#C8F122] sm:left-4 sm:size-12"
+                  className="absolute left-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-accent/60 hover:text-white sm:left-4 sm:size-12"
                   aria-label={locale === "fr" ? "Image précédente" : "Previous image"}
                 >
                   <ChevronLeft className="size-6" />
@@ -251,7 +251,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                 <button
                   type="button"
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-[#C8F122]/50 hover:text-[#C8F122] sm:right-4 sm:size-12"
+                  className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-md transition-colors hover:border-accent/60 hover:text-white sm:right-4 sm:size-12"
                   aria-label={locale === "fr" ? "Image suivante" : "Next image"}
                 >
                   <ChevronRight className="size-6" />
@@ -262,7 +262,7 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
 
           {/* Lightbox thumbnail strip */}
           {images.length > 1 && (
-            <div className="mx-auto flex max-w-full items-center gap-2 overflow-x-auto rounded-xl border border-white/10 bg-[#121316]/90 p-2 no-scrollbar">
+            <div className="mx-auto flex max-w-full items-center gap-2 overflow-x-auto rounded-xl border border-white/15 bg-black/60 p-2 no-scrollbar">
               {images.map((img, index) => (
                 <button
                   key={img.mediaId}
@@ -272,8 +272,8 @@ export default function ProjectGallery({ images, locale, projectTitle }: Project
                   className={cn(
                     "relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border transition-all",
                     index === safeIndex
-                      ? "border-[#C8F122] ring-2 ring-[#C8F122]/35 opacity-100"
-                      : "border-white/10 opacity-50 hover:opacity-85"
+                      ? "border-accent ring-2 ring-accent/40 opacity-100"
+                      : "border-white/15 opacity-55 hover:opacity-90"
                   )}
                 >
                   <img

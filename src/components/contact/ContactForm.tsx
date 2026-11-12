@@ -102,22 +102,22 @@ export function ContactForm({ locale }: { locale: Locale }) {
   return (
     <section
       aria-labelledby="contact-form-title"
-      className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#121316] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl"
+      className="relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-5 sm:p-7 shadow-2xl backdrop-blur-2xl"
     >
       {/* Subtle ambient light */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-10%] top-0 h-[360px] w-[360px] rounded-full bg-[#C8F122]/8 blur-[110px]"
+        className="pointer-events-none absolute right-[-10%] top-0 h-[360px] w-[360px] rounded-full bg-accent/8 blur-[110px]"
       />
 
       <div className="relative z-10">
-        <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#C8F122] mb-1.5 block">
+        <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-accent mb-1.5 block">
           {copy.eyebrow}
         </span>
-        <h2 id="contact-form-title" className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#FFFFFF] mb-1.5">
+        <h2 id="contact-form-title" className="font-display text-xl sm:text-2xl font-bold tracking-tight text-text-primary mb-1.5">
           {copy.title}
         </h2>
-        <p className="text-xs sm:text-sm leading-relaxed text-[#A1A1AA] mb-5 max-w-lg">
+        <p className="text-xs sm:text-sm leading-relaxed text-text-secondary mb-5 max-w-lg">
           {copy.description}
         </p>
 
@@ -125,8 +125,8 @@ export function ContactForm({ locale }: { locale: Locale }) {
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Name Input */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-mono font-semibold text-[#FFFFFF]/90 uppercase tracking-wider">
-                {copy.name} <span className="text-[#C8F122]">*</span>
+              <label className="block text-[11px] font-mono font-semibold text-text-primary/90 uppercase tracking-wider">
+                {copy.name} <span className="text-accent">*</span>
               </label>
               <input
                 name="name"
@@ -135,14 +135,14 @@ export function ContactForm({ locale }: { locale: Locale }) {
                 minLength={2}
                 maxLength={100}
                 placeholder={copy.namePlaceholder}
-                className="w-full rounded-xl border border-white/10 bg-[#0B0B0C] px-3.5 py-2.5 text-sm text-[#FFFFFF] placeholder:text-[#A1A1AA] focus:border-[#C8F122] focus:ring-1 focus:ring-[#C8F122] focus:outline-none transition-all"
+                className="w-full rounded-xl border border-border-strong bg-bg-page px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all"
               />
             </div>
 
             {/* Email Input */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-mono font-semibold text-[#FFFFFF]/90 uppercase tracking-wider">
-                {copy.email} <span className="text-[#C8F122]">*</span>
+              <label className="block text-[11px] font-mono font-semibold text-text-primary/90 uppercase tracking-wider">
+                {copy.email} <span className="text-accent">*</span>
               </label>
               <input
                 name="email"
@@ -153,15 +153,15 @@ export function ContactForm({ locale }: { locale: Locale }) {
                 minLength={5}
                 maxLength={254}
                 placeholder={copy.emailPlaceholder}
-                className="w-full rounded-xl border border-white/10 bg-[#0B0B0C] px-3.5 py-2.5 text-sm text-[#FFFFFF] placeholder:text-[#A1A1AA] focus:border-[#C8F122] focus:ring-1 focus:ring-[#C8F122] focus:outline-none transition-all"
+                className="w-full rounded-xl border border-border-strong bg-bg-page px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all"
               />
             </div>
           </div>
 
           {/* Subject Input */}
           <div className="space-y-1.5">
-            <label className="block text-[11px] font-mono font-semibold text-[#FFFFFF]/90 uppercase tracking-wider">
-              {copy.subject} <span className="text-[#C8F122]">*</span>
+            <label className="block text-[11px] font-mono font-semibold text-text-primary/90 uppercase tracking-wider">
+              {copy.subject} <span className="text-accent">*</span>
             </label>
             <input
               name="subject"
@@ -169,14 +169,14 @@ export function ContactForm({ locale }: { locale: Locale }) {
               minLength={3}
               maxLength={160}
               placeholder={copy.subjectPlaceholder}
-              className="w-full rounded-xl border border-white/10 bg-[#0B0B0C] px-3.5 py-2.5 text-sm text-[#FFFFFF] placeholder:text-[#A1A1AA] focus:border-[#C8F122] focus:ring-1 focus:ring-[#C8F122] focus:outline-none transition-all"
+              className="w-full rounded-xl border border-border-strong bg-bg-page px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all"
             />
           </div>
 
           {/* Message Input */}
           <div className="space-y-1.5">
-            <label className="block text-[11px] font-mono font-semibold text-[#FFFFFF]/90 uppercase tracking-wider">
-              {copy.message} <span className="text-[#C8F122]">*</span>
+            <label className="block text-[11px] font-mono font-semibold text-text-primary/90 uppercase tracking-wider">
+              {copy.message} <span className="text-accent">*</span>
             </label>
             <textarea
               name="message"
@@ -185,7 +185,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
               maxLength={5000}
               rows={3}
               placeholder={copy.messagePlaceholder}
-              className="w-full resize-y min-h-[82px] rounded-xl border border-white/10 bg-[#0B0B0C] px-3.5 py-2.5 text-sm text-[#FFFFFF] placeholder:text-[#A1A1AA] focus:border-[#C8F122] focus:ring-1 focus:ring-[#C8F122] focus:outline-none transition-all"
+              className="w-full resize-y min-h-[82px] rounded-xl border border-border-strong bg-bg-page px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all"
             />
           </div>
 
@@ -196,18 +196,18 @@ export function ContactForm({ locale }: { locale: Locale }) {
 
           {/* Alerts / Feedback */}
           {error && (
-            <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs font-medium text-rose-300" role="alert">
+            <p className="rounded-xl border border-danger/35 bg-danger/10 p-4 text-xs font-medium text-danger" role="alert">
               {error}
             </p>
           )}
           {success && (
-            <p className="flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs font-medium text-emerald-300" role="status">
-              <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+            <p className="flex items-center gap-2.5 rounded-xl border border-success/35 bg-success/10 p-4 text-xs font-medium text-success" role="status">
+              <CheckCircle2 className="size-4 shrink-0 text-success" />
               <span>{copy.success}</span>
             </p>
           )}
           {notice && (
-            <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-medium text-amber-300" role="status">
+            <p className="rounded-xl border border-warning/35 bg-warning/10 p-4 text-xs font-medium text-warning" role="status">
               {notice}
             </p>
           )}
@@ -217,14 +217,14 @@ export function ContactForm({ locale }: { locale: Locale }) {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap shrink-0 rounded-full bg-[#C8F122] px-7 py-3 font-mono text-xs font-bold text-[#0B0B0C] hover:bg-[#D9FB52] transition-all hover:scale-[1.02] shadow-lg shadow-[#C8F122]/25 cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap shrink-0 rounded-full bg-accent px-7 py-3 font-mono text-xs font-bold text-text-on-accent hover:bg-accent-hover transition-all hover:scale-[1.02] shadow-lg shadow-accent/25 cursor-pointer disabled:opacity-50"
             >
               {submitting ? <LoaderCircle className="size-4 animate-spin" /> : <Send className="size-4" />}
               <span>{submitting ? copy.sending : copy.submit}</span>
             </button>
 
-            <div className="flex items-center gap-2 text-[11px] text-[#A1A1AA]">
-              <ShieldCheck className="size-4 text-[#C8F122] shrink-0" />
+            <div className="flex items-center gap-2 text-[11px] text-text-secondary">
+              <ShieldCheck className="size-4 text-accent shrink-0" />
               <span className="leading-snug">{copy.privacy}</span>
             </div>
           </div>

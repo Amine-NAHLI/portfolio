@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Globe } from "lucide-react";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { SITE_NAV_ITEMS, resolveNavHref, type SiteNavItem } from "@/config/navigation";
 import type { Locale } from "@/i18n/config";
 
@@ -60,7 +61,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
-            ? "bg-[#0B0B0C]/90 py-3.5 backdrop-blur-xl border-b border-white/[0.08] shadow-lg"
+            ? "bg-bg-page/90 py-3.5 backdrop-blur-xl border-b border-border shadow-lg"
             : "bg-transparent py-5 sm:py-6"
         }`}
       >
@@ -68,10 +69,10 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
           {/* Left: Brand Monogram */}
           <Link
             href={`/${locale}`}
-            className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-[#FFFFFF]"
+            className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-text-primary"
           >
             <span>Amine Nahli</span>
-            <span className="size-1.5 rounded-full bg-[#C8F122]" />
+            <span className="size-1.5 rounded-full bg-accent" />
           </Link>
 
           {/* Center: Desktop Navigation Links (1:1 synced with FullscreenMenu) */}
@@ -91,8 +92,8 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
                   onClick={(e) => handleNavClick(e, item)}
                   className={`whitespace-nowrap text-xs font-medium transition-colors ${
                     isActive
-                      ? "text-[#FFFFFF]"
-                      : "text-[#A1A1AA] hover:text-[#FFFFFF]"
+                      ? "text-text-primary font-semibold"
+                      : "text-text-secondary hover:text-text-primary"
                   }`}
                 >
                   {item.label[locale]}
@@ -101,14 +102,16 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
             })}
           </nav>
 
-          {/* Right: Language switch + Menu Button */}
-          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
+          {/* Right: Theme switch + Language switch + Menu Button */}
+          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+            <ThemeToggle locale={locale} />
+
             <Link
               href={localeSwitchHref}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#FFFFFF] hover:bg-white/[0.08] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-3 py-1.5 text-xs font-medium text-text-primary hover:bg-text-primary/[0.08] transition-colors"
               aria-label="Changer de langue"
             >
-              <Globe className="size-3 text-[#C8F122]" />
+              <Globe className="size-3 text-accent" />
               <span>{locale === "fr" ? "EN" : "FR"}</span>
             </Link>
 
@@ -116,10 +119,10 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
               type="button"
               onClick={() => setIsMenuOpen(true)}
               aria-label="Ouvrir le menu de navigation"
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[#FFFFFF] hover:bg-white/10 transition-colors cursor-pointer"
+              className="flex items-center gap-2 rounded-full border border-border-strong bg-text-primary/[0.05] px-3.5 py-1.5 text-xs font-semibold text-text-primary hover:bg-text-primary/[0.1] transition-colors cursor-pointer"
             >
               <span>Menu</span>
-              <Menu className="size-3.5 text-[#A1A1AA]" />
+              <Menu className="size-3.5 text-text-secondary" />
             </button>
           </div>
         </div>

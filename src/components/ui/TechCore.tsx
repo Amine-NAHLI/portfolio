@@ -37,14 +37,14 @@ export function TechCore({ technologies, className }: TechCoreProps) {
     <div className={cn("relative w-full max-w-6xl mx-auto flex flex-col gap-4 select-none", className)}>
       
       {/* ELEGANT VISUAL STACK CONTAINER */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface-deep/80 p-6 md:p-8 backdrop-blur-2xl shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl border border-border-strong bg-surface/90 p-6 md:p-8 backdrop-blur-2xl shadow-2xl">
         
         {/* Subtle Background Glow */}
         <div className="pointer-events-none absolute -top-32 -left-32 size-80 rounded-full bg-accent/5 blur-[100px]" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 size-80 rounded-full bg-[#C8F122]/5 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 size-80 rounded-full bg-accent/5 blur-[100px]" />
 
         {/* HEADER STRIP */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-white/10">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-border">
           
           <div className="flex items-center gap-3">
             <div className="flex size-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent shadow-sm">
@@ -60,7 +60,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-surface/60 font-mono text-[0.7rem] text-text-secondary">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-border-strong bg-surface-subtle/80 font-mono text-[0.7rem] text-text-secondary">
             <span className="size-1.5 rounded-full bg-accent animate-pulse" />
             <span>Environnement Production</span>
           </div>
@@ -71,8 +71,8 @@ export function TechCore({ technologies, className }: TechCoreProps) {
         <div className="relative z-10 py-5 overflow-hidden">
           
           {/* Edge Fade Masks */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-32 bg-gradient-to-r from-surface-deep via-surface-deep/80 to-transparent z-20" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-32 bg-gradient-to-l from-surface-deep via-surface-deep/80 to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-32 bg-gradient-to-r from-surface via-surface/80 to-transparent z-20" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-32 bg-gradient-to-l from-surface via-surface/80 to-transparent z-20" />
 
           <div className="flex flex-col gap-3.5">
             
@@ -109,18 +109,18 @@ export function TechCore({ technologies, className }: TechCoreProps) {
         </div>
 
         {/* FOOTER READOUT */}
-        <div className="relative z-10 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 font-mono text-[0.68rem] text-text-muted">
+        <div className="relative z-10 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 font-mono text-[0.68rem] text-text-muted">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-blue-400" />
+              <span className="size-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
               Cybersécurité & Audit
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-[#C8F122]" />
+              <span className="size-1.5 rounded-full bg-accent" />
               Intelligence Artificielle
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-emerald-400" />
+              <span className="size-1.5 rounded-full bg-success" />
               Full-Stack & DevOps
             </span>
           </div>
@@ -139,8 +139,8 @@ export function TechCore({ technologies, className }: TechCoreProps) {
 // Clean Glass Technology Badge Component
 function VisualTechCard({ tech }: { tech: string }) {
   return (
-    <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-surface/70 px-3.5 py-2 shadow-sm backdrop-blur-md shrink-0">
-      <div className="flex size-6 items-center justify-center rounded-lg bg-surface-deep/80 p-1 border border-white/5">
+    <div className="flex items-center gap-2.5 rounded-xl border border-border-strong bg-surface-raised/85 px-3.5 py-2 shadow-sm backdrop-blur-md shrink-0">
+      <div className="flex size-6 items-center justify-center rounded-lg bg-surface-subtle p-1 border border-border">
         <SkillIcon name={tech} className="size-4" />
       </div>
       <span className="font-sans text-xs font-semibold text-text-primary tracking-tight whitespace-nowrap">

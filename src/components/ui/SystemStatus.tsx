@@ -11,17 +11,17 @@ export default function SystemStatus({ locale }: { locale: string }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="inline-flex max-w-full flex-wrap items-center gap-2 sm:gap-2.5 rounded-full border border-white/10 bg-surface/60 px-3.5 py-1.5 sm:px-4 backdrop-blur-md shadow-md"
+      className="inline-flex max-w-full flex-wrap items-center gap-2 sm:gap-2.5 rounded-full border border-border-strong bg-surface/70 px-3.5 py-1.5 sm:px-4 backdrop-blur-md shadow-md"
     >
       <div className="flex items-center gap-2 text-[0.72rem] sm:text-xs font-semibold text-text-primary">
         <span className="relative flex size-2 shrink-0">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span>
+          <span className="relative inline-flex size-2 rounded-full bg-success"></span>
         </span>
         <span className="truncate">{statusText}</span>
       </div>
 
-      <span className="hidden sm:inline text-white/20">•</span>
+      <span className="hidden sm:inline text-text-muted/40">•</span>
 
       <div className="hidden sm:flex items-center gap-3 text-xs font-medium text-text-secondary">
         <span className="flex items-center gap-1">

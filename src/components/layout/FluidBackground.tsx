@@ -52,11 +52,28 @@ export default function FluidBackground() {
       ["rgba(200, 241, 34, 0.05)", "rgba(200, 241, 34, 0)"],
     ];
 
+    const lightColors = [
+      ["rgba(236, 239, 234, 0.85)", "rgba(236, 239, 234, 0)"],
+      ["rgba(116, 141, 146, 0.24)", "rgba(116, 141, 146, 0)"],
+      ["rgba(18, 78, 102, 0.11)", "rgba(18, 78, 102, 0)"],
+      ["rgba(228, 232, 229, 0.72)", "rgba(228, 232, 229, 0)"],
+      ["rgba(18, 78, 102, 0.07)", "rgba(18, 78, 102, 0)"],
+    ];
+
+    let isLightTheme = document.documentElement.dataset.theme === "light";
+    const observer = new MutationObserver(() => {
+      isLightTheme = document.documentElement.dataset.theme === "light";
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
     function draw(time: number) {
-      ctx!.fillStyle = "#0B0B0C";
+      ctx!.fillStyle = isLightTheme ? "#D3D9D4" : "#0B0B0C";
       ctx!.fillRect(0, 0, width, height);
 
-      const colors = darkColors;
+      const colors = isLightTheme ? lightColors : darkColors;
 
       for (let i = 0; i < blobs.length; i++) {
         const b = blobs[i];

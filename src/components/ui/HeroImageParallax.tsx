@@ -46,10 +46,10 @@ export default function HeroImageParallax({ name }: { name: string }) {
           rotateY,
           transformStyle: "preserve-3d",
         }}
-        className="relative aspect-[4/5] w-full overflow-hidden rounded-[2.25rem] border border-white/10 bg-surface/60 p-2.5 backdrop-blur-2xl shadow-2xl transition-all duration-300 hover:border-accent/40 group"
+        className="relative aspect-[4/5] w-full overflow-hidden rounded-[2.25rem] border border-border-strong bg-surface/75 p-2.5 backdrop-blur-2xl shadow-2xl transition-all duration-300 hover:border-accent/40 group"
       >
         {/* Inner Bento Card Frame - Pure Portrait Image without text overlays */}
-        <div className="relative h-full w-full overflow-hidden rounded-[1.75rem] bg-surface-deep/90">
+        <div className="relative h-full w-full overflow-hidden rounded-[1.75rem] bg-surface-subtle">
           <Image
             src="/nahli.png"
             alt={name}

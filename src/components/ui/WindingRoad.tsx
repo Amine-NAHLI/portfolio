@@ -169,6 +169,14 @@ export default function WindingRoadOverlay({
       const totalLen = measurePath.getTotalLength();
       if (totalLen <= 0) return;
 
+      // Pre-sample 160 points along the path once
+      // Eliminates continuous CPU-heavy SVGPathElement.getPointAtLength() calls during scroll!
+      const SAMPLE_COUNT = 160;
+      const sampledPoints = Array.from({ length: SAMPLE_COUNT + 1 }, (_, i) => {
+        const pt = measurePath.getPointAtLength((i / SAMPLE_COUNT) * totalLen);
+        return { x: Number(pt.x.toFixed(1)), y: Number(pt.y.toFixed(1)) };
+      });
+
       const applyProgress = (rawProgress: number) => {
         const p = Math.max(0, Math.min(1, rawProgress));
         const dashOffset = totalLen * (1 - p);
@@ -180,7 +188,8 @@ export default function WindingRoadOverlay({
 
         if (beacon) {
           if (p > 0.005 && p < 0.998) {
-            const pt = measurePath.getPointAtLength(p * totalLen);
+            const idx = Math.min(SAMPLE_COUNT, Math.max(0, Math.round(p * SAMPLE_COUNT)));
+            const pt = sampledPoints[idx];
             beacon.setAttribute("transform", `translate(${pt.x}, ${pt.y})`);
             beacon.style.opacity = "1";
           } else {

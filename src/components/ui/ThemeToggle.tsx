@@ -13,7 +13,7 @@ function readActiveTheme(): ThemeMode {
   return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
-function applyTheme(next: ThemeMode) {
+function applyTheme(next: ThemeMode, event?: React.MouseEvent | MouseEvent) {
   if (typeof document === "undefined") return;
 
   const updateDom = () => {
@@ -33,22 +33,60 @@ function applyTheme(next: ThemeMode) {
     typeof (document as unknown as { startViewTransition?: unknown }).startViewTransition === "function" &&
     !prefersReduced;
 
-  // Add smooth transition class for all browsers & elements
-  document.documentElement.classList.add("theme-transitioning");
-
   if (hasViewTransition) {
-    type ViewTransition = { finished: Promise<void> };
-    const vt = (document as unknown as { startViewTransition: (cb: () => void) => ViewTransition }).startViewTransition(updateDom);
-    vt.finished
-      .catch(() => {})
-      .finally(() => {
-        document.documentElement.classList.remove("theme-transitioning");
-      });
+    try {
+      let x = window.innerWidth / 2;
+      let y = 40;
+
+      if (event && (event.clientX !== 0 || event.clientY !== 0)) {
+        x = event.clientX;
+        y = event.clientY;
+      } else if (event?.currentTarget instanceof HTMLElement) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      }
+
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      type ViewTransition = {
+        ready: Promise<void>;
+        finished: Promise<void>;
+      };
+
+      const vt = (document as unknown as { startViewTransition: (cb: () => void) => ViewTransition }).startViewTransition(updateDom);
+
+      vt.ready
+        .then(() => {
+          document.documentElement.animate(
+            {
+              clipPath: [
+                `circle(0px at ${x}px ${y}px)`,
+                `circle(${endRadius}px at ${x}px ${y}px)`,
+              ],
+            },
+            {
+              duration: 520,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              pseudoElement: "::view-transition-new(root)",
+            }
+          );
+        })
+        .catch(() => {});
+
+      vt.finished.catch(() => {});
+    } catch {
+      updateDom();
+    }
   } else {
+    document.documentElement.classList.add("theme-transitioning");
     updateDom();
     window.setTimeout(() => {
       document.documentElement.classList.remove("theme-transitioning");
-    }, 550);
+    }, 280);
   }
 }
 
@@ -118,14 +156,14 @@ export function ThemeToggle({
   return (
     <button
       type="button"
-      onClick={() => {
-        applyTheme(nextTheme);
+      onClick={(e) => {
+        applyTheme(nextTheme, e);
         setTheme(nextTheme);
       }}
       aria-label={ariaLabel}
       aria-pressed={isLight}
       title={ariaLabel}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-2.5 py-1.5 text-xs font-medium text-text-primary transition-colors hover:bg-text-primary/[0.08] cursor-pointer ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-2.5 py-1.5 text-xs font-medium text-text-primary transition-all duration-200 hover:bg-text-primary/[0.08] active:scale-95 cursor-pointer ${className}`}
     >
       <div className="relative size-3.5 flex items-center justify-center" aria-hidden="true">
         <Sun

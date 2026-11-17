@@ -62,8 +62,16 @@ export default function SmoothScroll() {
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
+      syncTouch: false,
       wheelMultiplier: 1,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1,
+      virtualScroll: (data) => {
+        // Never hijack touch events on mobile/tablets — preserve 100% native 120Hz/60Hz hardware momentum scrolling!
+        if (data.event.type.includes("touch")) {
+          return false;
+        }
+        return true;
+      },
       prevent: (node: HTMLElement) => {
         if (!node) return false;
 

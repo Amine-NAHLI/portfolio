@@ -115,50 +115,32 @@
     color-scheme: light;
   }
 
-  /* Calm, fluid theme switch transition */
+  /* Native GPU circular aperture theme transition */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 500ms;
-    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    animation: none;
+    mix-blend-mode: normal;
   }
 
   ::view-transition-old(root) {
-    animation-name: theme-fade-out;
+    z-index: 1;
   }
 
   ::view-transition-new(root) {
-    animation-name: theme-fade-in;
+    z-index: 9999;
   }
 
-  @keyframes theme-fade-out {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-
-  @keyframes theme-fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  html.theme-transitioning,
-  html.theme-transitioning *,
-  html.theme-transitioning *::before,
-  html.theme-transitioning *::after {
-    transition: background-color 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
-                border-color 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
-                color 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
-                fill 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
-                stroke 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
-                box-shadow 500ms cubic-bezier(0.25, 0.1, 0.25, 1) !important;
-    transition-delay: 0s !important;
+  /* Scoped fallback transitions on structural containers only (never on *) */
+  html.theme-transitioning body,
+  html.theme-transitioning header,
+  html.theme-transitioning nav,
+  html.theme-transitioning main,
+  html.theme-transitioning footer,
+  html.theme-transitioning [role="dialog"],
+  html.theme-transitioning .bg-surface,
+  html.theme-transitioning .bg-surface-raised,
+  html.theme-transitioning .bg-surface-subtle {
+    transition: background-color 260ms ease, border-color 260ms ease, color 260ms ease !important;
   }
 
   *, *::before, *::after { box-sizing: border-box; }

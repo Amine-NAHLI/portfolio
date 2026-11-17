@@ -208,13 +208,17 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
 
       const deckState = { progress: 0 };
 
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+      const scrollDistance = (count - 1) * (isMobile ? 480 : 700);
+      const scrubLag = isMobile ? 0.35 : 0.65;
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           pin: true,
           start: "top top",
-          end: `+=${(count - 1) * 700}`,
-          scrub: 0.65,
+          end: `+=${scrollDistance}`,
+          scrub: scrubLag,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },

@@ -19,6 +19,9 @@ export default function FluidBackground() {
 
     let width = 0;
     let height = 0;
+    let isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    let isScrolling = false;
+    let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
 
     function resize() {
       // Background auroras are soft continuous gradients: DPR 1 is crisp, perfectly smooth,
@@ -26,6 +29,7 @@ export default function FluidBackground() {
       const dpr = 1;
       width = window.innerWidth;
       height = window.innerHeight;
+      isMobile = width < 768;
       canvas!.width = width * dpr;
       canvas!.height = height * dpr;
       canvas!.style.width = `${width}px`;
@@ -64,7 +68,16 @@ export default function FluidBackground() {
     ];
 
     let isLightTheme = document.documentElement.dataset.theme === "light";
-    let themeProgress = isLightTheme ? 1 : 0;
+
+    const handleScroll = () => {
+      if (!isMobile) return;
+      isScrolling = true;
+      if (scrollEndTimer) clearTimeout(scrollEndTimer);
+      scrollEndTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 120);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     const observer = new MutationObserver(() => {
       isLightTheme = document.documentElement.dataset.theme === "light";
@@ -79,7 +92,9 @@ export default function FluidBackground() {
       ctx!.save();
       ctx!.globalAlpha = alpha;
 
-      for (let i = 0; i < blobs.length; i++) {
+      const blobCount = isMobile ? 3 : blobs.length;
+
+      for (let i = 0; i < blobCount; i++) {
         const b = blobs[i];
         const t = time * b.speed + b.phase;
 
@@ -116,24 +131,22 @@ export default function FluidBackground() {
 
     function draw(time: number) {
       if (!isVisible) return;
-
-      const target = isLightTheme ? 1 : 0;
-      // Smooth exponential easing towards target over ~450ms
-      themeProgress += (target - themeProgress) * 0.08;
-      if (Math.abs(target - themeProgress) < 0.002) {
-        themeProgress = target;
+      if (isMobile && isScrolling) {
+        animRef.current = requestAnimationFrame(draw);
+        return;
       }
 
-      // Smooth background fill interpolation
+      // Base background fill matching active theme
       // Dark: #0B0B0C (11, 11, 12), Light: #D3D9D4 (211, 217, 212)
-      const bgR = Math.round(11 + (211 - 11) * themeProgress);
-      const bgG = Math.round(11 + (217 - 11) * themeProgress);
-      const bgB = Math.round(12 + (212 - 12) * themeProgress);
-      ctx!.fillStyle = `rgb(${bgR}, ${bgG}, ${bgB})`;
+      ctx!.fillStyle = isLightTheme ? "rgb(211, 217, 212)" : "rgb(11, 11, 12)";
       ctx!.fillRect(0, 0, width, height);
 
-      drawBlobs(time, darkColors, 1 - themeProgress);
-      drawBlobs(time, lightColors, themeProgress);
+      // Render only the active theme's blobs (zero double-allocation)
+      if (isLightTheme) {
+        drawBlobs(time, lightColors, 1);
+      } else {
+        drawBlobs(time, darkColors, 1);
+      }
 
       animRef.current = requestAnimationFrame(draw);
     }
@@ -150,7 +163,10 @@ export default function FluidBackground() {
     return () => {
       cancelAnimationFrame(animRef.current);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      observer.disconnect();
+      if (scrollEndTimer) clearTimeout(scrollEndTimer);
     };
   }, []);
 

@@ -101,6 +101,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                 src={previewUrl}
                 alt={`Aperçu de ${certification.name}`}
                 loading="lazy"
+                decoding="async"
                 onLoad={() => setIsLoaded(true)}
                 onError={() => {
                   setHasError(true);

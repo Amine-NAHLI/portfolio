@@ -134,7 +134,7 @@ export default function CertificationsScene({
           {displayCertifications.map((cert) => (
             <div
               key={cert.id}
-              className="cert-card-wrapper h-full flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+              className="cert-card-wrapper h-full flex flex-col will-change-[transform,opacity]"
             >
               <CertificationCard
                 certification={cert}

@@ -19,6 +19,8 @@ type HoveredDay = {
   count: number;
   weekIdx: number;
   dayIdx: number;
+  formattedDate: string;
+  countText: string;
 };
 
 export default function GitHubContributionsScene({
@@ -79,13 +81,36 @@ export default function GitHubContributionsScene({
     [stats.calendarWeeks]
   );
 
-  const { monthLabels, activeDaysCount, peakDay } = useMemo(() => {
+  const { monthLabels, activeDaysCount, peakDay, enrichedWeeks } = useMemo(() => {
     if (!realWeeks) {
-      return { monthLabels: [] as { weekIdx: number; label: string }[], activeDaysCount: 0, peakDay: null as { date: string; count: number } | null };
+      return {
+        monthLabels: [] as { weekIdx: number; label: string }[],
+        activeDaysCount: 0,
+        peakDay: null as { date: string; count: number } | null,
+        enrichedWeeks: [] as {
+          contributionDays: {
+            date: string;
+            count: number;
+            dayIdx: number;
+            labelText: string;
+            formattedDate: string;
+            countText: string;
+            colorClass: string;
+          }[];
+        }[],
+      };
     }
 
     const monthFmt = new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-US", {
       month: "short",
+      timeZone: "UTC",
+    });
+
+    const dayFmt = new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-US", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
       timeZone: "UTC",
     });
 
@@ -95,7 +120,7 @@ export default function GitHubContributionsScene({
     let activeDays = 0;
     let maxDay: { date: string; count: number } | null = null;
 
-    realWeeks.forEach((week, wIdx) => {
+    const enriched = realWeeks.map((week, wIdx) => {
       const firstDay = week.contributionDays[0];
       if (firstDay) {
         const d = new Date(`${firstDay.date}T12:00:00Z`);
@@ -113,36 +138,42 @@ export default function GitHubContributionsScene({
         }
       }
 
-      for (const day of week.contributionDays) {
+      const days = week.contributionDays.map((day) => {
+        const parsed = new Date(`${day.date}T12:00:00Z`);
+        const dayIdx = parsed.getUTCDay();
         if (day.contributionCount > 0) {
           activeDays += 1;
           if (!maxDay || day.contributionCount > maxDay.count) {
             maxDay = { date: day.date, count: day.contributionCount };
           }
         }
-      }
+        const formattedDate = dayFmt.format(parsed);
+        const countText =
+          day.contributionCount === 0
+            ? (locale === "fr" ? "Aucune contribution" : "No contributions")
+            : `${day.contributionCount} contribution${day.contributionCount > 1 ? "s" : ""}`;
+
+        return {
+          date: day.date,
+          count: day.contributionCount,
+          dayIdx,
+          labelText: `${countText} · ${formattedDate}`,
+          formattedDate,
+          countText,
+          colorClass: getDayColor(day.contributionCount),
+        };
+      });
+
+      return { contributionDays: days };
     });
 
-    return { monthLabels: labels, activeDaysCount: activeDays, peakDay: maxDay };
+    return {
+      monthLabels: labels,
+      activeDaysCount: activeDays,
+      peakDay: maxDay,
+      enrichedWeeks: enriched,
+    };
   }, [realWeeks, locale]);
-
-  const formatDayLabel = (dateStr: string) => {
-    const parsed = new Date(`${dateStr}T12:00:00Z`);
-    return new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-US", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      timeZone: "UTC",
-    }).format(parsed);
-  };
-
-  const formatContributionCount = (count: number) => {
-    if (count === 0) {
-      return locale === "fr" ? "Aucune contribution" : "No contributions";
-    }
-    return `${count} contribution${count > 1 ? "s" : ""}`;
-  };
 
   const weekdayLabels = locale === "fr"
     ? ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
@@ -330,9 +361,9 @@ export default function GitHubContributionsScene({
                   />
                   {hoveredDay ? (
                     <span>
-                      <strong className="text-accent">{formatContributionCount(hoveredDay.count)}</strong>
+                      <strong className="text-accent">{hoveredDay.countText}</strong>
                       <span className="text-text-muted"> · </span>
-                      <span>{formatDayLabel(hoveredDay.date)}</span>
+                      <span>{hoveredDay.formattedDate}</span>
                     </span>
                   ) : (
                     <span>
@@ -361,9 +392,6 @@ export default function GitHubContributionsScene({
             {/* Real Full-Width Matrix Grid Container */}
             <div
               ref={matrixScrollRef}
-              data-lenis-prevent="true"
-              data-lenis-prevent-wheel="true"
-              data-lenis-prevent-touch="true"
               onMouseLeave={() => setHoveredDay(null)}
               className="relative overflow-x-auto sm:overflow-visible pb-2 -mx-2 px-2 sm:mx-0 sm:px-0 touch-pan-x overscroll-x-contain"
             >
@@ -419,10 +447,10 @@ export default function GitHubContributionsScene({
                       >
                         <div className="flex items-center gap-2 text-[11px] font-mono">
                           <span className="font-bold text-accent">
-                            {formatContributionCount(hoveredDay.count)}
+                            {hoveredDay.countText}
                           </span>
                           <span className="text-text-muted">·</span>
-                          <span className="text-text-primary">{formatDayLabel(hoveredDay.date)}</span>
+                          <span className="text-text-primary">{hoveredDay.formattedDate}</span>
                         </div>
                       </div>
                     )}
@@ -431,40 +459,40 @@ export default function GitHubContributionsScene({
                       className="grid gap-[3px] lg:gap-1"
                       style={{ gridTemplateColumns: `repeat(${realWeeks.length}, minmax(0, 1fr))` }}
                     >
-                      {realWeeks.map((week, wIdx) => (
+                      {enrichedWeeks.map((week, wIdx) => (
                         <div key={wIdx} className="grid grid-rows-7 gap-[3px] lg:gap-1">
                           {week.contributionDays.map((day) => {
-                            const dayIdx = new Date(`${day.date}T12:00:00Z`).getUTCDay();
                             const isHovered = hoveredDay?.date === day.date;
-                            const labelText = `${formatContributionCount(day.contributionCount)} · ${formatDayLabel(day.date)}`;
 
                             return (
                               <button
                                 key={day.date}
                                 type="button"
-                                style={{ gridRowStart: dayIdx + 1 }}
+                                style={{ gridRowStart: day.dayIdx + 1 }}
                                 onMouseEnter={() =>
                                   setHoveredDay({
                                     date: day.date,
-                                    count: day.contributionCount,
+                                    count: day.count,
                                     weekIdx: wIdx,
-                                    dayIdx,
+                                    dayIdx: day.dayIdx,
+                                    formattedDate: day.formattedDate,
+                                    countText: day.countText,
                                   })
                                 }
                                 onFocus={() =>
                                   setHoveredDay({
                                     date: day.date,
-                                    count: day.contributionCount,
+                                    count: day.count,
                                     weekIdx: wIdx,
-                                    dayIdx,
+                                    dayIdx: day.dayIdx,
+                                    formattedDate: day.formattedDate,
+                                    countText: day.countText,
                                   })
                                 }
                                 onBlur={() => setHoveredDay(null)}
-                                aria-label={labelText}
-                                title={labelText}
-                                className={`w-full aspect-square rounded-[2.5px] sm:rounded-[3px] transition-transform duration-150 cursor-pointer focus-visible:outline-none ${getDayColor(
-                                  day.contributionCount
-                                )} ${
+                                aria-label={day.labelText}
+                                title={day.labelText}
+                                className={`w-full aspect-square rounded-[2.5px] sm:rounded-[3px] transition-transform duration-150 cursor-pointer focus-visible:outline-none ${day.colorClass} ${
                                   isHovered
                                     ? "relative z-20 scale-125 ring-2 ring-text-primary"
                                     : "hover:scale-125 hover:z-20"

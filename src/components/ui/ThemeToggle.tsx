@@ -13,7 +13,7 @@ function readActiveTheme(): ThemeMode {
   return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
-function applyTheme(next: ThemeMode, event?: React.MouseEvent | MouseEvent) {
+function applyTheme(next: ThemeMode) {
   if (typeof document === "undefined") return;
 
   const updateDom = () => {
@@ -35,48 +35,10 @@ function applyTheme(next: ThemeMode, event?: React.MouseEvent | MouseEvent) {
 
   if (hasViewTransition) {
     try {
-      let x = window.innerWidth / 2;
-      let y = 40;
-
-      if (event && (event.clientX !== 0 || event.clientY !== 0)) {
-        x = event.clientX;
-        y = event.clientY;
-      } else if (event?.currentTarget instanceof HTMLElement) {
-        const rect = event.currentTarget.getBoundingClientRect();
-        x = rect.left + rect.width / 2;
-        y = rect.top + rect.height / 2;
-      }
-
-      const endRadius = Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
-      );
-
       type ViewTransition = {
-        ready: Promise<void>;
         finished: Promise<void>;
       };
-
       const vt = (document as unknown as { startViewTransition: (cb: () => void) => ViewTransition }).startViewTransition(updateDom);
-
-      vt.ready
-        .then(() => {
-          document.documentElement.animate(
-            {
-              clipPath: [
-                `circle(0px at ${x}px ${y}px)`,
-                `circle(${endRadius}px at ${x}px ${y}px)`,
-              ],
-            },
-            {
-              duration: 520,
-              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-              pseudoElement: "::view-transition-new(root)",
-            }
-          );
-        })
-        .catch(() => {});
-
       vt.finished.catch(() => {});
     } catch {
       updateDom();
@@ -156,25 +118,25 @@ export function ThemeToggle({
   return (
     <button
       type="button"
-      onClick={(e) => {
-        applyTheme(nextTheme, e);
+      onClick={() => {
+        applyTheme(nextTheme);
         setTheme(nextTheme);
       }}
       aria-label={ariaLabel}
       aria-pressed={isLight}
       title={ariaLabel}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-2.5 py-1.5 text-xs font-medium text-text-primary transition-all duration-200 hover:bg-text-primary/[0.08] active:scale-95 cursor-pointer ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-2.5 py-1.5 text-xs font-medium text-text-primary transition-all duration-300 hover:bg-text-primary/[0.08] active:scale-95 cursor-pointer ${className}`}
     >
       <div className="relative size-3.5 flex items-center justify-center" aria-hidden="true">
         <Sun
-          className={`size-3.5 text-accent absolute transition-all duration-500 ease-out ${
+          className={`size-3.5 text-accent absolute transition-all duration-400 ease-out ${
             isLight
               ? "opacity-0 rotate-90 scale-50 pointer-events-none"
               : "opacity-100 rotate-0 scale-100"
           }`}
         />
         <Moon
-          className={`size-3.5 text-accent absolute transition-all duration-500 ease-out ${
+          className={`size-3.5 text-accent absolute transition-all duration-400 ease-out ${
             isLight
               ? "opacity-100 rotate-0 scale-100"
               : "opacity-0 -rotate-90 scale-50 pointer-events-none"

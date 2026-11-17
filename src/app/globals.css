@@ -115,19 +115,43 @@
     color-scheme: light;
   }
 
-  /* Native GPU circular aperture theme transition */
+  /* Native GPU Atmospheric Dissolve theme transition (Seamless, pure lighting shift, zero shapes) */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation: none;
+    animation-duration: 440ms;
+    animation-timing-function: cubic-bezier(0.25, 1, 0.4, 1);
     mix-blend-mode: normal;
   }
 
   ::view-transition-old(root) {
     z-index: 1;
+    animation-name: atmospheric-dissolve-old;
   }
 
   ::view-transition-new(root) {
-    z-index: 9999;
+    z-index: 2;
+    animation-name: atmospheric-dissolve-new;
+  }
+
+  @keyframes atmospheric-dissolve-old {
+    0% {
+      opacity: 1;
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes atmospheric-dissolve-new {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 
   /* Scoped fallback transitions on structural containers only (never on *) */

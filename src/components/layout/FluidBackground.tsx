@@ -54,13 +54,15 @@ export default function FluidBackground() {
 
     const lightColors = [
       ["rgba(236, 239, 234, 0.85)", "rgba(236, 239, 234, 0)"],
-      ["rgba(116, 141, 146, 0.24)", "rgba(116, 141, 146, 0)"],
-      ["rgba(18, 78, 102, 0.11)", "rgba(18, 78, 102, 0)"],
+      ["rgba(116, 141, 146, 0.20)", "rgba(116, 141, 146, 0)"],
+      ["rgba(0, 102, 255, 0.12)", "rgba(0, 102, 255, 0)"],
       ["rgba(228, 232, 229, 0.72)", "rgba(228, 232, 229, 0)"],
-      ["rgba(18, 78, 102, 0.07)", "rgba(18, 78, 102, 0)"],
+      ["rgba(0, 102, 255, 0.08)", "rgba(0, 102, 255, 0)"],
     ];
 
     let isLightTheme = document.documentElement.dataset.theme === "light";
+    let themeProgress = isLightTheme ? 1 : 0;
+
     const observer = new MutationObserver(() => {
       isLightTheme = document.documentElement.dataset.theme === "light";
     });
@@ -69,11 +71,10 @@ export default function FluidBackground() {
       attributeFilter: ["data-theme"],
     });
 
-    function draw(time: number) {
-      ctx!.fillStyle = isLightTheme ? "#D3D9D4" : "#0B0B0C";
-      ctx!.fillRect(0, 0, width, height);
-
-      const colors = isLightTheme ? lightColors : darkColors;
+    function drawBlobs(time: number, colors: string[][], alpha: number) {
+      if (alpha <= 0.005) return;
+      ctx!.save();
+      ctx!.globalAlpha = alpha;
 
       for (let i = 0; i < blobs.length; i++) {
         const b = blobs[i];
@@ -94,6 +95,28 @@ export default function FluidBackground() {
         ctx!.ellipse(cx, cy, rx, ry, Math.sin(t * 0.5) * 0.3, 0, Math.PI * 2);
         ctx!.fill();
       }
+
+      ctx!.restore();
+    }
+
+    function draw(time: number) {
+      const target = isLightTheme ? 1 : 0;
+      // Smooth exponential easing towards target over ~450ms
+      themeProgress += (target - themeProgress) * 0.08;
+      if (Math.abs(target - themeProgress) < 0.002) {
+        themeProgress = target;
+      }
+
+      // Smooth background fill interpolation
+      // Dark: #0B0B0C (11, 11, 12), Light: #D3D9D4 (211, 217, 212)
+      const bgR = Math.round(11 + (211 - 11) * themeProgress);
+      const bgG = Math.round(11 + (217 - 11) * themeProgress);
+      const bgB = Math.round(12 + (212 - 12) * themeProgress);
+      ctx!.fillStyle = `rgb(${bgR}, ${bgG}, ${bgB})`;
+      ctx!.fillRect(0, 0, width, height);
+
+      drawBlobs(time, darkColors, 1 - themeProgress);
+      drawBlobs(time, lightColors, themeProgress);
 
       animRef.current = requestAnimationFrame(draw);
     }

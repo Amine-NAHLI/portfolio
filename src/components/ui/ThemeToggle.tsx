@@ -14,14 +14,42 @@ function readActiveTheme(): ThemeMode {
 }
 
 function applyTheme(next: ThemeMode) {
-  document.documentElement.dataset.theme = next;
-  document.documentElement.style.colorScheme = next;
-  try {
-    localStorage.setItem(STORAGE_KEY, next);
-  } catch {
-    // Ignore storage quota or private browsing errors
+  if (typeof document === "undefined") return;
+
+  const updateDom = () => {
+    document.documentElement.dataset.theme = next;
+    document.documentElement.style.colorScheme = next;
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // Ignore storage quota or private browsing errors
+    }
+    window.dispatchEvent(new CustomEvent<ThemeMode>(THEME_EVENT, { detail: next }));
+  };
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const hasViewTransition =
+    "startViewTransition" in document &&
+    typeof (document as unknown as { startViewTransition?: unknown }).startViewTransition === "function" &&
+    !prefersReduced;
+
+  // Add smooth transition class for all browsers & elements
+  document.documentElement.classList.add("theme-transitioning");
+
+  if (hasViewTransition) {
+    type ViewTransition = { finished: Promise<void> };
+    const vt = (document as unknown as { startViewTransition: (cb: () => void) => ViewTransition }).startViewTransition(updateDom);
+    vt.finished
+      .catch(() => {})
+      .finally(() => {
+        document.documentElement.classList.remove("theme-transitioning");
+      });
+  } else {
+    updateDom();
+    window.setTimeout(() => {
+      document.documentElement.classList.remove("theme-transitioning");
+    }, 550);
   }
-  window.dispatchEvent(new CustomEvent<ThemeMode>(THEME_EVENT, { detail: next }));
 }
 
 export function ThemeToggle({
@@ -99,12 +127,23 @@ export function ThemeToggle({
       title={ariaLabel}
       className={`inline-flex items-center justify-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-2.5 py-1.5 text-xs font-medium text-text-primary transition-colors hover:bg-text-primary/[0.08] cursor-pointer ${className}`}
     >
-      {isLight ? (
-        <Moon className="size-3.5 text-accent" />
-      ) : (
-        <Sun className="size-3.5 text-accent" />
-      )}
-      {showLabel ? <span>{mounted ? label : locale === "fr" ? "Clair" : "Light"}</span> : null}
+      <div className="relative size-3.5 flex items-center justify-center" aria-hidden="true">
+        <Sun
+          className={`size-3.5 text-accent absolute transition-all duration-500 ease-out ${
+            isLight
+              ? "opacity-0 rotate-90 scale-50 pointer-events-none"
+              : "opacity-100 rotate-0 scale-100"
+          }`}
+        />
+        <Moon
+          className={`size-3.5 text-accent absolute transition-all duration-500 ease-out ${
+            isLight
+              ? "opacity-100 rotate-0 scale-100"
+              : "opacity-0 -rotate-90 scale-50 pointer-events-none"
+          }`}
+        />
+      </div>
+      {showLabel ? <span className="transition-opacity duration-300">{mounted ? label : locale === "fr" ? "Clair" : "Light"}</span> : null}
     </button>
   );
 }

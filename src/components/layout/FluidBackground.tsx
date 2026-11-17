@@ -21,7 +21,9 @@ export default function FluidBackground() {
     let height = 0;
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Background auroras are soft continuous gradients: DPR 1 is crisp, perfectly smooth,
+      // and eliminates massive multi-megapixel overdraw on Retina / 4K displays.
+      const dpr = 1;
       width = window.innerWidth;
       height = window.innerHeight;
       canvas!.width = width * dpr;
@@ -34,13 +36,14 @@ export default function FluidBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Aurora blob definitions — positions animate with sin/cos
+    // Aurora blob definitions — larger radii with multi-stop radial gradients
+    // provide native soft light without requiring heavy GPU post-processing blur filters.
     const blobs = [
-      { cx: 0.15, cy: 0.1, rx: 0.45, ry: 0.5, speed: 0.0003, phase: 0, driftX: 0.08, driftY: 0.06 },
-      { cx: 0.75, cy: 0.2, rx: 0.4, ry: 0.45, speed: 0.00025, phase: 2.1, driftX: 0.07, driftY: 0.09 },
-      { cx: 0.5, cy: 0.7, rx: 0.55, ry: 0.5, speed: 0.00035, phase: 4.2, driftX: 0.1, driftY: 0.07 },
-      { cx: 0.3, cy: 0.5, rx: 0.35, ry: 0.4, speed: 0.0002, phase: 1.5, driftX: 0.06, driftY: 0.08 },
-      { cx: 0.85, cy: 0.65, rx: 0.3, ry: 0.35, speed: 0.00028, phase: 3.7, driftX: 0.05, driftY: 0.05 },
+      { cx: 0.15, cy: 0.1, rx: 0.65, ry: 0.7, speed: 0.0003, phase: 0, driftX: 0.08, driftY: 0.06 },
+      { cx: 0.75, cy: 0.2, rx: 0.6, ry: 0.65, speed: 0.00025, phase: 2.1, driftX: 0.07, driftY: 0.09 },
+      { cx: 0.5, cy: 0.7, rx: 0.75, ry: 0.7, speed: 0.00035, phase: 4.2, driftX: 0.1, driftY: 0.07 },
+      { cx: 0.3, cy: 0.5, rx: 0.55, ry: 0.6, speed: 0.0002, phase: 1.5, driftX: 0.06, driftY: 0.08 },
+      { cx: 0.85, cy: 0.65, rx: 0.5, ry: 0.55, speed: 0.00028, phase: 3.7, driftX: 0.05, driftY: 0.05 },
     ];
 
     // Midnight Lime neutral charcoal & olive atmospheric layers (#0B0B0C base + subtle #C8F122 ambient whisper)
@@ -85,9 +88,11 @@ export default function FluidBackground() {
         const rx = b.rx * width * (0.9 + 0.1 * Math.sin(t * 1.3));
         const ry = b.ry * height * (0.9 + 0.1 * Math.cos(t * 0.9));
 
-        const gradient = ctx!.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+        const radius = Math.max(rx, ry);
+        const gradient = ctx!.createRadialGradient(cx, cy, 0, cx, cy, radius);
         gradient.addColorStop(0, colors[i][0]);
-        gradient.addColorStop(0.6, colors[i][0].replace(/[\d.]+\)$/, (m) => `${parseFloat(m) * 0.4})`));
+        gradient.addColorStop(0.35, colors[i][0].replace(/[\d.]+\)$/, (m) => `${parseFloat(m) * 0.65})`));
+        gradient.addColorStop(0.7, colors[i][0].replace(/[\d.]+\)$/, (m) => `${parseFloat(m) * 0.2})`));
         gradient.addColorStop(1, colors[i][1]);
 
         ctx!.fillStyle = gradient;
@@ -99,7 +104,19 @@ export default function FluidBackground() {
       ctx!.restore();
     }
 
+    let isVisible = true;
+    const onVisibilityChange = () => {
+      isVisible = !document.hidden;
+      if (isVisible && !prefersReduced) {
+        cancelAnimationFrame(animRef.current);
+        animRef.current = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     function draw(time: number) {
+      if (!isVisible) return;
+
       const target = isLightTheme ? 1 : 0;
       // Smooth exponential easing towards target over ~450ms
       themeProgress += (target - themeProgress) * 0.08;
@@ -133,6 +150,7 @@ export default function FluidBackground() {
     return () => {
       cancelAnimationFrame(animRef.current);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 
@@ -141,20 +159,20 @@ export default function FluidBackground() {
       {/* Base page color */}
       <div className="absolute inset-0 bg-bg-page transition-colors duration-700" />
 
-      {/* Aurora canvas */}
+      {/* Aurora canvas without expensive GPU-filter blur */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 mix-blend-normal"
-        style={{ filter: "blur(80px) saturate(1.4)" }}
+        className="absolute inset-0 mix-blend-normal transform-gpu will-change-transform"
       />
 
-      {/* Subtle grain overlay for premium texture */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.25] mix-blend-overlay pointer-events-none">
-        <filter id="auroraGrain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#auroraGrain)" />
-      </svg>
+      {/* Lightweight, high-performance static noise overlay (SVG data-URI compiled once by GPU) */}
+      <div
+        className="absolute inset-0 opacity-[0.025] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+        }}
+      />
     </div>
   );
 }

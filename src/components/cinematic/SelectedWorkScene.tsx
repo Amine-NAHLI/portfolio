@@ -106,6 +106,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
   const containerRef = useRef<HTMLDivElement>(null);
   const cardElementsRef = useRef<(HTMLDivElement | null)[]>([]);
   const scrollTriggerInstanceRef = useRef<ScrollTrigger | null>(null);
+  const rafIndexRef = useRef<number | null>(null);
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -141,7 +142,12 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
 
         if (currentIdx !== lastIdx) {
           lastIdx = currentIdx;
-          setActiveIndex(currentIdx);
+          if (rafIndexRef.current !== null) {
+            cancelAnimationFrame(rafIndexRef.current);
+          }
+          rafIndexRef.current = requestAnimationFrame(() => {
+            setActiveIndex(currentIdx);
+          });
         }
 
         cards.forEach((card, idx) => {
@@ -224,6 +230,13 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
       });
 
       scrollTriggerInstanceRef.current = tl.scrollTrigger || null;
+
+      return () => {
+        if (rafIndexRef.current !== null) {
+          cancelAnimationFrame(rafIndexRef.current);
+          rafIndexRef.current = null;
+        }
+      };
     },
     { scope: containerRef, dependencies: [count] }
   );
@@ -253,14 +266,20 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
       id="work"
       className="relative w-full h-[100svh] min-h-[600px] bg-transparent pt-16 pb-4 sm:pt-[76px] sm:pb-6 px-4 sm:px-8 lg:px-14 border-t border-border flex flex-col items-center justify-center overflow-hidden scroll-mt-20"
     >
-      {/* Background Ambient Lighting */}
+      {/* Background Ambient Lighting (optimized radial gradients, zero CSS blur filter cost) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full bg-accent/10 blur-[180px] -z-10"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[550px] w-[550px] rounded-full -z-10"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/4 top-1/3 h-[450px] w-[450px] rounded-full bg-surface-raised opacity-65 blur-[160px] -z-10"
+        className="pointer-events-none absolute left-1/4 top-1/3 h-[450px] w-[450px] rounded-full opacity-65 -z-10"
+        style={{
+          background: "radial-gradient(circle, var(--surface-raised) 0%, transparent 70%)",
+        }}
       />
 
       <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-between h-full min-h-0">
@@ -315,10 +334,10 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                   }}
                   className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br from-surface-raised via-surface to-surface-subtle px-5 py-4 sm:px-8 sm:py-6 transition-[border-color,box-shadow] duration-300 will-change-[transform,opacity] ${
                     isCurrent
-                      ? "pointer-events-auto border-border-strong shadow-[0_24px_70px_rgba(0,0,0,0.22),0_0_40px_color-mix(in_srgb,var(--accent)_14%,transparent)] dark:shadow-[0_30px_90px_rgba(0,0,0,0.9),0_0_45px_rgba(200,241,34,0.1)] hover:border-accent/55"
+                      ? "pointer-events-auto border-border-strong shadow-[0_12px_36px_rgba(0,0,0,0.18)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)] hover:border-accent/55"
                       : isNextPeek
-                        ? "pointer-events-auto cursor-pointer border-border shadow-[0_18px_45px_rgba(0,0,0,0.14)] dark:shadow-[0_20px_55px_rgba(0,0,0,0.85)] hover:border-accent/35"
-                        : "pointer-events-none border-border shadow-xl"
+                        ? "pointer-events-auto cursor-pointer border-border shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.6)] hover:border-accent/35"
+                        : "pointer-events-none border-border shadow-md"
                   }`}
                 >
                   {/* Subtle top ambient sheen & inner corner highlight */}
@@ -328,7 +347,10 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                   />
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl"
+                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full pointer-events-none"
+                    style={{
+                      background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent) 0%, transparent 70%)",
+                    }}
                   />
 
                   {/* Top Card Bar */}

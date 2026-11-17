@@ -110,10 +110,13 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         ref={pinRef}
         className="relative flex h-[100svh] w-full flex-col justify-between px-6 sm:px-12 lg:px-20 py-16"
       >
-        {/* Subtle Ambient Glow */}
+        {/* Subtle Ambient Glow (optimized radial gradient, zero blur filter cost) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-accent/10 blur-[150px]"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 70%)",
+          }}
         />
 
         {/* Top Header */}

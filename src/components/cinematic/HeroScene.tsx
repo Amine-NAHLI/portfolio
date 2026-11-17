@@ -122,10 +122,10 @@ export default function HeroScene({
       data-no-text-reveal="true"
       className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-transparent px-4 sm:px-8 lg:px-14 py-20 text-text-primary"
     >
-      {/* Calibrated atmospheric lighting matching active theme accent */}
+      {/* Calibrated atmospheric lighting matching active theme accent (pure radial-gradient, no blur filter) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 h-[420px] w-[780px] max-w-[95vw] rounded-full blur-[120px]"
+        className="pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 h-[420px] w-[780px] max-w-[95vw] rounded-full"
         style={{
           background:
             "radial-gradient(ellipse at 50% 55%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, color-mix(in srgb, var(--accent) 6%, transparent) 46%, transparent 74%)",

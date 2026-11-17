@@ -49,14 +49,20 @@ export default async function ContactPage({ params }: ContactPageProps) {
 
   return (
     <div className="min-h-screen bg-bg-page text-text-primary pt-20 sm:pt-24 pb-8 flex items-start lg:items-center">
-      {/* Background ambient lighting */}
+      {/* Background ambient lighting (optimized radial gradients, zero blur filter cost) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full bg-surface-raised opacity-60 blur-[180px] -z-10"
+        className="pointer-events-none fixed left-[-10%] top-1/4 size-[600px] rounded-full opacity-60 -z-10"
+        style={{
+          background: "radial-gradient(circle, var(--surface-raised) 0%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full bg-surface opacity-70 blur-[180px] -z-10"
+        className="pointer-events-none fixed right-[-10%] top-1/2 size-[650px] rounded-full opacity-70 -z-10"
+        style={{
+          background: "radial-gradient(circle, var(--surface) 0%, transparent 70%)",
+        }}
       />
 
       <Container className="w-full">

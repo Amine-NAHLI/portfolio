@@ -48,18 +48,27 @@ export default function CinematicCanvas({
 }: CinematicCanvasProps) {
   return (
     <div className="relative w-full bg-bg-page text-text-primary selection:bg-accent/25 selection:text-text-primary">
-      {/* Background Mixed Atmospheric Lighting adapting to active theme */}
+      {/* Background Mixed Atmospheric Lighting adapting to active theme without heavy GPU blur filters */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full bg-surface-raised/60 blur-[200px] -z-10"
+        className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full -z-10"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-raised) 70%, transparent) 0%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full bg-surface/70 blur-[220px] -z-10"
+        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full -z-10"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface) 75%, transparent) 0%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[10%] bottom-[5%] h-[800px] w-[800px] rounded-full bg-surface-subtle/50 blur-[200px] -z-10"
+        className="pointer-events-none fixed left-[10%] bottom-[5%] h-[800px] w-[800px] rounded-full -z-10"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-subtle) 65%, transparent) 0%, transparent 70%)",
+        }}
       />
 
       {/* Scene 01: Hero / First Impression (Centered Monumental Typography) */}

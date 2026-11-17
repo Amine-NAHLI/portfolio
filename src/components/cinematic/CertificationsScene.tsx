@@ -102,10 +102,13 @@ export default function CertificationsScene({
       id="certifications"
       className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
     >
-      {/* Background Accent Glow */}
+      {/* Background Accent Glow (optimized radial gradient, zero blur filter cost) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full bg-accent/10 blur-[150px]"
+        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 70%)",
+        }}
       />
 
       <div className="mx-auto max-w-7xl relative z-10">

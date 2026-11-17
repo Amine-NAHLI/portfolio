@@ -67,10 +67,13 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
       />
 
       <article className="min-h-screen bg-bg-page text-text-primary pb-32">
-        {/* Subtle Ambient Accent Glow */}
+        {/* Subtle Ambient Accent Glow (optimized radial gradient, zero blur filter cost) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed right-[-10%] top-20 size-[600px] rounded-full bg-accent/5 blur-[180px] -z-10"
+          className="pointer-events-none fixed right-[-10%] top-20 size-[600px] rounded-full -z-10"
+          style={{
+            background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%)",
+          }}
         />
 
         {/* Hero Editorial Header */}

@@ -154,18 +154,27 @@ export default function GitHubContributionsScene({
       id="github"
       className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
     >
-      {/* Ambient Depth Spotlights */}
+      {/* Ambient Depth Spotlights (optimized radial gradients, zero blur filter cost) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-8%] top-1/3 h-[600px] w-[600px] rounded-full bg-accent/[0.05] blur-[180px]"
+        className="pointer-events-none absolute left-[-8%] top-1/3 h-[600px] w-[600px] rounded-full"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full bg-surface opacity-70 blur-[190px]"
+        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full opacity-70"
+        style={{
+          background: "radial-gradient(circle, var(--surface) 0%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-accent/8 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 70%)",
+        }}
       />
 
       <div className="mx-auto max-w-7xl relative z-10">

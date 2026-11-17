@@ -255,10 +255,13 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
       id="disciplines"
       className="relative w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden"
     >
-      {/* Background Radial Glow */}
+      {/* Background Radial Glow (optimized radial gradient, zero blur filter cost) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full bg-accent/8 blur-[160px]"
+        className="pointer-events-none absolute left-1/4 top-1/2 -translate-y-1/2 size-[600px] rounded-full"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 70%)",
+        }}
       />
 
       <div className="mx-auto max-w-7xl relative z-10">

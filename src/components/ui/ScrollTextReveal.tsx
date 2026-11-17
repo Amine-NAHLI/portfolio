@@ -41,7 +41,6 @@ export default function ScrollTextReveal() {
     const pending = new Set<HTMLElement>();
     let batchIndex = 0;
     let batchTimer: ReturnType<typeof setTimeout> | null = null;
-    let scrollRafId: number | null = null;
     let rescanTimer: ReturnType<typeof setTimeout> | null = null;
 
     const revealElement = (el: HTMLElement, observer: IntersectionObserver) => {
@@ -74,8 +73,8 @@ export default function ScrollTextReveal() {
         }
       },
       {
-        threshold: 0.08,
-        rootMargin: "0px 0px -6% 0px",
+        threshold: 0.04,
+        rootMargin: "0px 0px -4% 0px",
       }
     );
 
@@ -97,22 +96,6 @@ export default function ScrollTextReveal() {
       }
     };
 
-    const revealPassedElements = () => {
-      scrollRafId = null;
-      const cutoff = window.innerHeight * 0.96;
-      for (const el of Array.from(pending)) {
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= cutoff) {
-          revealElement(el, observer);
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (scrollRafId !== null || pending.size === 0) return;
-      scrollRafId = window.requestAnimationFrame(revealPassedElements);
-    };
-
     // Initial scan + re-scan for async-streamed/hydrated sections
     enrollCandidates();
 
@@ -122,13 +105,9 @@ export default function ScrollTextReveal() {
     });
     mutationObserver.observe(main, { childList: true, subtree: true });
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
     return () => {
       mutationObserver.disconnect();
       observer.disconnect();
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollRafId !== null) window.cancelAnimationFrame(scrollRafId);
       if (rescanTimer) clearTimeout(rescanTimer);
       if (batchTimer) clearTimeout(batchTimer);
 

@@ -77,10 +77,13 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
       id="contact"
       className="relative min-h-[88svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-border flex flex-col justify-center overflow-hidden scroll-mt-24"
     >
-      {/* Background Ambient Glow */}
+      {/* Background Ambient Glow (optimized radial gradient, zero blur filter cost) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-accent/10 blur-[160px]"
+        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 h-[500px] w-[600px] rounded-full"
+        style={{
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 70%)",
+        }}
       />
 
       {/* Main Centered Content */}

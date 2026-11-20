@@ -138,7 +138,6 @@ export default function Chatbot3DAvatar({
     scene.add(rootGroup);
 
     let mixer: THREE.AnimationMixer | null = null;
-    let currentModel: THREE.Group | null = null;
 
     // Model selection based on theme
     const modelUrl = isDark ? "/3D/ai-model-dark.glb" : "/3D/ai-model-claire.glb";
@@ -148,7 +147,6 @@ export default function Chatbot3DAvatar({
 
       // Clone from cache so instance transforms are independent
       const model = originalScene.clone(true);
-      currentModel = model;
 
       // Calculate bounding box and center geometry
       const box = new THREE.Box3().setFromObject(model);

@@ -7,6 +7,9 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import { GridPattern } from "@/components/magicui/grid-pattern";
+import { ArchitecturePipelineBeam } from "@/components/magicui/ArchitecturePipelineBeam";
 
 interface UniverseSceneProps {
   locale: Locale;
@@ -255,6 +258,16 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
       id="disciplines"
       className="relative w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden"
     >
+      {/* Architectural Grid Pattern (Magic UI) */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        strokeDasharray="4 2"
+        className="stroke-white/[0.03] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_50%,transparent_100%)] -z-10"
+      />
+
       {/* Background Radial Glow (optimized radial gradient, zero blur filter cost) */}
       <div
         aria-hidden="true"
@@ -332,19 +345,27 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
         </div>
 
         {/* Innovative Engineering Cockpit Console */}
-        <div className="universe-console rounded-3xl border border-border-strong bg-surface p-6 sm:p-10 shadow-2xl transition-all duration-500">
+        <div className="universe-console relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-10 shadow-2xl transition-all duration-500">
+          {/* Cockpit Laser Border Beam (Magic UI) */}
+          <BorderBeam
+            size={220}
+            duration={9}
+            colorFrom="#C8F122"
+            colorTo="#38BDF8"
+            borderWidth={1.5}
+          />
           <div className="grid gap-10 lg:grid-cols-12 items-start">
             
             {/* Left 7 Columns: In-depth Technical Spec */}
             <div className="lg:col-span-7 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-11 rounded-xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
-                    <Icon className="size-6" />
+                  <div className="size-10 rounded-xl bg-surface-raised border border-border flex items-center justify-center text-text-primary">
+                    <Icon className="size-5" />
                   </div>
                   <div>
-                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-accent">
-                      {current.codePrefix} · {locale === "fr" ? current.statusFr : current.status}
+                    <span className="text-xs font-mono font-medium text-text-muted">
+                      {locale === "fr" ? "Domaine" : "Track"} 0{current.codePrefix}
                     </span>
                     <h3 className="font-display text-2xl sm:text-3xl font-bold text-text-primary">
                       {locale === "fr" ? current.titleFr : current.title}
@@ -420,7 +441,20 @@ export default function UniverseScene({ locale }: UniverseSceneProps) {
             </div>
 
             {/* Right 5 Columns: Live Architecture Terminal / Code Simulator */}
-            <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
+            <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-5">
+              {/* Animated Data Pipeline Flow (Magic UI AnimatedBeam) */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold">
+                    {locale === "fr" ? "// FLUX D'ARCHITECTURE SYSTÈME" : "// SYSTEM ARCHITECTURE FLOW"}
+                  </span>
+                  <span className="text-[10px] font-mono text-text-muted">
+                    {current.id.toUpperCase()}
+                  </span>
+                </div>
+                <ArchitecturePipelineBeam locale={locale} trackId={current.id} />
+              </div>
+
               <div className="rounded-2xl border border-border-strong bg-surface-raised overflow-hidden shadow-2xl">
                 {/* Terminal Title Bar */}
                 <div className="flex items-center justify-between border-b border-border bg-text-primary/[0.03] px-4 py-3">

@@ -8,6 +8,8 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import { GridPattern } from "@/components/magicui/grid-pattern";
 
 interface SelectedWorkSceneProps {
   locale: Locale;
@@ -270,6 +272,16 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
       id="work"
       className="relative w-full h-[100svh] min-h-[600px] bg-transparent pt-16 pb-4 sm:pt-[76px] sm:pb-6 px-4 sm:px-8 lg:px-14 border-t border-border flex flex-col items-center justify-center overflow-hidden scroll-mt-20"
     >
+      {/* Background Architectural Grid Pattern (Magic UI) */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        strokeDasharray="4 2"
+        className="stroke-white/[0.03] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_50%,transparent_100%)] -z-10"
+      />
+
       {/* Background Ambient Lighting (optimized radial gradients, zero CSS blur filter cost) */}
       <div
         aria-hidden="true"
@@ -344,18 +356,22 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                         : "pointer-events-none border-border shadow-md"
                   }`}
                 >
-                  {/* Subtle top ambient sheen & inner corner highlight */}
+                  {/* Subtle top ambient sheen */}
                   <div
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"
                   />
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full pointer-events-none"
-                    style={{
-                      background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent) 0%, transparent 70%)",
-                    }}
-                  />
+
+                  {/* Active Card Laser Border Beam (Magic UI) */}
+                  {isCurrent && (
+                    <BorderBeam
+                      size={240}
+                      duration={8}
+                      colorFrom="#C8F122"
+                      colorTo="#38BDF8"
+                      borderWidth={1.5}
+                    />
+                  )}
 
                   {/* Top Card Bar */}
                   <div
@@ -364,7 +380,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     }`}
                   >
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                      <span className="font-mono text-xs font-bold text-accent bg-accent/10 border border-accent/30 px-2.5 py-0.5 rounded-full shrink-0">
+                      <span className="font-mono text-xs font-medium text-text-muted bg-surface-raised border border-border px-2 py-0.5 rounded-md shrink-0">
                         0{index + 1}
                       </span>
                       <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-text-secondary truncate">
@@ -539,7 +555,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
 
           {/* Scroll Guide Indicator */}
           <div className="text-[11px] font-mono text-text-muted flex items-center gap-2 text-center">
-            <span className="size-1.5 rounded-full bg-accent animate-pulse shrink-0" />
+            <span className="size-1.5 rounded-full bg-accent shrink-0" />
             <span>
               {locale === "fr"
                 ? "Défilez ou utilisez les flèches pour passer d'un projet à l'autre"

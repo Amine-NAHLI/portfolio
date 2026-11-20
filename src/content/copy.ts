@@ -83,11 +83,11 @@ export const publicCopy = {
       verify: "Vérifier la certification",
     },
     journey: {
-      eyebrow: "Parcours",
-      title: "Une progression entre ingénierie logicielle, cybersécurité et IA.",
-      description: "Cette chronologie rassemble uniquement les formations et expériences documentées dans mon CV.",
-      experience: "Expérience",
-      education: "Formation",
+      eyebrow: "Hackathons & Compétitions",
+      title: "L'Arène des Hackathons : Concevoir & Gagner sous Pression.",
+      description: "Sprints 48H intensifs, modèles d'IA livrés en production, prototypes robotiques autonomes et victoires validées par des jurys d'experts.",
+      experience: "Compétition",
+      education: "Sprint",
     },
     now: {
       eyebrow: "Maintenant",
@@ -200,11 +200,11 @@ export const publicCopy = {
       verify: "Verify Credential",
     },
     journey: {
-      eyebrow: "Journey",
-      title: "Progress across software engineering, cybersecurity and AI.",
-      description: "This timeline includes only the education and experience documented in my resume.",
-      experience: "Experience",
-      education: "Education",
+      eyebrow: "Hackathons & Competitions",
+      title: "The Competitive Arena: Engineering Under Pressure.",
+      description: "Intensive 48H sprints, production machine learning models, autonomous robotics hardware, and victories awarded by expert juries.",
+      experience: "Competition",
+      education: "Sprint",
     },
     now: {
       eyebrow: "Now",

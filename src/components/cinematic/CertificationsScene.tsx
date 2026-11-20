@@ -2,13 +2,15 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CertificationCard from "@/components/ui/CertificationCard";
 import type { Locale } from "@/i18n/config";
 import type { PublicCertification } from "@/features/portfolio/data";
+import { DotPattern } from "@/components/magicui/dot-pattern";
+import { Marquee } from "@/components/magicui/marquee";
 
 interface CertificationsSceneProps {
   locale: Locale;
@@ -96,19 +98,30 @@ export default function CertificationsScene({
     { scope: containerRef }
   );
 
+  const accreditedOrgs = [
+    "TRYHACKME",
+    "CISCO NETWORKING ACADEMY",
+    "DEEPLEARNING.AI",
+    "COURSERA",
+    "GOOGLE BUILD WITH GEMMA",
+    "UNIVERSITÉ PRIVÉE DE FÈS",
+    "GDG ON CAMPUS",
+  ];
+
   return (
     <section
       ref={containerRef}
       id="certifications"
       className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
     >
-      {/* Background Accent Glow (optimized radial gradient, zero blur filter cost) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-10%] top-1/3 size-[500px] rounded-full"
-        style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 70%)",
-        }}
+      {/* Background Dot Pattern (Magic UI) */}
+      <DotPattern
+        width={24}
+        height={24}
+        cx={1}
+        cy={1}
+        cr={1}
+        className="fill-white/[0.04] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_50%,transparent_100%)] -z-10"
       />
 
       <div className="mx-auto max-w-7xl relative z-10">
@@ -148,6 +161,18 @@ export default function CertificationsScene({
           ))}
         </div>
 
+        {/* Accredited Institutions Marquee Ribbon (Magic UI) */}
+        <div className="mt-14 py-3 rounded-2xl border border-border/80 bg-surface/50 overflow-hidden backdrop-blur-sm">
+          <Marquee pauseOnHover className="font-mono text-[11px] uppercase tracking-wider text-text-muted [--duration:30s]">
+            {accreditedOrgs.map((org, i) => (
+              <div key={i} className="flex items-center gap-8 mx-4">
+                <span className="hover:text-accent transition-colors">{org}</span>
+                <span className="text-accent/40">·</span>
+              </div>
+            ))}
+          </Marquee>
+        </div>
+
         {/* Bottom Explorer Link */}
         <div className="mt-12 flex items-center justify-between border-t border-border pt-6">
           <Link
@@ -161,10 +186,9 @@ export default function CertificationsScene({
             </span>
             <ArrowUpRight className="size-4" />
           </Link>
-          <div className="flex items-center gap-1.5 text-xs text-success font-medium">
-            <ShieldCheck className="size-3.5" />
-            <span>{locale === "fr" ? "Vérification officielle" : "Official verification"}</span>
-          </div>
+          <span className="text-xs text-text-muted font-medium">
+            {locale === "fr" ? "Organismes accrédités & certificats originaux" : "Accredited bodies & original certificates"}
+          </span>
         </div>
       </div>
     </section>

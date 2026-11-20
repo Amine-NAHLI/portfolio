@@ -34,7 +34,7 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
       <Container className="py-12 sm:py-16 lg:py-20">
         {skillGroups.length === 0 ? <PortfolioEmptyState collection="skills" locale={locale} className="mx-auto max-w-3xl" /> : <div className="grid gap-6 lg:grid-cols-3">
           {skillGroups.map((group) => (
-            <TechnicalFrame key={group.id} index={String(skillGroups.indexOf(group) + 1).padStart(2, "0")} label="Capability" className="flex flex-col p-6 sm:p-7">
+            <TechnicalFrame key={group.id} index={String(skillGroups.indexOf(group) + 1).padStart(2, "0")} label={locale === "fr" ? "Pôle Technique" : "Technical Domain"} className="flex flex-col p-6 sm:p-7">
               <h2 className="text-2xl font-semibold text-text-primary">{group.title}</h2>
               {group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}
               <ul className="mt-6 flex flex-wrap gap-2">

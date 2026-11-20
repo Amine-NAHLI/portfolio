@@ -9,11 +9,10 @@ import LocaleDocumentAttributes from "@/components/layout/LocaleDocumentAttribut
 import { getSiteUrl, siteConfig } from "@/config/site";
 import { getPublicContactLinks } from "@/features/portfolio/data";
 import { PageLoadWrapper } from "@/components/ui/PageLoadWrapper";
-import NoiseOverlay from "@/components/ui/NoiseOverlay";
-import ChatWidget from "@/components/ui/ChatWidget";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import ScrollTextReveal from "@/components/ui/ScrollTextReveal";
+import ChatWidgetLoader from "@/components/ui/ChatWidgetLoader";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -95,7 +94,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <SmoothScroll />
       <ScrollProgress />
       <ScrollTextReveal />
-      <NoiseOverlay />
       <div className="flex min-h-screen flex-col">
         <LocaleDocumentAttributes locale={candidate} />
         <a href="#main-content" className="skip-link">
@@ -106,7 +104,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <main id="main-content" className="flex-1" tabIndex={-1}>
           {children}
         </main>
-        <ChatWidget />
+        <ChatWidgetLoader />
       </div>
     </PageLoadWrapper>
   );

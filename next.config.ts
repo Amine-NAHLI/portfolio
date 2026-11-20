@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  compress: true,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2592000, // 30 days
+  },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
+  },
   outputFileTracingIncludes: {
     "/cv": [
       "./public/Amine_Nahli_CV.pdf",
@@ -34,6 +42,12 @@ const nextConfig: NextConfig = {
       {
         source: "/api/:path*",
         headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
+      {
+        source: "/(3D|images)/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
       },
       {
         source: "/cv",

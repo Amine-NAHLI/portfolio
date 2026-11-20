@@ -39,10 +39,6 @@ export function TechCore({ technologies, className }: TechCoreProps) {
       {/* ELEGANT VISUAL STACK CONTAINER */}
       <div className="relative overflow-hidden rounded-3xl border border-border-strong bg-surface/90 p-6 md:p-8 backdrop-blur-2xl shadow-2xl">
         
-        {/* Subtle Background Glow */}
-        <div className="pointer-events-none absolute -top-32 -left-32 size-80 rounded-full bg-accent/5 blur-[100px]" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 size-80 rounded-full bg-accent/5 blur-[100px]" />
-
         {/* HEADER STRIP */}
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-border">
           
@@ -61,7 +57,7 @@ export function TechCore({ technologies, className }: TechCoreProps) {
           </div>
 
           <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-border-strong bg-surface-subtle/80 font-mono text-[0.7rem] text-text-secondary">
-            <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+            <span className="size-1.5 rounded-full bg-accent" />
             <span>Environnement Production</span>
           </div>
 

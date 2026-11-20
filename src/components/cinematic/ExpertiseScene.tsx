@@ -7,6 +7,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
+import { Marquee } from "@/components/magicui/marquee";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 interface ExpertiseSceneProps {
   locale: Locale;
@@ -133,16 +135,16 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
       ref={containerRef}
       className="relative w-full bg-bg-page/40 py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden"
     >
-      {/* Kinetic Typography Marquee Banner */}
-      <div className="relative mb-20 -mx-4 sm:-mx-8 lg:-mx-14 border-y border-border bg-surface/65 py-5 overflow-hidden whitespace-nowrap backdrop-blur-md">
-        <div ref={marqueeRef} className="flex gap-12 font-mono text-xs sm:text-sm font-semibold tracking-widest text-text-secondary uppercase will-change-transform">
-          {[...marqueeKeywords, ...marqueeKeywords].map((word, i) => (
-            <div key={i} className="flex items-center gap-12">
+      {/* Kinetic Typography Marquee Banner (Magic UI) */}
+      <div className="relative mb-20 -mx-4 sm:-mx-8 lg:-mx-14 border-y border-border bg-surface/65 py-4 overflow-hidden backdrop-blur-md">
+        <Marquee pauseOnHover className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-text-secondary uppercase [--duration:38s]">
+          {marqueeKeywords.map((word, i) => (
+            <div key={i} className="flex items-center gap-10 mx-5">
               <span className="hover:text-accent transition-colors">{word}</span>
-              <span className="text-accent/60">✦</span>
+              <span className="text-accent/60">·</span>
             </div>
           ))}
-        </div>
+        </Marquee>
       </div>
 
       <div className="mx-auto max-w-7xl">
@@ -173,8 +175,17 @@ export default function ExpertiseScene({ locale }: ExpertiseSceneProps) {
             return (
               <div
                 key={cat.id}
-                className="skill-block group relative flex flex-col justify-between rounded-3xl border border-border bg-surface/75 p-7 backdrop-blur-xl transition-all duration-300 hover:border-accent/45 hover:bg-surface"
+                className="skill-block group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-surface/75 p-7 backdrop-blur-xl transition-all duration-300 hover:border-accent/45 hover:bg-surface"
               >
+                {/* Laser Border Beam on Hover (Magic UI) */}
+                <BorderBeam
+                  size={160}
+                  duration={6}
+                  colorFrom="#C8F122"
+                  colorTo="#38BDF8"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+
                 <div>
                   <div className="flex items-center justify-between pb-6 border-b border-border mb-6">
                     <h3 className="font-display text-lg font-bold text-text-primary">

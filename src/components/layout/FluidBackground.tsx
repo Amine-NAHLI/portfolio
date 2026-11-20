@@ -120,6 +120,9 @@ export default function FluidBackground() {
     }
 
     let isVisible = true;
+    let lastRenderTime = 0;
+    const targetInterval = isMobile ? 40 : 33; // ~25-30fps throttle (saves 60% CPU/battery for slow atmospheric aurora)
+
     const onVisibilityChange = () => {
       isVisible = !document.hidden;
       if (isVisible && !prefersReduced) {
@@ -135,6 +138,13 @@ export default function FluidBackground() {
         animRef.current = requestAnimationFrame(draw);
         return;
       }
+
+      // Throttle rendering: aurora motion is very slow, 30fps is visually identical to 120fps with a fraction of CPU load
+      if (time - lastRenderTime < targetInterval) {
+        animRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      lastRenderTime = time;
 
       // Base background fill matching active theme
       // Dark: #0B0B0C (11, 11, 12), Light: #D3D9D4 (211, 217, 212)

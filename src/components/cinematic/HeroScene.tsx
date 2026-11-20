@@ -10,6 +10,8 @@ import type { Locale } from "@/i18n/config";
 import type { HeroActionButton } from "@/content/hero-buttons";
 import { DEFAULT_HERO_BUTTONS } from "@/content/hero-buttons";
 import { getCvDownloadProps } from "@/lib/utils";
+import { GridPattern } from "@/components/magicui/grid-pattern";
+import { HyperText } from "@/components/magicui/hyper-text";
 
 interface HeroSceneProps {
   locale: Locale;
@@ -122,6 +124,16 @@ export default function HeroScene({
       data-no-text-reveal="true"
       className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-transparent px-4 sm:px-8 lg:px-14 py-20 text-text-primary"
     >
+      {/* Architectural Grid Pattern (Magic UI) */}
+      <GridPattern
+        width={48}
+        height={48}
+        x={-1}
+        y={-1}
+        strokeDasharray="4 2"
+        className="stroke-white/[0.04] [mask-image:radial-gradient(ellipse_75%_55%_at_50%_50%,#000_50%,transparent_100%)] -z-10"
+      />
+
       {/* Seamless atmospheric lighting — wide multi-stop exponential falloff dissolving invisibly into pure black */}
       <div
         aria-hidden="true"
@@ -137,6 +149,17 @@ export default function HeroScene({
         ref={contentRef}
         className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center justify-center text-center my-auto py-8"
       >
+        {/* Engineering Status Ticker (Magic UI HyperText) */}
+        <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-border-strong bg-surface-raised/80 px-4 py-1.5 font-mono text-xs shadow-sm backdrop-blur-md">
+          <span className="size-2 rounded-full bg-accent animate-pulse" />
+          <span className="text-text-muted text-[11px]">
+            {locale === "fr" ? "PROFIL INGÉNIEUR //" : "ENGINEERING TRACK //"}
+          </span>
+          <HyperText duration={500} className="text-xs font-bold text-accent">
+            CYBER_DEFENSE & AI_VISION
+          </HyperText>
+        </div>
+
         {/* Monumental Display Name */}
         <h1
           ref={titleRef}
@@ -164,7 +187,7 @@ export default function HeroScene({
             const isCv = isCvButton(btn);
             const isPrimary = btn.style === "primary";
             const buttonClassName = isPrimary
-              ? "inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-xs sm:text-sm font-bold text-text-on-accent shadow-[0_10px_28px_-8px_color-mix(in_srgb,var(--accent)_42%,transparent)] transition-all duration-200 hover:bg-accent-hover hover:scale-[1.02] active:scale-[0.98]"
+              ? "inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-xs sm:text-sm font-bold text-text-on-accent shadow-md transition-all duration-200 hover:bg-accent-hover hover:scale-[1.02] active:scale-[0.98]"
               : "inline-flex items-center gap-2 rounded-full border border-border-strong bg-text-primary/[0.04] px-6 py-3 text-xs sm:text-sm font-semibold text-text-primary transition-all duration-200 hover:border-accent/40 hover:bg-text-primary/[0.08]";
 
             const content = isPrimary ? (

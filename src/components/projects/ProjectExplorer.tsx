@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Code2, ExternalLink, LayoutGrid, ListFilter, Search, Sparkles } from "lucide-react";
+import { ArrowUpRight, Code2, ExternalLink, LayoutGrid, ListFilter, Search } from "lucide-react";
 import PortfolioEmptyState from "@/components/ui/PortfolioEmptyState";
 import { publicCopy } from "@/content/copy";
 import { getCategoryLabel, normalizeProjectCategories } from "@/lib/project-categories";
@@ -200,8 +200,8 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                 </div>
 
                 {project.featured && (
-                  <div className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full border border-accent/35 bg-accent px-2 py-0.5 text-[9px] font-mono font-semibold text-text-on-accent backdrop-blur-md">
-                    <Sparkles className="size-2.5 text-text-on-accent" />
+                  <div className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-accent/35 bg-accent px-2.5 py-0.5 text-[9px] font-mono font-semibold text-text-on-accent backdrop-blur-md">
+                    <span className="size-1.5 rounded-full bg-text-on-accent" />
                     <span>FEATURED</span>
                   </div>
                 )}

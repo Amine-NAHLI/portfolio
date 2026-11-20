@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminContext } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
-import { DEFAULT_JOURNEY_TIMELINE, type JourneyTimelineItem } from "@/types/journey";
+import { DEFAULT_HACKATHONS, type JourneyTimelineItem } from "@/types/journey";
 
 export async function GET() {
   try {
@@ -17,10 +17,10 @@ export async function GET() {
       return NextResponse.json({ items: data.value });
     }
 
-    return NextResponse.json({ items: DEFAULT_JOURNEY_TIMELINE });
+    return NextResponse.json({ items: DEFAULT_HACKATHONS });
   } catch (error) {
     console.error("GET journey timeline error:", error);
-    return NextResponse.json({ items: DEFAULT_JOURNEY_TIMELINE });
+    return NextResponse.json({ items: DEFAULT_HACKATHONS });
   }
 }
 
@@ -49,7 +49,21 @@ export async function POST(req: Request) {
       categoryLabel: String(item.categoryLabel || (item.type === "experience" ? "EXPÉRIENCE" : "FORMATION")).trim(),
       categoryLabelEn: String(item.categoryLabelEn || (item.type === "experience" ? "EXPERIENCE" : "EDUCATION")).trim(),
       award: item.award ? String(item.award).trim() : undefined,
+      awardEn: item.awardEn ? String(item.awardEn).trim() : undefined,
       awardColor: item.awardColor ? String(item.awardColor).trim() : "#F59E0B",
+      status: item.status === "in_progress" ? "in_progress" : "completed",
+      challenge: item.challenge ? String(item.challenge).trim() : undefined,
+      challengeEn: item.challengeEn ? String(item.challengeEn).trim() : undefined,
+      solution: item.solution ? String(item.solution).trim() : undefined,
+      solutionEn: item.solutionEn ? String(item.solutionEn).trim() : undefined,
+      githubUrl: item.githubUrl ? String(item.githubUrl).trim() : undefined,
+      demoUrl: item.demoUrl ? String(item.demoUrl).trim() : undefined,
+      images: Array.isArray(item.images)
+        ? item.images.map((img: unknown) => String(img).trim()).filter((img: string) => img.length > 0)
+        : [],
+      imageFit: item.imageFit === "contain" ? "contain" : "cover",
+      imagePosition: item.imagePosition ? String(item.imagePosition).trim() : "center",
+      enabled: item.enabled !== false,
       tags: Array.isArray(item.tags)
         ? item.tags
             .map((t: unknown) => {

@@ -1,8 +1,5 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-
 export default function TechCard({
   children,
   className = "",
@@ -10,31 +7,10 @@ export default function TechCard({
   children: React.ReactNode;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!ref.current) return;
-    const { left, top } = ref.current.getBoundingClientRect();
-    mouseX.set(e.clientX - left);
-    mouseY.set(e.clientY - top);
-  }
-
-  const background = useMotionTemplate`radial-gradient(350px circle at ${mouseX}px ${mouseY}px, color-mix(in srgb, var(--accent) 12%, transparent), transparent 80%)`;
-
   return (
     <div
-      ref={ref}
-      onMouseMove={handleMouseMove}
       className={`group relative overflow-hidden rounded-2xl border border-border-strong bg-surface-subtle/85 backdrop-blur-xl transition-all duration-300 hover:border-accent/40 hover:shadow-xl ${className}`}
     >
-      {/* Inner Spotlight Glow */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"
-        style={{ background }}
-      />
-
       {/* Content */}
       <div className="relative h-full w-full p-6">
         {children}

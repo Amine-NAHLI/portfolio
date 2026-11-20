@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { CheckCircle2, LoaderCircle, Send, ShieldCheck } from "lucide-react";
+import { CheckCircle2, LoaderCircle, Send } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { trackAnalyticsEvent } from "@/components/analytics/PrivacyAnalytics";
 
@@ -217,14 +217,13 @@ export function ContactForm({ locale }: { locale: Locale }) {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap shrink-0 rounded-full bg-accent px-7 py-3 font-mono text-xs font-bold text-text-on-accent hover:bg-accent-hover transition-all hover:scale-[1.02] shadow-lg shadow-accent/25 cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap shrink-0 rounded-full bg-accent px-7 py-3 font-mono text-xs font-bold text-text-on-accent hover:bg-accent-hover transition-all hover:scale-[1.02] shadow-sm cursor-pointer disabled:opacity-50"
             >
               {submitting ? <LoaderCircle className="size-4 animate-spin" /> : <Send className="size-4" />}
               <span>{submitting ? copy.sending : copy.submit}</span>
             </button>
 
-            <div className="flex items-center gap-2 text-[11px] text-text-secondary">
-              <ShieldCheck className="size-4 text-accent shrink-0" />
+            <div className="flex items-center gap-2 text-[11px] text-text-muted">
               <span className="leading-snug">{copy.privacy}</span>
             </div>
           </div>

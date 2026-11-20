@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  Milestone,
+  Trophy,
   Plus,
   Trash2,
   ArrowUp,
@@ -14,28 +14,54 @@ import {
   AlertCircle,
   Palette,
   Sparkles,
+  Camera,
+  ExternalLink,
+  Terminal,
+  Zap,
+  RotateCcw,
+  Sliders,
+  Maximize2,
+  Layers,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpToLine,
+  ArrowDownToLine,
+  ListOrdered,
+  Eye,
+  EyeOff,
+  Star,
+  X,
 } from "lucide-react";
+import { GithubIcon } from "@/components/ui/Icons";
 import type { JourneyTimelineItem, JourneyTag } from "@/types/journey";
+import { DEFAULT_HACKATHONS } from "@/types/journey";
 
 const COLOR_PRESETS = [
+  { label: "Violet Gemma", value: "#A855F7" },
   { label: "Or / Ambre", value: "#F59E0B" },
   { label: "Émeraude", value: "#10B981" },
   { label: "Céladon Minéral", value: "#C8F122" },
-  { label: "Cyan Électrique", value: "#00F0FF" },
+  { label: "Cyan Électrique", value: "#38BDF8" },
   { label: "Rose Rubis", value: "#F43F5E" },
   { label: "Bleu Cobalt", value: "#3B82F6" },
-  { label: "Orange", value: "#F97316" },
-  { label: "Lime", value: "#84CC16" },
+  { label: "Orange Vif", value: "#F97316" },
 ];
 
 export function JourneyManager({ initialItems }: { initialItems: JourneyTimelineItem[] }) {
-  const [items, setItems] = useState<JourneyTimelineItem[]>(initialItems);
+  const [items, setItems] = useState<JourneyTimelineItem[]>(
+    initialItems && initialItems.length > 0 ? initialItems : DEFAULT_HACKATHONS
+  );
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showReorderModal, setShowReorderModal] = useState(false);
 
-  // New tag inputs per item
+  // New photo input state
+  const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [previewPhotoIndex, setPreviewPhotoIndex] = useState(0);
+
+  // New tag inputs state
   const [newTagName, setNewTagName] = useState("");
   const [newTagMode, setNewTagMode] = useState<"standard" | "custom">("standard");
   const [newTagColor, setNewTagColor] = useState("#C8F122");
@@ -54,6 +80,56 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     });
   };
 
+  // --- Photo Management Handlers ---
+  const handleAddPhoto = (itemIndex: number) => {
+    const trimmed = newPhotoUrl.trim();
+    if (!trimmed) return;
+
+    setItems((prev) => {
+      const updated = [...prev];
+      const currentImages = updated[itemIndex]?.images || [];
+      updated[itemIndex] = {
+        ...updated[itemIndex],
+        images: [...currentImages, trimmed],
+      };
+      return updated;
+    });
+
+    setNewPhotoUrl("");
+  };
+
+  const handleRemovePhoto = (itemIndex: number, photoIndex: number) => {
+    setItems((prev) => {
+      const updated = [...prev];
+      const currentImages = updated[itemIndex]?.images || [];
+      updated[itemIndex] = {
+        ...updated[itemIndex],
+        images: currentImages.filter((_, i) => i !== photoIndex),
+      };
+      return updated;
+    });
+  };
+
+  const handleMovePhoto = (itemIndex: number, photoIndex: number, direction: "left" | "right") => {
+    setItems((prev) => {
+      const updated = [...prev];
+      const currentImages = [...(updated[itemIndex]?.images || [])];
+      const targetIndex = direction === "left" ? photoIndex - 1 : photoIndex + 1;
+      if (targetIndex < 0 || targetIndex >= currentImages.length) return prev;
+
+      const temp = currentImages[photoIndex];
+      currentImages[photoIndex] = currentImages[targetIndex];
+      currentImages[targetIndex] = temp;
+
+      updated[itemIndex] = {
+        ...updated[itemIndex],
+        images: currentImages,
+      };
+      return updated;
+    });
+  };
+
+  // --- Tag Handlers ---
   const handleAddTag = (itemIndex: number) => {
     const trimmed = newTagName.trim();
     if (!trimmed) return;
@@ -88,6 +164,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     });
   };
 
+  // --- Hackathon Items Reordering & Visibility ---
   const handleMoveItem = (index: number, direction: "up" | "down") => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= items.length) return;
@@ -103,18 +180,72 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     setActiveItemIndex(targetIndex);
   };
 
+  const handleMoveToPosition = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) return;
+
+    setItems((prev) => {
+      const updated = [...prev];
+      const [moved] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, moved);
+      return updated;
+    });
+
+    setActiveItemIndex(toIndex);
+  };
+
+  const handleMoveToTop = (index: number) => {
+    handleMoveToPosition(index, 0);
+  };
+
+  const handleMoveToBottom = (index: number) => {
+    handleMoveToPosition(index, items.length - 1);
+  };
+
+  const handleToggleVisibility = (index: number) => {
+    setItems((prev) => {
+      const updated = [...prev];
+      const current = updated[index]?.enabled !== false;
+      updated[index] = { ...updated[index], enabled: !current };
+      return updated;
+    });
+  };
+
+  const handleSetCoverPhoto = (itemIndex: number, photoIndex: number) => {
+    if (photoIndex === 0) return;
+    setItems((prev) => {
+      const updated = [...prev];
+      const currentImages = [...(updated[itemIndex]?.images || [])];
+      const [chosen] = currentImages.splice(photoIndex, 1);
+      currentImages.unshift(chosen);
+      updated[itemIndex] = { ...updated[itemIndex], images: currentImages };
+      return updated;
+    });
+    setPreviewPhotoIndex(0);
+  };
+
   const handleAddNewItem = () => {
     const newItem: JourneyTimelineItem = {
-      id: `journey-${Date.now()}`,
-      year: "2026 — EN COURS",
-      title: "Nouvelle Réalisation / Expérience",
-      titleEn: "New Engineering Achievement",
-      organization: "Organisation ou Établissement",
+      id: `hackathon-${Date.now()}`,
+      year: "2026 — 2027",
+      title: "Nouveau Hackathon / Compétition d'Ingénierie",
+      titleEn: "New Competitive Hackathon & Engineering Sprint",
+      organization: "Organisateur / Événement",
       location: "Fès, Maroc",
       type: "experience",
-      categoryLabel: "EXPÉRIENCE",
-      categoryLabelEn: "EXPERIENCE",
-      tags: [{ name: "Ingénierie Logicielle", color: "standard" }],
+      categoryLabel: "COMPÉTITION",
+      categoryLabelEn: "COMPETITION",
+      award: "Prix / Podium",
+      awardEn: "Award / Podium",
+      awardColor: "#A855F7",
+      status: "completed",
+      challenge: "Défi technique imposé lors du sprint 48H.",
+      challengeEn: "Technical sprint challenge under time constraints.",
+      solution: "Prototype logiciel et architecture déployés avec succès.",
+      solutionEn: "Shipped software prototype and architecture.",
+      githubUrl: "",
+      demoUrl: "",
+      images: [],
+      tags: [{ name: "IA & Systèmes", color: "#A855F7" }],
     };
 
     setItems((prev) => [...prev, newItem]);
@@ -123,11 +254,23 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
   const handleDeleteItem = (index: number) => {
     if (items.length <= 1) {
-      setErrorMessage("Le parcours doit contenir au moins une étape.");
+      setErrorMessage("La section doit contenir au moins un hackathon ou sprint.");
       return;
     }
     setItems((prev) => prev.filter((_, i) => i !== index));
     setActiveItemIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleResetToDefaultHackathons = () => {
+    if (
+      window.confirm(
+        "Voulez-vous charger la configuration recommandée des Hackathons (Google Build with Gemma, UPF Robotics, Prochains Sprints) ?"
+      )
+    ) {
+      setItems(DEFAULT_HACKATHONS);
+      setActiveItemIndex(0);
+      setSuccessMessage("Modèle des Hackathons chargés. Pensez à enregistrer vos modifications.");
+    }
   };
 
   const handleSave = async () => {
@@ -147,7 +290,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
         throw new Error(data.error || "Erreur lors de l'enregistrement.");
       }
 
-      setSuccessMessage("Parcours et tags enregistrés avec succès !");
+      setSuccessMessage("Hackathons, photographies et tags enregistrés avec succès !");
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
@@ -160,34 +303,54 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
       {/* Top Action Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/10 bg-[#121316]/60 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-[#C8F122]/10 border border-[#C8F122]/20 text-[#C8F122]">
-            <Milestone className="size-5" />
+          <div className="p-2.5 rounded-lg bg-[#A855F7]/10 border border-[#A855F7]/20 text-[#A855F7]">
+            <Trophy className="size-5" />
           </div>
           <div>
             <h2 className="font-display text-base font-bold text-[#FFFFFF]">
-              Étapes du Parcours ({items.length})
+              Hackathons & Compétitions ({items.length})
             </h2>
             <p className="font-mono text-xs text-[#A1A1AA]">
-              Gérez les formations, expériences et personnalisez les tags avec leurs couleurs
+              Gérez vos sprints 48H, ajoutez les photos de terrain, vos défis techniques et vos repos GitHub
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleResetToDefaultHackathons}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-mono font-medium text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/20 transition-colors cursor-pointer"
+            title="Charger les 3 hackathons officiels par défaut (Gemma, UPF Robotics, Upcoming)"
+          >
+            <RotateCcw className="size-3.5" />
+            <span>Hackathons par défaut</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowReorderModal(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-2 text-xs font-mono font-medium text-cyan-400 hover:bg-cyan-400/20 transition-colors cursor-pointer"
+            title="Ouvrir la vue pour réorganiser l'ordre de tous les hackathons"
+          >
+            <ListOrdered className="size-3.5" />
+            <span>Organiser l&apos;Ordre ({items.length})</span>
+          </button>
+
           <button
             type="button"
             onClick={handleAddNewItem}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-mono font-medium text-[#FFFFFF] hover:border-[#C8F122] hover:bg-[#C8F122]/10 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-mono font-medium text-[#FFFFFF] hover:border-[#A855F7] hover:bg-[#A855F7]/10 transition-colors cursor-pointer"
           >
-            <Plus className="size-4 text-[#C8F122]" />
-            <span>Ajouter une étape</span>
+            <Plus className="size-4 text-[#A855F7]" />
+            <span>Ajouter un Hackathon</span>
           </button>
 
           <button
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#C8F122] px-5 py-2 font-mono text-xs font-bold text-black hover:bg-[#a882ff] transition-all shadow-md shadow-[#C8F122]/20 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#C8F122] px-5 py-2 font-mono text-xs font-bold text-black hover:bg-[#b0d912] transition-all shadow-md shadow-[#C8F122]/20 disabled:opacity-50 cursor-pointer"
           >
             {isSaving ? (
               <>
@@ -219,68 +382,113 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
         </div>
       )}
 
-      {/* Main Grid: Item Selector Sidebar + Detail Editor */}
+      {/* Main Grid: Hackathon Selector Sidebar + Detail Editor */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left List of Timeline Items */}
+        {/* Left List of Hackathons */}
         <div className="lg:col-span-4 space-y-2">
           <div className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] px-1 mb-2">
-            Chronologie ({items.length})
+            Compétitions Documentées ({items.length})
           </div>
 
-          <div className="space-y-2 max-h-[700px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10">
+          <div className="space-y-2 max-h-[750px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10">
             {items.map((item, index) => {
               const isSelected = index === activeItemIndex;
+              const photoCount = item.images?.length || 0;
               return (
                 <div
                   key={item.id}
                   onClick={() => setActiveItemIndex(index)}
                   className={`group relative p-3.5 rounded-xl border transition-all cursor-pointer text-left ${
                     isSelected
-                      ? "border-[#C8F122] bg-[#C8F122]/10 shadow-lg shadow-[#C8F122]/5"
+                      ? "border-[#A855F7] bg-[#A855F7]/10 shadow-lg shadow-[#A855F7]/5"
                       : "border-white/10 bg-[#121316]/40 hover:border-white/20 hover:bg-[#121316]/80"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="font-mono text-[10px] font-bold text-[#C8F122] uppercase tracking-wider">
-                      {item.year || "Période"}
+                    <span className="font-mono text-[10px] font-bold text-[#A855F7] uppercase tracking-wider">
+                      {item.year || "Date"}
                     </span>
-                    <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[#A1A1AA]">
-                      {item.type === "experience" ? "Expérience" : "Formation"}
+                    <span
+                      className="text-[9.5px] font-mono px-2 py-0.5 rounded-full border border-white/10"
+                      style={{
+                        color: item.awardColor || "#F59E0B",
+                        borderColor: `${item.awardColor || "#F59E0B"}40`,
+                        backgroundColor: `${item.awardColor || "#F59E0B"}15`,
+                      }}
+                    >
+                      {item.award ? item.award.split("—")[0].trim() : "Sprint"}
                     </span>
                   </div>
 
-                  <h4 className="font-display text-sm font-bold text-[#FFFFFF] line-clamp-1 group-hover:text-[#C8F122] transition-colors">
+                  <h4 className="font-display text-sm font-bold text-[#FFFFFF] line-clamp-1 group-hover:text-[#A855F7] transition-colors">
                     {item.title}
                   </h4>
                   <p className="text-xs text-[#A1A1AA] line-clamp-1 mt-0.5">
                     {item.organization}
                   </p>
 
-                  {/* Tags Preview Pills */}
-                  <div className="flex flex-wrap gap-1 mt-2.5">
-                    {item.tags.slice(0, 3).map((tag, tIdx) => (
-                      <span
-                        key={tIdx}
-                        style={
-                          tag.color && tag.color !== "standard"
-                            ? { color: tag.color, borderColor: `${tag.color}40`, backgroundColor: `${tag.color}15` }
-                            : undefined
+                  {/* Photo count indicator, Visibility & Quick Reorder */}
+                  <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/[0.06] text-[10px] font-mono">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleVisibility(index);
+                        }}
+                        title={
+                          item.enabled !== false
+                            ? "Affiché sur le site (Cliquer pour masquer)"
+                            : "Masqué (Cliquer pour afficher)"
                         }
-                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
-                          tag.color === "standard" || !tag.color
-                            ? "border-white/10 bg-white/[0.04] text-[#A1A1AA]"
-                            : ""
+                        className={`p-1 rounded transition-colors cursor-pointer ${
+                          item.enabled !== false
+                            ? "text-emerald-400 hover:bg-emerald-400/20"
+                            : "text-white/30 hover:bg-white/10"
                         }`}
                       >
-                        {tag.name}
+                        {item.enabled !== false ? (
+                          <Eye className="size-3.5" />
+                        ) : (
+                          <EyeOff className="size-3.5 text-amber-400" />
+                        )}
+                      </button>
+                      <span className="text-[#A1A1AA] flex items-center gap-1">
+                        <Camera className="size-3 text-white/50" />
+                        <span>{photoCount === 0 ? "0" : `${photoCount}`}</span>
                       </span>
-                    ))}
-                    {item.tags.length > 3 && (
-                      <span className="text-[9px] font-mono text-[#A1A1AA] self-center">
-                        +{item.tags.length - 3}
+                    </div>
+
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveItem(index, "up");
+                        }}
+                        disabled={index === 0}
+                        title="Monter d'un rang"
+                        className="p-1 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
+                      >
+                        <ArrowUp className="size-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveItem(index, "down");
+                        }}
+                        disabled={index === items.length - 1}
+                        title="Descendre d'un rang"
+                        className="p-1 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
+                      >
+                        <ArrowDown className="size-3" />
+                      </button>
+                      <span className="font-bold text-cyan-400 px-1.5 py-0.5 rounded bg-cyan-400/10 border border-cyan-400/20 ml-1">
+                        #{index + 1}
                       </span>
-                    )}
+                    </div>
                   </div>
                 </div>
               );
@@ -291,23 +499,64 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
         {/* Right Active Item Editor */}
         {activeItem && (
           <div className="lg:col-span-8 space-y-6 rounded-2xl border border-white/10 bg-[#121316]/50 p-6 backdrop-blur-xl">
-            {/* Header with reordering & delete */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            {/* Header: Identity & Delete */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-[#C8F122] uppercase tracking-wider">
-                  Étape #{activeItemIndex + 1}
+                <span className="font-mono text-xs font-bold text-[#A855F7] uppercase tracking-wider">
+                  Hackathon #{activeItemIndex + 1}
                 </span>
                 <span className="text-white/20">|</span>
-                <span className="text-xs text-[#A1A1AA]">{activeItem.id}</span>
+                <span className="text-xs font-mono text-[#A1A1AA]">{activeItem.id}</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleDeleteItem(activeItemIndex)}
+                title="Supprimer ce hackathon"
+                className="p-1.5 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer text-xs font-mono flex items-center gap-1.5"
+              >
+                <Trash2 className="size-3.5" />
+                <span>Supprimer</span>
+              </button>
+            </div>
+
+            {/* Barre de Contrôle : Ordre d'affichage & Visibilité */}
+            <div className="p-3.5 rounded-xl border border-white/15 bg-white/[0.02] flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
+                  <ListOrdered className="size-4" />
+                  <span>Ordre d&apos;affichage :</span>
+                </span>
+                <select
+                  value={activeItemIndex}
+                  onChange={(e) => handleMoveToPosition(activeItemIndex, Number(e.target.value))}
+                  className="rounded-lg border border-white/15 bg-[#121316] px-3 py-1.5 font-mono text-xs text-white focus:border-cyan-400 focus:outline-none cursor-pointer"
+                >
+                  {items.map((_, pIdx) => (
+                    <option key={pIdx} value={pIdx}>
+                      Position #{pIdx + 1} {pIdx === 0 ? "★ (1ère carte / En avant)" : pIdx === items.length - 1 ? "(Dernière carte)" : ""}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
+                  onClick={() => handleMoveToTop(activeItemIndex)}
+                  disabled={activeItemIndex === 0}
+                  title="Placer en 1ère position (À la une)"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-xs font-mono text-white/80 hover:text-white hover:border-cyan-400 disabled:opacity-25 cursor-pointer"
+                >
+                  <ArrowUpToLine className="size-3.5 text-cyan-400" />
+                  <span>1er</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleMoveItem(activeItemIndex, "up")}
                   disabled={activeItemIndex === 0}
-                  title="Monter dans le parcours"
-                  className="p-1.5 rounded-lg border border-white/10 text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/20 disabled:opacity-30 cursor-pointer"
+                  title="Monter d'un rang"
+                  className="p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-white/80 hover:text-white hover:border-white/20 disabled:opacity-25 cursor-pointer"
                 >
                   <ArrowUp className="size-4" />
                 </button>
@@ -315,18 +564,44 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   type="button"
                   onClick={() => handleMoveItem(activeItemIndex, "down")}
                   disabled={activeItemIndex === items.length - 1}
-                  title="Descendre dans le parcours"
-                  className="p-1.5 rounded-lg border border-white/10 text-[#A1A1AA] hover:text-[#FFFFFF] hover:border-white/20 disabled:opacity-30 cursor-pointer"
+                  title="Descendre d'un rang"
+                  className="p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-white/80 hover:text-white hover:border-white/20 disabled:opacity-25 cursor-pointer"
                 >
                   <ArrowDown className="size-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDeleteItem(activeItemIndex)}
-                  title="Supprimer cette étape"
-                  className="p-1.5 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors ml-2 cursor-pointer"
+                  onClick={() => handleMoveToBottom(activeItemIndex)}
+                  disabled={activeItemIndex === items.length - 1}
+                  title="Placer en dernière position"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-xs font-mono text-white/80 hover:text-white hover:border-white/20 disabled:opacity-25 cursor-pointer"
                 >
-                  <Trash2 className="size-4" />
+                  <ArrowDownToLine className="size-3.5" />
+                  <span>Fin</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleToggleVisibility(activeItemIndex)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer ${
+                    activeItem.enabled !== false
+                      ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-sm"
+                      : "border border-amber-500/30 bg-amber-500/10 text-amber-400"
+                  }`}
+                >
+                  {activeItem.enabled !== false ? (
+                    <>
+                      <Eye className="size-3.5" />
+                      <span>Affiché sur le site</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="size-3.5" />
+                      <span>Masqué du site</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -335,126 +610,110 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Titre Français *
+                  Titre du Hackathon / Compétition (Français) *
                 </label>
                 <input
                   type="text"
                   value={activeItem.title}
                   onChange={(e) => updateItemField(activeItemIndex, "title", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Titre Anglais (EN) *
+                  Titre du Hackathon (Anglais - EN) *
                 </label>
                 <input
                   type="text"
                   value={activeItem.titleEn}
                   onChange={(e) => updateItemField(activeItemIndex, "titleEn", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Organisation / Entreprise / École *
+                  Organisateur / Entité / Événement *
                 </label>
                 <input
                   type="text"
                   value={activeItem.organization}
                   onChange={(e) => updateItemField(activeItemIndex, "organization", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Période / Année (ex: 2023 — EN COURS) *
+                  Période / Date (ex: Juillet 2026) *
                 </label>
                 <input
                   type="text"
                   value={activeItem.year}
                   onChange={(e) => updateItemField(activeItemIndex, "year", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Lieu (ex: Fès, Maroc)
+                  Lieu (ex: Afrique du Nord, Fès, Maroc)
                 </label>
                 <input
                   type="text"
                   value={activeItem.location}
                   onChange={(e) => updateItemField(activeItemIndex, "location", e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Type
+                  Statut du Hackathon
                 </label>
                 <select
-                  value={activeItem.type}
-                  onChange={(e) =>
-                    updateItemField(activeItemIndex, "type", e.target.value as "education" | "experience")
-                  }
-                  className="w-full rounded-lg border border-white/10 bg-[#121316] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
-                >
-                  <option value="experience">Expérience Professionnelle / Compétition</option>
-                  <option value="education">Formation / Diplôme</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
-                  Statut de l&apos;étape (En cours vs Terminé)
-                </label>
-                <select
-                  value={activeItem.status || (activeItem.year?.toUpperCase().includes("EN COURS") ? "in_progress" : "completed")}
+                  value={activeItem.status || "completed"}
                   onChange={(e) =>
                     updateItemField(activeItemIndex, "status", e.target.value as "completed" | "in_progress")
                   }
-                  className="w-full rounded-lg border border-white/10 bg-[#121316] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
+                  className="w-full rounded-lg border border-white/10 bg-[#121316] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none cursor-pointer"
                 >
-                  <option value="completed">Terminé / Effectué</option>
-                  <option value="in_progress">En cours actuellement</option>
+                  <option value="completed">Terminé / Podium Validé</option>
+                  <option value="in_progress">En cours / Inscription Confirmée</option>
                 </select>
               </div>
 
-              {/* Award / Distinction Optional */}
-              <div className="space-y-1.5 sm:col-span-2 p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/[0.04]">
+              {/* Distinction / Prix Spécial */}
+              <div className="space-y-1.5 sm:col-span-2 p-3.5 rounded-xl border border-purple-500/20 bg-purple-500/[0.04]">
                 <div className="flex items-center gap-2 mb-1">
-                  <Award className="size-4 text-amber-400" />
-                  <span className="font-mono text-xs font-bold text-amber-300 uppercase tracking-wider">
-                    Distinction ou Prix Spécial (Optionnel)
+                  <Award className="size-4 text-purple-400" />
+                  <span className="font-mono text-xs font-bold text-purple-300 uppercase tracking-wider">
+                    Distinction, Prix ou Rang Obtenu
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="sm:col-span-2 space-y-2">
                     <input
                       type="text"
-                      placeholder="Distinction en français (ex: 3ème Prix National...)"
+                      placeholder="Ex: 1ʳᵉ Place — Champion Régional, 3ᵉ Prix National..."
                       value={activeItem.award || ""}
                       onChange={(e) => updateItemField(activeItemIndex, "award", e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-purple-400 focus:outline-none"
                     />
                     <input
                       type="text"
-                      placeholder="Distinction en anglais (ex: 3rd National Prize, 1st Regional Place...)"
+                      placeholder="Ex: 1st Place — Regional Champion, 3rd National Prize..."
                       value={activeItem.awardEn || ""}
                       onChange={(e) => updateItemField(activeItemIndex, "awardEn", e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-purple-400 focus:outline-none"
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs text-[#A1A1AA]">Couleur :</span>
                     <input
                       type="color"
-                      value={activeItem.awardColor || "#F59E0B"}
+                      value={activeItem.awardColor || "#A855F7"}
                       onChange={(e) => updateItemField(activeItemIndex, "awardColor", e.target.value)}
                       className="size-8 rounded border border-white/20 bg-transparent cursor-pointer"
                     />
@@ -463,16 +722,476 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               </div>
             </div>
 
-            {/* TAGS SECTION WITH CUSTOM COLOR OR STANDARD */}
+            {/* --- SECTION 1: GESTION DES PHOTOS DE TERRAIN (DEMANDE UTILISATEUR) --- */}
+            <div className="space-y-4 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
+                    <Camera className="size-4 text-[#A855F7]" />
+                    <span>Photographies & Clichés de Terrain</span>
+                  </h3>
+                  <p className="font-mono text-xs text-[#A1A1AA]">
+                    Ajoutez les photos de votre hackathon (remise de trophée, stand, écran de live code, soutenance devant les jurys).
+                  </p>
+                </div>
+                <span className="font-mono text-xs text-[#A1A1AA]">
+                  {(activeItem.images || []).length} photo{(activeItem.images || []).length > 1 ? "s" : ""}
+                </span>
+              </div>
+
+              {/* Photo Input URL Form */}
+              <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/80 space-y-3">
+                <div className="font-mono text-xs uppercase tracking-wider text-[#A855F7] font-bold">
+                  {"// Ajouter une nouvelle photo (Mode Multi-photos Instagram)"}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Collez l'URL de la photo (ex: https://... ou /images/hackathons/gemma-podium.jpg)"
+                      value={newPhotoUrl}
+                      onChange={(e) => setNewPhotoUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddPhoto(activeItemIndex);
+                        }
+                      }}
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddPhoto(activeItemIndex)}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#A855F7]/40 bg-[#A855F7]/15 px-4 py-2 font-mono text-xs font-bold text-[#A855F7] hover:bg-[#A855F7] hover:text-white transition-all cursor-pointer shrink-0"
+                  >
+                    <Plus className="size-4" />
+                    <span>Ajouter la photo</span>
+                  </button>
+                </div>
+                <p className="text-[11px] font-mono text-white/40">
+                  Ajoutez plusieurs clichés par hackathon pour activer le carrousel style Instagram avec pagination à points et flèches de navigation.
+                </p>
+              </div>
+
+              {/* Photo Framing & Dimensioning Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border border-white/10 bg-[#121316]/80">
+                {/* Focal Point / Vertical Alignment */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
+                      <Sliders className="size-3.5" />
+                      <span>Point Focal / Cadrage Vertical</span>
+                    </label>
+                    <span className="font-mono text-[10px] text-white/50">
+                      Actuel : {activeItem.imagePosition || "center"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: "top", label: "Haut", desc: "Visages & Trophées" },
+                      { id: "center", label: "Centre", desc: "Équilibré (Standard)" },
+                      { id: "bottom", label: "Bas", desc: "Robots & Matériel" },
+                    ].map((pos) => {
+                      const isSelected = (activeItem.imagePosition || "center") === pos.id;
+                      return (
+                        <button
+                          key={pos.id}
+                          type="button"
+                          onClick={() => updateItemField(activeItemIndex, "imagePosition", pos.id)}
+                          className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                            isSelected
+                              ? "border-cyan-400 bg-cyan-400/15 text-white shadow-sm"
+                              : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
+                          }`}
+                        >
+                          <div className="font-mono text-xs font-bold">{pos.label}</div>
+                          <div className="text-[10px] text-white/45 mt-0.5">{pos.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Dimensioning / Fit Mode */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
+                      <Maximize2 className="size-3.5" />
+                      <span>Mode de Remplissage (Dimensionnement)</span>
+                    </label>
+                    <span className="font-mono text-[10px] text-white/50">
+                      Actuel : {activeItem.imageFit || "cover"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "cover", label: "Plein Cadre (Cover)", desc: "Remplit 100% de la carte sans bandes" },
+                      { id: "contain", label: "Image Complète (Contain)", desc: "Affiche toute la photo avec bordures" },
+                    ].map((fit) => {
+                      const isSelected = (activeItem.imageFit || "cover") === fit.id;
+                      return (
+                        <button
+                          key={fit.id}
+                          type="button"
+                          onClick={() => updateItemField(activeItemIndex, "imageFit", fit.id as "cover" | "contain")}
+                          className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                            isSelected
+                              ? "border-cyan-400 bg-cyan-400/15 text-white shadow-sm"
+                              : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
+                          }`}
+                        >
+                          <div className="font-mono text-xs font-bold">{fit.label}</div>
+                          <div className="text-[10px] text-white/45 mt-0.5">{fit.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Interactive Instagram Card Simulator */}
+              <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs uppercase tracking-wider text-white/80 font-semibold flex items-center gap-2">
+                    <Layers className="size-4 text-cyan-400" />
+                    <span>Simulateur en Direct : Rendu Carte Portfolio</span>
+                  </span>
+                  {(activeItem.images || []).length > 1 && (
+                    <span className="font-mono text-[11px] text-cyan-400">
+                      Carrousel Instagram actif ({activeItem.images!.length} clichés)
+                    </span>
+                  )}
+                </div>
+
+                <div className="relative mx-auto max-w-sm h-[380px] rounded-2xl overflow-hidden border border-white/20 bg-[#0d0e12] shadow-2xl select-none group">
+                  {/* Photo Display with active framing settings */}
+                  {(activeItem.images || []).length > 0 ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={activeItem.images![previewPhotoIndex % activeItem.images!.length]}
+                      alt="Aperçu simulateur"
+                      style={{
+                        objectFit: activeItem.imageFit || "cover",
+                        objectPosition: activeItem.imagePosition || "center",
+                      }}
+                      className="size-full transition-all duration-300"
+                    />
+                  ) : (
+                    <div className="size-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-[#181920] to-[#07080a]">
+                      <Camera className="size-10 text-white/20 mb-2" />
+                      <span className="font-mono text-xs text-white/40">Aucune photo ajoutée pour ce hackathon</span>
+                    </div>
+                  )}
+
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/20 pointer-events-none" />
+
+                  {/* Badge Top Left */}
+                  <div className="absolute top-3.5 left-3.5 z-20">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15">
+                      <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="font-mono text-[9px] font-semibold tracking-wider text-cyan-400 uppercase">
+                        HACKATHON & EVENT
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Instagram Counter Top Right */}
+                  <div className="absolute top-3.5 right-3.5 z-20">
+                    {(activeItem.images || []).length > 1 ? (
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono font-bold text-white/90">
+                        <Layers className="size-3 text-cyan-400" />
+                        <span>
+                          {(previewPhotoIndex % activeItem.images!.length) + 1}/{activeItem.images!.length}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="font-mono text-[10px] font-bold text-white/40 px-2 py-0.5 rounded-full bg-black/40 border border-white/10">
+                        #{activeItemIndex + 1}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Instagram Interactive Navigation Arrows */}
+                  {(activeItem.images || []).length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewPhotoIndex(
+                            (prev) => (prev - 1 + activeItem.images!.length) % activeItem.images!.length
+                          )
+                        }
+                        className="absolute left-2.5 top-1/2 -translate-y-1/2 z-30 size-8 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black transition-all"
+                        title="Photo précédente"
+                      >
+                        <ChevronLeft className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewPhotoIndex((prev) => (prev + 1) % activeItem.images!.length)
+                        }
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 z-30 size-8 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black transition-all"
+                        title="Photo suivante"
+                      >
+                        <ChevronRight className="size-4" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Instagram Indicator Dots */}
+                  {(activeItem.images || []).length > 1 && (
+                    <div className="absolute bottom-16 inset-x-0 z-30 flex items-center justify-center gap-1.5">
+                      {activeItem.images!.map((_, dotIdx) => (
+                        <button
+                          key={dotIdx}
+                          type="button"
+                          onClick={() => setPreviewPhotoIndex(dotIdx)}
+                          className={`transition-all rounded-full cursor-pointer ${
+                            dotIdx === previewPhotoIndex % activeItem.images!.length
+                              ? "w-4 h-1 bg-cyan-400 shadow-[0_0_8px_rgba(56,189,248,0.9)]"
+                              : "size-1 bg-white/40 hover:bg-white/70"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Bottom Caption Preview */}
+                  <div className="absolute inset-x-0 bottom-0 z-20 p-4">
+                    <div className="flex items-center min-w-0">
+                      <span
+                        className="w-1 h-4 rounded-full shrink-0 mr-2.5"
+                        style={{
+                          backgroundColor: activeItem.awardColor || "#38BDF8",
+                        }}
+                      />
+                      <h4 className="font-sans text-xs sm:text-sm font-bold text-white tracking-tight line-clamp-1">
+                        {activeItem.title || "Titre du hackathon"}
+                      </h4>
+                    </div>
+                    <p className="pl-3.5 mt-1 font-mono text-[10px] text-white/50 truncate">
+                      {activeItem.organization} · {activeItem.year}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photos Gallery Grid or Empty State */}
+              <div className="space-y-2">
+                <div className="font-mono text-xs uppercase tracking-wider text-white/70 font-semibold">
+                  Gestion des clichés ({activeItem.images?.length || 0})
+                </div>
+                {(activeItem.images || []).length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.01] p-6 text-center space-y-2">
+                    <div className="size-10 mx-auto rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#A1A1AA]">
+                      <Camera className="size-5" />
+                    </div>
+                    <h4 className="font-mono text-xs font-semibold text-white/90">
+                      Aucune photo pour ce hackathon pour l&apos;instant
+                    </h4>
+                    <p className="font-mono text-[11px] text-[#A1A1AA] max-w-md mx-auto">
+                      Dès que vous ajoutez une URL d&apos;image ci-dessus, elle s&apos;affichera en temps réel dans le simulateur et dans votre portfolio public.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {(activeItem.images || []).map((imgUrl, pIdx) => (
+                      <div
+                        key={pIdx}
+                        className={`group relative rounded-xl border p-2.5 space-y-2 transition-all ${
+                          pIdx === previewPhotoIndex % activeItem.images!.length
+                            ? "border-cyan-400/50 bg-cyan-400/[0.03]"
+                            : "border-white/10 bg-white/[0.03]"
+                        }`}
+                      >
+                        <div
+                          className="relative aspect-[4/3] rounded-lg overflow-hidden bg-black/40 border border-white/10 cursor-pointer"
+                          onClick={() => setPreviewPhotoIndex(pIdx)}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={imgUrl}
+                            alt={`Aperçu Hackathon ${pIdx + 1}`}
+                            className="size-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = "none";
+                            }}
+                          />
+                          {/* Photo badges */}
+                          <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+                            <span className="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-md font-mono text-[9px] text-[#A855F7] font-bold">
+                              #{pIdx + 1}
+                            </span>
+                            {pIdx === 0 && (
+                              <span className="px-1.5 py-0.5 rounded bg-amber-400 text-black font-mono text-[8.5px] font-bold flex items-center gap-0.5 shadow-sm">
+                                <Star className="size-2.5 fill-black" />
+                                <span>Couverture</span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-mono text-[10px] text-[#A1A1AA] truncate max-w-[120px]" title={imgUrl}>
+                            {imgUrl}
+                          </span>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            {pIdx > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => handleSetCoverPhoto(activeItemIndex, pIdx)}
+                                title="Définir comme photo #1 (Couverture principale de la carte)"
+                                className="px-1.5 py-0.5 rounded text-amber-400 hover:bg-amber-400/20 cursor-pointer flex items-center gap-1 font-mono text-[9px] border border-amber-400/30"
+                              >
+                                <Star className="size-2.5 fill-amber-400" />
+                                <span>1ère</span>
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleMovePhoto(activeItemIndex, pIdx, "left")}
+                              disabled={pIdx === 0}
+                              title="Déplacer vers la gauche"
+                              className="p-1 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
+                            >
+                              <ArrowUp className="size-3 -rotate-90" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMovePhoto(activeItemIndex, pIdx, "right")}
+                              disabled={pIdx === (activeItem.images?.length || 1) - 1}
+                              title="Déplacer vers la droite"
+                              className="p-1 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
+                            >
+                              <ArrowDown className="size-3 -rotate-90" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemovePhoto(activeItemIndex, pIdx)}
+                              title="Supprimer la photo"
+                              className="p-1 rounded text-red-400 hover:bg-red-400/20 cursor-pointer ml-1"
+                            >
+                              <Trash2 className="size-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* --- SECTION 2: BRIEFING TECHNIQUE (DÉFI 48H & PROTOTYPE LIVRÉ) --- */}
+            <div className="space-y-4 pt-4 border-t border-white/10">
+              <div>
+                <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
+                  <Terminal className="size-4 text-amber-400" />
+                  <span>Dossier Technique & Briefing Sprint</span>
+                </h3>
+                <p className="font-mono text-xs text-[#A1A1AA]">
+                  Documentez le défi technique imposé par les jurys et la solution d&apos;ingénierie que vous avez conçue et livrée.
+                </p>
+              </div>
+
+              {/* Défi 48H Imposé */}
+              <div className="space-y-3 p-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.03]">
+                <div className="flex items-center gap-2">
+                  <Terminal className="size-4 text-amber-400" />
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
+                    Défi 48H Imposé par les Jurys
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <textarea
+                    rows={2}
+                    placeholder="Défi en français (ex: Concevoir et déployer en 48h une application à fort impact sociétal exploitant Gemma 2...)"
+                    value={activeItem.challenge || ""}
+                    onChange={(e) => updateItemField(activeItemIndex, "challenge", e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
+                  />
+                  <textarea
+                    rows={2}
+                    placeholder="Défi en anglais (ex: Design and ship within 48 hours a high-impact applied solution leveraging Google Gemma 2...)"
+                    value={activeItem.challengeEn || ""}
+                    onChange={(e) => updateItemField(activeItemIndex, "challengeEn", e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Prototype Livré & Architecture */}
+              <div className="space-y-3 p-4 rounded-xl border border-[#C8F122]/20 bg-[#C8F122]/[0.03]">
+                <div className="flex items-center gap-2">
+                  <Zap className="size-4 text-[#C8F122]" />
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#C8F122]">
+                    Prototype d&apos;Ingénierie Livré
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <textarea
+                    rows={2}
+                    placeholder="Solution en français (ex: SignBridge : Pipeline de vision temps réel avec MediaPipe relié à Gemma 2 LoRA...)"
+                    value={activeItem.solution || ""}
+                    onChange={(e) => updateItemField(activeItemIndex, "solution", e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  />
+                  <textarea
+                    rows={2}
+                    placeholder="Solution en anglais (ex: SignBridge: Real-time computer vision pipeline with MediaPipe coupled with fine-tuned Gemma 2...)"
+                    value={activeItem.solutionEn || ""}
+                    onChange={(e) => updateItemField(activeItemIndex, "solutionEn", e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Liens GitHub & Démo */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA] flex items-center gap-1.5">
+                    <GithubIcon className="size-3.5" />
+                    <span>Lien Repository GitHub</span>
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://github.com/Amine-NAHLI/..."
+                    value={activeItem.githubUrl || ""}
+                    onChange={(e) => updateItemField(activeItemIndex, "githubUrl", e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none font-mono text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA] flex items-center gap-1.5">
+                    <ExternalLink className="size-3.5" />
+                    <span>Lien Démo ou Vidéo Live (Optionnel)</span>
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={activeItem.demoUrl || ""}
+                    onChange={(e) => updateItemField(activeItemIndex, "demoUrl", e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* --- SECTION 3: TAGS & STACK DU HACKATHON --- */}
             <div className="space-y-4 pt-4 border-t border-white/10">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
                     <Sparkles className="size-4 text-[#C8F122]" />
-                    <span>Tags & Compétences de cette étape</span>
+                    <span>Stack Technique & Tags du Sprint</span>
                   </h3>
                   <p className="font-mono text-xs text-[#A1A1AA]">
-                    Ajoutez des tags et choisissez soit la couleur standard neutre, soit vos couleurs personnalisées
+                    Ajoutez les technologies utilisées pendant le sprint et personnalisez leurs couleurs.
                   </p>
                 </div>
               </div>
@@ -481,7 +1200,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               <div className="flex flex-wrap gap-2 p-3.5 rounded-xl border border-white/10 bg-white/[0.02] min-h-[50px] items-center">
                 {activeItem.tags.length === 0 ? (
                   <span className="text-xs font-mono text-[#A1A1AA] italic">
-                    Aucun tag pour le moment. Ajoutez-en ci-dessous.
+                    Aucun tag technique pour le moment.
                   </span>
                 ) : (
                   activeItem.tags.map((tag, tagIdx) => {
@@ -522,20 +1241,20 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 )}
               </div>
 
-              {/* Tag Builder (Input + Mode + Color Presets) */}
+              {/* Tag Builder */}
               <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/80 space-y-4">
                 <div className="font-mono text-xs uppercase tracking-wider text-[#C8F122] font-bold">
-                  {"// Nouveau Tag"}
+                  {"// Nouveau Tag Technique"}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                   <div className="sm:col-span-6 space-y-1.5">
                     <label className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
-                      Intitulé du Tag
+                      Intitulé de la Techno
                     </label>
                     <input
                       type="text"
-                      placeholder="Ex: Cybersécurité, Zero-Trust, Python..."
+                      placeholder="Ex: Google Gemma 2, PyTorch, LoRA, C++ Embarqué..."
                       value={newTagName}
                       onChange={(e) => setNewTagName(e.target.value)}
                       onKeyDown={(e) => {
@@ -557,8 +1276,8 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                       onChange={(e) => setNewTagMode(e.target.value as "standard" | "custom")}
                       className="w-full rounded-lg border border-white/10 bg-[#121316] px-3 py-2 text-xs font-mono text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
                     >
-                      <option value="standard">⚪ Standard (Simple)</option>
-                      <option value="custom">🎨 Personnalisé</option>
+                      <option value="standard">Standard (Neutre)</option>
+                      <option value="custom">Personnalisé</option>
                     </select>
                   </div>
 
@@ -574,13 +1293,13 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                   </div>
                 </div>
 
-                {/* Color Chooser (Presets + Color Picker) when in Custom Mode */}
+                {/* Color Chooser */}
                 {newTagMode === "custom" && (
                   <div className="pt-2 border-t border-white/[0.06] space-y-3">
                     <div className="flex items-center gap-2">
                       <Palette className="size-3.5 text-[#C8F122]" />
                       <span className="font-mono text-xs text-[#A1A1AA]">
-                        Choisissez une couleur vibrante prédéfinie ou libre :
+                        Couleur prédéfinie ou libre :
                       </span>
                     </div>
 
@@ -617,21 +1336,6 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                         <span className="font-mono text-xs text-[#FFFFFF] uppercase">{newTagColor}</span>
                       </div>
                     </div>
-
-                    {/* Live Badge Preview */}
-                    <div className="flex items-center gap-3 pt-2">
-                      <span className="font-mono text-[11px] text-[#A1A1AA]">Aperçu du rendu :</span>
-                      <span
-                        style={{
-                          color: newTagColor,
-                          borderColor: `${newTagColor}45`,
-                          backgroundColor: `${newTagColor}15`,
-                        }}
-                        className="inline-flex items-center rounded-md border px-3 py-0.5 font-mono text-xs font-semibold shadow-[0_0_15px_rgba(0,0,0,0.5)]"
-                      >
-                        {newTagName.trim() || "Aperçu Tag"}
-                      </span>
-                    </div>
                   </div>
                 )}
               </div>
@@ -639,6 +1343,135 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
           </div>
         )}
       </div>
+
+      {/* Modal : Réorganisation Visuelle de l'Ordre */}
+      {showReorderModal && (
+        <div
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl"
+          onClick={() => setShowReorderModal(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border border-white/20 bg-[#0e0f14] p-6 shadow-2xl space-y-5 scrollbar-thin scrollbar-thumb-white/10"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2.5">
+                <ListOrdered className="size-5 text-cyan-400" />
+                <div>
+                  <h3 className="font-display text-lg font-bold text-white">
+                    Organiser l&apos;Ordre d&apos;Affichage
+                  </h3>
+                  <p className="font-mono text-xs text-white/50">
+                    Définissez l&apos;ordre exact des cartes dans le portfolio (1ère, 2ème, 3ème...)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReorderModal(false)}
+                className="size-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {items.map((it, idx) => (
+                <div
+                  key={it.id}
+                  className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${
+                    idx === activeItemIndex
+                      ? "border-cyan-400 bg-cyan-400/10"
+                      : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="size-7 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center font-mono text-xs font-bold text-cyan-400 shrink-0">
+                      #{idx + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-sans text-sm font-bold text-white truncate">
+                        {it.title}
+                      </div>
+                      <div className="font-mono text-xs text-white/40 truncate">
+                        {it.organization} · {it.year}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleVisibility(idx)}
+                      title={it.enabled !== false ? "Affiché sur le site" : "Masqué"}
+                      className={`p-1.5 rounded-lg border text-xs font-mono transition-colors cursor-pointer ${
+                        it.enabled !== false
+                          ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
+                          : "border-white/10 bg-white/[0.03] text-white/30"
+                      }`}
+                    >
+                      {it.enabled !== false ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMoveToTop(idx)}
+                      disabled={idx === 0}
+                      title="Placer en 1ère position"
+                      className="p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-cyan-400 hover:bg-cyan-400/20 disabled:opacity-20 cursor-pointer"
+                    >
+                      <ArrowUpToLine className="size-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMoveItem(idx, "up")}
+                      disabled={idx === 0}
+                      title="Monter d'un rang"
+                      className="p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-white/70 hover:text-white disabled:opacity-20 cursor-pointer"
+                    >
+                      <ArrowUp className="size-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMoveItem(idx, "down")}
+                      disabled={idx === items.length - 1}
+                      title="Descendre d'un rang"
+                      className="p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-white/70 hover:text-white disabled:opacity-20 cursor-pointer"
+                    >
+                      <ArrowDown className="size-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMoveToBottom(idx)}
+                      disabled={idx === items.length - 1}
+                      title="Placer en dernière position"
+                      className="p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
+                    >
+                      <ArrowDownToLine className="size-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+              <span className="font-mono text-xs text-white/50">
+                Les modifications sont appliquées immédiatement. Pensez à enregistrer avec le bouton vert.
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowReorderModal(false)}
+                className="px-4 py-2 rounded-lg bg-cyan-400 text-black font-mono text-xs font-bold hover:bg-cyan-300 transition-colors cursor-pointer"
+              >
+                Terminer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,9 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
 import type { GitHubStats } from "@/lib/github";
+import { NumberTicker } from "@/components/magicui/number-ticker";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import { DotPattern } from "@/components/magicui/dot-pattern";
 
 interface GitHubContributionsSceneProps {
   locale: Locale;
@@ -185,6 +188,16 @@ export default function GitHubContributionsScene({
       id="github"
       className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
     >
+      {/* Architectural Dot Pattern (Magic UI) */}
+      <DotPattern
+        width={24}
+        height={24}
+        cx={1}
+        cy={1}
+        cr={1}
+        className="fill-white/[0.04] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_50%,transparent_100%)] -z-10"
+      />
+
       {/* Ambient Depth Spotlights (optimized radial gradients, zero blur filter cost) */}
       <div
         aria-hidden="true"
@@ -241,14 +254,21 @@ export default function GitHubContributionsScene({
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           
           {/* Card 1: Real Total Contributions */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
+          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
+            <BorderBeam
+              size={180}
+              duration={7}
+              colorFrom="#C8F122"
+              colorTo="#38BDF8"
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            />
             <div className="text-xs font-mono uppercase tracking-wider text-text-muted mb-5">
               {locale === "fr" ? "Volume Annuel" : "Annual Volume"}
             </div>
 
             <div className="flex items-baseline gap-3">
               <span className="font-display text-4xl sm:text-5xl font-black text-text-primary tracking-tight">
-                {stats.totalContributions}
+                <NumberTicker value={stats.totalContributions} />
               </span>
               <span className="text-xs font-mono text-accent font-bold uppercase tracking-wider">
                 {locale === "fr" ? "Contributions" : "Contributions"}
@@ -263,14 +283,21 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 2: Real Public Repositories */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
+          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
+            <BorderBeam
+              size={180}
+              duration={7}
+              colorFrom="#38BDF8"
+              colorTo="#A855F7"
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            />
             <div className="text-xs font-mono uppercase tracking-wider text-text-muted mb-5">
               {locale === "fr" ? "Dépôts Publics" : "Public Repositories"}
             </div>
 
             <div className="flex items-baseline gap-3">
               <span className="font-display text-4xl sm:text-5xl font-black text-text-primary tracking-tight">
-                {stats.totalRepositories}
+                <NumberTicker value={stats.totalRepositories} />
               </span>
               <span className="text-xs font-mono text-accent font-bold uppercase tracking-wider">
                 {locale === "fr" ? "Projets Ouverts" : "Open Repos"}
@@ -285,7 +312,14 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 3: Real Dominant Stack Distribution */}
-          <div className="github-anim-card relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
+          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
+            <BorderBeam
+              size={180}
+              duration={7}
+              colorFrom="#A855F7"
+              colorTo="#C8F122"
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            />
             <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-text-muted mb-4">
               <span>{locale === "fr" ? "Stack Dominante" : "Core Tech Stack"}</span>
               <span className="text-text-primary font-semibold">{stats.topLanguage?.name || "Python"}</span>

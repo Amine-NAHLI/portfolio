@@ -18,7 +18,7 @@ type ProjectSummaryCardProps = {
 export default function ProjectSummaryCard({ project, locale, cta }: ProjectSummaryCardProps) {
   return (
     <TiltCard className="h-full">
-      <article className="group relative flex h-full flex-col bg-bg-page/60 backdrop-blur-xl border border-border rounded-2xl overflow-hidden transition-all duration-500 hover:border-accent/40 shadow-xl hover:shadow-[0_0_30px_-10px_rgba(var(--color-accent-rgb),0.2)]">
+      <article className="group relative flex h-full flex-col bg-bg-page/60 backdrop-blur-xl border border-border rounded-2xl overflow-hidden transition-all duration-500 hover:border-accent/40 shadow-xl hover:shadow-2xl">
         
         {/* Cover Image Area */}
         <div className="relative aspect-video w-full overflow-hidden bg-surface-raised">
@@ -53,9 +53,6 @@ export default function ProjectSummaryCard({ project, locale, cta }: ProjectSumm
         
         {/* Content Area */}
         <div className="relative flex flex-col flex-1 p-5 z-10 -mt-2">
-          {/* Glowing dot effect */}
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent/20 blur-[50px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
           <h2 className="text-xl font-semibold text-text-primary tracking-tight transition-colors duration-300 group-hover:text-accent">
             {project.title}
           </h2>

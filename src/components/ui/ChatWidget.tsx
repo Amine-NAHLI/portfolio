@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Maximize2, Minimize2, RotateCcw, Sparkles, Terminal, Volume2, VolumeX, X } from "lucide-react";
+import { CornerDownLeft, Maximize2, Minimize2, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
 import Chatbot3DAvatar from "./Chatbot3DAvatar";
 
 type EntryRole = "banner" | "input" | "stdout" | "error" | "muted" | "ai";
@@ -355,9 +355,6 @@ function MagneticLauncherButton({
   const innerX = useTransform(springX, (v) => v * 0.45);
   const innerY = useTransform(springY, (v) => v * 0.45);
 
-  // Ambient glow scale mapped to spring glow
-  const glowScale = useTransform(springGlow, [0, 1], [0.85, 1.4]);
-
   useEffect(() => {
     // Disable magnetic pull on mobile / coarse pointer or when terminal is open
     if (typeof window === "undefined" || isOpen) {
@@ -418,18 +415,6 @@ function MagneticLauncherButton({
 
   return (
     <div className="relative">
-      {/* Soft Ambient Glow Aura behind 3D mascot */}
-      <motion.div
-        aria-hidden="true"
-        style={{
-          opacity: springGlow,
-          x: springX,
-          y: springY,
-          scale: glowScale,
-        }}
-        className="pointer-events-none absolute -inset-2 rounded-full bg-accent/20 blur-2xl transition-colors duration-300"
-      />
-
       {/* 3D Model Floating Launcher Button (Fully Integrated & Frameless) */}
       <motion.button
         ref={buttonRef}
@@ -475,7 +460,7 @@ function MagneticLauncherButton({
             aria-hidden="true"
             className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full border border-border-strong/90 bg-surface/95 dark:bg-[#121218]/95 px-3 py-1 text-[11px] font-semibold text-text-primary shadow-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-y-1 group-hover:translate-y-0 whitespace-nowrap z-30"
           >
-            <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+            <span className="size-1.5 rounded-full bg-accent" />
             <span>{locale === "fr" ? "Assistant IA" : "AI Assistant"}</span>
             <span className="font-mono text-[9px] text-text-muted">ESC</span>
           </div>
@@ -1179,7 +1164,7 @@ export default function ChatWidget() {
 
     while ((match = linkRegex.exec(content)) !== null) {
       if (match.index > lastIndex) {
-        parts.push(renderBoldSegments(content.slice(lastIndex, match.index), lastIndex));
+        parts.push(renderFormattedSegments(content.slice(lastIndex, match.index), lastIndex));
       }
       const isExternal = match[2].startsWith("http");
       parts.push(
@@ -1189,7 +1174,7 @@ export default function ChatWidget() {
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
           onClick={(e) => e.stopPropagation()}
-          className="text-accent underline decoration-accent/60 underline-offset-2 hover:text-text-primary hover:decoration-text-primary transition-colors"
+          className="text-accent underline decoration-accent/60 underline-offset-2 hover:text-text-primary hover:decoration-text-primary transition-colors font-medium"
         >
           {match[1]}
         </a>
@@ -1198,28 +1183,70 @@ export default function ChatWidget() {
     }
 
     if (lastIndex < content.length) {
-      parts.push(renderBoldSegments(content.slice(lastIndex), lastIndex));
+      parts.push(renderFormattedSegments(content.slice(lastIndex), lastIndex));
     }
     return parts;
   };
 
-  const renderBoldSegments = (text: string, baseKey: number) => {
-    const chunks = text.split(/\*\*([^*]+)\*\*/g);
-    return chunks.map((chunk, i) =>
-      i % 2 === 1 ? (
-        <strong key={`b-${baseKey}-${i}`} className="font-semibold text-text-primary">
-          {chunk}
-        </strong>
-      ) : (
-        <React.Fragment key={`t-${baseKey}-${i}`}>{chunk}</React.Fragment>
-      )
-    );
+  const renderFormattedSegments = (text: string, baseKey: number) => {
+    // 1. Parse inline code blocks `code`
+    const codeChunks = text.split(/`([^`]+)`/g);
+    return codeChunks.map((chunk, i) => {
+      if (i % 2 === 1) {
+        return (
+          <code
+            key={`c-${baseKey}-${i}`}
+            className="px-1.5 py-0.5 mx-0.5 rounded bg-surface-raised border border-border text-accent text-[11px] font-mono select-all inline-block align-baseline font-medium"
+          >
+            {chunk}
+          </code>
+        );
+      }
+      // 2. Parse bold segments **bold** in prose
+      const boldChunks = chunk.split(/\*\*([^*]+)\*\*/g);
+      return boldChunks.map((sub, j) =>
+        j % 2 === 1 ? (
+          <strong key={`b-${baseKey}-${i}-${j}`} className="font-semibold text-text-primary">
+            {sub}
+          </strong>
+        ) : (
+          <React.Fragment key={`t-${baseKey}-${i}-${j}`}>{sub}</React.Fragment>
+        )
+      );
+    });
   };
 
-  const safeCursor = Math.max(0, Math.min(cursorPos, inputValue.length));
+  const suggestionChips = [
+    {
+      label: locale === "fr" ? "Résumé du profil" : "Profile Summary",
+      prompt:
+        locale === "fr"
+          ? "Fais-moi un résumé percutant du profil et des atouts d'Amine Nahli"
+          : "Give me a compelling summary of Amine Nahli's profile and key strengths",
+    },
+    {
+      label: locale === "fr" ? "Projets phares" : "Key Projects",
+      prompt: "projects",
+    },
+    {
+      label: locale === "fr" ? "Cybersécurité & IA" : "Cyber & AI Stack",
+      prompt:
+        locale === "fr"
+          ? "Quelles sont les compétences d'Amine en Cybersécurité, IA et Développement ?"
+          : "What are Amine's skills in Cybersecurity, AI, and Software Engineering?",
+    },
+    {
+      label: locale === "fr" ? "Télécharger le CV" : "Download CV",
+      prompt: "cv",
+    },
+    {
+      label: locale === "fr" ? "Commandes CLI" : "Terminal commands",
+      prompt: "help",
+    },
+  ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -1232,8 +1259,8 @@ export default function ChatWidget() {
             data-lenis-prevent-touch="true"
             className={`absolute bottom-[5.25rem] sm:bottom-[6rem] right-0 flex flex-col overflow-hidden rounded-xl border border-border-strong/90 bg-surface-raised shadow-[0_24px_70px_rgba(0,0,0,0.35)] dark:bg-[#07070B]/95 dark:border-white/10 dark:shadow-[0_28px_80px_rgba(0,0,0,0.95)] font-mono text-[12px] backdrop-blur-2xl transition-all duration-200 overscroll-contain ${
               isExpanded
-                ? "w-[94vw] sm:w-[720px] lg:w-[820px] h-[calc(100dvh-7.5rem)] max-h-[82vh]"
-                : "w-[92vw] max-w-[440px] sm:w-[560px] sm:max-w-none h-[460px] max-h-[calc(100dvh-7.5rem)]"
+                ? "w-[calc(100vw-2rem)] sm:w-[720px] lg:w-[820px] h-[calc(100dvh-7.5rem)] max-h-[82vh]"
+                : "w-[calc(100vw-2rem)] sm:w-[560px] h-[480px] max-h-[calc(100dvh-7.5rem)]"
             }`}
           >
             {/* Terminal Window Header */}
@@ -1241,8 +1268,8 @@ export default function ChatWidget() {
               <div className="flex items-center gap-2 text-[11px] text-text-secondary">
                 <span className="relative flex size-2 shrink-0">
                   <span
-                    className={`absolute inline-flex size-full rounded-full opacity-75 ${
-                      isLoading ? "bg-warning animate-ping" : "bg-accent animate-pulse"
+                    className={`absolute inline-flex size-full rounded-full opacity-40 ${
+                      isLoading ? "bg-warning animate-ping" : "bg-accent"
                     }`}
                   />
                   <span
@@ -1369,38 +1396,38 @@ export default function ChatWidget() {
                 );
               })}
 
-              {/* Authentic TTY Inline Prompt */}
+              {/* Quick Action Suggestion Chips for 1-Tap Queries */}
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1 px-0.5 no-scrollbar select-none pt-2">
+                {suggestionChips.map((chip, idx) => (
+                  <button
+                    key={`chip-${idx}`}
+                    type="button"
+                    onClick={() => executeInput(chip.prompt)}
+                    disabled={isLoading}
+                    className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-mono bg-surface border border-border hover:border-accent hover:text-accent text-text-secondary active:scale-95 transition-all cursor-pointer disabled:opacity-40"
+                  >
+                    <span>{chip.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Authentic TTY Inline Prompt with Native Touch & Desktop Input */}
               {!isLoading && (
-                <div className="relative flex flex-wrap items-baseline gap-x-1.5 pt-1">
-                  <span className="shrink-0 select-none">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    executeInput(inputValue);
+                  }}
+                  className="relative flex items-center gap-2 pt-2 border-t border-border/40 mt-1"
+                >
+                  <span className="shrink-0 select-none flex items-center gap-1 text-[11px] sm:text-[12px]">
                     <span className="text-success font-medium">visitor@nahli.dev</span>
                     <span className="text-text-muted">:</span>
                     <span className="text-accent font-medium">{virtualPath}</span>
                     <span className="text-text-muted">$</span>
                   </span>
 
-                  <span className="text-text-primary whitespace-pre-wrap break-all font-mono text-[12px]">
-                    {inputValue.slice(0, safeCursor)}
-                    <span
-                      aria-hidden="true"
-                      className={`inline-block min-w-[7px] px-[0.5px] leading-[1.3] align-baseline ${
-                        isFocused
-                          ? "bg-accent text-text-on-accent animate-[pulse_1.1s_steps(2,start)_infinite]"
-                          : "border border-accent/65 text-text-primary"
-                      }`}
-                    >
-                      {inputValue[safeCursor] ?? "\u00A0"}
-                    </span>
-                    {inputValue.slice(safeCursor + 1)}
-                  </span>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      executeInput(inputValue);
-                    }}
-                    className="absolute left-0 top-0 opacity-0 pointer-events-none w-px h-px overflow-hidden"
-                  >
+                  <div className="relative flex-1 flex items-center min-w-0">
                     <input
                       ref={inputRef}
                       type="text"
@@ -1420,12 +1447,85 @@ export default function ChatWidget() {
                       autoCapitalize="off"
                       spellCheck={false}
                       aria-label="Terminal stdin"
+                      placeholder={
+                        isFocused
+                          ? ""
+                          : locale === "fr"
+                          ? "Tapez 'help' ou une question..."
+                          : "Type 'help' or any question..."
+                      }
+                      className="w-full bg-transparent text-text-primary outline-none border-none font-mono text-[16px] sm:text-[12px] p-0 placeholder:text-text-muted/40"
                     />
-                  </form>
-                </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!inputValue.trim()}
+                    aria-label="Send command"
+                    title={locale === "fr" ? "Envoyer (Entrée)" : "Send (Enter)"}
+                    className="shrink-0 flex items-center justify-center size-6 sm:size-5 rounded bg-accent text-text-on-accent disabled:opacity-20 disabled:pointer-events-none hover:brightness-110 active:scale-95 transition-all cursor-pointer shadow-sm"
+                  >
+                    <CornerDownLeft className="size-3.5 sm:size-3 stroke-[2.5]" />
+                  </button>
+                </form>
               )}
 
               <div ref={scrollEndRef} />
+            </div>
+
+            {/* Mobile Touch Quick Helper Toolbar */}
+            <div className="flex sm:hidden items-center justify-between gap-1 px-3 py-1.5 bg-surface dark:bg-[#07070B] border-t border-border text-[10px] font-mono select-none">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={handleTabComplete}
+                  className="px-2 py-0.5 rounded bg-surface-raised border border-border active:bg-accent/20 active:text-accent text-text-secondary"
+                >
+                  Tab ⇥
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (history.length > 0) {
+                      const nextIdx = Math.min(historyIndex + 1, history.length - 1);
+                      setHistoryIndex(nextIdx);
+                      setInputAndCursor(history[nextIdx] || "");
+                    }
+                  }}
+                  disabled={history.length === 0}
+                  className="px-2 py-0.5 rounded bg-surface-raised border border-border active:bg-accent/20 active:text-accent disabled:opacity-30 text-text-secondary"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (historyIndex > 0) {
+                      const prevIdx = historyIndex - 1;
+                      setHistoryIndex(prevIdx);
+                      setInputAndCursor(history[prevIdx] || "");
+                    } else if (historyIndex === 0) {
+                      setHistoryIndex(-1);
+                      setInputAndCursor("");
+                    }
+                  }}
+                  disabled={historyIndex < 0}
+                  className="px-2 py-0.5 rounded bg-surface-raised border border-border active:bg-accent/20 active:text-accent disabled:opacity-30 text-text-secondary"
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={clearTerminal}
+                  className="px-2 py-0.5 rounded bg-surface-raised border border-border active:bg-accent/20 active:text-accent text-text-secondary"
+                >
+                  Clear
+                </button>
+              </div>
+
+              <span className="text-text-muted truncate">
+                AmineOS
+              </span>
             </div>
 
             {/* Minimal tmux-style TTY Statusline */}

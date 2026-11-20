@@ -6,7 +6,7 @@ import { hasSupabasePublicConfig } from "@/lib/env/supabase";
 import { createPublicClient } from "@/lib/supabase/public";
 import { siteConfig } from "@/config/site";
 
-import { DEFAULT_JOURNEY_TIMELINE, type JourneyTimelineItem } from "@/types/journey";
+import { DEFAULT_HACKATHONS, type JourneyTimelineItem } from "@/types/journey";
 
 export type PublicJourneyEntry = {
   id: string;
@@ -255,7 +255,7 @@ const featuredHomeCertificationsCache = unstable_cache(
 export const getFeaturedHomeCertificationIds = () => featuredHomeCertificationsCache();
 
 async function queryJourneyTimeline(): Promise<JourneyTimelineItem[]> {
-  if (!hasSupabasePublicConfig()) return DEFAULT_JOURNEY_TIMELINE;
+  if (!hasSupabasePublicConfig()) return DEFAULT_HACKATHONS;
   try {
     const { data, error } = await createPublicClient()
       .from("site_settings")
@@ -263,21 +263,35 @@ async function queryJourneyTimeline(): Promise<JourneyTimelineItem[]> {
       .eq("key", "journey_timeline")
       .single();
     if (error || !data || !Array.isArray(data.value) || data.value.length === 0) {
-      return DEFAULT_JOURNEY_TIMELINE;
+      return DEFAULT_HACKATHONS;
     }
-    // Normalize items and tags
-    return (data.value as Record<string, unknown>[]).map((item, idx) => ({
-      id: String(item.id || `journey-${idx}`),
+    // Normalize items, tags, images and technical sprint challenge/solution fields
+    const parsed = (data.value as Record<string, unknown>[]).map((item, idx) => ({
+      id: String(item.id || `hackathon-${idx}`),
       year: String(item.year || ""),
       title: String(item.title || ""),
       titleEn: String(item.titleEn || item.title || ""),
       organization: String(item.organization || ""),
       location: String(item.location || ""),
-      type: item.type === "experience" ? ("experience" as const) : ("education" as const),
-      categoryLabel: String(item.categoryLabel || (item.type === "experience" ? "EXPÉRIENCE" : "FORMATION")),
-      categoryLabelEn: String(item.categoryLabelEn || (item.type === "experience" ? "EXPERIENCE" : "EDUCATION")),
+      type: item.type === "education" ? ("education" as const) : ("experience" as const),
+      categoryLabel: String(item.categoryLabel || "COMPÉTITION"),
+      categoryLabelEn: String(item.categoryLabelEn || "COMPETITION"),
       award: item.award ? String(item.award) : undefined,
+      awardEn: item.awardEn ? String(item.awardEn) : undefined,
       awardColor: item.awardColor ? String(item.awardColor) : "#F59E0B",
+      status: item.status === "in_progress" ? ("in_progress" as const) : ("completed" as const),
+      challenge: item.challenge ? String(item.challenge) : undefined,
+      challengeEn: item.challengeEn ? String(item.challengeEn) : undefined,
+      solution: item.solution ? String(item.solution) : undefined,
+      solutionEn: item.solutionEn ? String(item.solutionEn) : undefined,
+      githubUrl: item.githubUrl ? String(item.githubUrl) : undefined,
+      demoUrl: item.demoUrl ? String(item.demoUrl) : undefined,
+      images: Array.isArray(item.images)
+        ? (item.images as unknown[]).map((img) => String(img).trim()).filter((img) => img.length > 0)
+        : [],
+      imageFit: item.imageFit === "contain" ? ("contain" as const) : ("cover" as const),
+      imagePosition: item.imagePosition ? String(item.imagePosition) : "center",
+      enabled: item.enabled !== false,
       tags: Array.isArray(item.tags)
         ? item.tags.map((t: unknown) =>
             typeof t === "string"
@@ -286,8 +300,19 @@ async function queryJourneyTimeline(): Promise<JourneyTimelineItem[]> {
           )
         : [],
     }));
+
+    // If existing records were old academic entries without hackathons, fallback to DEFAULT_HACKATHONS
+    const hasHackathons = parsed.some(
+      (item) =>
+        item.categoryLabel?.toLowerCase().includes("compétition") ||
+        item.categoryLabel?.toLowerCase().includes("robotique") ||
+        item.id?.includes("hackathon") ||
+        item.award !== undefined
+    );
+
+    return hasHackathons ? parsed : DEFAULT_HACKATHONS;
   } catch {
-    return DEFAULT_JOURNEY_TIMELINE;
+    return DEFAULT_HACKATHONS;
   }
 }
 

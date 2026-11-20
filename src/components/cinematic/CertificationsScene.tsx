@@ -140,7 +140,7 @@ export default function CertificationsScene({
                 certification={cert}
                 locale={locale}
                 copy={{
-                  verify: locale === "fr" ? "Vérifier le certificat" : "Verify Credential",
+                  verify: locale === "fr" ? "Vérifier la certification" : "Verify Credential",
                   close: locale === "fr" ? "Fermer" : "Close",
                 }}
               />

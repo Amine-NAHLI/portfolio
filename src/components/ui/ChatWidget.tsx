@@ -2,8 +2,9 @@
 
 import React, { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { Maximize2, Minimize2, RotateCcw, Terminal, Volume2, VolumeX, X } from "lucide-react";
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Maximize2, Minimize2, RotateCcw, Sparkles, Terminal, Volume2, VolumeX, X } from "lucide-react";
+import Chatbot3DAvatar from "./Chatbot3DAvatar";
 
 type EntryRole = "banner" | "input" | "stdout" | "error" | "muted" | "ai";
 
@@ -319,6 +320,169 @@ function getPageShellContext(virtualPath: string, locale: "fr" | "en"): PageShel
       ].join("\n"),
     },
   };
+}
+
+interface MagneticLauncherButtonProps {
+  isOpen: boolean;
+  isLoading?: boolean;
+  onClick: () => void;
+  locale: "fr" | "en";
+}
+
+function MagneticLauncherButton({
+  isOpen,
+  isLoading,
+  onClick,
+  locale,
+}: MagneticLauncherButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const rawGlow = useMotionValue(0);
+
+  // High-performance damped spring physics (ultra-fluid, zero jitter)
+  const springConfig = { damping: 16, stiffness: 180, mass: 0.15 };
+  const springX = useSpring(rawX, springConfig);
+  const springY = useSpring(rawY, springConfig);
+  const springGlow = useSpring(rawGlow, { damping: 20, stiffness: 200 });
+
+  // 3D Tilt angles mapped directly to displacement
+  const rotateX = useTransform(springY, [-32, 32], [10, -10]);
+  const rotateY = useTransform(springX, [-32, 32], [-10, 10]);
+
+  // Dual-layer parallax: inner content moves faster for 3D depth
+  const innerX = useTransform(springX, (v) => v * 0.45);
+  const innerY = useTransform(springY, (v) => v * 0.45);
+
+  // Ambient glow scale mapped to spring glow
+  const glowScale = useTransform(springGlow, [0, 1], [0.85, 1.4]);
+
+  useEffect(() => {
+    // Disable magnetic pull on mobile / coarse pointer or when terminal is open
+    if (typeof window === "undefined" || isOpen) {
+      rawX.set(0);
+      rawY.set(0);
+      rawGlow.set(0);
+      return;
+    }
+
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (isTouch) return;
+
+    const RADIUS = 140; // Magnetic zone in pixels
+    const MAX_PULL = 28; // Max displacement in pixels
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch" || !buttonRef.current) return;
+
+      const rect = buttonRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist < RADIUS) {
+        const factor = Math.pow(1 - dist / RADIUS, 0.85);
+        const pullX = Math.max(-MAX_PULL, Math.min(MAX_PULL, dx * 0.35 * factor));
+        const pullY = Math.max(-MAX_PULL, Math.min(MAX_PULL, dy * 0.35 * factor));
+
+        rawX.set(pullX);
+        rawY.set(pullY);
+        rawGlow.set(factor);
+      } else if (rawGlow.get() > 0) {
+        rawX.set(0);
+        rawY.set(0);
+        rawGlow.set(0);
+      }
+    };
+
+    const handlePointerLeave = () => {
+      rawX.set(0);
+      rawY.set(0);
+      rawGlow.set(0);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("blur", handlePointerLeave);
+    document.addEventListener("mouseleave", handlePointerLeave);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("blur", handlePointerLeave);
+      document.removeEventListener("mouseleave", handlePointerLeave);
+    };
+  }, [isOpen, rawX, rawY, rawGlow]);
+
+  return (
+    <div className="relative">
+      {/* Soft Ambient Glow Aura behind 3D mascot */}
+      <motion.div
+        aria-hidden="true"
+        style={{
+          opacity: springGlow,
+          x: springX,
+          y: springY,
+          scale: glowScale,
+        }}
+        className="pointer-events-none absolute -inset-2 rounded-full bg-accent/20 blur-2xl transition-colors duration-300"
+      />
+
+      {/* 3D Model Floating Launcher Button (Fully Integrated & Frameless) */}
+      <motion.button
+        ref={buttonRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          x: springX,
+          y: springY,
+          rotateX,
+          rotateY,
+          transformPerspective: 600,
+        }}
+        whileHover={{ scale: 1.12 }}
+        whileTap={{ scale: 0.92 }}
+        onClick={onClick}
+        className="group relative flex size-16 sm:size-20 items-center justify-center bg-transparent border-0 p-0 cursor-pointer overflow-visible will-change-transform select-none focus:outline-none"
+        aria-label={
+          isOpen
+            ? locale === "fr"
+              ? "Fermer le terminal (ESC)"
+              : "Close terminal (ESC)"
+            : locale === "fr"
+            ? "Ouvrir l'Assistant IA 3D"
+            : "Open 3D AI Assistant"
+        }
+      >
+        {/* Parallax 3D Model Canvas Container */}
+        <motion.div
+          style={{ x: innerX, y: innerY }}
+          className="relative flex size-full items-center justify-center overflow-visible pointer-events-none"
+        >
+          <Chatbot3DAvatar
+            size={72}
+            isHovered={isHovered}
+            isOpen={isOpen}
+            isLoading={isLoading}
+          />
+        </motion.div>
+
+        {/* Floating Tooltip on Hover (cleanly shown ONLY when chat is closed to prevent any overlap) */}
+        {!isOpen && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full border border-border-strong/90 bg-surface/95 dark:bg-[#121218]/95 px-3 py-1 text-[11px] font-semibold text-text-primary shadow-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-y-1 group-hover:translate-y-0 whitespace-nowrap z-30"
+          >
+            <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+            <span>{locale === "fr" ? "Assistant IA" : "AI Assistant"}</span>
+            <span className="font-mono text-[9px] text-text-muted">ESC</span>
+          </div>
+        )}
+      </motion.button>
+    </div>
+  );
 }
 
 export default function ChatWidget() {
@@ -1066,16 +1230,27 @@ export default function ChatWidget() {
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
-            className={`absolute bottom-14 right-0 mb-2 flex flex-col overflow-hidden rounded-lg border border-border-strong bg-surface-raised shadow-[0_24px_70px_rgba(33,42,49,0.22)] dark:bg-[#050507] dark:shadow-[0_28px_80px_rgba(0,0,0,0.95)] font-mono text-[12px] transition-all duration-200 overscroll-contain ${
+            className={`absolute bottom-[5.25rem] sm:bottom-[6rem] right-0 flex flex-col overflow-hidden rounded-xl border border-border-strong/90 bg-surface-raised shadow-[0_24px_70px_rgba(0,0,0,0.35)] dark:bg-[#07070B]/95 dark:border-white/10 dark:shadow-[0_28px_80px_rgba(0,0,0,0.95)] font-mono text-[12px] backdrop-blur-2xl transition-all duration-200 overscroll-contain ${
               isExpanded
-                ? "w-[94vw] sm:w-[720px] lg:w-[820px] h-[82vh] max-h-[82vh]"
-                : "w-[92vw] max-w-[440px] sm:w-[560px] sm:max-w-none h-[460px] max-h-[78vh]"
+                ? "w-[94vw] sm:w-[720px] lg:w-[820px] h-[calc(100dvh-7.5rem)] max-h-[82vh]"
+                : "w-[92vw] max-w-[440px] sm:w-[560px] sm:max-w-none h-[460px] max-h-[calc(100dvh-7.5rem)]"
             }`}
           >
             {/* Terminal Window Header */}
             <div className="flex items-center justify-between border-b border-border bg-surface dark:bg-[#0C0B10] px-3.5 py-2 select-none">
               <div className="flex items-center gap-2 text-[11px] text-text-secondary">
-                <span className="inline-block size-2 rounded-sm bg-accent" />
+                <span className="relative flex size-2 shrink-0">
+                  <span
+                    className={`absolute inline-flex size-full rounded-full opacity-75 ${
+                      isLoading ? "bg-warning animate-ping" : "bg-accent animate-pulse"
+                    }`}
+                  />
+                  <span
+                    className={`relative inline-flex size-2 rounded-full ${
+                      isLoading ? "bg-warning" : "bg-accent"
+                    }`}
+                  />
+                </span>
                 <span className="font-semibold text-text-primary">
                   visitor@nahli.dev:{virtualPath}
                 </span>
@@ -1257,7 +1432,7 @@ export default function ChatWidget() {
             <div className="flex items-center justify-between border-t border-border bg-surface dark:bg-[#0B0B0C] px-3.5 py-1.5 text-[10px] text-text-muted select-none">
               <div className="flex items-center gap-2 truncate">
                 <span className="text-accent font-semibold">[tty1:{virtualPath}]</span>
-                <span className="truncate">Tab: complete · ↑↓: history · Ctrl+L: clear · Ctrl+C: abort</span>
+                <span className="truncate">Tab: complete · ↑↓: history · Ctrl+L: clear · Esc: close</span>
               </div>
               <span className={`shrink-0 font-semibold ${isLoading ? "text-warning" : "text-success"}`}>
                 {isLoading ? "STREAMING" : "READY"}
@@ -1267,25 +1442,13 @@ export default function ChatWidget() {
         )}
       </AnimatePresence>
 
-      {/* Compact Floating CLI Launcher */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      {/* 3D Mascot Floating Launcher */}
+      <MagneticLauncherButton
+        isOpen={isOpen}
+        isLoading={isLoading}
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative flex h-11 w-11 hover:w-auto items-center justify-center rounded-full border border-border-strong bg-surface/95 px-3 text-text-primary shadow-[0_10px_30px_rgba(33,42,49,0.22)] dark:shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 ease-out hover:border-accent/60 hover:shadow-[0_0_24px_color-mix(in_srgb,var(--accent)_30%,transparent)] cursor-pointer overflow-hidden"
-        aria-label="Ouvrir le terminal CLI"
-      >
-        <span className="relative flex size-2 shrink-0">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />
-          <span className="relative inline-flex size-2 rounded-full bg-success" />
-        </span>
-
-        <Terminal className="size-4 text-accent shrink-0 ml-1.5 transition-transform duration-300 group-hover:rotate-6" />
-
-        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 font-mono text-xs font-semibold tracking-wider text-text-primary">
-          {isOpen ? "EXIT" : "tty1 · CLI"}
-        </span>
-      </motion.button>
+        locale={locale}
+      />
     </div>
   );
 }

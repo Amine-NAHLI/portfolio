@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import Link from "next/link";
-import { Check, Eye, FileUp, Images, Pencil, Plus, Trash2, X, Star } from "lucide-react";
+import { Check, ExternalLink, Eye, FileUp, Images, Pencil, Plus, Trash2, X, Star } from "lucide-react";
 import ProjectEditorForm from "@/components/admin/ProjectEditorForm";
 
 export type AdminWorkspaceSection = "projects" | "journey" | "certifications" | "testimonials" | "messages";
@@ -21,7 +21,7 @@ const labels: Record<AdminWorkspaceSection, { title: string; description: string
 function emptyValues(section: AdminWorkspaceSection): RecordValue {
   if (section === "projects") return { title: "", subtitle_fr: "", subtitle_en: "", description_fr: "", description_en: "", problem_fr: "", problem_en: "", solution_fr: "", solution_en: "", objectives_fr: "", objectives_en: "", architecture_fr: "", architecture_en: "", results_fr: "", results_en: "", github_url: "", demo_url: "", categories: "", technologies: "", sort_order: 0, featured: 0 };
   if (section === "journey") return { kind: "experience", title_fr: "", title_en: "", organization: "", summary_fr: "", summary_en: "", started_on: "", ended_on: "", sort_order: 0 };
-  if (section === "certifications") return { title_fr: "", title_en: "", issuer: "", issued_on: "", description_fr: "", description_en: "", document_media_id: "" };
+  if (section === "certifications") return { title_fr: "", title_en: "", issuer: "", issued_on: "", description_fr: "", description_en: "", verification_url: "", document_media_id: "" };
   return {};
 }
 
@@ -32,6 +32,7 @@ function fromRecord(section: AdminWorkspaceSection, record: RecordValue): Record
     ...record,
     title_fr: record.title_fr ?? record.name_fr ?? record.title ?? "",
     title_en: record.title_en ?? record.name_en ?? record.title ?? "",
+    verification_url: record.verification_url ?? "",
   };
   return { ...emptyValues(section), ...record };
 }
@@ -205,7 +206,7 @@ function WorkspaceTable({ section, records, onEdit, onView, onDelete, onModerate
 
   const headers = section === "projects" ? ["Titre", "GitHub", "Technologies", "Ordre"]
     : section === "journey" ? ["Type", "Titre", "Organisation", "Début"]
-      : section === "certifications" ? ["Titre", "Organisme", "Date", "PDF"]
+      : section === "certifications" ? ["Titre", "Organisme", "Date", "Lien de vérification"]
         : section === "testimonials" ? ["Nom", "Rôle", "Date", "Statut"]
           : ["Nom", "E-mail", "Sujet", "Date", "État"];
 
@@ -323,7 +324,7 @@ function Cells({ section, record }: { section: AdminWorkspaceSection; record: Re
   const cell = (value: unknown) => <td className={`max-w-64 px-4 py-3 ${isUnread ? "text-text-primary font-semibold" : "text-text-secondary"}`}><span className="line-clamp-3">{Array.isArray(value) ? value.join(", ") : String(value || "—")}</span></td>;
   if (section === "projects") return <>{cell(record.title)}{cell(record.github_url)}{cell(record.technologies)}{cell(record.sort_order)}</>;
   if (section === "journey") return <>{cell(record.kind === "experience" ? "Expérience" : "Formation")}{cell(record.title_fr)}{cell(record.organization)}{cell(record.started_on)}</>;
-  if (section === "certifications") return <>{cell(record.title)}{cell(record.issuer)}{cell(record.issued_on)}{cell(record.document_media_id ? "Ajouté" : "—")}</>;
+  if (section === "certifications") return <>{cell(record.title)}{cell(record.issuer)}{cell(record.issued_on)}{cell(record.verification_url ? <a href={String(record.verification_url)} target="_blank" rel="noreferrer" className="text-accent hover:underline inline-flex items-center gap-1 font-mono text-xs"><ExternalLink className="size-3 shrink-0" /><span className="truncate max-w-[160px]">{String(record.verification_url)}</span></a> : "—")}</>;
   if (section === "testimonials") return <>{cell(`${record.first_name ?? ""} ${record.last_name ?? ""}`.trim())}{cell(record.job_title ?? record.organization)}{cell(formatDate(record.created_at))}{cell(record.status)}</>;
   return <>{cell(record.sender_name)}{cell(record.sender_email)}{cell(record.subject)}{cell(formatDate(record.created_at))}{cell(record.status === "new" ? "Non lu" : "Lu")}</>;
 }
@@ -519,7 +520,7 @@ function EditorFields({ section, values, set, translate, translating, generateCa
     <span className="text-xs font-normal text-text-muted">Si la date est vide ou dans le futur, le parcours s’affiche « En cours ». Il passera automatiquement à la date de fin une fois atteinte.</span>
   </div>
   {field("sort_order", "Ordre d’affichage", "number")}</>;
-  return <>{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
+  return <>{field("title_fr", "Titre FR", "text", true)}{field("title_en", "Titre EN", "text", true)}{field("issuer", "Organisme", "text", true, false)}{field("issued_on", "Date", "date")}{field("verification_url", "Lien officiel de vérification (ex: https://...)", "text", true, false)}{textarea("description_fr", "Description FR", true)}{textarea("description_en", "Description EN", false, false)}{checkbox("featured", "Mettre en avant sur la page d'accueil")}<div className="grid gap-2 text-sm font-semibold text-text-primary sm:col-span-2"><span>Fichier PDF</span><input ref={pdfRef} type="file" accept="application/pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => setPdf(event.target.files?.[0] ?? null)} className="sr-only" /><button type="button" className="button-secondary w-fit" onClick={() => pdfRef.current?.click()}><FileUp className="size-4" />{pdf ? pdf.name : values.document_media_id ? "Remplacer le PDF" : "Ajouter un PDF"}</button><span className="text-xs font-normal text-text-muted">PDF uniquement, 5 Mo maximum.</span></div></>;
 }
 
 function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSection; record: RecordValue; onClose: () => void }) {
@@ -546,7 +547,13 @@ function DetailDialog({ section, record, onClose }: { section: AdminWorkspaceSec
       break;
     case "certifications":
       title = "Certification";
-      entries = [["Titre FR", record.title_fr ?? record.name_fr ?? record.title], ["Titre EN", record.title_en ?? record.name_en ?? record.title], ["Organisme", record.issuer], ["Date", formatDate(record.issued_on)]];
+      entries = [
+        ["Titre FR", record.title_fr ?? record.name_fr ?? record.title],
+        ["Titre EN", record.title_en ?? record.name_en ?? record.title],
+        ["Organisme", record.issuer],
+        ["Date", formatDate(record.issued_on)],
+        ["Lien de vérification", record.verification_url],
+      ];
       break;
   }
 

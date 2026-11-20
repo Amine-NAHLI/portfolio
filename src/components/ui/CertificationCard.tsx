@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Award, Calendar, Download, ExternalLink, LoaderCircle, Maximize2, ShieldCheck, X } from "lucide-react";
+import { Award, Calendar, ExternalLink, LoaderCircle, Maximize2, ShieldCheck, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Certification = {
@@ -308,46 +308,27 @@ export default function CertificationCard({ certification, locale, copy }: Certi
 
                       {/* Bottom Actions */}
                       <div className="pt-3 border-t border-border mt-auto flex flex-col gap-2.5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          {certification.hasDocument && (
-                            <a
-                              href={`/api/certifications/${certification.id}/document`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className={
-                                certification.verificationUrl
-                                  ? "flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-border-strong bg-text-primary/[0.04] px-4 py-2.5 text-xs font-semibold text-text-primary hover:bg-text-primary/[0.09] transition-colors"
-                                  : "flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-xs font-semibold text-text-on-accent hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
-                              }
-                            >
-                              <Download
-                                className={
-                                  certification.verificationUrl
-                                    ? "size-3.5 text-accent"
-                                    : "size-3.5 text-text-on-accent"
-                                }
-                              />
-                              <span>{locale === "fr" ? "Télécharger le PDF" : "Download PDF"}</span>
-                            </a>
-                          )}
-
-                          {certification.verificationUrl && (
-                            <a
-                              href={certification.verificationUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-xs font-semibold text-text-on-accent hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
-                            >
-                              <span>{copy.verify}</span>
-                              <ExternalLink className="size-3.5" />
-                            </a>
-                          )}
-                        </div>
+                        {certification.verificationUrl ? (
+                          <a
+                            href={certification.verificationUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-xs sm:text-sm font-bold text-text-on-accent hover:bg-accent-hover transition-all duration-200 shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:scale-[1.01]"
+                          >
+                            <ExternalLink className="size-4" />
+                            <span>{copy.verify || (locale === "fr" ? "Vérifier la certification" : "Verify Credential")}</span>
+                          </a>
+                        ) : (
+                          <div className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-border-strong bg-surface-raised px-5 py-3 text-xs font-semibold text-text-secondary select-none">
+                            <ShieldCheck className="size-4 text-accent" />
+                            <span>{locale === "fr" ? "Certification Officielle Vérifiée" : "Official Verified Credential"}</span>
+                          </div>
+                        )}
 
                         <button
                           type="button"
                           onClick={() => setOpen(false)}
-                          className="w-full inline-flex items-center justify-center rounded-full border border-border-strong bg-text-primary/[0.03] py-2 text-xs font-medium text-text-secondary hover:text-text-primary hover:border-border-strong transition-colors cursor-pointer"
+                          className="w-full inline-flex items-center justify-center rounded-full border border-border-strong bg-text-primary/[0.03] py-2.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-text-primary/[0.06] transition-colors cursor-pointer"
                         >
                           {copy.close || (locale === "fr" ? "Fermer" : "Close")}
                         </button>

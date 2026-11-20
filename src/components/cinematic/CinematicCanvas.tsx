@@ -53,21 +53,21 @@ export default function CinematicCanvas({
         aria-hidden="true"
         className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full -z-10"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-raised) 70%, transparent) 0%, transparent 70%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-raised) 50%, transparent) 0%, color-mix(in srgb, var(--surface-raised) 20%, transparent) 50%, transparent 100%)",
         }}
       />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full -z-10"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--surface) 75%, transparent) 0%, transparent 70%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface) 50%, transparent) 0%, color-mix(in srgb, var(--surface) 20%, transparent) 50%, transparent 100%)",
         }}
       />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed left-[10%] bottom-[5%] h-[800px] w-[800px] rounded-full -z-10"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-subtle) 65%, transparent) 0%, transparent 70%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-subtle) 45%, transparent) 0%, color-mix(in srgb, var(--surface-subtle) 15%, transparent) 50%, transparent 100%)",
         }}
       />
 

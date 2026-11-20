@@ -24,6 +24,7 @@
     "@gsap/react": "^2.1.2",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.3",
+    "@types/three": "^0.187.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "framer-motion": "^12.43.0",
@@ -33,7 +34,8 @@
     "next": "15.5.20",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

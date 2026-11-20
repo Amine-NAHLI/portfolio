@@ -159,7 +159,7 @@ async function getRecords(db: UntypedClient, section: Section) {
   }
 
   if (section === "certifications") {
-    const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, document_media_id, created_at, featured").order("issued_on", { ascending: false });
+    const { data, error } = await db.from("certifications").select("id, name_fr, name_en, issuer, issued_on, description_fr, description_en, verification_url, document_media_id, created_at, featured").order("issued_on", { ascending: false });
     if (error) throw error;
     return (data ?? []).map((item: Record<string, unknown>) => ({
       ...item,
@@ -405,6 +405,7 @@ async function saveCertification(db: UntypedClient, context: AdminContext, id: s
   const issuedOn = date(input.issued_on);
   const descriptionFr = text(input.description_fr, 1, 1_600);
   const descriptionEn = nullableText(input.description_en, 1_600);
+  const verificationUrl = nullableText(input.verification_url, 500);
   const documentMediaId = nullableText(input.document_media_id, 64);
   if (!titleFr || !issuedOn || !descriptionFr || (input.description_en !== undefined && input.description_en !== null && input.description_en !== "" && !descriptionEn) || (documentMediaId && !/^[0-9a-f-]{36}$/i.test(documentMediaId))) throw new ValidationError("Vérifiez les champs de la certification.");
   const previousDocument = id
@@ -425,7 +426,7 @@ async function saveCertification(db: UntypedClient, context: AdminContext, id: s
   }
   const slug = await uniqueSlug(db, "certifications", titleFr, id ?? undefined);
   const featured = Boolean(input.featured);
-  const payload = { slug, name_fr: titleFr, name_en: titleEn, issuer, issued_on: issuedOn, description_fr: descriptionFr, description_en: descriptionEn, document_media_id: documentMediaId, credential_status: "completed", publication_status: "published", skills: [], sort_order: 0, featured };
+  const payload = { slug, name_fr: titleFr, name_en: titleEn, issuer, issued_on: issuedOn, description_fr: descriptionFr, description_en: descriptionEn, verification_url: verificationUrl, document_media_id: documentMediaId, credential_status: "completed", publication_status: "published", skills: [], sort_order: 0, featured };
   const result = id ? await db.from("certifications").update(payload).eq("id", id).select("id").single() : await db.from("certifications").insert(payload).select("id").single();
   if (result.error || !result.data) {
     if (documentMediaId && documentMediaId !== previousDocumentMediaId) {
@@ -445,7 +446,7 @@ async function saveCertification(db: UntypedClient, context: AdminContext, id: s
       console.error("Certification document cleanup failed", { certificationId: recordId, error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError) });
     }
   }
-  await audit(context, id ? "update" : "create", "certifications", recordId, ["title", "issuer", "issued_on", "description_fr", "description_en", "document_media_id"]);
+  await audit(context, id ? "update" : "create", "certifications", recordId, ["title", "issuer", "issued_on", "description_fr", "description_en", "verification_url", "document_media_id"]);
   return recordId;
 }
 

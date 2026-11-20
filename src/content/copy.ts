@@ -80,7 +80,7 @@ export const publicCopy = {
       description: "Les intitulés repris ici correspondent aux éléments présents dans mon CV officiel.",
       completed: "Terminé",
       relatedSkills: "Compétences associées",
-      verify: "Consulter le profil de vérification",
+      verify: "Vérifier la certification",
     },
     journey: {
       eyebrow: "Parcours",
@@ -197,7 +197,7 @@ export const publicCopy = {
       description: "The titles shown here match the items listed in my official resume.",
       completed: "Completed",
       relatedSkills: "Related skills",
-      verify: "Open verification profile",
+      verify: "Verify Credential",
     },
     journey: {
       eyebrow: "Journey",

@@ -33,6 +33,35 @@ export type JourneyTimelineItem = {
 
 export const DEFAULT_HACKATHONS: JourneyTimelineItem[] = [
   {
+    id: "cafe-cursor-casablanca",
+    year: "2024",
+    title: "Cafe Cursor Casablanca — Building and Connecting with the Cursor Community",
+    titleEn: "Cafe Cursor Casablanca — Building and Connecting with the Cursor Community",
+    organization: "Cursor Community & Wemeet",
+    location: "Casablanca, Maroc",
+    type: "experience",
+    categoryLabel: "HACKATHON & EVENT",
+    categoryLabelEn: "HACKATHON & EVENT",
+    award: "Communauté & Développeur IA",
+    awardEn: "Community & AI Builder",
+    awardColor: "#38BDF8",
+    status: "completed",
+    challenge: "Premier rassemblement officiel de la communauté Cursor au Maroc : co-working, prototypage rapide et échanges techniques avancés autour des flux de développement assistés par IA avec Yash Gaitonde de l'équipe Cursor.",
+    challengeEn: "First official gathering of the Cursor community in Morocco: co-working, rapid prototyping, and advanced technical discussions on AI-assisted development workflows with Yash Gaitonde from the Cursor team.",
+    solution: "Sessions pratiques d'ingénierie logicielle accélérée par agents autonomes, architectures temps réel et retours d'expérience sur les patterns de code en production.",
+    solutionEn: "Hands-on accelerated software engineering sessions with autonomous agents, real-time architectures, and production code design patterns.",
+    githubUrl: "https://github.com/Amine-NAHLI",
+    images: [
+      "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/blogs/1788388400675-lygakdn1ka.png"
+    ],
+    tags: [
+      { name: "Cursor AI", color: "#38BDF8" },
+      { name: "IA Générative", color: "#C8F122" },
+      { name: "Fast Prototyping", color: "#A855F7" },
+      { name: "Casablanca", color: "standard" },
+    ],
+  },
+  {
     id: "gemma-hackathon",
     year: "Juillet 2026",
     title: "Google Build with Gemma Hackathon — 1ʳᵉ Place Régionale",
@@ -51,7 +80,9 @@ export const DEFAULT_HACKATHONS: JourneyTimelineItem[] = [
     solution: "SignBridge : Pipeline de vision par ordinateur temps réel extrayant les 21 repères articulaires des mains (MediaPipe) connecté à un modèle Gemma 2 fine-tuné (LoRA) pour la transcription fluide de la langue des signes.",
     solutionEn: "SignBridge: Real-time computer vision pipeline extracting 21 skeletal hand landmarks (MediaPipe) coupled with a fine-tuned Gemma 2 model (LoRA) for fluent sign language translation.",
     githubUrl: "https://github.com/Amine-NAHLI/signbridge",
-    images: [],
+    images: [
+      "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/images/1787344204839-f4b0iauozgm.png"
+    ],
     tags: [
       { name: "Google Gemma 2", color: "#A855F7" },
       { name: "MediaPipe Vision", color: "#38BDF8" },
@@ -78,7 +109,9 @@ export const DEFAULT_HACKATHONS: JourneyTimelineItem[] = [
     solution: "Architecture mécatronique complète : asservissement de trajectoire PID en C++, traitement de télémétrie capteurs ultrasons/IR à haute fréquence (100Hz) et gestion de puissance embarquée.",
     solutionEn: "Complete mechatronic architecture: embedded C++ closed-loop PID trajectory tracking, high-frequency ultrasonic/IR sensor telemetry (100Hz), and embedded power distribution.",
     githubUrl: "https://github.com/Amine-NAHLI",
-    images: [],
+    images: [
+      "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/blogs/1788388400675-lygakdn1ka.png"
+    ],
     tags: [
       { name: "C++ Embarqué", color: "#F59E0B" },
       { name: "Asservissement PID", color: "#10B981" },
@@ -105,7 +138,9 @@ export const DEFAULT_HACKATHONS: JourneyTimelineItem[] = [
     solution: "Préparation active des briques logicielles, templates de déploiement instantané et outillage d'audit pour des livraisons de prototypes en moins de 36 heures.",
     solutionEn: "Active preparation of reusable software modules, rapid-deployment templates, and telemetry pipelines for sub-36h prototype execution.",
     githubUrl: "https://github.com/Amine-NAHLI",
-    images: [],
+    images: [
+      "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/blogs/1788388400675-lygakdn1ka.png"
+    ],
     tags: [
       { name: "CTF Cyber Defense", color: "#10B981" },
       { name: "Agents IA Autonomes", color: "#C8F122" },

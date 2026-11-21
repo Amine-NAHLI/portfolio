@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { publicCopy } from "@/content/copy";
 import { DEFAULT_HERO_BUTTONS, type HeroActionButton } from "@/content/dynamic-copy";
-import { GeneralInfoForm } from "./GeneralInfoForm";
-import { HeroButtonsManager } from "./HeroButtonsManager";
+import { BilingualGeneralClient } from "./BilingualGeneralClient";
 
 export default async function GeneralInfoPage() {
   const supabase = await createClient();
@@ -65,14 +64,12 @@ export default async function GeneralInfoPage() {
         </div>
       </header>
 
-      {/* Hero Action Buttons Manager */}
-      <HeroButtonsManager initialButtons={heroButtons} />
-
-      {/* Bilingual Content Editor */}
-      <div className="mt-10 grid gap-8 xl:grid-cols-2 items-start">
-        <GeneralInfoForm locale="fr" title="Version Française" defaultValues={currentFr} />
-        <GeneralInfoForm locale="en" title="Version Anglaise" defaultValues={currentEn} />
-      </div>
+      {/* Clean Bilingual Client Hub */}
+      <BilingualGeneralClient
+        heroButtons={heroButtons}
+        currentFr={currentFr}
+        currentEn={currentEn}
+      />
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Award, Calendar, ExternalLink, LoaderCircle, Maximize2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BorderBeam } from "@/components/magicui/border-beam";
 
 type Certification = {
   id: string;
@@ -91,14 +90,6 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         }}
         className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-border-strong bg-surface transition-all duration-300 hover:border-accent/55 hover:-translate-y-1 hover:shadow-2xl w-full h-full cursor-pointer"
       >
-        {/* Subtle Laser Border Beam on Hover (Magic UI) */}
-        <BorderBeam
-          size={140}
-          duration={6}
-          colorFrom="#C8F122"
-          colorTo="#38BDF8"
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        />
         {/* Document Preview Frame (Realistic Exhibition Mat & Paper Sheet) */}
         <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-subtle/80 dark:bg-[#0E0E12] border-b border-border flex items-center justify-center p-3.5 sm:p-4">
           {/* Loading Skeleton */}
@@ -138,9 +129,9 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             </div>
           )}
 
-          {/* Issuer Pill Badge */}
+          {/* Issuer Pure Typography */}
           {certification.issuer && (
-            <div className="absolute top-2.5 right-2.5 z-20 rounded-full border border-border bg-surface-raised/90 px-2.5 py-0.5 backdrop-blur-md text-[10px] font-mono font-medium text-text-secondary shadow-sm">
+            <div className="absolute top-3 right-3 z-20 font-mono text-xs font-bold italic tracking-wide text-accent drop-shadow-md">
               {certification.issuer}
             </div>
           )}

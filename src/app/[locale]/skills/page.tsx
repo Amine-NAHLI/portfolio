@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import Badge from "@/components/ui/Badge";
 import Container from "@/components/ui/Container";
 import PageIntro from "@/components/ui/PageIntro";
 import PortfolioEmptyState from "@/components/ui/PortfolioEmptyState";
@@ -37,13 +36,14 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
             <TechnicalFrame key={group.id} index={String(skillGroups.indexOf(group) + 1).padStart(2, "0")} label={locale === "fr" ? "Pôle Technique" : "Technical Domain"} className="flex flex-col p-6 sm:p-7">
               <h2 className="text-2xl font-semibold text-text-primary">{group.title}</h2>
               {group.description ? <p className="mt-3 text-sm leading-6 text-text-secondary">{group.description}</p> : null}
-              <ul className="mt-6 flex flex-wrap gap-2">
-                {group.skills.map((skill) => (
-                  <li key={skill.name}>
-                    <Badge title={skill.level} className="flex items-center gap-1.5 px-3 py-1.5">
-                      <SkillIcon name={skill.name} className="text-[16px]" />
-                      <span>{skill.name}</span>
-                    </Badge>
+              <ul className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+                {group.skills.map((skill, idx) => (
+                  <li key={skill.name} className="inline-flex items-center gap-1.5 font-mono text-xs text-text-secondary hover:text-text-primary transition-colors">
+                    <SkillIcon name={skill.name} className="text-[16px]" />
+                    <span className="font-medium italic">{skill.name}</span>
+                    {idx < group.skills.length - 1 && (
+                      <span className="opacity-30 not-italic ml-2 text-text-muted">·</span>
+                    )}
                   </li>
                 ))}
               </ul>

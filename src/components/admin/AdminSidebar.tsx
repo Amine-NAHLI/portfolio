@@ -4,43 +4,79 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  LayoutDashboard, FolderKanban, Milestone, Award, MessageSquare, 
+  LayoutDashboard, FolderKanban, Award, MessageSquare, 
   Inbox, LogOut, Menu, ExternalLink, X, Settings, FileText, 
-  RefreshCw, Orbit, Languages, ShieldCheck, ChevronRight, Layers, Images
+  RefreshCw, Orbit, Languages, ShieldCheck, ChevronRight, Layers, Images,
+  Trophy
 } from "lucide-react";
 import { signOutAdmin } from "@/app/admin/(protected)/actions";
 
-const navGroups = [
+interface NavSubItem {
+  href: string;
+  label: string;
+  icon?: typeof Layers;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  badge?: string;
+  subItems?: NavSubItem[];
+}
+
+interface NavGroup {
+  title: string;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
   {
     title: "Vue d'ensemble",
     items: [
-      { href: "/admin/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
-    ]
+      { href: "/admin/dashboard", label: "Tableau de Bord", icon: LayoutDashboard, badge: "Hub" },
+    ],
   },
   {
-    title: "Gestion Contenu",
+    title: "Vitrine & Réalisations",
     items: [
-      { href: "/admin/projects", label: "Tous les Projets", icon: FolderKanban },
-      { href: "/admin/project-gallery", label: "Galerie Photos Projets", icon: Images },
-      { href: "/admin/featured-projects", label: "Projets Accueil (4)", icon: Layers },
-      { href: "/admin/journey", label: "Parcours & Tags", icon: Milestone },
-      { href: "/admin/certifications", label: "Toutes les Certifications", icon: Award },
-      { href: "/admin/featured-certifications", label: "Certifications Accueil (3)", icon: Award },
-      { href: "/admin/testimonials", label: "Avis Clients", icon: MessageSquare },
-      { href: "/admin/messages", label: "Messages Contact", icon: Inbox },
-    ]
+      {
+        href: "/admin/projects",
+        label: "Tous les Projets",
+        icon: FolderKanban,
+        subItems: [
+          { href: "/admin/featured-projects", label: "Sélection Accueil (4)", icon: Layers },
+          { href: "/admin/project-gallery", label: "Galerie Photos", icon: Images },
+        ],
+      },
+      {
+        href: "/admin/journey",
+        label: "Hackathons & Parcours",
+        icon: Trophy,
+      },
+      {
+        href: "/admin/certifications",
+        label: "Certifications",
+        icon: Award,
+        subItems: [
+          { href: "/admin/featured-certifications", label: "Sélection Accueil (3)", icon: Award },
+        ],
+      },
+      { href: "/admin/testimonials", label: "Avis & Témoignages", icon: MessageSquare },
+      { href: "/admin/messages", label: "Messages Reçus", icon: Inbox },
+    ],
   },
   {
-    title: "Configuration",
+    title: "Configuration & Profil",
     items: [
-      { href: "/admin/general", label: "Infos Générales", icon: FileText },
-      { href: "/admin/cv", label: "CV Officiel (PDF)", icon: FileText },
-      { href: "/admin/hero-tech", label: "Technologies", icon: Orbit },
-      { href: "/admin/translations", label: "Traductions", icon: Languages },
-      { href: "/admin/settings", label: "Paramètres", icon: Settings },
-    ]
-  }
-] as const;
+      { href: "/admin/general", label: "Textes & Identité", icon: FileText },
+      { href: "/admin/cv", label: "Mon CV (PDF)", icon: FileText },
+      { href: "/admin/hero-tech", label: "Technologies Clés", icon: Orbit },
+      { href: "/admin/translations", label: "Traductions FR / EN", icon: Languages },
+      { href: "/admin/settings", label: "Paramètres & Visibilité", icon: Settings },
+    ],
+  },
+];
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -57,19 +93,21 @@ export function AdminSidebar() {
   }
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-surface-subtle/80 backdrop-blur-2xl">
+    <div className="flex flex-col h-full bg-surface-subtle/90 backdrop-blur-2xl">
       {/* Brand Header */}
-      <div className="p-5 flex items-center gap-3 border-b border-border/50">
-        <div className="size-10 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center font-display text-accent font-bold shadow-md shadow-accent/10">
-          AN
-        </div>
-        <div className="flex flex-col">
-          <span className="font-display text-sm font-bold text-text-primary tracking-tight">Amine Nahli</span>
-          <span className="text-[0.65rem] font-mono font-semibold text-accent uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
-            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Control Center
-          </span>
-        </div>
+      <div className="p-5 flex items-center justify-between border-b border-border/50">
+        <Link href="/admin/dashboard" className="flex items-center gap-3 group">
+          <div className="size-10 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center font-display text-accent font-bold shadow-md shadow-accent/10 group-hover:scale-105 transition-transform">
+            AN
+          </div>
+          <div className="flex flex-col">
+            <span className="font-display text-sm font-bold text-text-primary tracking-tight">Amine Nahli</span>
+            <span className="text-[0.65rem] font-mono font-semibold text-accent uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Console Admin
+            </span>
+          </div>
+        </Link>
       </div>
 
       {/* Navigation Groups */}
@@ -81,24 +119,62 @@ export function AdminSidebar() {
             </div>
             {group.items.map((item) => {
               const active = pathname === item.href;
+              const hasActiveChild = item.subItems?.some((sub) => pathname === sub.href);
               const Icon = item.icon;
+
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl font-sans text-xs font-medium transition-all group ${
-                    active 
-                      ? "bg-accent/15 border border-accent/30 text-accent font-semibold shadow-md shadow-accent/10" 
-                      : "text-text-secondary hover:text-text-primary hover:bg-surface-raised/80"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`size-4 transition-colors ${active ? "text-accent" : "text-text-muted group-hover:text-text-primary"}`} />
-                    <span>{item.label}</span>
-                  </div>
-                  {active && <ChevronRight className="size-3.5 text-accent" />}
-                </Link>
+                <div key={item.href} className="space-y-1">
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl font-sans text-xs font-medium transition-all group ${
+                      active
+                        ? "bg-accent/15 border border-accent/30 text-accent font-semibold shadow-md shadow-accent/10"
+                        : hasActiveChild
+                        ? "bg-surface-raised/60 text-text-primary font-medium border border-border/50"
+                        : "text-text-secondary hover:text-text-primary hover:bg-surface-raised/80"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Icon className={`size-4 shrink-0 transition-colors ${active ? "text-accent" : "text-text-muted group-hover:text-text-primary"}`} />
+                      <span className="truncate">{item.label}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {item.badge && (
+                        <span className="px-1.5 py-0.5 rounded-md bg-accent/20 text-accent text-[9px] font-mono font-bold">
+                          {item.badge}
+                        </span>
+                      )}
+                      {active && <ChevronRight className="size-3.5 text-accent" />}
+                    </div>
+                  </Link>
+
+                  {/* Clean Nested Sub-Items */}
+                  {item.subItems && item.subItems.length > 0 && (
+                    <div className="ml-5 pl-3 border-l border-white/10 space-y-1 pt-0.5 pb-1">
+                      {item.subItems.map((sub) => {
+                        const subActive = pathname === sub.href;
+                        const SubIcon = sub.icon || Layers;
+                        return (
+                          <Link
+                            key={sub.href}
+                            href={sub.href}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-sans transition-all ${
+                              subActive
+                                ? "bg-accent/15 text-accent font-semibold border border-accent/25 shadow-xs"
+                                : "text-text-muted hover:text-text-primary hover:bg-white/[0.04]"
+                            }`}
+                          >
+                            <SubIcon className={`size-3 shrink-0 ${subActive ? "text-accent" : "text-text-muted/60"}`} />
+                            <span className="truncate">{sub.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -110,16 +186,16 @@ export function AdminSidebar() {
         <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[0.7rem] font-mono font-medium">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-3.5" />
-            Accès Autorisé
+            Accès Sécurisé
           </span>
-          <span className="text-[0.65rem] opacity-70">v2.4</span>
+          <span className="text-[0.65rem] opacity-70">Admin v2.5</span>
         </div>
         
         <div className="space-y-1.5 pt-1">
           <button 
             onClick={syncPortfolio} 
             disabled={syncing} 
-            className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl bg-accent/10 border border-accent/25 text-xs font-semibold text-accent hover:bg-accent hover:text-bg-page transition-all disabled:opacity-50 shadow-sm"
+            className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl bg-accent/10 border border-accent/25 text-xs font-semibold text-accent hover:bg-accent hover:text-bg-page transition-all disabled:opacity-50 shadow-sm cursor-pointer"
           >
             <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} /> 
             {syncing ? "Synchronisation..." : "Synchroniser Cache"}
@@ -131,12 +207,12 @@ export function AdminSidebar() {
             rel="noreferrer" 
             className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl border border-border/60 bg-surface-subtle text-xs font-medium text-text-secondary hover:text-text-primary hover:border-accent/40 hover:bg-surface-raised transition-all"
           >
-            <ExternalLink className="size-3.5" /> Voir le Portfolio
+            <ExternalLink className="size-3.5" /> Voir le Portfolio en direct
           </Link>
 
           <form action={signOutAdmin}>
             <button 
-              className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl border border-danger/20 bg-danger/5 text-xs font-medium text-danger hover:bg-danger hover:text-white transition-all" 
+              className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl border border-danger/20 bg-danger/5 text-xs font-medium text-danger hover:bg-danger hover:text-white transition-all cursor-pointer" 
               type="submit"
             >
               <LogOut className="size-3.5" /> Se Déconnecter

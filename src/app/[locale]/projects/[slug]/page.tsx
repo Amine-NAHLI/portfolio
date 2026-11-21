@@ -90,19 +90,26 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               </Link>
             </div>
 
-            {/* Categories & Verified Badge */}
-            <div className="flex flex-wrap items-center gap-2.5 mb-5">
-              {normalizedCategories.map((category) => (
+            {/* Categories & Verified Status in pure typography */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-5">
+              {normalizedCategories.map((category, idx) => (
                 <span
                   key={category}
-                  className="rounded-full border border-border-strong bg-text-primary/[0.04] px-3 py-1 text-xs font-semibold text-accent"
+                  className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent"
                 >
                   {getCategoryLabel(category, locale)}
+                  {idx < normalizedCategories.length - 1 && (
+                    <span className="opacity-40 ml-3 not-italic text-text-muted">·</span>
+                  )}
                 </span>
               ))}
 
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-mono font-medium text-success">
-                <span className="size-1.5 rounded-full bg-success" />
+              {normalizedCategories.length > 0 && (
+                <span className="opacity-30 text-text-muted hidden sm:inline">|</span>
+              )}
+
+              <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium italic text-success">
+                <span className="size-1.5 rounded-full bg-success animate-pulse" />
                 <span>{locale === "fr" ? "Étude d'ingénierie vérifiée" : "Verified engineering case"}</span>
               </span>
             </div>
@@ -287,14 +294,17 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                   <span className="text-xs font-mono font-semibold uppercase tracking-wider text-accent mb-3 block">
                     {copy.technologies}
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.technologies.map((technology) => (
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 font-mono text-xs italic text-text-secondary">
+                    {project.technologies.map((technology, idx) => (
                       <span
                         key={technology}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-text-primary/[0.03] px-2.5 py-1 text-xs font-medium text-text-primary"
+                        className="inline-flex items-center gap-1.5 hover:text-text-primary transition-colors"
                       >
-                        <SkillIcon name={technology} className="text-[13px]" />
+                        <SkillIcon name={technology} className="text-[13px] not-italic" />
                         <span>{technology}</span>
+                        {idx < project.technologies.length - 1 && (
+                          <span className="opacity-30 not-italic ml-2 text-text-muted">·</span>
+                        )}
                       </span>
                     ))}
                   </div>

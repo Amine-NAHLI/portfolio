@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Trophy,
   Plus,
@@ -21,16 +21,15 @@ import {
   RotateCcw,
   Sliders,
   Maximize2,
-  Layers,
-  ChevronLeft,
-  ChevronRight,
   ArrowUpToLine,
   ArrowDownToLine,
   ListOrdered,
   Eye,
   EyeOff,
-  Star,
   X,
+  UploadCloud,
+  Image as ImageIcon,
+  Search,
 } from "lucide-react";
 import { GithubIcon } from "@/components/ui/Icons";
 import type { JourneyTimelineItem, JourneyTag } from "@/types/journey";
@@ -52,14 +51,19 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     initialItems && initialItems.length > 0 ? initialItems : DEFAULT_HACKATHONS
   );
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
+  const [editorTab, setEditorTab] = useState<"info" | "photos" | "dossier" | "tags">("info");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showReorderModal, setShowReorderModal] = useState(false);
 
-  // New photo input state
+  // Photo Upload & Input state (Single Photo Mode)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showUrlFallback, setShowUrlFallback] = useState(false);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
-  const [previewPhotoIndex, setPreviewPhotoIndex] = useState(0);
 
   // New tag inputs state
   const [newTagName, setNewTagName] = useState("");
@@ -80,6 +84,67 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     });
   };
 
+  // Helper to read file as Data URL (Base64) for resilient local/offline preview
+  const readFileAsDataUrl = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // --- Photo Upload File Handler (Single Photo Mode) ---
+  const handleUploadFiles = async (files: FileList | File[]) => {
+    const fileList = Array.from(files).filter(
+      (f) => f.type.startsWith("image/") && f.size <= 8 * 1024 * 1024
+    );
+    if (fileList.length === 0) {
+      setErrorMessage("Veuillez sélectionner une image valide (PNG, JPG, WEBP, max 8 Mo).");
+      return;
+    }
+
+    setIsUploadingPhotos(true);
+    setErrorMessage(null);
+
+    const file = fileList[0];
+    let photoUrl = "";
+
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok && data.publicUrl) {
+        photoUrl = data.publicUrl;
+      } else {
+        photoUrl = await readFileAsDataUrl(file);
+      }
+    } catch {
+      photoUrl = await readFileAsDataUrl(file);
+    }
+
+    if (photoUrl) {
+      setItems((prev) => {
+        const updated = [...prev];
+        updated[activeItemIndex] = {
+          ...updated[activeItemIndex],
+          images: [photoUrl],
+        };
+        return updated;
+      });
+      setSuccessMessage("✓ Photo officielle mise à jour ! Pensez à enregistrer vos modifications.");
+    }
+
+    setIsUploadingPhotos(false);
+  };
+
   // --- Photo Management Handlers ---
   const handleAddPhoto = (itemIndex: number) => {
     const trimmed = newPhotoUrl.trim();
@@ -87,46 +152,27 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
     setItems((prev) => {
       const updated = [...prev];
-      const currentImages = updated[itemIndex]?.images || [];
       updated[itemIndex] = {
         ...updated[itemIndex],
-        images: [...currentImages, trimmed],
+        images: [trimmed],
       };
       return updated;
     });
 
     setNewPhotoUrl("");
+    setSuccessMessage("✓ Lien de photo appliqué !");
   };
 
-  const handleRemovePhoto = (itemIndex: number, photoIndex: number) => {
+  const handleClearPhoto = (itemIndex: number) => {
     setItems((prev) => {
       const updated = [...prev];
-      const currentImages = updated[itemIndex]?.images || [];
       updated[itemIndex] = {
         ...updated[itemIndex],
-        images: currentImages.filter((_, i) => i !== photoIndex),
+        images: [],
       };
       return updated;
     });
-  };
-
-  const handleMovePhoto = (itemIndex: number, photoIndex: number, direction: "left" | "right") => {
-    setItems((prev) => {
-      const updated = [...prev];
-      const currentImages = [...(updated[itemIndex]?.images || [])];
-      const targetIndex = direction === "left" ? photoIndex - 1 : photoIndex + 1;
-      if (targetIndex < 0 || targetIndex >= currentImages.length) return prev;
-
-      const temp = currentImages[photoIndex];
-      currentImages[photoIndex] = currentImages[targetIndex];
-      currentImages[targetIndex] = temp;
-
-      updated[itemIndex] = {
-        ...updated[itemIndex],
-        images: currentImages,
-      };
-      return updated;
-    });
+    setSuccessMessage("Photo retirée. Pensez à enregistrer vos modifications.");
   };
 
   // --- Tag Handlers ---
@@ -208,19 +254,6 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
       updated[index] = { ...updated[index], enabled: !current };
       return updated;
     });
-  };
-
-  const handleSetCoverPhoto = (itemIndex: number, photoIndex: number) => {
-    if (photoIndex === 0) return;
-    setItems((prev) => {
-      const updated = [...prev];
-      const currentImages = [...(updated[itemIndex]?.images || [])];
-      const [chosen] = currentImages.splice(photoIndex, 1);
-      currentImages.unshift(chosen);
-      updated[itemIndex] = { ...updated[itemIndex], images: currentImages };
-      return updated;
-    });
-    setPreviewPhotoIndex(0);
   };
 
   const handleAddNewItem = () => {
@@ -386,13 +419,42 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left List of Hackathons */}
-        <div className="lg:col-span-4 space-y-2">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] px-1 mb-2">
-            Compétitions Documentées ({items.length})
+        <div className="lg:col-span-4 space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] font-bold">
+              Compétitions ({items.length})
+            </span>
+            <span className="text-[10px] font-mono text-cyan-400">
+              Actif : #{activeItemIndex + 1}
+            </span>
+          </div>
+
+          {/* Quick Search Filter */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-text-muted" />
+            <input
+              type="text"
+              placeholder="Rechercher par titre ou année..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-xs text-white placeholder:text-text-muted/60 focus:border-cyan-400 focus:outline-none transition-colors"
+            />
           </div>
 
           <div className="space-y-2 max-h-[750px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10">
-            {items.map((item, index) => {
+            {items
+              .map((item, index) => ({ item, index }))
+              .filter(({ item }) => {
+                if (!searchQuery.trim()) return true;
+                const q = searchQuery.toLowerCase();
+                return (
+                  item.title.toLowerCase().includes(q) ||
+                  item.organization.toLowerCase().includes(q) ||
+                  (item.year && item.year.toLowerCase().includes(q)) ||
+                  (item.award && item.award.toLowerCase().includes(q))
+                );
+              })
+              .map(({ item, index }) => {
               const isSelected = index === activeItemIndex;
               const photoCount = item.images?.length || 0;
               return (
@@ -606,8 +668,64 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               </div>
             </div>
 
-            {/* General Info Form */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* 4 Clean Visual Navigation Tabs */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10">
+              <button
+                type="button"
+                onClick={() => setEditorTab("info")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-mono text-xs font-semibold transition-all cursor-pointer ${
+                  editorTab === "info"
+                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-xs"
+                    : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
+                }`}
+              >
+                <Award className="size-3.5" />
+                <span>1. Infos & Prix</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setEditorTab("photos")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-mono text-xs font-semibold transition-all cursor-pointer ${
+                  editorTab === "photos"
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs"
+                    : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
+                }`}
+              >
+                <Camera className="size-3.5" />
+                <span>2. Photos ({(activeItem.images || []).length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setEditorTab("dossier")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-mono text-xs font-semibold transition-all cursor-pointer ${
+                  editorTab === "dossier"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs"
+                    : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
+                }`}
+              >
+                <Terminal className="size-3.5" />
+                <span>3. Défi & Prototype</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setEditorTab("tags")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-mono text-xs font-semibold transition-all cursor-pointer ${
+                  editorTab === "tags"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs"
+                    : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
+                }`}
+              >
+                <Palette className="size-3.5" />
+                <span>4. Technologies ({activeItem.tags.length})</span>
+              </button>
+            </div>
+
+            {/* TAB 1: General Info Form */}
+            {editorTab === "info" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in duration-200">
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA]">
                   Titre du Hackathon / Compétition (Français) *
@@ -721,373 +839,316 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 </div>
               </div>
             </div>
+          )}
 
-            {/* --- SECTION 1: GESTION DES PHOTOS DE TERRAIN (DEMANDE UTILISATEUR) --- */}
-            <div className="space-y-4 pt-4 border-t border-white/10">
-              <div className="flex items-center justify-between">
+          {/* TAB 2: GESTION DE LA PHOTO OFFICIELLE DU HACKATHON (PHOTO UNIQUE) */}
+          {editorTab === "photos" && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
                   <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
-                    <Camera className="size-4 text-[#A855F7]" />
-                    <span>Photographies & Clichés de Terrain</span>
+                    <Camera className="size-4 text-cyan-400" />
+                    <span>Photo Officielle du Hackathon</span>
                   </h3>
                   <p className="font-mono text-xs text-[#A1A1AA]">
-                    Ajoutez les photos de votre hackathon (remise de trophée, stand, écran de live code, soutenance devant les jurys).
+                    Ajoutez la photo principale (podium, équipe, remise de prix). Le cadre s&apos;adapte automatiquement en couleurs naturelles.
                   </p>
                 </div>
-                <span className="font-mono text-xs text-[#A1A1AA]">
-                  {(activeItem.images || []).length} photo{(activeItem.images || []).length > 1 ? "s" : ""}
+                <span className="font-mono text-xs text-cyan-400 font-bold px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20">
+                  {(activeItem.images || []).length > 0 ? "1 Photo configurée" : "Aucune photo"}
                 </span>
               </div>
 
-              {/* Photo Input URL Form */}
-              <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/80 space-y-3">
-                <div className="font-mono text-xs uppercase tracking-wider text-[#A855F7] font-bold">
-                  {"// Ajouter une nouvelle photo (Mode Multi-photos Instagram)"}
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder="Collez l'URL de la photo (ex: https://... ou /images/hackathons/gemma-podium.jpg)"
-                      value={newPhotoUrl}
-                      onChange={(e) => setNewPhotoUrl(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddPhoto(activeItemIndex);
-                        }
-                      }}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleAddPhoto(activeItemIndex)}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#A855F7]/40 bg-[#A855F7]/15 px-4 py-2 font-mono text-xs font-bold text-[#A855F7] hover:bg-[#A855F7] hover:text-white transition-all cursor-pointer shrink-0"
-                  >
-                    <Plus className="size-4" />
-                    <span>Ajouter la photo</span>
-                  </button>
-                </div>
-                <p className="text-[11px] font-mono text-white/40">
-                  Ajoutez plusieurs clichés par hackathon pour activer le carrousel style Instagram avec pagination à points et flèches de navigation.
-                </p>
-              </div>
+              {/* Input fichier caché pour sélection */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    void handleUploadFiles(e.target.files);
+                    e.target.value = "";
+                  }
+                }}
+              />
 
-              {/* Photo Framing & Dimensioning Controls */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border border-white/10 bg-[#121316]/80">
-                {/* Focal Point / Vertical Alignment */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
-                      <Sliders className="size-3.5" />
-                      <span>Point Focal / Cadrage Vertical</span>
-                    </label>
-                    <span className="font-mono text-[10px] text-white/50">
-                      Actuel : {activeItem.imagePosition || "center"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: "top", label: "Haut", desc: "Visages & Trophées" },
-                      { id: "center", label: "Centre", desc: "Équilibré (Standard)" },
-                      { id: "bottom", label: "Bas", desc: "Robots & Matériel" },
-                    ].map((pos) => {
-                      const isSelected = (activeItem.imagePosition || "center") === pos.id;
-                      return (
-                        <button
-                          key={pos.id}
-                          type="button"
-                          onClick={() => updateItemField(activeItemIndex, "imagePosition", pos.id)}
-                          className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-cyan-400 bg-cyan-400/15 text-white shadow-sm"
-                              : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
-                          }`}
-                        >
-                          <div className="font-mono text-xs font-bold">{pos.label}</div>
-                          <div className="text-[10px] text-white/45 mt-0.5">{pos.desc}</div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Dimensioning / Fit Mode */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
-                      <Maximize2 className="size-3.5" />
-                      <span>Mode de Remplissage (Dimensionnement)</span>
-                    </label>
-                    <span className="font-mono text-[10px] text-white/50">
-                      Actuel : {activeItem.imageFit || "cover"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: "cover", label: "Plein Cadre (Cover)", desc: "Remplit 100% de la carte sans bandes" },
-                      { id: "contain", label: "Image Complète (Contain)", desc: "Affiche toute la photo avec bordures" },
-                    ].map((fit) => {
-                      const isSelected = (activeItem.imageFit || "cover") === fit.id;
-                      return (
-                        <button
-                          key={fit.id}
-                          type="button"
-                          onClick={() => updateItemField(activeItemIndex, "imageFit", fit.id as "cover" | "contain")}
-                          className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-cyan-400 bg-cyan-400/15 text-white shadow-sm"
-                              : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
-                          }`}
-                        >
-                          <div className="font-mono text-xs font-bold">{fit.label}</div>
-                          <div className="text-[10px] text-white/45 mt-0.5">{fit.desc}</div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Live Interactive Instagram Card Simulator */}
-              <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/50 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs uppercase tracking-wider text-white/80 font-semibold flex items-center gap-2">
-                    <Layers className="size-4 text-cyan-400" />
-                    <span>Simulateur en Direct : Rendu Carte Portfolio</span>
-                  </span>
-                  {(activeItem.images || []).length > 1 && (
-                    <span className="font-mono text-[11px] text-cyan-400">
-                      Carrousel Instagram actif ({activeItem.images!.length} clichés)
-                    </span>
-                  )}
-                </div>
-
-                <div className="relative mx-auto max-w-sm h-[380px] rounded-2xl overflow-hidden border border-white/20 bg-[#0d0e12] shadow-2xl select-none group">
-                  {/* Photo Display with active framing settings */}
-                  {(activeItem.images || []).length > 0 ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={activeItem.images![previewPhotoIndex % activeItem.images!.length]}
-                      alt="Aperçu simulateur"
-                      style={{
-                        objectFit: activeItem.imageFit || "cover",
-                        objectPosition: activeItem.imagePosition || "center",
-                      }}
-                      className="size-full transition-all duration-300"
-                    />
-                  ) : (
-                    <div className="size-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-[#181920] to-[#07080a]">
-                      <Camera className="size-10 text-white/20 mb-2" />
-                      <span className="font-mono text-xs text-white/40">Aucune photo ajoutée pour ce hackathon</span>
-                    </div>
-                  )}
-
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/20 pointer-events-none" />
-
-                  {/* Badge Top Left */}
-                  <div className="absolute top-3.5 left-3.5 z-20">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15">
-                      <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                      <span className="font-mono text-[9px] font-semibold tracking-wider text-cyan-400 uppercase">
-                        HACKATHON & EVENT
+              {/* Si une photo existe : aperçu dans son cadre adaptatif + actions directes */}
+              {(activeItem.images || []).length > 0 ? (
+                <div className="space-y-5">
+                  <div className="p-4 sm:p-6 rounded-2xl border border-white/10 bg-[#0E0F14] space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs font-bold uppercase tracking-wider text-white/80 flex items-center gap-2">
+                        <ImageIcon className="size-4 text-cyan-400" />
+                        <span>Aperçu en Direct du Cadre</span>
+                      </span>
+                      <span className="font-mono text-[11px] text-cyan-400 font-medium">
+                        {activeItem.imageFit === "contain" ? "Cadre Adapté (Photo Entière)" : "Plein Cadre (Cover)"}
                       </span>
                     </div>
+
+                    {/* Cadre Adaptatif en Couleurs Naturelles */}
+                    <div
+                      className={`relative w-full rounded-2xl overflow-hidden border border-white/15 bg-black/80 flex items-center justify-center transition-all ${
+                        activeItem.imageFit === "contain"
+                          ? "min-h-[260px] max-h-[380px] p-2.5"
+                          : "aspect-[16/10] max-h-[400px]"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={activeItem.images![0]}
+                        alt={activeItem.title || "Photo hackathon"}
+                        style={{
+                          objectFit: activeItem.imageFit || "cover",
+                          objectPosition: activeItem.imagePosition || "center",
+                        }}
+                        className={`transition-all duration-300 ${
+                          activeItem.imageFit === "contain"
+                            ? "max-h-[360px] w-auto max-w-full rounded-xl object-contain"
+                            : "size-full object-cover"
+                        }`}
+                      />
+
+                      {/* Badge Prix */}
+                      {activeItem.award && (
+                        <div className="absolute top-3.5 left-3.5 z-10">
+                          <span
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border backdrop-blur-md shadow-lg"
+                            style={{
+                              color: activeItem.awardColor || "#38BDF8",
+                              backgroundColor: "rgba(0, 0, 0, 0.75)",
+                              borderColor: `${activeItem.awardColor || "#38BDF8"}60`,
+                            }}
+                          >
+                            <span className="size-2 rounded-full animate-pulse" style={{ backgroundColor: activeItem.awardColor || "#38BDF8" }} />
+                            <span>{activeItem.award}</span>
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Badge Année */}
+                      {activeItem.year && (
+                        <div className="absolute top-3.5 right-3.5 z-10">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest text-white/90 bg-black/75 backdrop-blur-md border border-white/15">
+                            {activeItem.year}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions Rapides : Remplacer ou Supprimer */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                      <div className="font-mono text-xs text-white/50 truncate max-w-md" title={activeItem.images![0]}>
+                        Fichier : {activeItem.images![0].startsWith("data:") ? "Image importée" : activeItem.images![0]}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isUploadingPhotos}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-400 text-black font-mono text-xs font-bold hover:bg-cyan-300 transition-colors cursor-pointer shadow-lg shadow-cyan-400/10 active:scale-95 disabled:opacity-50"
+                        >
+                          <UploadCloud className="size-4" />
+                          <span>Remplacer par une autre photo</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleClearPhoto(activeItemIndex)}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-xs font-medium hover:bg-red-500/20 transition-colors cursor-pointer active:scale-95"
+                        >
+                          <Trash2 className="size-3.5" />
+                          <span>Retirer la photo</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Instagram Counter Top Right */}
-                  <div className="absolute top-3.5 right-3.5 z-20">
-                    {(activeItem.images || []).length > 1 ? (
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono font-bold text-white/90">
-                        <Layers className="size-3 text-cyan-400" />
-                        <span>
-                          {(previewPhotoIndex % activeItem.images!.length) + 1}/{activeItem.images!.length}
-                        </span>
+                  {/* Contrôles Cadrage & Dimensions */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Mode d'adaptation */}
+                    <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/70 space-y-2.5">
+                      <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
+                        <Maximize2 className="size-3.5" />
+                        <span>Mode d&apos;adaptation du cadre</span>
+                      </label>
+                      <p className="font-mono text-[11px] text-white/50">
+                        Choisissez comment la photo s&apos;adapte aux dimensions :
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        {[
+                          {
+                            id: "contain",
+                            label: "Photo Entière (Recommandé)",
+                            desc: "Le cadre s'adapte sans rogner les têtes ou trophées",
+                          },
+                          {
+                            id: "cover",
+                            label: "Plein Cadre (Cover)",
+                            desc: "Remplit tout l'espace 16:10",
+                          },
+                        ].map((fit) => {
+                          const isSelected = (activeItem.imageFit || "cover") === fit.id;
+                          return (
+                            <button
+                              key={fit.id}
+                              type="button"
+                              onClick={() => updateItemField(activeItemIndex, "imageFit", fit.id as "cover" | "contain")}
+                              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? "border-cyan-400 bg-cyan-400/15 text-white shadow-md shadow-cyan-400/10"
+                                  : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
+                              }`}
+                            >
+                              <div className="font-mono text-xs font-bold">{fit.label}</div>
+                              <div className="text-[10px] text-white/50 mt-1 leading-tight">{fit.desc}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Point Focal Vertical */}
+                    <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/70 space-y-2.5">
+                      <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
+                        <Sliders className="size-3.5" />
+                        <span>Alignement focal vertical</span>
+                      </label>
+                      <p className="font-mono text-[11px] text-white/50">
+                        Zone à centrer en priorité dans le cadre :
+                      </p>
+                      <div className="grid grid-cols-3 gap-2 pt-1">
+                        {[
+                          { id: "top", label: "Haut", desc: "Visages & Trophées" },
+                          { id: "center", label: "Centre", desc: "Équilibré standard" },
+                          { id: "bottom", label: "Bas", desc: "Robots & Matériel" },
+                        ].map((pos) => {
+                          const isSelected = (activeItem.imagePosition || "center") === pos.id;
+                          return (
+                            <button
+                              key={pos.id}
+                              type="button"
+                              onClick={() => updateItemField(activeItemIndex, "imagePosition", pos.id)}
+                              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? "border-cyan-400 bg-cyan-400/15 text-white shadow-md shadow-cyan-400/10"
+                                  : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
+                              }`}
+                            >
+                              <div className="font-mono text-xs font-bold">{pos.label}</div>
+                              <div className="text-[10px] text-white/50 mt-1 leading-tight">{pos.desc}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Zone d'importation pour une photo unique */
+                <div className="space-y-4">
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        void handleUploadFiles(e.dataTransfer.files);
+                      }
+                    }}
+                    onClick={() => {
+                      if (!isUploadingPhotos) {
+                        fileInputRef.current?.click();
+                      }
+                    }}
+                    className={`relative p-8 sm:p-12 rounded-2xl border-2 border-dashed transition-all cursor-pointer text-center group select-none ${
+                      isDragging
+                        ? "border-cyan-400 bg-cyan-400/[0.08] scale-[1.01]"
+                        : "border-white/15 bg-white/[0.02] hover:border-cyan-400/50 hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    {isUploadingPhotos ? (
+                      <div className="flex flex-col items-center justify-center py-4 space-y-3">
+                        <Loader2 className="size-10 text-cyan-400 animate-spin" />
+                        <div className="font-mono text-sm font-bold text-white">
+                          Importation de votre photo en cours...
+                        </div>
+                        <p className="font-mono text-xs text-white/50">
+                          Traitement haute résolution en cours
+                        </p>
                       </div>
                     ) : (
-                      <span className="font-mono text-[10px] font-bold text-white/40 px-2 py-0.5 rounded-full bg-black/40 border border-white/10">
-                        #{activeItemIndex + 1}
-                      </span>
+                      <div className="flex flex-col items-center justify-center space-y-4">
+                        <div className="size-16 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-400/20 transition-all shadow-md shadow-cyan-400/5">
+                          <UploadCloud className="size-8" />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-mono text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">
+                            Glissez votre photo ici ou cliquez pour choisir
+                          </div>
+                          <p className="font-mono text-xs text-white/50">
+                            PNG, JPG, WEBP jusqu&apos;à 8 Mo · Une seule photo par hackathon
+                          </p>
+                        </div>
+                        <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-400 text-black font-mono text-xs font-bold shadow-lg shadow-cyan-400/15 group-hover:bg-cyan-300 transition-colors">
+                          <ImageIcon className="size-4" />
+                          <span>Choisir une photo sur mon ordinateur</span>
+                        </span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Instagram Interactive Navigation Arrows */}
-                  {(activeItem.images || []).length > 1 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPreviewPhotoIndex(
-                            (prev) => (prev - 1 + activeItem.images!.length) % activeItem.images!.length
-                          )
-                        }
-                        className="absolute left-2.5 top-1/2 -translate-y-1/2 z-30 size-8 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black transition-all"
-                        title="Photo précédente"
-                      >
-                        <ChevronLeft className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPreviewPhotoIndex((prev) => (prev + 1) % activeItem.images!.length)
-                        }
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 z-30 size-8 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black transition-all"
-                        title="Photo suivante"
-                      >
-                        <ChevronRight className="size-4" />
-                      </button>
-                    </>
-                  )}
+                  {/* Fallback URL externe */}
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowUrlFallback(!showUrlFallback)}
+                      className="font-mono text-[11px] text-white/40 hover:text-cyan-400 transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span>{showUrlFallback ? "▼ Masquer l'ajout par URL" : "▶ Ou coller une URL d'image externe"}</span>
+                    </button>
 
-                  {/* Instagram Indicator Dots */}
-                  {(activeItem.images || []).length > 1 && (
-                    <div className="absolute bottom-16 inset-x-0 z-30 flex items-center justify-center gap-1.5">
-                      {activeItem.images!.map((_, dotIdx) => (
-                        <button
-                          key={dotIdx}
-                          type="button"
-                          onClick={() => setPreviewPhotoIndex(dotIdx)}
-                          className={`transition-all rounded-full cursor-pointer ${
-                            dotIdx === previewPhotoIndex % activeItem.images!.length
-                              ? "w-4 h-1 bg-cyan-400 shadow-[0_0_8px_rgba(56,189,248,0.9)]"
-                              : "size-1 bg-white/40 hover:bg-white/70"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Bottom Caption Preview */}
-                  <div className="absolute inset-x-0 bottom-0 z-20 p-4">
-                    <div className="flex items-center min-w-0">
-                      <span
-                        className="w-1 h-4 rounded-full shrink-0 mr-2.5"
-                        style={{
-                          backgroundColor: activeItem.awardColor || "#38BDF8",
-                        }}
-                      />
-                      <h4 className="font-sans text-xs sm:text-sm font-bold text-white tracking-tight line-clamp-1">
-                        {activeItem.title || "Titre du hackathon"}
-                      </h4>
-                    </div>
-                    <p className="pl-3.5 mt-1 font-mono text-[10px] text-white/50 truncate">
-                      {activeItem.organization} · {activeItem.year}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Photos Gallery Grid or Empty State */}
-              <div className="space-y-2">
-                <div className="font-mono text-xs uppercase tracking-wider text-white/70 font-semibold">
-                  Gestion des clichés ({activeItem.images?.length || 0})
-                </div>
-                {(activeItem.images || []).length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.01] p-6 text-center space-y-2">
-                    <div className="size-10 mx-auto rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#A1A1AA]">
-                      <Camera className="size-5" />
-                    </div>
-                    <h4 className="font-mono text-xs font-semibold text-white/90">
-                      Aucune photo pour ce hackathon pour l&apos;instant
-                    </h4>
-                    <p className="font-mono text-[11px] text-[#A1A1AA] max-w-md mx-auto">
-                      Dès que vous ajoutez une URL d&apos;image ci-dessus, elle s&apos;affichera en temps réel dans le simulateur et dans votre portfolio public.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {(activeItem.images || []).map((imgUrl, pIdx) => (
-                      <div
-                        key={pIdx}
-                        className={`group relative rounded-xl border p-2.5 space-y-2 transition-all ${
-                          pIdx === previewPhotoIndex % activeItem.images!.length
-                            ? "border-cyan-400/50 bg-cyan-400/[0.03]"
-                            : "border-white/10 bg-white/[0.03]"
-                        }`}
-                      >
-                        <div
-                          className="relative aspect-[4/3] rounded-lg overflow-hidden bg-black/40 border border-white/10 cursor-pointer"
-                          onClick={() => setPreviewPhotoIndex(pIdx)}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={imgUrl}
-                            alt={`Aperçu Hackathon ${pIdx + 1}`}
-                            className="size-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = "none";
+                    {showUrlFallback && (
+                      <div className="mt-2.5 p-3.5 rounded-xl border border-white/10 bg-[#121316]/60 space-y-2">
+                        <div className="flex flex-col sm:flex-row gap-2.5">
+                          <input
+                            type="text"
+                            placeholder="https://..."
+                            value={newPhotoUrl}
+                            onChange={(e) => setNewPhotoUrl(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddPhoto(activeItemIndex);
+                              }
                             }}
+                            className="flex-1 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-xs text-[#FFFFFF] focus:border-cyan-400 focus:outline-none"
                           />
-                          {/* Photo badges */}
-                          <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
-                            <span className="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-md font-mono text-[9px] text-[#A855F7] font-bold">
-                              #{pIdx + 1}
-                            </span>
-                            {pIdx === 0 && (
-                              <span className="px-1.5 py-0.5 rounded bg-amber-400 text-black font-mono text-[8.5px] font-bold flex items-center gap-0.5 shadow-sm">
-                                <Star className="size-2.5 fill-black" />
-                                <span>Couverture</span>
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="font-mono text-[10px] text-[#A1A1AA] truncate max-w-[120px]" title={imgUrl}>
-                            {imgUrl}
-                          </span>
-
-                          <div className="flex items-center gap-1 shrink-0">
-                            {pIdx > 0 && (
-                              <button
-                                type="button"
-                                onClick={() => handleSetCoverPhoto(activeItemIndex, pIdx)}
-                                title="Définir comme photo #1 (Couverture principale de la carte)"
-                                className="px-1.5 py-0.5 rounded text-amber-400 hover:bg-amber-400/20 cursor-pointer flex items-center gap-1 font-mono text-[9px] border border-amber-400/30"
-                              >
-                                <Star className="size-2.5 fill-amber-400" />
-                                <span>1ère</span>
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => handleMovePhoto(activeItemIndex, pIdx, "left")}
-                              disabled={pIdx === 0}
-                              title="Déplacer vers la gauche"
-                              className="p-1 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
-                            >
-                              <ArrowUp className="size-3 -rotate-90" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMovePhoto(activeItemIndex, pIdx, "right")}
-                              disabled={pIdx === (activeItem.images?.length || 1) - 1}
-                              title="Déplacer vers la droite"
-                              className="p-1 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer"
-                            >
-                              <ArrowDown className="size-3 -rotate-90" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemovePhoto(activeItemIndex, pIdx)}
-                              title="Supprimer la photo"
-                              className="p-1 rounded text-red-400 hover:bg-red-400/20 cursor-pointer ml-1"
-                            >
-                              <Trash2 className="size-3" />
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleAddPhoto(activeItemIndex)}
+                            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-cyan-400/40 bg-cyan-400/15 px-3 py-1.5 font-mono text-xs font-bold text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all cursor-pointer shrink-0"
+                          >
+                            <Plus className="size-3.5" />
+                            <span>Valider la photo</span>
+                          </button>
                         </div>
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
+          )}
 
-            {/* --- SECTION 2: BRIEFING TECHNIQUE (DÉFI 48H & PROTOTYPE LIVRÉ) --- */}
-            <div className="space-y-4 pt-4 border-t border-white/10">
+          {/* TAB 3: DOSSIER TECHNIQUE (DÉFI 48H & PROTOTYPE LIVRÉ) */}
+          {editorTab === "dossier" && (
+            <div className="space-y-4 animate-in fade-in duration-200">
               <div>
                 <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
                   <Terminal className="size-4 text-amber-400" />
@@ -1181,9 +1242,11 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 </div>
               </div>
             </div>
+          )}
 
-            {/* --- SECTION 3: TAGS & STACK DU HACKATHON --- */}
-            <div className="space-y-4 pt-4 border-t border-white/10">
+          {/* TAB 4: TAGS & STACK DU HACKATHON */}
+          {editorTab === "tags" && (
+            <div className="space-y-4 animate-in fade-in duration-200">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
@@ -1340,9 +1403,10 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 )}
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
+    </div>
 
       {/* Modal : Réorganisation Visuelle de l'Ordre */}
       {showReorderModal && (

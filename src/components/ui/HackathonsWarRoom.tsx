@@ -7,8 +7,6 @@ import {
   X,
   Zap,
   Terminal,
-  Camera,
-  Layers,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -28,7 +26,7 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
   const baseList = enabledList.length > 0 ? enabledList : rawList;
 
   // Filter for hackathons/competitions if mixed
-  const hackathons = baseList.some(
+  const hackathonsFiltered = baseList.some(
     (it) =>
       it.categoryLabel?.toLowerCase().includes("compétition") ||
       it.categoryLabel?.toLowerCase().includes("robotique") ||
@@ -45,269 +43,200 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
       )
     : baseList;
 
-  const [hoveredIndex, setHoveredIndex] = useState<number>(0);
+  const hackathons = hackathonsFiltered.length > 0 ? hackathonsFiltered : DEFAULT_HACKATHONS;
+
+  // Thematic image resolver ensuring authentic HD photographs are always visible
+  const getResolvedImages = (hackathon: JourneyTimelineItem, idx: number): string[] => {
+    if (hackathon.images && hackathon.images.length > 0) {
+      const valid = hackathon.images.filter((img) => img && img.trim() !== "");
+      if (valid.length > 0) return valid;
+    }
+
+    const idLower = (hackathon.id || "").toLowerCase();
+    const titleLower = (hackathon.title || "").toLowerCase();
+
+    if (idLower.includes("cursor") || titleLower.includes("cursor")) {
+      return [
+        "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/blogs/1788388400675-lygakdn1ka.png",
+      ];
+    }
+    if (idLower.includes("gemma") || titleLower.includes("gemma") || titleLower.includes("ia")) {
+      return [
+        "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/images/1787344204839-f4b0iauozgm.png",
+      ];
+    }
+    if (idLower.includes("robot") || titleLower.includes("robot") || titleLower.includes("upf")) {
+      return [
+        "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/blogs/1788388400675-lygakdn1ka.png",
+      ];
+    }
+
+    const fallbacks = [
+      "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/blogs/1788388400675-lygakdn1ka.png",
+      "https://vyjlvjrrtttyqaaafkub.supabase.co/storage/v1/object/public/projects/images/1787344204839-f4b0iauozgm.png",
+    ];
+    return [fallbacks[idx % fallbacks.length]];
+  };
+
+  // State: Modal dossier & hover kinetic expansion
   const [activeModalItem, setActiveModalItem] = useState<JourneyTimelineItem | null>(null);
-  
-  // Track active photo index per card (Instagram Carousel)
-  const [cardPhotoIndices, setCardPhotoIndices] = useState<Record<string, number>>({});
-  // Track active photo index in the opened detail modal
   const [modalPhotoIndex, setModalPhotoIndex] = useState<number>(0);
-
-  const getCardPhotoIndex = (cardId: string) => cardPhotoIndices[cardId] || 0;
-
-  const nextPhoto = (cardId: string, total: number) => {
-    setCardPhotoIndices((prev) => ({
-      ...prev,
-      [cardId]: ((prev[cardId] || 0) + 1) % total,
-    }));
-  };
-
-  const prevPhoto = (cardId: string, total: number) => {
-    setCardPhotoIndices((prev) => ({
-      ...prev,
-      [cardId]: ((prev[cardId] || 0) - 1 + total) % total,
-    }));
-  };
-
-  const setPhoto = (cardId: string, index: number) => {
-    setCardPhotoIndices((prev) => ({
-      ...prev,
-      [cardId]: index,
-    }));
-  };
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <div className="w-full space-y-3">
-      {/* Cards Row: Fluid Horizontal Snap on Mobile + Kinetic Hover Expansion on Desktop */}
-      <div className="relative flex flex-row gap-3 sm:gap-4 w-full h-[470px] sm:h-[520px] lg:h-[590px] overflow-x-auto md:overflow-visible snap-x snap-mandatory px-4 sm:px-6 md:px-0 -mx-4 sm:-mx-6 md:mx-0 pb-3 md:pb-0 scrollbar-none select-none scroll-smooth">
+    <div className="w-full">
+      {/* Conteneur Flex interactif divisé à parts égales par défaut, avec expansion cinétique au survol */}
+      <div
+        className="w-full flex flex-col md:flex-row gap-5 sm:gap-6 items-stretch md:min-h-[480px] lg:h-[520px]"
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
         {hackathons.map((hackathon, idx) => {
-          const isExpanded = idx === hoveredIndex;
-          const title =
-            locale === "fr" ? hackathon.title : hackathon.titleEn || hackathon.title;
-          const award =
-            locale === "fr" ? hackathon.award : hackathon.awardEn || hackathon.award;
-          const images = hackathon.images || [];
+          const images = getResolvedImages(hackathon, idx);
+          const photo = images[0];
+          const hTitle = locale === "fr" ? hackathon.title : hackathon.titleEn || hackathon.title;
+          const hAward = locale === "fr" ? hackathon.award : hackathon.awardEn || hackathon.award;
+          const hAccent = hackathon.awardColor || (hAward?.includes("1") ? "#38BDF8" : hAward?.includes("3") ? "#F59E0B" : "#A855F7");
 
-          const currentPhotoIdx = getCardPhotoIndex(hackathon.id);
-          const activeImage = images[currentPhotoIdx] || images[0] || null;
+          const isHovered = hoveredIndex === idx;
+          const hasHover = hoveredIndex !== null;
+          const isShrunk = hasHover && !isHovered;
 
-          const accentColor =
-            hackathon.awardColor ||
-            (hackathon.award?.includes("1")
-              ? "#38BDF8"
-              : hackathon.award?.includes("3")
-              ? "#F59E0B"
-              : "#38BDF8");
+          // Libellé de catégorie adaptatif : concis quand la carte est compressée pour garantir zéro encombrement
+          const categoryText = isShrunk
+            ? "Hackathon"
+            : locale === "fr"
+            ? "Hackathon & Événement"
+            : "Hackathon & Event";
 
-          // Framing and fit options configured in Admin
-          const imageFit = hackathon.imageFit || "cover";
-          const imagePosition = hackathon.imagePosition || "center";
+          // Résolveur de distinction succincte : extrait le prix pur (ex: "1ʳᵉ Place", "3ᵉ Prix")
+          const getShortAward = (awardStr: string | undefined): string => {
+            if (!awardStr) return "";
+            const parts = awardStr.split(/\s*[-—–:]\s*/);
+            const primary = (parts[0] || "").trim();
+            if (primary.length > 0 && primary.length <= 16) {
+              return primary;
+            }
+            const words = primary.split(/\s+/);
+            if (words.length >= 2) {
+              const twoWords = words.slice(0, 2).join(" ");
+              if (twoWords.length <= 16) return twoWords;
+            }
+            return primary.length > 14 ? primary.slice(0, 12).trim() + "…" : primary;
+          };
+          const displayAward = getShortAward(hAward);
+
+          // Flex ratio dynamique :
+          // Par défaut : divisé à parts égales (50%/50% si 2, 33%/33%/33% si 3).
+          // Au survol : la photo survolée s'agrandit pour prendre ses vraies dimensions et pousse les autres.
+          const flexRatio = !hasHover
+            ? 1
+            : isHovered
+            ? hackathons.length === 2
+              ? 2.3
+              : 2.8
+            : hackathons.length === 2
+            ? 1
+            : 0.8;
 
           return (
             <motion.div
-              key={hackathon.id}
+              key={hackathon.id || idx}
               layout
               transition={{
                 type: "spring",
-                stiffness: 280,
-                damping: 28,
+                stiffness: 260,
+                damping: 26,
               }}
               onMouseEnter={() => setHoveredIndex(idx)}
               onClick={() => {
-                setHoveredIndex(idx);
-                setModalPhotoIndex(currentPhotoIdx);
+                setModalPhotoIndex(0);
                 setActiveModalItem(hackathon);
               }}
-              className={`group relative rounded-[26px] sm:rounded-[32px] overflow-hidden border border-white/10 bg-[#0d0e12] transition-colors duration-500 cursor-pointer snap-center shrink-0 md:shrink ${
-                isExpanded
-                  ? "w-[82vw] sm:w-[72vw] md:w-auto md:flex-[3.2] lg:flex-[4] shadow-[0_20px_60px_rgba(0,0,0,0.85)] border-white/25"
-                  : "w-[82vw] sm:w-[72vw] md:w-auto md:flex-1 md:min-w-[125px] lg:min-w-[145px] opacity-85 md:opacity-75 hover:opacity-100"
+              style={{ flex: flexRatio }}
+              className={`group relative w-full h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 cursor-pointer shadow-2xl select-none transition-colors duration-300 ${
+                isHovered
+                  ? "border-cyan-400/40 shadow-[0_20px_50px_rgba(0,0,0,0.85)]"
+                  : "border-white/10 hover:border-white/25"
               }`}
             >
-              {/* Photo Background (Full Bleed with customizable framing and fit) */}
-              {activeImage ? (
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={activeImage}
-                    src={activeImage}
-                    alt={title}
-                    loading="lazy"
-                    decoding="async"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    style={{
-                      objectFit: imageFit,
-                      objectPosition: imagePosition,
-                    }}
-                    className={`absolute inset-0 size-full contrast-110 transition-transform duration-700 ease-out group-hover:scale-105 ${
-                      isExpanded ? "grayscale-0" : "grayscale contrast-110"
+              {/* 100% Real, Natural Colors - Photo couvre 100% de la carte sans aucun cadre noir */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo}
+                alt={hTitle}
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 size-full object-cover block transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+
+              {/* Subtle dark gradient overlay at bottom for clean text contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/10 pointer-events-none" />
+
+              {/* Top Bar: Typographie signature encre noire, plus grasse et plus lisible */}
+              <div className="absolute top-0 inset-x-0 z-20 px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-2.5 sm:gap-3 pointer-events-none">
+                <span
+                  className={`font-signature select-none truncate tracking-wide text-black drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)] transition-all duration-300 ${
+                    isShrunk
+                      ? "text-xs sm:text-sm font-bold max-w-[44%]"
+                      : "text-sm sm:text-base md:text-[17px] font-bold max-w-[48%]"
+                  }`}
+                >
+                  {categoryText}
+                </span>
+
+                {displayAward ? (
+                  <span
+                    className={`font-signature select-none truncate text-right tracking-wide text-black drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)] transition-all duration-300 ${
+                      isShrunk
+                        ? "text-xs sm:text-sm font-bold max-w-[50%]"
+                        : "text-sm sm:text-base md:text-[17px] font-bold max-w-[48%]"
                     }`}
-                  />
-                </AnimatePresence>
-              ) : (
-                // Stylized Monochrome Darkroom Slate when image is empty (ready for admin)
-                <div className="absolute inset-0 size-full bg-gradient-to-b from-[#181920] via-[#101116] to-[#07080a] flex flex-col items-center justify-center p-6 text-center">
-                  <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] opacity-50" />
-                  <div className="relative size-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/30 group-hover:text-cyan-400 group-hover:border-cyan-400/30 transition-colors">
-                    <Camera className="size-6" />
-                  </div>
-                  <span className="relative font-mono text-[10px] uppercase tracking-widest text-white/40 mt-3 group-hover:text-white/70 transition-colors">
-                    {locale === "fr" ? "Cliché en attente" : "Photo pending"}
+                  >
+                    {displayAward}
                   </span>
-                </div>
-              )}
-
-              {/* Ambient Dark Vignette & Bottom Gradient for clean text contrast */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20 pointer-events-none" />
-
-              {/* Top Left Badge: "HACKATHON & EVENT" */}
-              <div className="absolute top-4 left-4 sm:top-5 sm:left-5 z-20">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-sm">
-                  <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="font-mono text-[10px] font-semibold tracking-wider text-cyan-400 uppercase">
-                    HACKATHON & EVENT
-                  </span>
-                </div>
-              </div>
-
-              {/* Top Right: Instagram Multi-Photo Counter or Single Badge */}
-              <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 flex items-center gap-2">
-                {images.length > 1 ? (
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10.5px] font-mono font-bold text-white/90 shadow-sm">
-                    <Layers className="size-3 text-cyan-400" />
-                    <span>
-                      {currentPhotoIdx + 1}/{images.length}
-                    </span>
-                  </div>
                 ) : (
-                  <span className="font-mono text-[11px] font-bold text-white/40 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
+                  <span className="font-signature text-sm sm:text-base md:text-[17px] font-bold text-black drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)] select-none">
                     #{String(idx + 1).padStart(2, "0")}
                   </span>
                 )}
               </div>
 
-              {/* Instagram Carousel Navigation Arrows (desktop hover or mobile tap) */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      prevPhoto(hackathon.id, images.length);
-                    }}
-                    aria-label="Photo précédente"
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 size-9 sm:size-10 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white/90 hover:text-white hover:bg-black flex items-center justify-center opacity-90 md:opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg active:scale-95"
-                  >
-                    <ChevronLeft className="size-5" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      nextPhoto(hackathon.id, images.length);
-                    }}
-                    aria-label="Photo suivante"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 size-9 sm:size-10 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white/90 hover:text-white hover:bg-black flex items-center justify-center opacity-90 md:opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg active:scale-95"
-                  >
-                    <ChevronRight className="size-5" />
-                  </button>
-                </>
-              )}
-
-              {/* Instagram-style Carousel Pagination Dots */}
-              {images.length > 1 && (
-                <div className="absolute bottom-20 sm:bottom-24 inset-x-0 z-30 flex items-center justify-center gap-1.5 pointer-events-auto">
-                  {images.map((_, dotIdx) => (
-                    <button
-                      key={dotIdx}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPhoto(hackathon.id, dotIdx);
-                      }}
-                      className={`transition-all rounded-full cursor-pointer ${
-                        dotIdx === currentPhotoIdx
-                          ? "w-5 h-1.5 bg-cyan-400 shadow-[0_0_10px_rgba(56,189,248,0.9)]"
-                          : "size-1.5 bg-white/40 hover:bg-white/80"
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Bottom Caption: Vertical Colored Bar + Title */}
-              <div className="absolute inset-x-0 bottom-0 z-20 p-5 sm:p-6 lg:p-7 flex flex-col justify-end">
+              {/* Bottom Caption: Vertical Accent Bar + Title & Organization */}
+              <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 lg:p-7 flex flex-col justify-end pointer-events-none">
                 <div className="flex items-center min-w-0">
-                  {/* Vertical Accent Bar */}
                   <span
-                    className="w-1 h-4 sm:h-5 rounded-full shrink-0 mr-2.5 sm:mr-3 transition-transform group-hover:scale-y-110"
+                    className="w-1.5 h-5 rounded-full shrink-0 mr-3 transition-transform group-hover:scale-y-110"
                     style={{
-                      backgroundColor: accentColor,
-                      boxShadow: `0 0 12px ${accentColor}90`,
+                      backgroundColor: hAccent,
+                      boxShadow: `0 0 12px ${hAccent}90`,
                     }}
                   />
-
-                  {/* Title */}
                   <h3
-                    className={`font-sans text-sm sm:text-base lg:text-lg font-bold text-white tracking-tight leading-snug ${
-                      isExpanded ? "line-clamp-2" : "truncate"
-                    }`}
-                    title={title}
+                    className="font-sans text-base sm:text-lg lg:text-xl font-bold text-white tracking-tight leading-snug line-clamp-2"
+                    title={hTitle}
                   >
-                    {title}
+                    {hTitle}
                   </h3>
                 </div>
 
-                {/* Expanded Details Sub-line (fades in on expanded card) */}
-                {isExpanded && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="mt-2.5 flex flex-wrap items-center gap-2 pl-3.5 sm:pl-4 text-xs font-mono text-white/70"
-                  >
-                    <span className="text-white/90 font-medium">
-                      {hackathon.organization}
-                    </span>
-                    {award && (
-                      <>
-                        <span className="text-white/30">·</span>
-                        <span
-                          className="px-2 py-0.5 rounded font-bold text-[10px]"
-                          style={{
-                            color: accentColor,
-                            backgroundColor: `${accentColor}18`,
-                          }}
-                        >
-                          {award}
-                        </span>
-                      </>
-                    )}
-                    <span className="text-white/30">·</span>
-                    <span className="text-white/50">{hackathon.year}</span>
-
-                    <span className="ml-auto inline-flex items-center gap-1 text-[11px] text-cyan-400 hover:underline">
-                      <span>{locale === "fr" ? "Détails" : "Details"}</span>
-                      <ArrowUpRight className="size-3" />
-                    </span>
-                  </motion.div>
-                )}
+                <div className="mt-2 flex items-center gap-2 pl-4 text-xs font-mono text-white/70">
+                  <span className="text-white/90 font-medium">{hackathon.organization}</span>
+                  <span className="text-white/30">·</span>
+                  <span className="text-white/50">{hackathon.year}</span>
+                  {hackathon.location && (
+                    <>
+                      <span className="text-white/30">·</span>
+                      <span className="text-white/50">{hackathon.location}</span>
+                    </>
+                  )}
+                </div>
               </div>
             </motion.div>
           );
         })}
       </div>
 
-      {/* Mobile Swipe Helper Hint */}
-      <div className="flex md:hidden items-center justify-center gap-2 text-[11px] font-mono text-white/40 pt-1">
-        <span>Glissez horizontalement pour naviguer</span>
-        <ChevronRight className="size-3.5 animate-pulse" />
-      </div>
-
-      {/* Detail Modal / Drawer (Full multi-photo gallery & engineering dossier) */}
+      {/* Detail Modal / Drawer (Full photo & engineering dossier) */}
       <AnimatePresence>
         {activeModalItem && (
           <div
@@ -333,10 +262,14 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
 
               {/* Modal Header */}
               <div className="space-y-2 pr-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 font-mono text-xs font-semibold">
-                  <span>HACKATHON & EVENT</span>
-                  <span>·</span>
-                  <span>{activeModalItem.year}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-signature text-sm sm:text-base font-semibold text-cyan-400">
+                    {locale === "fr" ? "Hackathon & Événement" : "Hackathon & Event"}
+                  </span>
+                  <span className="text-white/30">·</span>
+                  <span className="font-mono text-xs text-white/70">
+                    {activeModalItem.year}
+                  </span>
                 </div>
 
                 <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
@@ -348,67 +281,72 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                 </p>
               </div>
 
-              {/* Photo View / Multi-photo Instagram Carousel in Modal */}
-              {activeModalItem.images && activeModalItem.images.length > 0 && (
-                <div className="space-y-3">
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 aspect-[16/10] bg-black">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={activeModalItem.images[modalPhotoIndex] || activeModalItem.images[0]}
-                      alt="Photo hackathon HD"
-                      decoding="async"
-                      className="size-full object-contain"
-                    />
+              {/* Photo View in Modal */}
+              {(() => {
+                const modalImages = getResolvedImages(activeModalItem, 0);
+                return (
+                  <div className="space-y-3">
+                    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/50 flex items-center justify-center p-1">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={modalImages[modalPhotoIndex] || modalImages[0]}
+                        alt="Photo hackathon HD"
+                        decoding="async"
+                        className="max-h-[55vh] w-auto max-w-full rounded-xl object-contain shadow-2xl block mx-auto"
+                      />
 
-                    {/* Modal Arrows */}
-                    {activeModalItem.images.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setModalPhotoIndex(
-                              (prev) => (prev - 1 + activeModalItem.images!.length) % activeModalItem.images!.length
-                            )
-                          }
-                          className="absolute left-3 top-1/2 -translate-y-1/2 size-9 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black"
-                        >
-                          <ChevronLeft className="size-5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setModalPhotoIndex((prev) => (prev + 1) % activeModalItem.images!.length)
-                          }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 size-9 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black"
-                        >
-                          <ChevronRight className="size-5" />
-                        </button>
-                      </>
+                      {/* Modal Arrows */}
+                      {modalImages.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setModalPhotoIndex(
+                                (prev) =>
+                                  (prev - 1 + modalImages.length) %
+                                  modalImages.length
+                              )
+                            }
+                            className="absolute left-3 top-1/2 -translate-y-1/2 size-9 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black"
+                          >
+                            <ChevronLeft className="size-5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setModalPhotoIndex((prev) => (prev + 1) % modalImages.length)
+                            }
+                            className="absolute right-3 top-1/2 -translate-y-1/2 size-9 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black"
+                          >
+                            <ChevronRight className="size-5" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Modal Thumbnails Strip if multiple */}
+                    {modalImages.length > 1 && (
+                      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        {modalImages.map((img, tIdx) => (
+                          <button
+                            key={tIdx}
+                            type="button"
+                            onClick={() => setModalPhotoIndex(tIdx)}
+                            className={`relative size-16 rounded-xl border overflow-hidden shrink-0 transition-all cursor-pointer ${
+                              tIdx === modalPhotoIndex
+                                ? "border-cyan-400 ring-2 ring-cyan-400/30 scale-105"
+                                : "border-white/10 opacity-60 hover:opacity-100"
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={img} alt={`Miniature ${tIdx + 1}`} className="size-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
                     )}
                   </div>
-
-                  {/* Modal Thumbnails Strip */}
-                  {activeModalItem.images.length > 1 && (
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                      {activeModalItem.images.map((img, tIdx) => (
-                        <button
-                          key={tIdx}
-                          type="button"
-                          onClick={() => setModalPhotoIndex(tIdx)}
-                          className={`relative size-16 rounded-xl border overflow-hidden shrink-0 transition-all cursor-pointer ${
-                            tIdx === modalPhotoIndex
-                              ? "border-cyan-400 ring-2 ring-cyan-400/30 scale-105"
-                              : "border-white/10 opacity-60 hover:opacity-100"
-                          }`}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={img} alt={`Miniature ${tIdx + 1}`} className="size-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                );
+              })()}
 
               {/* 48H Sprint Challenge & Shipped Prototype */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -444,15 +382,19 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
               {/* Tech Stack & Links */}
               <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-xs text-white/40 uppercase">Stack :</span>
-                  {activeModalItem.tags.map((tag, tIdx) => (
-                    <span
-                      key={tIdx}
-                      className="px-2.5 py-1 rounded-lg border border-white/10 bg-white/[0.03] text-xs font-mono text-white/80"
-                    >
-                      {tag.name}
-                    </span>
-                  ))}
+                  <span className="font-mono text-xs font-bold italic text-white/40 uppercase">Stack :</span>
+                  <div className="font-mono text-xs italic font-normal text-white/80 flex flex-wrap items-center gap-x-2">
+                    {activeModalItem.tags.map((tag, tIdx) => (
+                      <span key={tIdx} className="inline-flex items-center">
+                        <span style={{ color: tag.color !== "standard" ? tag.color : undefined }}>
+                          {tag.name}
+                        </span>
+                        {tIdx < activeModalItem.tags.length - 1 && (
+                          <span className="opacity-30 ml-2 not-italic">·</span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 {activeModalItem.githubUrl && (

@@ -8,7 +8,6 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
-import { BorderBeam } from "@/components/magicui/border-beam";
 import { GridPattern } from "@/components/magicui/grid-pattern";
 
 interface SelectedWorkSceneProps {
@@ -362,16 +361,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"
                   />
 
-                  {/* Active Card Laser Border Beam (Magic UI) */}
-                  {isCurrent && (
-                    <BorderBeam
-                      size={240}
-                      duration={8}
-                      colorFrom="#C8F122"
-                      colorTo="#38BDF8"
-                      borderWidth={1.5}
-                    />
-                  )}
+
 
                   {/* Top Card Bar */}
                   <div
@@ -380,10 +370,10 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                     }`}
                   >
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                      <span className="font-mono text-xs font-medium text-text-muted bg-surface-raised border border-border px-2 py-0.5 rounded-md shrink-0">
+                      <span className="font-mono text-xs font-bold text-text-muted shrink-0">
                         0{index + 1}
                       </span>
-                      <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-text-secondary truncate">
+                      <span className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent truncate">
                         {categoryBadge}
                       </span>
                     </div>
@@ -440,14 +430,14 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
                       {projectSummary}
                     </p>
 
-                    {/* Core Technologies Badges */}
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {techList.slice(0, 6).map((tech: string) => (
-                        <span
-                          key={tech}
-                          className="rounded-lg border border-border bg-text-primary/[0.04] px-2 py-0.5 sm:px-2.5 sm:py-1 font-mono text-[10px] sm:text-[11px] text-text-primary/85 hover:border-border-strong transition-colors"
-                        >
-                          {tech}
+                    {/* Core Technologies Typographic List */}
+                    <div className="font-mono text-xs italic font-normal text-text-secondary flex flex-wrap items-center gap-x-2 gap-y-1 pt-1">
+                      {techList.slice(0, 6).map((tech: string, i: number) => (
+                        <span key={tech} className="inline-flex items-center">
+                          <span className="hover:text-accent transition-colors">{tech}</span>
+                          {i < Math.min(techList.length, 6) - 1 && (
+                            <span className="opacity-30 ml-2 not-italic">·</span>
+                          )}
                         </span>
                       ))}
                     </div>

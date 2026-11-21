@@ -3,8 +3,12 @@
 import React, { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import dynamic from "next/dynamic";
 import { CornerDownLeft, Maximize2, Minimize2, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
-import Chatbot3DAvatar from "./Chatbot3DAvatar";
+
+const Chatbot3DAvatar = dynamic(() => import("./Chatbot3DAvatar"), {
+  ssr: false,
+});
 
 type EntryRole = "banner" | "input" | "stdout" | "error" | "muted" | "ai";
 
@@ -345,7 +349,6 @@ function MagneticLauncherButton({
   const springConfig = { damping: 16, stiffness: 180, mass: 0.15 };
   const springX = useSpring(rawX, springConfig);
   const springY = useSpring(rawY, springConfig);
-  const springGlow = useSpring(rawGlow, { damping: 20, stiffness: 200 });
 
   // 3D Tilt angles mapped directly to displacement
   const rotateX = useTransform(springY, [-32, 32], [10, -10]);
@@ -480,7 +483,6 @@ export default function ChatWidget() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [cursorPos, setCursorPos] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
@@ -524,7 +526,6 @@ export default function ChatWidget() {
 
   const setInputAndCursor = (val: string) => {
     setInputValue(val);
-    setCursorPos(val.length);
     requestAnimationFrame(() => {
       if (inputRef.current) {
         inputRef.current.setSelectionRange(val.length, val.length);
@@ -1436,11 +1437,6 @@ export default function ChatWidget() {
                       onBlur={() => setIsFocused(false)}
                       onChange={(e) => {
                         setInputValue(e.target.value);
-                        setCursorPos(e.target.selectionStart ?? e.target.value.length);
-                      }}
-                      onSelect={(e) => {
-                        const t = e.currentTarget;
-                        setCursorPos(t.selectionStart ?? t.value.length);
                       }}
                       onKeyDown={handleKeyDown}
                       autoComplete="off"

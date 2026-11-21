@@ -48,26 +48,26 @@ export default function CinematicCanvas({
 }: CinematicCanvasProps) {
   return (
     <div className="relative w-full bg-bg-page text-text-primary selection:bg-accent/25 selection:text-text-primary">
-      {/* Background Mixed Atmospheric Lighting adapting to active theme without heavy GPU blur filters */}
+      {/* Background Mixed Atmospheric Lighting adapting to active theme with subtle, refined falloff */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full -z-10"
+        className="pointer-events-none fixed left-[-15%] top-[10%] h-[900px] w-[900px] rounded-full opacity-40 -z-10"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-raised) 50%, transparent) 0%, color-mix(in srgb, var(--surface-raised) 20%, transparent) 50%, transparent 100%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-raised) 40%, transparent) 0%, color-mix(in srgb, var(--surface-raised) 15%, transparent) 50%, transparent 100%)",
         }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full -z-10"
+        className="pointer-events-none fixed right-[-15%] top-[45%] h-[950px] w-[950px] rounded-full opacity-35 -z-10"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--surface) 50%, transparent) 0%, color-mix(in srgb, var(--surface) 20%, transparent) 50%, transparent 100%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface) 40%, transparent) 0%, color-mix(in srgb, var(--surface) 15%, transparent) 50%, transparent 100%)",
         }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[10%] bottom-[5%] h-[800px] w-[800px] rounded-full -z-10"
+        className="pointer-events-none fixed left-[10%] bottom-[5%] h-[800px] w-[800px] rounded-full opacity-30 -z-10"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-subtle) 45%, transparent) 0%, color-mix(in srgb, var(--surface-subtle) 15%, transparent) 50%, transparent 100%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--surface-subtle) 35%, transparent) 0%, color-mix(in srgb, var(--surface-subtle) 10%, transparent) 50%, transparent 100%)",
         }}
       />
 

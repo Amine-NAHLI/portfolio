@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 2592000, // 30 days
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizePackageImports: ["lucide-react", "framer-motion", "three", "gsap", "@gsap/react"],
   },
   outputFileTracingIncludes: {
     "/cv": [

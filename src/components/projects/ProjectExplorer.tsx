@@ -8,7 +8,6 @@ import { publicCopy } from "@/content/copy";
 import { getCategoryLabel, normalizeProjectCategories } from "@/lib/project-categories";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
-import SkillIcon from "@/components/ui/SkillIcon";
 
 type ProjectExplorerProps = {
   locale: Locale;
@@ -191,7 +190,7 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                     return (
                       <span
                         key={cat}
-                        className="rounded-full border border-border-strong bg-surface-raised/90 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-semibold text-accent"
+                        className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent drop-shadow-md"
                       >
                         {label}
                       </span>
@@ -200,9 +199,8 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                 </div>
 
                 {project.featured && (
-                  <div className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-accent/35 bg-accent px-2.5 py-0.5 text-[9px] font-mono font-semibold text-text-on-accent backdrop-blur-md">
-                    <span className="size-1.5 rounded-full bg-text-on-accent" />
-                    <span>FEATURED</span>
+                  <div className="absolute top-3 right-3 z-10 font-mono text-xs font-bold italic tracking-wide text-accent drop-shadow-md">
+                    FEATURED
                   </div>
                 )}
               </div>
@@ -222,19 +220,18 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                     {project.summary[locale]}
                   </p>
 
-                  {/* Tech stack pills with SkillIcon */}
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {project.technologies.slice(0, 4).map((tech) => (
-                      <span
-                        key={tech}
-                        className="inline-flex items-center gap-1 rounded-md border border-border bg-text-primary/[0.03] px-2 py-0.5 text-[10px] text-text-primary/85"
-                      >
-                        <SkillIcon name={tech} className="text-[12px]" />
-                        <span>{tech}</span>
+                  {/* Tech stack typographic list */}
+                  <div className="font-mono text-xs italic font-normal text-text-secondary flex flex-wrap items-center gap-x-2 gap-y-1 mb-5">
+                    {project.technologies.slice(0, 4).map((tech, tIdx) => (
+                      <span key={tech} className="inline-flex items-center">
+                        <span className="hover:text-accent transition-colors">{tech}</span>
+                        {tIdx < Math.min(project.technologies.length, 4) - 1 && (
+                          <span className="opacity-30 ml-2 not-italic">·</span>
+                        )}
                       </span>
                     ))}
                     {project.technologies.length > 4 && (
-                      <span className="rounded-md border border-border bg-text-primary/[0.03] px-1.5 py-0.5 text-[10px] text-text-muted">
+                      <span className="text-text-muted text-[11px] not-italic">
                         +{project.technologies.length - 4}
                       </span>
                     )}
@@ -311,23 +308,25 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                       </span>
                     </td>
                     <td className="py-4 px-6 whitespace-nowrap">
-                      {project.normalizedCategories.slice(0, 2).map((cat) => (
-                        <span
-                          key={cat}
-                          className="mr-1.5 rounded-full border border-border-strong bg-text-primary/[0.03] px-2.5 py-0.5 text-[11px] font-medium text-accent"
-                        >
-                          {getCategoryLabel(cat, locale)}
-                        </span>
-                      ))}
+                      <div className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent">
+                        {project.normalizedCategories.slice(0, 2).map((cat, cIdx) => (
+                          <span key={cat}>
+                            <span>{getCategoryLabel(cat, locale)}</span>
+                            {cIdx < Math.min(project.normalizedCategories.length, 2) - 1 && (
+                              <span className="opacity-30 mx-1.5 not-italic">·</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
                     </td>
                     <td className="py-4 px-6 hidden md:table-cell">
-                      <div className="flex flex-wrap gap-1.5 max-w-md">
-                        {project.technologies.slice(0, 4).map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded-md border border-border bg-text-primary/[0.03] px-2 py-0.5 text-xs text-text-primary/85"
-                          >
-                            {tech}
+                      <div className="font-mono text-xs italic font-normal text-text-secondary flex flex-wrap items-center gap-x-2 gap-y-1 max-w-md">
+                        {project.technologies.slice(0, 4).map((tech, tIdx) => (
+                          <span key={tech} className="inline-flex items-center">
+                            <span>{tech}</span>
+                            {tIdx < Math.min(project.technologies.length, 4) - 1 && (
+                              <span className="opacity-30 ml-2 not-italic">·</span>
+                            )}
                           </span>
                         ))}
                       </div>

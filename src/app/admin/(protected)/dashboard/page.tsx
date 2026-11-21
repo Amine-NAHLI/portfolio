@@ -73,6 +73,212 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
       
+      {/* Hub Visuel : Modules de Gestion Principaux */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-xl font-bold text-text-primary tracking-tight">
+              Modules de Gestion
+            </h2>
+            <p className="text-xs text-text-muted font-mono mt-0.5">
+              Choisissez directement l&apos;élément du portfolio que vous souhaitez mettre à jour
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+          {/* Card 1: Projets */}
+          <div className="rounded-2xl border border-white/10 bg-surface/50 hover:bg-surface/80 hover:border-accent/40 p-5 transition-all group flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="grid size-11 place-items-center rounded-xl border border-accent/30 bg-accent/15 text-accent group-hover:scale-105 transition-transform">
+                  <FolderKanban className="size-5" />
+                </div>
+                <span className="font-mono text-xs font-bold text-accent px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20">
+                  {projectsCount} projets
+                </span>
+              </div>
+              <h3 className="font-display text-base font-bold text-text-primary group-hover:text-accent transition-colors">
+                Projets & Réalisations
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">
+                Créer, modifier les fiches de projets, la galerie photo et ordonner les 4 projets en vedette sur l&apos;accueil.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-2">
+              <Link 
+                href="/admin/projects" 
+                className="flex-1 text-center py-2 px-3 rounded-xl bg-white/[0.04] hover:bg-accent hover:text-black font-mono text-xs font-semibold text-text-primary transition-all border border-white/10"
+              >
+                Tous les Projets
+              </Link>
+              <Link 
+                href="/admin/featured-projects" 
+                className="py-2 px-3 rounded-xl bg-accent/10 hover:bg-accent/20 text-accent font-mono text-xs font-semibold transition-all border border-accent/20"
+                title="Choisir les 4 projets de l'accueil"
+              >
+                Accueil (4)
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: Hackathons */}
+          <div className="rounded-2xl border border-white/10 bg-surface/50 hover:bg-surface/80 hover:border-purple-400/40 p-5 transition-all group flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="grid size-11 place-items-center rounded-xl border border-purple-500/30 bg-purple-500/15 text-purple-400 group-hover:scale-105 transition-transform">
+                  <Award className="size-5" />
+                </div>
+                <span className="font-mono text-xs font-bold text-purple-400 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20">
+                  Podiums 48H
+                </span>
+              </div>
+              <h3 className="font-display text-base font-bold text-text-primary group-hover:text-purple-400 transition-colors">
+                Hackathons & Parcours
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">
+                Gérer les photos de terrain en direct, les récompenses remportées, défis 48H et prototypes livrés.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/5">
+              <Link 
+                href="/admin/journey" 
+                className="block text-center py-2 px-3 rounded-xl bg-purple-500/15 hover:bg-purple-500 hover:text-white font-mono text-xs font-semibold text-purple-300 transition-all border border-purple-500/30"
+              >
+                Gérer les Hackathons & Photos →
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 3: Certifications */}
+          <div className="rounded-2xl border border-white/10 bg-surface/50 hover:bg-surface/80 hover:border-amber-400/40 p-5 transition-all group flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="grid size-11 place-items-center rounded-xl border border-amber-500/30 bg-amber-500/15 text-amber-400 group-hover:scale-105 transition-transform">
+                  <Award className="size-5" />
+                </div>
+                <span className="font-mono text-xs font-bold text-amber-400 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                  Officiel
+                </span>
+              </div>
+              <h3 className="font-display text-base font-bold text-text-primary group-hover:text-amber-400 transition-colors">
+                Certifications & Diplômes
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">
+                Ajouter des certifications, lier les badges officiels et sélectionner les 3 certificats mis en avant sur l&apos;accueil.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-2">
+              <Link 
+                href="/admin/certifications" 
+                className="flex-1 text-center py-2 px-3 rounded-xl bg-white/[0.04] hover:bg-amber-400 hover:text-black font-mono text-xs font-semibold text-text-primary transition-all border border-white/10"
+              >
+                Toutes les Certifications
+              </Link>
+              <Link 
+                href="/admin/featured-certifications" 
+                className="py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-mono text-xs font-semibold transition-all border border-amber-500/20"
+                title="Choisir les 3 certifications de l'accueil"
+              >
+                Accueil (3)
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 4: Messages Contact */}
+          <div className="rounded-2xl border border-white/10 bg-surface/50 hover:bg-surface/80 hover:border-emerald-400/40 p-5 transition-all group flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="grid size-11 place-items-center rounded-xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 group-hover:scale-105 transition-transform">
+                  <Inbox className="size-5" />
+                </div>
+                <span className="font-mono text-xs font-bold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  {newMessagesCount} nouveau{newMessagesCount > 1 ? "x" : ""}
+                </span>
+              </div>
+              <h3 className="font-display text-base font-bold text-text-primary group-hover:text-emerald-400 transition-colors">
+                Boîte de Réception
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">
+                Consulter les prises de contact de recruteurs et clients reçues via le formulaire du portfolio.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/5">
+              <Link 
+                href="/admin/messages" 
+                className="block text-center py-2 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 hover:text-black font-mono text-xs font-semibold text-emerald-300 transition-all border border-emerald-500/30"
+              >
+                Ouvrir les Messages ({newMessagesCount}) →
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 5: CV Officiel */}
+          <div className="rounded-2xl border border-white/10 bg-surface/50 hover:bg-surface/80 hover:border-blue-400/40 p-5 transition-all group flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="grid size-11 place-items-center rounded-xl border border-blue-500/30 bg-blue-500/15 text-blue-400 group-hover:scale-105 transition-transform">
+                  <Server className="size-5" />
+                </div>
+                <span className="font-mono text-xs font-bold text-blue-400 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+                  FR / EN
+                </span>
+              </div>
+              <h3 className="font-display text-base font-bold text-text-primary group-hover:text-blue-400 transition-colors">
+                Mon CV Officiel (PDF)
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">
+                Mettre à jour directement vos fichiers PDF de CV en français et anglais téléchargeables par les visiteurs.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/5">
+              <Link 
+                href="/admin/cv" 
+                className="block text-center py-2 px-3 rounded-xl bg-blue-500/15 hover:bg-blue-500 hover:text-white font-mono text-xs font-semibold text-blue-300 transition-all border border-blue-500/30"
+              >
+                Gérer les Fichiers CV →
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 6: Paramètres & Visibilité */}
+          <div className="rounded-2xl border border-white/10 bg-surface/50 hover:bg-surface/80 hover:border-cyan-400/40 p-5 transition-all group flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="grid size-11 place-items-center rounded-xl border border-cyan-400/30 bg-cyan-400/15 text-cyan-400 group-hover:scale-105 transition-transform">
+                  <Sparkles className="size-5" />
+                </div>
+                <span className="font-mono text-xs font-bold text-cyan-400 px-2.5 py-0.5 rounded-full bg-cyan-400/10 border border-cyan-400/20">
+                  Configuration
+                </span>
+              </div>
+              <h3 className="font-display text-base font-bold text-text-primary group-hover:text-cyan-400 transition-colors">
+                Paramètres & Visibilité
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">
+                Activer ou masquer des sections du portfolio (GitHub, Projets, Hackathons) et modifier vos liens sociaux.
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/5">
+              <Link 
+                href="/admin/settings" 
+                className="block text-center py-2 px-3 rounded-xl bg-cyan-400/15 hover:bg-cyan-400 hover:text-black font-mono text-xs font-semibold text-cyan-300 transition-all border border-cyan-400/30"
+              >
+                Régler la Visibilité & Options →
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* Primary Metrics Bento Grid */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
         

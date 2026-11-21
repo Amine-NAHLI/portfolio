@@ -63,6 +63,8 @@ export async function POST(request: NextRequest) {
     return fail("Les métadonnées du fichier n’ont pas pu être enregistrées.", 500);
   }
 
+  const { data: publicUrlData } = context.supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+
   await context.supabase.from("audit_logs").insert({
     actor_id: context.userId,
     action: "create",
@@ -70,5 +72,9 @@ export async function POST(request: NextRequest) {
     entity_id: data.id,
     details: { fields: ["file", "mime_type", "size_bytes"] },
   });
-  return NextResponse.json({ record: data }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
+  return NextResponse.json({ 
+    record: data, 
+    publicUrl: publicUrlData?.publicUrl || "",
+    storagePath 
+  }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
 }

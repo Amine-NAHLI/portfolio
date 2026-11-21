@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -8,7 +9,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Locale } from "@/i18n/config";
 import type { GitHubStats } from "@/lib/github";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-import { BorderBeam } from "@/components/magicui/border-beam";
 import { DotPattern } from "@/components/magicui/dot-pattern";
 
 interface GitHubContributionsSceneProps {
@@ -198,26 +198,26 @@ export default function GitHubContributionsScene({
         className="fill-white/[0.04] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_50%,transparent_100%)] -z-10"
       />
 
-      {/* Ambient Depth Spotlights (optimized radial gradients, zero blur filter cost) */}
+      {/* Ambient Depth Spotlights (subtle depth without washing out darks) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-8%] top-1/3 h-[600px] w-[600px] rounded-full"
+        className="pointer-events-none absolute left-[-8%] top-1/3 h-[500px] w-[500px] rounded-full opacity-40"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 5%, transparent) 0%, transparent 70%)",
         }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-8%] top-1/2 h-[650px] w-[650px] rounded-full opacity-70"
+        className="pointer-events-none absolute right-[-8%] top-1/2 h-[550px] w-[550px] rounded-full opacity-35"
         style={{
           background: "radial-gradient(circle, var(--surface) 0%, transparent 70%)",
         }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full opacity-35"
         style={{
-          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 70%)",
+          background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 70%)",
         }}
       />
 
@@ -239,29 +239,32 @@ export default function GitHubContributionsScene({
             </p>
           </div>
 
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-border-strong bg-surface px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-text-primary backdrop-blur-md transition-all duration-300 hover:border-accent hover:bg-accent hover:text-text-on-accent hover:shadow-[0_0_25px_color-mix(in_srgb,var(--accent)_25%,transparent)]"
-          >
-            <span>GitHub / Amine-NAHLI</span>
-            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+          <div className="flex flex-wrap items-center gap-3 self-start md:self-end">
+            <Link
+              href={`/${locale}/contributions`}
+              className="group inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-text-primary backdrop-blur-md transition-all duration-300 hover:border-accent hover:bg-accent hover:text-text-on-accent hover:shadow-[0_0_25px_color-mix(in_srgb,var(--accent)_25%,transparent)]"
+            >
+              <span>{locale === "fr" ? "Dossier Complet Contributions" : "Full Contributions Dossier"}</span>
+              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-subtle/50 px-5 py-3 font-mono text-xs font-medium text-text-muted transition-colors hover:text-text-primary hover:border-border-strong"
+            >
+              <span>GitHub / Amine-NAHLI</span>
+              <ArrowUpRight className="size-3.5" />
+            </a>
+          </div>
         </div>
 
         {/* 3 Clean Architectural Metric Cards */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           
           {/* Card 1: Real Total Contributions */}
-          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
-            <BorderBeam
-              size={180}
-              duration={7}
-              colorFrom="#C8F122"
-              colorTo="#38BDF8"
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            />
+          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl hover:border-accent/40 transition-colors duration-300">
             <div className="text-xs font-mono uppercase tracking-wider text-text-muted mb-5">
               {locale === "fr" ? "Volume Annuel" : "Annual Volume"}
             </div>
@@ -283,14 +286,7 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 2: Real Public Repositories */}
-          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
-            <BorderBeam
-              size={180}
-              duration={7}
-              colorFrom="#38BDF8"
-              colorTo="#A855F7"
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            />
+          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl hover:border-accent/40 transition-colors duration-300">
             <div className="text-xs font-mono uppercase tracking-wider text-text-muted mb-5">
               {locale === "fr" ? "Dépôts Publics" : "Public Repositories"}
             </div>
@@ -312,14 +308,7 @@ export default function GitHubContributionsScene({
           </div>
 
           {/* Card 3: Real Dominant Stack Distribution */}
-          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl">
-            <BorderBeam
-              size={180}
-              duration={7}
-              colorFrom="#A855F7"
-              colorTo="#C8F122"
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            />
+          <div className="github-anim-card group relative overflow-hidden rounded-3xl border border-border-strong bg-surface p-6 sm:p-7 shadow-xl hover:border-accent/40 transition-colors duration-300">
             <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-text-muted mb-4">
               <span>{locale === "fr" ? "Stack Dominante" : "Core Tech Stack"}</span>
               <span className="text-text-primary font-semibold">{stats.topLanguage?.name || "Python"}</span>
@@ -340,19 +329,22 @@ export default function GitHubContributionsScene({
               ))}
             </div>
 
-            {/* Language breakdown pills */}
-            <div className="flex flex-wrap gap-2">
-              {topLanguages.map((lang) => (
+            {/* Language breakdown in pure typography */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs">
+              {topLanguages.map((lang, idx) => (
                 <div
                   key={lang.name}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-text-primary/[0.03] px-2.5 py-1 text-[11px] text-text-primary/85"
+                  className="inline-flex items-center gap-1.5"
                 >
                   <span
                     className="size-2 rounded-full"
                     style={{ backgroundColor: lang.color || "var(--accent)" }}
                   />
-                  <span>{lang.name}</span>
-                  <span className="text-text-muted font-mono">{lang.percentage.toFixed(0)}%</span>
+                  <span className="font-semibold italic text-text-primary">{lang.name}</span>
+                  <span className="text-text-muted not-italic">{lang.percentage.toFixed(0)}%</span>
+                  {idx < topLanguages.length - 1 && (
+                    <span className="opacity-30 ml-2 not-italic text-text-muted">·</span>
+                  )}
                 </div>
               ))}
             </div>
@@ -552,6 +544,24 @@ export default function GitHubContributionsScene({
             </div>
           </div>
         )}
+
+        {/* Bottom Explorer Link */}
+        <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border pt-6">
+          <Link
+            href={`/${locale}/contributions`}
+            className="inline-flex items-center gap-2 text-xs font-semibold text-accent hover:text-text-primary transition-colors font-mono"
+          >
+            <span>
+              {locale === "fr"
+                ? "Explorer la page dédiée aux contributions & dépôts publics"
+                : "Explore dedicated contributions & open-source repositories"}
+            </span>
+            <ArrowUpRight className="size-4" />
+          </Link>
+          <span className="text-xs text-text-muted font-medium font-mono">
+            {locale === "fr" ? "Synchronisé via l'API GraphQL GitHub" : "Synchronized via GitHub GraphQL API"}
+          </span>
+        </div>
 
       </div>
     </section>

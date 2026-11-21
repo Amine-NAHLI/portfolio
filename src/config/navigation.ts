@@ -15,7 +15,7 @@ export const SITE_NAV_ITEMS: SiteNavItem[] = [
   { id: "02", label: { fr: "À Propos", en: "About" }, href: "/#about", hashId: "about" },
   { id: "03", label: { fr: "Projets", en: "Projects" }, href: "/projects" },
   { id: "04", label: { fr: "Parcours", en: "Journey" }, href: "/journey" },
-  { id: "05", label: { fr: "Contributions", en: "Contributions" }, href: "/#github", hashId: "github" },
+  { id: "05", label: { fr: "Contributions", en: "Contributions" }, href: "/contributions", hashId: "github" },
   { id: "06", label: { fr: "Certifications", en: "Certifications" }, href: "/certifications" },
   { id: "07", label: { fr: "Contact", en: "Contact" }, href: "/contact" },
 ];

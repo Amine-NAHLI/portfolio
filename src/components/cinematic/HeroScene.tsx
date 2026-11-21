@@ -11,7 +11,6 @@ import type { HeroActionButton } from "@/content/hero-buttons";
 import { DEFAULT_HERO_BUTTONS } from "@/content/hero-buttons";
 import { getCvDownloadProps } from "@/lib/utils";
 import { GridPattern } from "@/components/magicui/grid-pattern";
-import { HyperText } from "@/components/magicui/hyper-text";
 
 interface HeroSceneProps {
   locale: Locale;
@@ -149,17 +148,6 @@ export default function HeroScene({
         ref={contentRef}
         className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center justify-center text-center my-auto py-8"
       >
-        {/* Engineering Status Ticker (Magic UI HyperText) */}
-        <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-border-strong bg-surface-raised/80 px-4 py-1.5 font-mono text-xs shadow-sm backdrop-blur-md">
-          <span className="size-2 rounded-full bg-accent animate-pulse" />
-          <span className="text-text-muted text-[11px]">
-            {locale === "fr" ? "PROFIL INGÉNIEUR //" : "ENGINEERING TRACK //"}
-          </span>
-          <HyperText duration={500} className="text-xs font-bold text-accent">
-            CYBER_DEFENSE & AI_VISION
-          </HyperText>
-        </div>
-
         {/* Monumental Display Name */}
         <h1
           ref={titleRef}

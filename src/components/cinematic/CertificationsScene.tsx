@@ -10,7 +10,6 @@ import CertificationCard from "@/components/ui/CertificationCard";
 import type { Locale } from "@/i18n/config";
 import type { PublicCertification } from "@/features/portfolio/data";
 import { DotPattern } from "@/components/magicui/dot-pattern";
-import { Marquee } from "@/components/magicui/marquee";
 
 interface CertificationsSceneProps {
   locale: Locale;
@@ -98,16 +97,6 @@ export default function CertificationsScene({
     { scope: containerRef }
   );
 
-  const accreditedOrgs = [
-    "TRYHACKME",
-    "CISCO NETWORKING ACADEMY",
-    "DEEPLEARNING.AI",
-    "COURSERA",
-    "GOOGLE BUILD WITH GEMMA",
-    "UNIVERSITÉ PRIVÉE DE FÈS",
-    "GDG ON CAMPUS",
-  ];
-
   return (
     <section
       ref={containerRef}
@@ -159,18 +148,6 @@ export default function CertificationsScene({
               />
             </div>
           ))}
-        </div>
-
-        {/* Accredited Institutions Marquee Ribbon (Magic UI) */}
-        <div className="mt-14 py-3 rounded-2xl border border-border/80 bg-surface/50 overflow-hidden backdrop-blur-sm">
-          <Marquee pauseOnHover className="font-mono text-[11px] uppercase tracking-wider text-text-muted [--duration:30s]">
-            {accreditedOrgs.map((org, i) => (
-              <div key={i} className="flex items-center gap-8 mx-4">
-                <span className="hover:text-accent transition-colors">{org}</span>
-                <span className="text-accent/40">·</span>
-              </div>
-            ))}
-          </Marquee>
         </div>
 
         {/* Bottom Explorer Link */}

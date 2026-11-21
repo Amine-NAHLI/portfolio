@@ -1,8 +1,6 @@
 import { FolderKanban, MessageSquare, Inbox, ExternalLink, Activity, Server, ArrowUpRight, Sparkles, Layers, Award } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/admin";
 import Link from "next/link";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import BentoCard from "@/components/ui/BentoCard";
 import CountUp from "@/components/ui/CountUp";
 
@@ -402,7 +400,7 @@ export default async function AdminDashboardPage() {
 
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="font-mono text-[0.7rem] text-text-muted">
-                      {format(new Date(msg.created_at), "dd MMM, HH:mm", { locale: fr })}
+                      {new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(msg.created_at))}
                     </span>
                     {msg.status === "new" ? (
                       <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-amber-400">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowUpRight,
@@ -82,6 +82,14 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
   const [activeModalItem, setActiveModalItem] = useState<JourneyTimelineItem | null>(null);
   const [modalPhotoIndex, setModalPhotoIndex] = useState<number>(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+    return () => window.removeEventListener("resize", checkIsDesktop);
+  }, []);
 
   return (
     <div className="w-full">
@@ -152,8 +160,8 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                 setModalPhotoIndex(0);
                 setActiveModalItem(hackathon);
               }}
-              style={{ flex: flexRatio }}
-              className={`group relative w-full h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 cursor-pointer shadow-2xl select-none transition-colors duration-300 ${
+              style={isDesktop ? { flex: flexRatio } : { minHeight: "360px", height: "360px" }}
+              className={`group relative w-full shrink-0 min-h-[360px] h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 cursor-pointer shadow-2xl select-none transition-colors duration-300 ${
                 isHovered
                   ? "border-cyan-400/40 shadow-[0_20px_50px_rgba(0,0,0,0.85)]"
                   : "border-white/10 hover:border-white/25"

@@ -1,9 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare module "three" {
-  export type Group = any;
+  export interface Object3D {
+    isMesh?: boolean;
+    material?: any;
+    position: any;
+    scale: any;
+    rotation: any;
+    add(child: any): void;
+    traverse(callback: (child: Object3D) => void): void;
+    [key: string]: any;
+  }
+
+  export type Group = Object3D;
+  export type Mesh = Object3D;
   export type AnimationClip = any;
   export type AnimationMixer = any;
-  export type Mesh = any;
   export type MeshStandardMaterial = any;
   export type Scene = any;
   export type PerspectiveCamera = any;

@@ -165,7 +165,7 @@ export default function Chatbot3DAvatar({
       pivot.add(model);
 
       // Enhance materials: elevate dark body so bevels pop, boost metallic highlights and emissive glows
-      model.traverse((child) => {
+      model.traverse((child: any) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           if (mesh.material) {

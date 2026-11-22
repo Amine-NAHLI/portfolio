@@ -81,82 +81,79 @@ export default function CertificationCard({ certification, locale, copy }: Certi
 
   return (
     <>
-      {/* Interactive Trigger Card */}
+      {/* Interactive Trigger Card - Hackathon Photo Style (Full visual, gradient overlay, sans cadre séparé) */}
       <button
         type="button"
         onClick={() => {
           setModalDocError(false);
           setOpen(true);
         }}
-        className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-border-strong bg-surface transition-all duration-300 hover:border-accent/55 hover:-translate-y-1 hover:shadow-2xl w-full h-full cursor-pointer"
+        className="group relative w-full aspect-[16/11] min-h-[300px] sm:min-h-[340px] rounded-[24px] sm:rounded-[32px] overflow-hidden border border-white/10 hover:border-accent/40 shadow-2xl transition-all duration-300 hover:scale-[1.01] select-none text-left cursor-pointer bg-neutral-950 block"
       >
-        {/* Document Preview Frame (Affichage complet direct sans cadre épais ni tag sur l'image) */}
-        <div className="relative w-full aspect-[16/11] overflow-hidden bg-white dark:bg-[#121316] border-b border-border flex items-center justify-center">
-          {/* Loading Skeleton */}
-          {!isLoaded && !hasError && certification.hasDocument && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface/90">
-              <LoaderCircle className="size-6 animate-spin text-text-muted" />
+        {/* Certificate Image filling 100% of the card */}
+        {certification.hasDocument && !hasError ? (
+          <img
+            src={previewUrl}
+            alt={certification.name}
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setIsLoaded(true)}
+            onError={() => setHasError(true)}
+            className={`absolute inset-0 size-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105 ${
+              isLoaded ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-surface-subtle text-center">
+            <div className="grid size-11 place-items-center rounded-xl border border-border bg-surface-raised text-text-secondary mb-2 group-hover:scale-105 transition-transform">
+              <Award className="size-5 text-accent" />
             </div>
-          )}
-
-          {certification.hasDocument && !hasError ? (
-            <div className="relative size-full flex items-center justify-center bg-white">
-              <img
-                src={previewUrl}
-                alt={`Aperçu de ${certification.name}`}
-                loading="lazy"
-                decoding="async"
-                onLoad={() => setIsLoaded(true)}
-                onError={() => {
-                  setHasError(true);
-                }}
-                className={`size-full object-contain bg-white transition-transform duration-500 group-hover:scale-[1.02] ${
-                  isLoaded ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            </div>
-          ) : (
-            <div className="relative flex flex-col items-center justify-center w-full h-full bg-surface-subtle p-6 text-center">
-              <div className="grid size-11 place-items-center rounded-xl border border-border bg-surface-raised text-text-secondary mb-2 group-hover:scale-105 transition-transform">
-                <Award className="size-5 text-text-primary" />
-              </div>
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-                {certification.issuer || "Certification Officielle"}
-              </span>
-            </div>
-          )}
-
-          {/* Indicateur discret de consultation / clic pour détails */}
-          <div className="absolute top-3 right-3 z-10 transition-transform duration-300 group-hover:scale-105 pointer-events-none">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-medium text-white/90 bg-black/75 backdrop-blur-md border border-white/20 shadow-sm group-hover:border-accent/60 group-hover:text-accent transition-colors">
-              <Maximize2 className="size-3 text-accent" />
-              <span>{locale === "fr" ? "Détails" : "Details"}</span>
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-text-muted">
+              {certification.issuer || "Certification Officielle"}
             </span>
           </div>
+        )}
+
+        {/* Loading Skeleton */}
+        {!isLoaded && !hasError && certification.hasDocument && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-neutral-950/80">
+            <LoaderCircle className="size-6 animate-spin text-text-muted" />
+          </div>
+        )}
+
+        {/* Subtle Dark Gradient Overlay at bottom for clean text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 pointer-events-none" />
+
+        {/* Top Bar: Click for details badge */}
+        <div className="absolute top-0 inset-x-0 z-20 px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-2.5 pointer-events-none">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-accent drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+            {certification.issuer || "Certification"}
+          </span>
+
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-medium text-white/90 bg-black/75 backdrop-blur-md border border-white/20 shadow-sm group-hover:border-accent/60 group-hover:text-accent transition-colors">
+            <Maximize2 className="size-3 text-accent" />
+            <span>{locale === "fr" ? "Détails" : "Details"}</span>
+          </span>
         </div>
 
-        {/* Info Content Container */}
-        <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-surface">
-          <div>
-            {certification.issuer && (
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-accent mb-1.5 block">
-                {certification.issuer}
-              </span>
-            )}
-            <h3 className="text-base sm:text-lg font-display font-bold leading-snug text-text-primary group-hover:text-accent transition-colors line-clamp-2">
+        {/* Bottom Caption: Title, Date & Inspect (Hackathon style) */}
+        <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-5 flex flex-col justify-end pointer-events-none">
+          <div className="flex items-center min-w-0">
+            <span className="w-1.5 h-4.5 rounded-full shrink-0 mr-2.5 bg-accent shadow-[0_0_10px_var(--color-accent)] transition-transform group-hover:scale-y-110" />
+            <h3 className="font-sans text-sm sm:text-base font-bold text-white tracking-tight leading-snug line-clamp-2 drop-shadow-md">
               {certification.name}
             </h3>
           </div>
 
-          <div className="mt-4 flex items-center justify-between pt-3 border-t border-border">
-            <span className="text-xs font-mono text-text-secondary flex items-center gap-1.5">
-              <Calendar className="size-3.5 opacity-75 text-accent" />
-              {formattedDate || "—"}
-            </span>
+          <div className="mt-1.5 flex items-center justify-between pl-4 text-xs font-mono text-white/70">
+            <div className="flex items-center gap-1.5 text-white/60">
+              <Calendar className="size-3 text-accent" />
+              <span>{formattedDate || "—"}</span>
+            </div>
 
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent group-hover:text-text-primary transition-colors">
-              {locale === "fr" ? "Inspecter" : "Inspect"}
-              <Maximize2 className="size-3.5" />
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent group-hover:text-white transition-colors">
+              <span>{locale === "fr" ? "Inspecter" : "Inspect"}</span>
+              <ExternalLink className="size-3" />
             </span>
           </div>
         </div>

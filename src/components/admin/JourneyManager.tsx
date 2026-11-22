@@ -16,7 +16,8 @@ import {
   Sparkles,
   Camera,
   RotateCcw,
-  Sliders,
+  Crosshair,
+  Move,
   Maximize2,
   ArrowUpToLine,
   ArrowDownToLine,
@@ -42,6 +43,22 @@ const COLOR_PRESETS = [
   { label: "Orange Vif", value: "#F97316" },
 ];
 
+function parseFocalPosition(pos?: string): { x: number; y: number } {
+  if (!pos || pos === "center") return { x: 50, y: 50 };
+  if (pos === "top") return { x: 50, y: 15 };
+  if (pos === "bottom") return { x: 50, y: 85 };
+  const parts = pos.trim().split(/\s+/);
+  if (parts.length === 2) {
+    const x = parseInt(parts[0], 10);
+    const y = parseInt(parts[1], 10);
+    return {
+      x: isNaN(x) ? 50 : Math.max(0, Math.min(100, x)),
+      y: isNaN(y) ? 50 : Math.max(0, Math.min(100, y)),
+    };
+  }
+  return { x: 50, y: 50 };
+}
+
 export function JourneyManager({ initialItems }: { initialItems: JourneyTimelineItem[] }) {
   const [items, setItems] = useState<JourneyTimelineItem[]>(
     initialItems && initialItems.length > 0 ? initialItems : DEFAULT_HACKATHONS
@@ -58,6 +75,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDraggingFocal, setIsDraggingFocal] = useState(false);
   const [showUrlFallback, setShowUrlFallback] = useState(false);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
 
@@ -873,9 +891,39 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                       </span>
                     </div>
 
-                    {/* Cadre Adaptatif en Couleurs Naturelles */}
+                    {/* Cadre Adaptatif en Couleurs Naturelles avec Cadrage Manuel à la Souris */}
                     <div
-                      className={`relative w-full rounded-2xl overflow-hidden border border-white/15 bg-black/80 flex items-center justify-center transition-all ${
+                      onPointerDown={(e) => {
+                        setIsDraggingFocal(true);
+                        try {
+                          e.currentTarget.setPointerCapture(e.pointerId);
+                        } catch {
+                          // Ignore
+                        }
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+                        const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+                        updateItemField(activeItemIndex, "imagePosition", `${x}% ${y}%`);
+                      }}
+                      onPointerMove={(e) => {
+                        if (!isDraggingFocal) return;
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+                        const y = Math.round(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
+                        updateItemField(activeItemIndex, "imagePosition", `${x}% ${y}%`);
+                      }}
+                      onPointerUp={(e) => {
+                        if (isDraggingFocal) {
+                          setIsDraggingFocal(false);
+                          try {
+                            e.currentTarget.releasePointerCapture(e.pointerId);
+                          } catch {
+                            // Ignore
+                          }
+                        }
+                      }}
+                      onPointerCancel={() => setIsDraggingFocal(false)}
+                      className={`relative w-full rounded-2xl overflow-hidden border border-white/15 bg-black/80 flex items-center justify-center transition-all cursor-crosshair select-none touch-none group/preview ${
                         activeItem.imageFit === "contain"
                           ? "min-h-[260px] max-h-[380px] p-2.5"
                           : "aspect-[16/10] max-h-[400px]"
@@ -889,16 +937,53 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                           objectFit: activeItem.imageFit || "cover",
                           objectPosition: activeItem.imagePosition || "center",
                         }}
-                        className={`transition-all duration-300 ${
+                        className={`pointer-events-none transition-[object-position] duration-75 select-none ${
                           activeItem.imageFit === "contain"
                             ? "max-h-[360px] w-auto max-w-full rounded-xl object-contain"
                             : "size-full object-cover"
                         }`}
                       />
 
+                      {/* Réticule de Cadrage Interactif avec la Souris */}
+                      {(() => {
+                        const focal = parseFocalPosition(activeItem.imagePosition);
+                        return (
+                          <div
+                            className="absolute pointer-events-none transition-[left,top] duration-75 z-10 select-none"
+                            style={{
+                              left: `${focal.x}%`,
+                              top: `${focal.y}%`,
+                              transform: "translate(-50%, -50%)",
+                            }}
+                          >
+                            <div className="relative flex items-center justify-center">
+                              {/* Anneau lumineux pulsant */}
+                              <span className="absolute size-10 rounded-full border-2 border-cyan-400 bg-cyan-400/20 shadow-[0_0_18px_rgba(34,211,238,0.85)] animate-pulse" />
+                              {/* Point central */}
+                              <span className="size-2.5 rounded-full bg-cyan-300 shadow-md shadow-cyan-400" />
+                              {/* Réticule en croix */}
+                              <span className="absolute w-8 h-px bg-cyan-400" />
+                              <span className="absolute h-8 w-px bg-cyan-400" />
+                              {/* Coordonnées */}
+                              <span className="absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-black/90 text-[10px] font-mono font-bold text-cyan-300 border border-cyan-400/50 shadow-xl backdrop-blur-md">
+                                X: {focal.x}% · Y: {focal.y}%
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Aide visuelle au survol */}
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium text-cyan-200 bg-black/85 backdrop-blur-md border border-cyan-400/40 shadow-xl">
+                          <Move className="size-3 text-cyan-400" />
+                          <span>Cliquez ou glissez avec la souris pour recadrer librement</span>
+                        </span>
+                      </div>
+
                       {/* Badge Prix */}
                       {activeItem.award && (
-                        <div className="absolute top-3.5 left-3.5 z-10">
+                        <div className="absolute top-3.5 left-3.5 z-10 pointer-events-none">
                           <span
                             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border backdrop-blur-md shadow-lg"
                             style={{
@@ -915,7 +1000,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
                       {/* Badge Année */}
                       {activeItem.year && (
-                        <div className="absolute top-3.5 right-3.5 z-10">
+                        <div className="absolute top-3.5 right-3.5 z-10 pointer-events-none">
                           <span className="px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest text-white/90 bg-black/75 backdrop-blur-md border border-white/15">
                             {activeItem.year}
                           </span>
@@ -995,39 +1080,95 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                       </div>
                     </div>
 
-                    {/* Point Focal Vertical */}
-                    <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/70 space-y-2.5">
-                      <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
-                        <Sliders className="size-3.5" />
-                        <span>Alignement focal vertical</span>
-                      </label>
-                      <p className="font-mono text-[11px] text-white/50">
-                        Zone à centrer en priorité dans le cadre :
-                      </p>
-                      <div className="grid grid-cols-3 gap-2 pt-1">
-                        {[
-                          { id: "top", label: "Haut", desc: "Visages & Trophées" },
-                          { id: "center", label: "Centre", desc: "Équilibré standard" },
-                          { id: "bottom", label: "Bas", desc: "Robots & Matériel" },
-                        ].map((pos) => {
-                          const isSelected = (activeItem.imagePosition || "center") === pos.id;
-                          return (
-                            <button
-                              key={pos.id}
-                              type="button"
-                              onClick={() => updateItemField(activeItemIndex, "imagePosition", pos.id)}
-                              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                isSelected
-                                  ? "border-cyan-400 bg-cyan-400/15 text-white shadow-md shadow-cyan-400/10"
-                                  : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/20 hover:text-white"
-                              }`}
-                            >
-                              <div className="font-mono text-xs font-bold">{pos.label}</div>
-                              <div className="text-[10px] text-white/50 mt-1 leading-tight">{pos.desc}</div>
-                            </button>
-                          );
-                        })}
-                      </div>
+                    {/* Cadrage Manuel & Point Focal à la Souris */}
+                    <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/70 space-y-3">
+                      {(() => {
+                        const focal = parseFocalPosition(activeItem.imagePosition);
+                        return (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <label className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
+                                <Crosshair className="size-3.5" />
+                                <span>Cadrage manuel au pixel</span>
+                              </label>
+                              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-cyan-400/15 border border-cyan-400/30 text-cyan-300">
+                                X: {focal.x}% · Y: {focal.y}%
+                              </span>
+                            </div>
+
+                            {/* Sliders X & Y */}
+                            <div className="space-y-2 pt-1">
+                              <div className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-mono text-white/60">
+                                  <span>Horizontal (X) : Gauche ↔ Droite</span>
+                                  <span className="text-cyan-400 font-bold">{focal.x}%</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="100"
+                                  value={focal.x}
+                                  onChange={(e) => {
+                                    const newX = Number(e.target.value);
+                                    updateItemField(activeItemIndex, "imagePosition", `${newX}% ${focal.y}%`);
+                                  }}
+                                  className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none"
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-mono text-white/60">
+                                  <span>Vertical (Y) : Haut ↔ Bas</span>
+                                  <span className="text-cyan-400 font-bold">{focal.y}%</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="100"
+                                  value={focal.y}
+                                  onChange={(e) => {
+                                    const newY = Number(e.target.value);
+                                    updateItemField(activeItemIndex, "imagePosition", `${focal.x}% ${newY}%`);
+                                  }}
+                                  className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Raccourcis Cadrage Précis */}
+                            <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+                              <div className="text-[10px] font-mono text-white/50 uppercase tracking-wider">
+                                Raccourcis de Cadrage :
+                              </div>
+                              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                                {[
+                                  { label: "Centré", x: 50, y: 50 },
+                                  { label: "Visages", x: 50, y: 15 },
+                                  { label: "Robots", x: 50, y: 85 },
+                                  { label: "Gauche", x: 20, y: 50 },
+                                  { label: "Droite", x: 80, y: 50 },
+                                ].map((p) => {
+                                  const isActive = focal.x === p.x && focal.y === p.y;
+                                  return (
+                                    <button
+                                      key={p.label}
+                                      type="button"
+                                      onClick={() => updateItemField(activeItemIndex, "imagePosition", `${p.x}% ${p.y}%`)}
+                                      className={`px-2 py-1.5 rounded-lg border text-[11px] font-mono font-medium transition-all cursor-pointer text-center ${
+                                        isActive
+                                          ? "border-cyan-400 bg-cyan-400/20 text-white shadow-xs"
+                                          : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white hover:border-white/25"
+                                      }`}
+                                    >
+                                      {p.label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

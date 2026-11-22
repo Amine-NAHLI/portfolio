@@ -151,14 +151,18 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                   : "border-white/10 hover:border-white/25"
               }`}
             >
-              {/* 100% Real, Natural Colors - Photo couvre 100% de la carte sans aucun cadre noir */}
+              {/* 100% Real, Natural Colors - Photo couvre 100% de la carte avec cadrage dynamique */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={photo}
                 alt={hTitle}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 size-full object-cover block transition-transform duration-700 ease-out group-hover:scale-105"
+                style={{
+                  objectFit: hackathon.imageFit || "cover",
+                  objectPosition: hackathon.imagePosition || "center",
+                }}
+                className="absolute inset-0 size-full block transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
               {/* Subtle dark gradient overlay at bottom for clean text contrast */}

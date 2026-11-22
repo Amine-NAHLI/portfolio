@@ -90,8 +90,8 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         }}
         className="group relative flex flex-col text-left overflow-hidden rounded-3xl border border-border-strong bg-surface transition-all duration-300 hover:border-accent/55 hover:-translate-y-1 hover:shadow-2xl w-full h-full cursor-pointer"
       >
-        {/* Document Preview Frame (Realistic Exhibition Mat & Paper Sheet) */}
-        <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-subtle/80 dark:bg-[#0E0E12] border-b border-border flex items-center justify-center p-3.5 sm:p-4">
+        {/* Document Preview Frame (Affichage complet direct sans cadre épais ni tag sur l'image) */}
+        <div className="relative w-full aspect-[16/11] overflow-hidden bg-white dark:bg-[#121316] border-b border-border flex items-center justify-center">
           {/* Loading Skeleton */}
           {!isLoaded && !hasError && certification.hasDocument && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-surface/90">
@@ -100,23 +100,20 @@ export default function CertificationCard({ certification, locale, copy }: Certi
           )}
 
           {certification.hasDocument && !hasError ? (
-            <div className="relative h-full w-full flex items-center justify-center">
-              {/* Authentic Paper Sheet with realistic drop shadow */}
-              <div className="relative max-h-full max-w-full rounded-xs bg-white shadow-[0_4px_18px_rgba(0,0,0,0.18)] dark:shadow-[0_6px_22px_rgba(0,0,0,0.55)] ring-1 ring-black/10 overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
-                <img
-                  src={previewUrl}
-                  alt={`Aperçu de ${certification.name}`}
-                  loading="lazy"
-                  decoding="async"
-                  onLoad={() => setIsLoaded(true)}
-                  onError={() => {
-                    setHasError(true);
-                  }}
-                  className={`max-h-full w-auto max-w-full object-contain ${
-                    isLoaded ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-              </div>
+            <div className="relative size-full flex items-center justify-center bg-white">
+              <img
+                src={previewUrl}
+                alt={`Aperçu de ${certification.name}`}
+                loading="lazy"
+                decoding="async"
+                onLoad={() => setIsLoaded(true)}
+                onError={() => {
+                  setHasError(true);
+                }}
+                className={`size-full object-contain bg-white transition-transform duration-500 group-hover:scale-[1.02] ${
+                  isLoaded ? "opacity-100" : "opacity-0"
+                }`}
+              />
             </div>
           ) : (
             <div className="relative flex flex-col items-center justify-center w-full h-full bg-surface-subtle p-6 text-center">
@@ -129,17 +126,23 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             </div>
           )}
 
-          {/* Issuer Pure Typography */}
-          {certification.issuer && (
-            <div className="absolute top-3 right-3 z-20 font-mono text-xs font-bold italic tracking-wide text-accent drop-shadow-md">
-              {certification.issuer}
-            </div>
-          )}
+          {/* Indicateur discret de consultation / clic pour détails */}
+          <div className="absolute top-3 right-3 z-10 transition-transform duration-300 group-hover:scale-105 pointer-events-none">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-medium text-white/90 bg-black/75 backdrop-blur-md border border-white/20 shadow-sm group-hover:border-accent/60 group-hover:text-accent transition-colors">
+              <Maximize2 className="size-3 text-accent" />
+              <span>{locale === "fr" ? "Détails" : "Details"}</span>
+            </span>
+          </div>
         </div>
 
         {/* Info Content Container */}
         <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 bg-surface">
           <div>
+            {certification.issuer && (
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-accent mb-1.5 block">
+                {certification.issuer}
+              </span>
+            )}
             <h3 className="text-base sm:text-lg font-display font-bold leading-snug text-text-primary group-hover:text-accent transition-colors line-clamp-2">
               {certification.name}
             </h3>

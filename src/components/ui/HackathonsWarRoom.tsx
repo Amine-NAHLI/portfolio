@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowUpRight,
-  X,
-  Zap,
-  Terminal,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { GithubIcon } from "@/components/ui/Icons";
+import { motion } from "framer-motion";
 import type { Locale } from "@/i18n/config";
 import type { JourneyTimelineItem } from "@/types/journey";
 import { DEFAULT_HACKATHONS } from "@/types/journey";
@@ -78,9 +69,6 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
     return [fallbacks[idx % fallbacks.length]];
   };
 
-  // State: Modal dossier & hover kinetic expansion
-  const [activeModalItem, setActiveModalItem] = useState<JourneyTimelineItem | null>(null);
-  const [modalPhotoIndex, setModalPhotoIndex] = useState<number>(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -156,12 +144,8 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                 damping: 26,
               }}
               onMouseEnter={() => setHoveredIndex(idx)}
-              onClick={() => {
-                setModalPhotoIndex(0);
-                setActiveModalItem(hackathon);
-              }}
               style={isDesktop ? { flex: flexRatio } : { minHeight: "360px", height: "360px" }}
-              className={`group relative w-full shrink-0 min-h-[360px] h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 cursor-pointer shadow-2xl select-none transition-colors duration-300 ${
+              className={`group relative w-full shrink-0 min-h-[360px] h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 shadow-2xl select-none transition-colors duration-300 ${
                 isHovered
                   ? "border-cyan-400/40 shadow-[0_20px_50px_rgba(0,0,0,0.85)]"
                   : "border-white/10 hover:border-white/25"
@@ -209,7 +193,7 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                 )}
               </div>
 
-              {/* Bottom Caption: Vertical Accent Bar + Title & Organization */}
+              {/* Bottom Caption: Title, Organization, Year & Tags (FR & EN) - Zero Modal Details */}
               <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 lg:p-7 flex flex-col justify-end pointer-events-none">
                 <div className="flex items-center min-w-0">
                   <span
@@ -227,7 +211,7 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                   </h3>
                 </div>
 
-                <div className="mt-2 flex items-center gap-2 pl-4 text-xs font-mono text-white/70">
+                <div className="mt-1.5 flex items-center gap-2 pl-4 text-xs font-mono text-white/70">
                   <span className="text-white/90 font-medium">{hackathon.organization}</span>
                   <span className="text-white/30">·</span>
                   <span className="text-white/50">{hackathon.year}</span>
@@ -238,190 +222,32 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                     </>
                   )}
                 </div>
+
+                {/* Event Tags (Bilingual FR/EN, styled in clean italic typography without boxy badges) */}
+                {hackathon.tags && hackathon.tags.length > 0 && (
+                  <div className="mt-2.5 flex flex-wrap items-center gap-2 pl-4">
+                    {hackathon.tags.slice(0, 4).map((tag, tIdx) => {
+                      const tagName = locale === "fr" ? tag.name : (tag.nameEn || tag.name);
+                      const isCustom = tag.color && tag.color !== "standard" && tag.color.startsWith("#");
+                      return (
+                        <span
+                          key={tIdx}
+                          style={isCustom ? { color: tag.color } : undefined}
+                          className={`font-mono text-[11px] sm:text-xs font-semibold italic ${
+                            !isCustom ? "text-white/80" : ""
+                          }`}
+                        >
+                          #{tagName}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </motion.div>
           );
         })}
       </div>
-
-      {/* Detail Modal / Drawer (Full photo & engineering dossier) */}
-      <AnimatePresence>
-        {activeModalItem && (
-          <div
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl"
-            onClick={() => setActiveModalItem(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.25 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[28px] border border-white/15 bg-[#0e0f14] p-6 sm:p-8 shadow-2xl text-left space-y-6 scrollbar-thin scrollbar-thumb-white/10"
-            >
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => setActiveModalItem(null)}
-                className="absolute top-5 right-5 z-20 flex size-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
-              >
-                <X className="size-4" />
-              </button>
-
-              {/* Modal Header */}
-              <div className="space-y-2 pr-10">
-                <div className="flex items-center gap-2">
-                  <span className="font-signature text-sm sm:text-base font-semibold text-cyan-400">
-                    {locale === "fr" ? "Hackathon & Événement" : "Hackathon & Event"}
-                  </span>
-                  <span className="text-white/30">·</span>
-                  <span className="font-mono text-xs text-white/70">
-                    {activeModalItem.year}
-                  </span>
-                </div>
-
-                <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                  {locale === "fr" ? activeModalItem.title : activeModalItem.titleEn || activeModalItem.title}
-                </h3>
-                <p className="font-mono text-xs text-white/60">
-                  {locale === "fr" ? "Organisé par :" : "Organized by:"}{" "}
-                  <strong className="text-white">{activeModalItem.organization}</strong> — {activeModalItem.location}
-                </p>
-              </div>
-
-              {/* Photo View in Modal */}
-              {(() => {
-                const modalImages = getResolvedImages(activeModalItem, 0);
-                return (
-                  <div className="space-y-3">
-                    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/50 flex items-center justify-center p-1">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={modalImages[modalPhotoIndex] || modalImages[0]}
-                        alt="Photo hackathon HD"
-                        decoding="async"
-                        className="max-h-[55vh] w-auto max-w-full rounded-xl object-contain shadow-2xl block mx-auto"
-                      />
-
-                      {/* Modal Arrows */}
-                      {modalImages.length > 1 && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setModalPhotoIndex(
-                                (prev) =>
-                                  (prev - 1 + modalImages.length) %
-                                  modalImages.length
-                              )
-                            }
-                            className="absolute left-3 top-1/2 -translate-y-1/2 size-9 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black"
-                          >
-                            <ChevronLeft className="size-5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setModalPhotoIndex((prev) => (prev + 1) % modalImages.length)
-                            }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 size-9 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black"
-                          >
-                            <ChevronRight className="size-5" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Modal Thumbnails Strip if multiple */}
-                    {modalImages.length > 1 && (
-                      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                        {modalImages.map((img, tIdx) => (
-                          <button
-                            key={tIdx}
-                            type="button"
-                            onClick={() => setModalPhotoIndex(tIdx)}
-                            className={`relative size-16 rounded-xl border overflow-hidden shrink-0 transition-all cursor-pointer ${
-                              tIdx === modalPhotoIndex
-                                ? "border-cyan-400 ring-2 ring-cyan-400/30 scale-105"
-                                : "border-white/10 opacity-60 hover:opacity-100"
-                            }`}
-                          >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={img} alt={`Miniature ${tIdx + 1}`} className="size-full object-cover" />
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
-
-              {/* 48H Sprint Challenge & Shipped Prototype */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-4 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Terminal className="size-4 text-amber-400" />
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-                      {locale === "fr" ? "// Défi 48H Imposé" : "// 48H Sprint Challenge"}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-white/70 leading-relaxed font-sans">
-                    {locale === "fr"
-                      ? activeModalItem.challenge
-                      : activeModalItem.challengeEn || activeModalItem.challenge}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-4 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="size-4 text-cyan-400" />
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-400">
-                      {locale === "fr" ? "// Prototype Livré" : "// Shipped Prototype"}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-white/70 leading-relaxed font-sans">
-                    {locale === "fr"
-                      ? activeModalItem.solution
-                      : activeModalItem.solutionEn || activeModalItem.solution}
-                  </p>
-                </div>
-              </div>
-
-              {/* Tech Stack & Links */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-xs font-bold italic text-white/40 uppercase">Stack :</span>
-                  <div className="font-mono text-xs italic font-normal text-white/80 flex flex-wrap items-center gap-x-2">
-                    {activeModalItem.tags.map((tag, tIdx) => (
-                      <span key={tIdx} className="inline-flex items-center">
-                        <span style={{ color: tag.color !== "standard" ? tag.color : undefined }}>
-                          {tag.name}
-                        </span>
-                        {tIdx < activeModalItem.tags.length - 1 && (
-                          <span className="opacity-30 ml-2 not-italic">·</span>
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {activeModalItem.githubUrl && (
-                  <a
-                    href={activeModalItem.githubUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 font-mono text-xs font-semibold text-white hover:bg-white hover:text-black transition-all"
-                  >
-                    <GithubIcon className="size-4" />
-                    <span>{locale === "fr" ? "Voir le Code" : "Source Code"}</span>
-                    <ArrowUpRight className="size-3.5" />
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

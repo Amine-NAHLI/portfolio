@@ -15,9 +15,6 @@ import {
   Palette,
   Sparkles,
   Camera,
-  ExternalLink,
-  Terminal,
-  Zap,
   RotateCcw,
   Sliders,
   Maximize2,
@@ -31,7 +28,6 @@ import {
   Image as ImageIcon,
   Search,
 } from "lucide-react";
-import { GithubIcon } from "@/components/ui/Icons";
 import type { JourneyTimelineItem, JourneyTag } from "@/types/journey";
 import { DEFAULT_HACKATHONS } from "@/types/journey";
 
@@ -51,7 +47,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     initialItems && initialItems.length > 0 ? initialItems : DEFAULT_HACKATHONS
   );
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
-  const [editorTab, setEditorTab] = useState<"info" | "photos" | "dossier" | "tags">("info");
+  const [editorTab, setEditorTab] = useState<"info" | "photos" | "tags">("info");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -65,8 +61,9 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
   const [showUrlFallback, setShowUrlFallback] = useState(false);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
 
-  // New tag inputs state
+  // New tag inputs state (Bilingual FR/EN)
   const [newTagName, setNewTagName] = useState("");
+  const [newTagNameEn, setNewTagNameEn] = useState("");
   const [newTagMode, setNewTagMode] = useState<"standard" | "custom">("standard");
   const [newTagColor, setNewTagColor] = useState("#C8F122");
 
@@ -182,6 +179,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
     const newTag: JourneyTag = {
       name: trimmed,
+      nameEn: newTagNameEn.trim() || trimmed,
       color: newTagMode === "standard" ? "standard" : newTagColor,
     };
 
@@ -196,6 +194,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
     });
 
     setNewTagName("");
+    setNewTagNameEn("");
   };
 
   const handleRemoveTag = (itemIndex: number, tagIndex: number) => {
@@ -668,8 +667,8 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               </div>
             </div>
 
-            {/* 4 Clean Visual Navigation Tabs */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10">
+            {/* 3 Clean Visual Navigation Tabs */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10">
               <button
                 type="button"
                 onClick={() => setEditorTab("info")}
@@ -698,19 +697,6 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
 
               <button
                 type="button"
-                onClick={() => setEditorTab("dossier")}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-mono text-xs font-semibold transition-all cursor-pointer ${
-                  editorTab === "dossier"
-                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs"
-                    : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
-              >
-                <Terminal className="size-3.5" />
-                <span>3. Défi & Prototype</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setEditorTab("tags")}
                 className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-mono text-xs font-semibold transition-all cursor-pointer ${
                   editorTab === "tags"
@@ -719,7 +705,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                 }`}
               >
                 <Palette className="size-3.5" />
-                <span>4. Technologies ({activeItem.tags.length})</span>
+                <span>3. Technologies & Tags ({activeItem.tags.length})</span>
               </button>
             </div>
 
@@ -1146,105 +1132,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
             </div>
           )}
 
-          {/* TAB 3: DOSSIER TECHNIQUE (DÉFI 48H & PROTOTYPE LIVRÉ) */}
-          {editorTab === "dossier" && (
-            <div className="space-y-4 animate-in fade-in duration-200">
-              <div>
-                <h3 className="font-display text-base font-bold text-[#FFFFFF] flex items-center gap-2">
-                  <Terminal className="size-4 text-amber-400" />
-                  <span>Dossier Technique & Briefing Sprint</span>
-                </h3>
-                <p className="font-mono text-xs text-[#A1A1AA]">
-                  Documentez le défi technique imposé par les jurys et la solution d&apos;ingénierie que vous avez conçue et livrée.
-                </p>
-              </div>
-
-              {/* Défi 48H Imposé */}
-              <div className="space-y-3 p-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.03]">
-                <div className="flex items-center gap-2">
-                  <Terminal className="size-4 text-amber-400" />
-                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-                    Défi 48H Imposé par les Jurys
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <textarea
-                    rows={2}
-                    placeholder="Défi en français (ex: Concevoir et déployer en 48h une application à fort impact sociétal exploitant Gemma 2...)"
-                    value={activeItem.challenge || ""}
-                    onChange={(e) => updateItemField(activeItemIndex, "challenge", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
-                  />
-                  <textarea
-                    rows={2}
-                    placeholder="Défi en anglais (ex: Design and ship within 48 hours a high-impact applied solution leveraging Google Gemma 2...)"
-                    value={activeItem.challengeEn || ""}
-                    onChange={(e) => updateItemField(activeItemIndex, "challengeEn", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-amber-400 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Prototype Livré & Architecture */}
-              <div className="space-y-3 p-4 rounded-xl border border-[#C8F122]/20 bg-[#C8F122]/[0.03]">
-                <div className="flex items-center gap-2">
-                  <Zap className="size-4 text-[#C8F122]" />
-                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#C8F122]">
-                    Prototype d&apos;Ingénierie Livré
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <textarea
-                    rows={2}
-                    placeholder="Solution en français (ex: SignBridge : Pipeline de vision temps réel avec MediaPipe relié à Gemma 2 LoRA...)"
-                    value={activeItem.solution || ""}
-                    onChange={(e) => updateItemField(activeItemIndex, "solution", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
-                  />
-                  <textarea
-                    rows={2}
-                    placeholder="Solution en anglais (ex: SignBridge: Real-time computer vision pipeline with MediaPipe coupled with fine-tuned Gemma 2...)"
-                    value={activeItem.solutionEn || ""}
-                    onChange={(e) => updateItemField(activeItemIndex, "solutionEn", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs sm:text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Liens GitHub & Démo */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA] flex items-center gap-1.5">
-                    <GithubIcon className="size-3.5" />
-                    <span>Lien Repository GitHub</span>
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://github.com/Amine-NAHLI/..."
-                    value={activeItem.githubUrl || ""}
-                    onChange={(e) => updateItemField(activeItemIndex, "githubUrl", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none font-mono text-xs"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-mono text-xs uppercase tracking-wider text-[#A1A1AA] flex items-center gap-1.5">
-                    <ExternalLink className="size-3.5" />
-                    <span>Lien Démo ou Vidéo Live (Optionnel)</span>
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={activeItem.demoUrl || ""}
-                    onChange={(e) => updateItemField(activeItemIndex, "demoUrl", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#A855F7] focus:outline-none font-mono text-xs"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: TAGS & STACK DU HACKATHON */}
+          {/* TAB 3: TAGS & STACK DU HACKATHON */}
           {editorTab === "tags" && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="flex items-center justify-between">
@@ -1254,7 +1142,7 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                     <span>Stack Technique & Tags du Sprint</span>
                   </h3>
                   <p className="font-mono text-xs text-[#A1A1AA]">
-                    Ajoutez les technologies utilisées pendant le sprint et personnalisez leurs couleurs.
+                    Ajoutez les technologies en francais et en anglais et personnalisez leurs couleurs.
                   </p>
                 </div>
               </div>
@@ -1287,6 +1175,11 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                         }`}
                       >
                         <span className="font-medium">{tag.name}</span>
+                        {tag.nameEn && tag.nameEn !== tag.name && (
+                          <span className="text-[10px] text-cyan-400 font-mono">
+                            (EN: {tag.nameEn})
+                          </span>
+                        )}
                         <span className="text-[10px] opacity-60">
                           {isCustom ? tag.color : "Standard"}
                         </span>
@@ -1307,17 +1200,17 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
               {/* Tag Builder */}
               <div className="p-4 rounded-xl border border-white/10 bg-[#121316]/80 space-y-4">
                 <div className="font-mono text-xs uppercase tracking-wider text-[#C8F122] font-bold">
-                  {"// Nouveau Tag Technique"}
+                  {"// Nouveau Tag Technique (Bilingue FR / EN)"}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                  <div className="sm:col-span-6 space-y-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
                     <label className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
-                      Intitulé de la Techno
+                      Tag en Francais (FR) *
                     </label>
                     <input
                       type="text"
-                      placeholder="Ex: Google Gemma 2, PyTorch, LoRA, C++ Embarqué..."
+                      placeholder="Ex: Intelligence Artificielle, Robotique, Vision par Ordinateur..."
                       value={newTagName}
                       onChange={(e) => setNewTagName(e.target.value)}
                       onKeyDown={(e) => {
@@ -1330,7 +1223,28 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                     />
                   </div>
 
-                  <div className="sm:col-span-3 space-y-1.5">
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
+                      Tag en Anglais (EN - optionnel)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: Artificial Intelligence, Robotics, Computer Vision..."
+                      value={newTagNameEn}
+                      onChange={(e) => setNewTagNameEn(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddTag(activeItemIndex);
+                        }
+                      }}
+                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                  <div className="sm:col-span-8 space-y-1.5">
                     <label className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
                       Style de Couleur
                     </label>
@@ -1340,11 +1254,11 @@ export function JourneyManager({ initialItems }: { initialItems: JourneyTimeline
                       className="w-full rounded-lg border border-white/10 bg-[#121316] px-3 py-2 text-xs font-mono text-[#FFFFFF] focus:border-[#C8F122] focus:outline-none cursor-pointer"
                     >
                       <option value="standard">Standard (Neutre)</option>
-                      <option value="custom">Personnalisé</option>
+                      <option value="custom">Personnalise</option>
                     </select>
                   </div>
 
-                  <div className="sm:col-span-3">
+                  <div className="sm:col-span-4">
                     <button
                       type="button"
                       onClick={() => handleAddTag(activeItemIndex)}

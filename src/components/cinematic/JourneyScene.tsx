@@ -49,7 +49,7 @@ export default function JourneyScene({
             href={`/${locale}/journey`}
             className="group inline-flex items-center gap-2 self-start md:self-end rounded-full border border-border-strong bg-surface/85 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-text-primary backdrop-blur-md transition-all duration-300 hover:border-accent hover:bg-accent hover:text-text-on-accent shadow-sm"
           >
-            <span>{locale === "fr" ? "Détails des Hackathons" : "View Hackathon Dossiers"}</span>
+            <span>{locale === "fr" ? "Tous les Hackathons" : "All Hackathons"}</span>
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>

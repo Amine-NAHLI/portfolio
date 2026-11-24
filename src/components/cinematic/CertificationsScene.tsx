@@ -101,7 +101,7 @@ export default function CertificationsScene({
     <section
       ref={containerRef}
       id="certifications"
-      className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
+      className="relative w-full bg-transparent py-16 sm:py-24 lg:py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
     >
       {/* Background Dot Pattern (Magic UI) */}
       <DotPattern
@@ -115,16 +115,16 @@ export default function CertificationsScene({
 
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Header */}
-        <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
+        <div className="mb-8 sm:mb-12 lg:mb-14 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 border-b border-border pb-6 sm:pb-8">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-accent mb-3 block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-accent mb-2 sm:mb-3 block">
               {locale === "fr" ? "Diplômes & Accréditations" : "Verified Credentials"}
             </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-text-primary">
+            <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text-primary">
               {locale === "fr" ? "Certifications Officielles." : "Official Certifications."}
             </h2>
           </div>
-          <p className="max-w-md text-sm text-text-secondary leading-relaxed">
+          <p className="max-w-md text-xs sm:text-sm text-text-secondary leading-relaxed">
             {locale === "fr"
               ? "Apprentissage continu structuré et accrédité par des organismes reconnus, avec justificatifs officiels vérifiables."
               : "Structured continuous learning and technical certifications from recognized industry bodies, with verifiable proof."}
@@ -132,7 +132,7 @@ export default function CertificationsScene({
         </div>
 
         {/* Certifications Grid */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 lg:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {displayCertifications.map((cert) => (
             <div
               key={cert.id}

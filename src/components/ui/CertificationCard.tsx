@@ -81,14 +81,14 @@ export default function CertificationCard({ certification, locale, copy }: Certi
 
   return (
     <>
-      {/* Interactive Trigger Card - Hackathon Photo Style (Full visual, gradient overlay, sans cadre séparé) */}
+      {/* Interactive Trigger Card - Hackathon Photo Style (Full visual, gradient overlay, responsive mobile) */}
       <button
         type="button"
         onClick={() => {
           setModalDocError(false);
           setOpen(true);
         }}
-        className="group relative w-full aspect-[16/11] min-h-[300px] sm:min-h-[340px] rounded-[24px] sm:rounded-[32px] overflow-hidden border border-white/10 hover:border-accent/40 shadow-2xl transition-all duration-300 hover:scale-[1.01] select-none text-left cursor-pointer bg-neutral-950 block"
+        className="group relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-[20px] sm:rounded-[28px] overflow-hidden border border-white/10 hover:border-accent/40 shadow-xl sm:shadow-2xl transition-all duration-300 hover:scale-[1.01] select-none text-left cursor-pointer bg-neutral-950 block"
       >
         {/* Certificate Image filling 100% of the card */}
         {certification.hasDocument && !hasError ? (
@@ -99,7 +99,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={() => setHasError(true)}
-            className={`absolute inset-0 size-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105 ${
+            className={`absolute inset-0 size-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 ${
               isLoaded ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -121,39 +121,39 @@ export default function CertificationCard({ certification, locale, copy }: Certi
           </div>
         )}
 
-        {/* Subtle Dark Gradient Overlay at bottom for clean text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 pointer-events-none" />
+        {/* Subtle Dark Gradient Overlay at bottom for clean text contrast without darkening the certificate */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 via-25% to-transparent to-50% pointer-events-none" />
 
-        {/* Top Bar: Click for details badge */}
-        <div className="absolute top-0 inset-x-0 z-20 px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-2.5 pointer-events-none">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-accent drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+        {/* Top Bar: Issuer Tag & Click for details badge */}
+        <div className="absolute top-0 inset-x-0 z-20 px-3 py-2.5 sm:px-4 sm:py-3 flex items-center justify-between gap-2 pointer-events-none">
+          <span className="inline-flex items-center font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider text-accent px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-accent/30 shadow-md">
             {certification.issuer || "Certification"}
           </span>
 
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-medium text-white/90 bg-black/75 backdrop-blur-md border border-white/20 shadow-sm group-hover:border-accent/60 group-hover:text-accent transition-colors">
-            <Maximize2 className="size-3 text-accent" />
+          <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] font-mono font-medium text-white/90 bg-black/75 backdrop-blur-md border border-white/20 shadow-md group-hover:border-accent/60 group-hover:text-accent transition-colors">
+            <Maximize2 className="size-2.5 sm:size-3 text-accent" />
             <span>{locale === "fr" ? "Détails" : "Details"}</span>
           </span>
         </div>
 
         {/* Bottom Caption: Title, Date & Inspect (Hackathon style) */}
-        <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-5 flex flex-col justify-end pointer-events-none">
+        <div className="absolute inset-x-0 bottom-0 z-20 p-3 sm:p-4.5 flex flex-col justify-end pointer-events-none">
           <div className="flex items-center min-w-0">
-            <span className="w-1.5 h-4.5 rounded-full shrink-0 mr-2.5 bg-accent shadow-[0_0_10px_var(--color-accent)] transition-transform group-hover:scale-y-110" />
-            <h3 className="font-sans text-sm sm:text-base font-bold text-white tracking-tight leading-snug line-clamp-2 drop-shadow-md">
+            <span className="w-1.5 h-3.5 sm:h-4.5 rounded-full shrink-0 mr-2 sm:mr-2.5 bg-accent shadow-[0_0_10px_var(--color-accent)] transition-transform group-hover:scale-y-110" />
+            <h3 className="font-sans text-xs sm:text-sm md:text-base font-bold text-white tracking-tight leading-tight line-clamp-1 sm:line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               {certification.name}
             </h3>
           </div>
 
-          <div className="mt-1.5 flex items-center justify-between pl-4 text-xs font-mono text-white/70">
-            <div className="flex items-center gap-1.5 text-white/60">
+          <div className="mt-1 flex items-center justify-between pl-3 sm:pl-3.5 text-[10px] sm:text-xs font-mono text-white/80">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-white/70">
               <Calendar className="size-3 text-accent" />
               <span>{formattedDate || "—"}</span>
             </div>
 
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent group-hover:text-white transition-colors">
+            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-accent group-hover:text-white transition-colors">
               <span>{locale === "fr" ? "Inspecter" : "Inspect"}</span>
-              <ExternalLink className="size-3" />
+              <ExternalLink className="size-2.5 sm:size-3" />
             </span>
           </div>
         </div>

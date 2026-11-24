@@ -101,7 +101,7 @@ export function AdminSidebar() {
             AN
           </div>
           <div className="flex flex-col">
-            <span className="font-display text-sm font-bold text-text-primary tracking-tight">Amine Nahli</span>
+            <span className="font-display text-sm font-bold text-text-primary tracking-tight">Amine NAHLI</span>
             <span className="text-[0.65rem] font-mono font-semibold text-accent uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Console Admin

@@ -23,9 +23,9 @@ const metadataByLocale: Record<Locale, Pick<Metadata, "title" | "description" | 
   fr: {
     title: "Portfolio",
     description:
-      "Découvrez le parcours, les projets et les compétences d'Amine Nahli en cybersécurité, intelligence artificielle et développement logiciel.",
+      "Découvrez le parcours, les projets et les compétences d'Amine NAHLI en cybersécurité, intelligence artificielle et développement logiciel.",
     openGraph: {
-      title: "Amine Nahli — Élève ingénieur en cybersécurité & IA",
+      title: "Amine NAHLI — Élève ingénieur en cybersécurité & IA",
       description:
         "Projets, parcours et apprentissages à l'intersection de la cybersécurité, de l'IA et du développement logiciel.",
       locale: "fr_FR",
@@ -35,9 +35,9 @@ const metadataByLocale: Record<Locale, Pick<Metadata, "title" | "description" | 
   en: {
     title: "Portfolio",
     description:
-      "Explore Amine Nahli's journey, projects and skills across cybersecurity, artificial intelligence and software engineering.",
+      "Explore Amine NAHLI's journey, projects and skills across cybersecurity, artificial intelligence and software engineering.",
     openGraph: {
-      title: "Amine Nahli — Computer engineering student, Cybersecurity & AI",
+      title: "Amine NAHLI — Computer engineering student, Cybersecurity & AI",
       description:
         "Projects, experience and learning at the intersection of cybersecurity, AI and software engineering.",
       locale: "en_US",

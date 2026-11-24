@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Amine Nahli",
+  name: "Amine NAHLI",
   githubUsername: "Amine-NAHLI",
   location: {
     fr: "Fès, Maroc",

@@ -7,7 +7,7 @@ export const publicCopy = {
       eyebrow: "Élève ingénieur · Cybersécurité & IA",
       title: "Je construis des systèmes utiles à l'intersection du logiciel, de la sécurité et de l'IA.",
       introduction:
-        "Je suis Amine Nahli, élève ingénieur en génie informatique à l'Université Privée de Fès. J'explore des problèmes concrets par le développement full-stack, l'audit de sécurité et l'intelligence artificielle.",
+        "Je suis Amine NAHLI, élève ingénieur en génie informatique à l'Université Privée de Fès. J'explore des problèmes concrets par le développement full-stack, l'audit de sécurité et l'intelligence artificielle.",
       primaryCta: "Découvrir mes projets",
       secondaryCta: "Voir mon parcours",
       resumeCta: "Consulter mon CV",
@@ -125,7 +125,7 @@ export const publicCopy = {
       eyebrow: "Engineering student · Cybersecurity & AI",
       title: "I build useful systems at the intersection of software, security and AI.",
       introduction:
-        "I'm Amine Nahli, a computer engineering student at Université Privée de Fès. I explore practical problems through full-stack development, security auditing and artificial intelligence.",
+        "I'm Amine NAHLI, a computer engineering student at Université Privée de Fès. I explore practical problems through full-stack development, security auditing and artificial intelligence.",
       primaryCta: "Explore my projects",
       secondaryCta: "View my journey",
       resumeCta: "Open my resume",

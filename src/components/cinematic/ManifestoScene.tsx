@@ -130,7 +130,7 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
               {locale === "fr" ? "Exigence d'ingénierie logicielle" : "Software Engineering Standards"}
             </span>
           </div>
-          <span className="text-xs text-text-secondary">Amine Nahli</span>
+          <span className="text-xs text-text-secondary">Amine NAHLI</span>
         </div>
 
         {/* Center: Overlapping Kinetic Statements */}

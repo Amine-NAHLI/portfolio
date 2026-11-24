@@ -71,7 +71,7 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
             href={`/${locale}`}
             className="group flex shrink-0 items-center gap-2 font-display text-base sm:text-lg font-bold tracking-tight text-text-primary transition-colors"
           >
-            <span>Amine Nahli</span>
+            <span>Amine NAHLI</span>
             <span className="size-1.5 rounded-full bg-accent" />
           </Link>
 

@@ -13,6 +13,7 @@ import SmoothScroll from "@/components/ui/SmoothScroll";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import ScrollTextReveal from "@/components/ui/ScrollTextReveal";
 import ChatWidgetLoader from "@/components/ui/ChatWidgetLoader";
+import ConsoleCTF from "@/components/ui/ConsoleCTF";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -105,6 +106,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           {children}
         </main>
         <ChatWidgetLoader />
+        <ConsoleCTF />
       </div>
     </PageLoadWrapper>
   );

@@ -75,7 +75,7 @@ export default function ContactScene({ locale, contactLinks }: ContactSceneProps
     <section
       ref={containerRef}
       id="contact"
-      className="relative min-h-[88svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-border flex flex-col justify-center overflow-hidden scroll-mt-24"
+      className="relative min-h-[88svh] w-full bg-transparent py-24 sm:py-32 px-4 sm:px-8 lg:px-14 border-t border-border/30 flex flex-col justify-center overflow-hidden scroll-mt-24"
     >
       {/* Background Ambient Glow (optimized radial gradient, zero blur filter cost) */}
       <div

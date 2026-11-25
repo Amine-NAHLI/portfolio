@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import type { Locale } from "@/i18n/config";
 import type { JourneyTimelineItem } from "@/types/journey";
 import { DEFAULT_HACKATHONS } from "@/types/journey";
@@ -121,34 +120,35 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
           };
           const displayAward = getShortAward(hAward);
 
-          // Flex ratio dynamique :
+          // Flex ratio dynamique fluide :
           // Par défaut : divisé à parts égales (50%/50% si 2, 33%/33%/33% si 3).
-          // Au survol : la photo survolée s'agrandit pour prendre ses vraies dimensions et pousse les autres.
+          // Au survol : la photo survolée s'agrandit avec transition fluide sans saut brusque.
           const flexRatio = !hasHover
             ? 1
             : isHovered
             ? hackathons.length === 2
-              ? 2.3
-              : 2.8
+              ? 2
+              : 2.2
             : hackathons.length === 2
             ? 1
-            : 0.8;
+            : 0.85;
 
           return (
-            <motion.div
+            <div
               key={hackathon.id || idx}
-              layout
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 26,
-              }}
               onMouseEnter={() => setHoveredIndex(idx)}
-              style={isDesktop ? { flex: flexRatio } : { minHeight: "360px", height: "360px" }}
-              className={`group relative w-full shrink-0 min-h-[360px] h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 shadow-2xl select-none transition-colors duration-300 ${
+              style={
+                isDesktop
+                  ? {
+                      flex: flexRatio,
+                      transition: "flex 650ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    }
+                  : { minHeight: "360px", height: "360px" }
+              }
+              className={`hackathon-card group relative w-full shrink-0 min-h-[360px] h-[360px] sm:h-[420px] md:h-auto md:min-h-full rounded-[24px] sm:rounded-[32px] overflow-hidden border bg-neutral-950 shadow-2xl select-none will-change-[flex] transition-[border-color,box-shadow] duration-500 ease-out ${
                 isHovered
-                  ? "border-cyan-400/40 shadow-[0_20px_50px_rgba(0,0,0,0.85)]"
-                  : "border-white/10 hover:border-white/25"
+                  ? "border-cyan-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.85)] z-20"
+                  : "border-white/10 hover:border-white/25 z-10"
               }`}
             >
               {/* 100% Real, Natural Colors - Photo couvre 100% de la carte avec cadrage dynamique */}
@@ -248,7 +248,7 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>

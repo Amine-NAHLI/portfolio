@@ -186,7 +186,7 @@ export default function GitHubContributionsScene({
     <section
       ref={containerRef}
       id="github"
-      className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
+      className="relative w-full bg-transparent py-28 px-4 sm:px-8 lg:px-14 border-t border-border/30 overflow-hidden scroll-mt-24"
     >
       {/* Architectural Dot Pattern (Magic UI) */}
       <DotPattern

@@ -101,7 +101,7 @@ export default function CertificationsScene({
     <section
       ref={containerRef}
       id="certifications"
-      className="relative w-full bg-transparent py-16 sm:py-24 lg:py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
+      className="relative w-full bg-transparent py-16 sm:py-24 lg:py-28 px-4 sm:px-8 lg:px-14 border-t border-border/30 overflow-hidden scroll-mt-24"
     >
       {/* Background Dot Pattern (Magic UI) */}
       <DotPattern

@@ -3,22 +3,16 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-const REVEAL_SELECTOR = "section h2, section p, section header span, section > div > div > span";
+const REVEAL_SELECTOR =
+  "section h2, section p, section header span, section span.text-accent, .hackathon-card, .cert-card-wrapper, .github-anim-card, .contact-card-btn, .section-reveal-item";
 
 function isExcludedElement(el: HTMLElement): boolean {
   return Boolean(
     el.closest("#hero") ||
-      el.closest("#manifesto") ||
-      el.closest(".pin-spacer") ||
       el.closest('[role="dialog"]') ||
       el.closest("#terminal-chat") ||
       el.closest('[role="tooltip"]') ||
-      el.closest("[data-lenis-prevent]") ||
-      el.closest("[data-no-text-reveal]") ||
-      el.closest(".cert-card-wrapper") ||
-      el.closest(".github-anim-card") ||
-      el.closest(".contact-card-btn") ||
-      el.classList.contains("about-paragraph")
+      el.closest("[data-lenis-prevent]")
   );
 }
 

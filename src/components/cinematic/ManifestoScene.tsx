@@ -65,10 +65,24 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         },
       });
 
-      // Initially show the first statement, then cross-fade to subsequent ones
+      // Initially show the first statement with fluid entrance, then cross-fade to subsequent ones
       cards.forEach((card, index) => {
         if (index === 0) {
-          gsap.set(card, { opacity: 1, y: 0, scale: 1 });
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top 80%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
         } else {
           gsap.set(card, { opacity: 0, y: 60, scale: 0.95 });
 
@@ -103,7 +117,6 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
   return (
     <section
       ref={containerRef}
-      data-no-text-reveal="true"
       className="relative w-full bg-transparent text-text-primary overflow-hidden"
     >
       <div

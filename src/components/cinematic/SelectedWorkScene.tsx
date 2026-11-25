@@ -269,7 +269,7 @@ export default function SelectedWorkScene({ locale, projects }: SelectedWorkScen
     <section
       ref={containerRef}
       id="work"
-      className="relative w-full h-[100svh] min-h-[600px] bg-transparent pt-16 pb-4 sm:pt-[76px] sm:pb-6 px-4 sm:px-8 lg:px-14 border-t border-border flex flex-col items-center justify-center overflow-hidden scroll-mt-20"
+      className="relative w-full h-[100svh] min-h-[600px] bg-transparent pt-16 pb-4 sm:pt-[76px] sm:pb-6 px-4 sm:px-8 lg:px-14 border-t border-border/30 flex flex-col items-center justify-center overflow-hidden scroll-mt-20"
     >
       {/* Background Architectural Grid Pattern (Magic UI) */}
       <GridPattern

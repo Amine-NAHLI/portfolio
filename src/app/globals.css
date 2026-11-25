@@ -250,6 +250,54 @@ html.lenis, html.lenis body {
 @keyframes grid-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-2rem, -1.25rem, 0); } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
 @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* Permanent fluid ambient background animations */
+@keyframes ambient-drift-1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(50px, 35px, 0) scale(1.08); }
+  66% { transform: translate3d(-35px, 50px, 0) scale(0.95); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes ambient-drift-2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(-55px, -40px, 0) scale(1.06); }
+  66% { transform: translate3d(40px, -25px, 0) scale(0.94); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes ambient-drift-3 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(35px, -45px, 0) scale(1.07); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes ambient-pulse-glow {
+  0% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.05); }
+  100% { opacity: 0.3; transform: scale(1); }
+}
+
+.animate-ambient-1 {
+  animation: ambient-drift-1 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-ambient-2 {
+  animation: ambient-drift-2 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-ambient-3 {
+  animation: ambient-drift-3 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-ambient-glow {
+  animation: ambient-pulse-glow 14s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+}
+
 @keyframes fluid-blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
@@ -261,19 +309,20 @@ html.lenis, html.lenis body {
   animation: fluid-blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Subtle scroll text reveal */
+/* Snappy fluid scroll reveal matching Hero 0.5s ease-out */
 [data-text-reveal] {
   transition:
-    opacity 0.68s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
 }
 [data-text-reveal="hidden"] {
-  opacity: 0;
-  transform: translate3d(0, 14px, 0);
+  opacity: 0 !important;
+  transform: translate3d(0, 16px, 0) !important;
 }
 [data-text-reveal="visible"] {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

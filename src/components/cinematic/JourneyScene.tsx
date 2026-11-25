@@ -22,7 +22,7 @@ export default function JourneyScene({
   return (
     <section
       id="journey"
-      className="relative w-full bg-transparent py-24 sm:py-28 px-4 sm:px-8 lg:px-14 border-t border-border overflow-hidden scroll-mt-24"
+      className="relative w-full bg-transparent py-24 sm:py-28 px-4 sm:px-8 lg:px-14 border-t border-border/30 overflow-hidden scroll-mt-24"
     >
       <div className="mx-auto max-w-7xl relative z-10">
         

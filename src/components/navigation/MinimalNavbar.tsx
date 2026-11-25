@@ -61,11 +61,17 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ease-in-out ${
           scrolled
-            ? "bg-bg-page/85 backdrop-blur-xl border-b border-border shadow-md py-3.5"
+            ? "bg-bg-page/85 backdrop-blur-xl border-b border-border shadow-md py-3 sm:py-3.5"
             : "bg-transparent py-5 sm:py-6 border-b border-transparent"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-8 lg:px-14">
+        <div
+          className={`mx-auto flex items-center justify-between gap-4 transition-all duration-500 ease-out ${
+            scrolled
+              ? "max-w-xl px-4 sm:px-6"
+              : "max-w-7xl px-4 sm:px-8 lg:px-14"
+          }`}
+        >
           {/* Left: Brand Monogram */}
           <Link
             href={`/${locale}`}
@@ -75,13 +81,13 @@ export default function MinimalNavbar({ locale, contactLinks }: MinimalNavbarPro
             <span className="size-1.5 rounded-full bg-accent" />
           </Link>
 
-          {/* Center: Desktop Navigation Links (synced with FullscreenMenu, fades out smoothly on scroll) */}
+          {/* Center: Desktop Navigation Links (synced with FullscreenMenu, smoothly collapses & glides on scroll) */}
           <nav
             aria-label="Navigation principale"
-            className={`hidden lg:flex items-center gap-6 xl:gap-7 transition-all duration-300 ${
+            className={`hidden lg:flex items-center transition-all duration-500 ease-out ${
               scrolled
-                ? "opacity-0 pointer-events-none -translate-y-1 invisible"
-                : "opacity-100 pointer-events-auto translate-y-0 visible"
+                ? "max-w-0 opacity-0 pointer-events-none -translate-y-2 overflow-hidden gap-0"
+                : "max-w-3xl opacity-100 pointer-events-auto translate-y-0 gap-6 xl:gap-7"
             }`}
           >
             {SITE_NAV_ITEMS.map((item) => {

@@ -103,6 +103,24 @@ export default function HeroScene({
   const isCvButton = (btn: HeroActionButton) =>
     btn.id === "cv" || btn.url === "/cv" || btn.url.startsWith("/cv?");
 
+  const handleHeroBtnClick = (e: React.MouseEvent<HTMLAnchorElement>, targetUrl: string) => {
+    if (typeof window === "undefined") return;
+    if (targetUrl.includes("#")) {
+      const hash = targetUrl.split("#")[1];
+      const el = document.getElementById(hash);
+      if (el) {
+        e.preventDefault();
+        window.history.pushState(null, "", `#${hash}`);
+        const lenis = window.__lenis;
+        if (lenis) {
+          lenis.scrollTo(el, { offset: -70, duration: 1.2 });
+        } else {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+  };
+
   const resolveButtonUrl = (btn: HeroActionButton) => {
     if (isCvButton(btn)) {
       return contactLinks.resume;
@@ -212,6 +230,7 @@ export default function HeroScene({
                 href={targetUrl}
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noreferrer" : undefined}
+                onClick={(e) => handleHeroBtnClick(e, targetUrl)}
                 className={buttonClassName}
               >
                 {content}

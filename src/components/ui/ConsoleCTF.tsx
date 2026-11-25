@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { ShieldCheck, X, Trophy, Sparkles } from "lucide-react";
+import { ShieldCheck, X, Sparkles, Volume2, VolumeX, PartyPopper } from "lucide-react";
 
 declare global {
   interface Window {
@@ -15,12 +15,156 @@ declare global {
   }
 }
 
+function ConfettiCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const onResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", onResize);
+
+    const colors = ["#C8F122", "#FF007F", "#00F0FF", "#FFE600", "#A855F7", "#FFFFFF", "#38BDF8"];
+    const particles = Array.from({ length: 90 }).map(() => ({
+      x: Math.random() * width,
+      y: Math.random() * height - height,
+      size: Math.random() * 8 + 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speedY: Math.random() * 3 + 2.5,
+      speedX: Math.random() * 3 - 1.5,
+      rotation: Math.random() * 360,
+      rotationSpeed: Math.random() * 8 - 4,
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p) => {
+        p.y += p.speedY;
+        p.x += Math.sin(p.y / 25) * p.speedX;
+        p.rotation += p.rotationSpeed;
+
+        if (p.y > height) {
+          p.y = -20;
+          p.x = Math.random() * width;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        ctx.restore();
+      });
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none fixed inset-0 z-[60] h-full w-full"
+    />
+  );
+}
+
 export default function ConsoleCTF() {
   const pathname = usePathname();
   const isEn = pathname?.startsWith("/en");
   const [isVictoryModalOpen, setIsVictoryModalOpen] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const victoryAudioRef = useRef<HTMLAudioElement | null>(null);
+  const successAudioRef = useRef<HTMLAudioElement | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitialized = useRef(false);
   const imageBase64Ref = useRef<string | null>(null);
+
+  // Sound played when a question is solved (Level 1 & Level 2) - stops after exactly 8 seconds
+  const playSuccessAudio = () => {
+    try {
+      if (successAudioRef.current) {
+        successAudioRef.current.pause();
+        successAudioRef.current.currentTime = 0;
+      }
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+
+      if (!successAudioRef.current) {
+        successAudioRef.current = new Audio("/m_fixed_9asHrPg.mp3");
+        successAudioRef.current.volume = 0.8;
+      }
+      successAudioRef.current.currentTime = 0;
+      successAudioRef.current.play().catch(() => {});
+
+      // Stop after exactly 8 seconds
+      successTimeoutRef.current = setTimeout(() => {
+        if (successAudioRef.current) {
+          successAudioRef.current.pause();
+          successAudioRef.current.currentTime = 0;
+        }
+      }, 8000);
+    } catch {
+      // Audio playback fallback
+    }
+  };
+
+  // Sound played on final victory when the meme photo appears - loops in bg until modal is closed
+  const playVictoryAudio = () => {
+    try {
+      // Stop question audio if still active
+      if (successAudioRef.current) {
+        successAudioRef.current.pause();
+        successAudioRef.current.currentTime = 0;
+      }
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+
+      if (!victoryAudioRef.current) {
+        victoryAudioRef.current = new Audio("/untitled_Bh5UcZG.mp3");
+        victoryAudioRef.current.volume = 0.85;
+        victoryAudioRef.current.loop = true; // Stays playing in background until modal is closed
+      }
+      victoryAudioRef.current.currentTime = 0;
+      victoryAudioRef.current
+        .play()
+        .then(() => setIsPlayingAudio(true))
+        .catch(() => {
+          setIsPlayingAudio(false);
+        });
+    } catch {
+      // Audio playback fallback
+    }
+  };
+
+  const closeModal = () => {
+    setIsVictoryModalOpen(false);
+    if (victoryAudioRef.current) {
+      victoryAudioRef.current.pause();
+      victoryAudioRef.current.currentTime = 0;
+      setIsPlayingAudio(false);
+    }
+  };
 
   // Pre-load and convert image to Base64 Data URL so Chrome DevTools console renders it inline
   useEffect(() => {
@@ -164,6 +308,7 @@ export default function ConsoleCTF() {
     const triggerVictory = () => {
       saveLevel(3);
       setIsVictoryModalOpen(true);
+      playVictoryAudio();
 
       const victoryText = isEn
         ? "╔══════════════════════════════════════════════════════════════════════════════════╗\n" +
@@ -234,6 +379,7 @@ export default function ConsoleCTF() {
           answer.includes("gemma2")
         ) {
           saveLevel(2);
+          playSuccessAudio();
           printLevel2();
           return isEn
             ? "✨ Correct! Moving to Level 2."
@@ -251,6 +397,7 @@ export default function ConsoleCTF() {
           answer === "nahlicyber"
         ) {
           saveLevel(3);
+          playSuccessAudio();
           printLevel3();
           return isEn
             ? "✨ Level 2 unlocked! Now run override() to finish!"
@@ -271,19 +418,77 @@ export default function ConsoleCTF() {
       return "";
     };
 
-    const handleOverride = () => {
-      const currentLevel = getStoredLevel();
-      if (currentLevel < 2) {
-        return isEn
-          ? "🔒 Access denied! Complete Level 1 first by finding the flag."
-          : "🔒 Accès refusé ! Complète d'abord le Niveau 1 en trouvant le flag.";
+    const printFinalPayloadInstructions = () => {
+      if (isEn) {
+        console.log(
+          "%c🔥 [ACCESS AUTHORIZATION CODE UNLOCKED!]\n\n" +
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+            "🚩 FINAL STEP — INJECT THE EXPLOIT IN THE CONTACT FORM\n" +
+            "🎯 To execute the payload and extract the database:\n" +
+            "    1. Scroll down to the Contact Form on this page (#contact)\n" +
+            "    2. Fill in the fields with:\n" +
+            "       • Subject : INJECT_PAYLOAD_2026\n" +
+            "       • Message : ' OR 1=1; DROP TABLE ADMIN; --\n" +
+            "    3. Click \"Send message\" and watch what happens!\n" +
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+          "color: #ff007f; font-family: monospace; font-weight: bold; font-size: 12px; line-height: 1.6;"
+        );
+      } else {
+        console.log(
+          "%c🔥 [CODE D'AUTORISATION D'ACCÈS DÉVERROUILLÉ !]\n\n" +
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+            "🚩 DERNIÈRE ÉTAPE — INJECTION DU PAYLOAD DANS LE FORMULAIRE DE CONTACT\n" +
+            "🎯 Pour exécuter l'exploit et tenter d'extraire la base de données :\n" +
+            "    1. Descends jusqu'au formulaire de Contact en bas de la page (#contact)\n" +
+            "    2. Remplis les champs avec exactement :\n" +
+            "       • Objet   : INJECT_PAYLOAD_2026\n" +
+            "       • Message : ' OR 1=1; DROP TABLE ADMIN; --\n" +
+            "    3. Clique sur \"Envoyer le message\" et regarde le résultat !\n" +
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+          "color: #ff007f; font-family: monospace; font-weight: bold; font-size: 12px; line-height: 1.6;"
+        );
       }
-      return triggerVictory();
+    };
+
+    const handleOverride = (param?: unknown) => {
+      const currentLevel = getStoredLevel();
+      if (currentLevel < 3 && param !== "force") {
+        return isEn
+          ? "🔒 Access denied! Solve Level 1 and Level 2 first!"
+          : "🔒 Accès refusé ! Résous d'abord le Niveau 1 et le Niveau 2 !";
+      }
+
+      if (param === "force") {
+        return triggerVictory();
+      }
+
+      saveLevel(4);
+      playSuccessAudio();
+      printFinalPayloadInstructions();
+
+      // Auto glide down smoothly to the contact form!
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          const el = document.getElementById("contact");
+          if (el) {
+            const lenis = window.__lenis;
+            if (lenis) {
+              lenis.scrollTo(el, { offset: -70, duration: 1.5 });
+            } else {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }
+        }, 150);
+      }
+
+      return isEn
+        ? "👉 Gliding down to Contact Form! Submit the SQL payload to execute the attack!"
+        : "👉 Défilement vers le formulaire de Contact ! Soumets le payload SQL pour lancer l'attaque !";
     };
 
     const handleReset = () => {
       saveLevel(1);
-      setIsVictoryModalOpen(false);
+      closeModal();
       console.clear();
       printHeader();
       return isEn ? "CTF reset to Level 1!" : "CTF réinitialisé au Niveau 1 !";
@@ -296,7 +501,7 @@ export default function ConsoleCTF() {
     window.hack = handleOverride;
     window.resetCTF = handleReset;
 
-    // Print welcome on first mount
+    // Print welcome on first mount - restores progress if refreshed during CTF
     if (!hasInitialized.current) {
       hasInitialized.current = true;
       const lvl = getStoredLevel();
@@ -305,10 +510,19 @@ export default function ConsoleCTF() {
         printLevel2();
       } else if (lvl === 3) {
         printLevel3();
+      } else if (lvl >= 4) {
+        printFinalPayloadInstructions();
       }
     }
 
+    const onVictoryTrigger = () => {
+      triggerVictory();
+    };
+    window.addEventListener("ctf_victory_trigger", onVictoryTrigger);
+
     return () => {
+      window.removeEventListener("ctf_victory_trigger", onVictoryTrigger);
+      if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
       delete window.flag;
       delete window.solve;
       delete window.override;
@@ -321,76 +535,129 @@ export default function ConsoleCTF() {
     <>
       {/* Victory Easter Egg Modal displayed on screen when Level 3 is solved */}
       {isVictoryModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
-        >
-          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border-2 border-accent bg-surface-deep text-text-primary p-6 sm:p-7 shadow-[0_0_50px_rgba(200,241,34,0.35)]">
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setIsVictoryModalOpen(false)}
-              aria-label="Fermer la modal"
-              className="absolute top-4 right-4 z-20 flex size-9 items-center justify-center rounded-full border border-border-strong bg-text-primary/[0.08] text-text-secondary hover:text-text-primary hover:bg-text-primary/[0.15] transition-colors cursor-pointer"
+        <>
+          <ConfettiCanvas />
+          <div
+            role="dialog"
+            aria-modal="true"
+            onClick={closeModal}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in cursor-pointer"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="cursor-default relative w-full max-w-lg overflow-hidden rounded-3xl border-2 border-accent bg-surface-deep text-text-primary p-6 sm:p-7 shadow-[0_0_60px_rgba(200,241,34,0.45)]"
             >
-              <X className="size-4" />
-            </button>
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={closeModal}
+                aria-label="Fermer la modal"
+                className="absolute top-4 right-4 z-20 flex size-9 items-center justify-center rounded-full border border-border-strong bg-text-primary/[0.08] text-text-secondary hover:text-text-primary hover:bg-text-primary/[0.15] transition-colors cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
 
-            {/* Header Badge */}
-            <div className="flex items-center gap-2 font-mono text-xs font-bold text-accent uppercase tracking-wider mb-3">
-              <Trophy className="size-4 text-accent" />
-              <span>{isEn ? "CTF COMPLETED // 100% SOLVED" : "CTF TERMINÉ // 100% RÉUSSI"}</span>
-            </div>
+              {/* Header Badge */}
+              <div className="flex items-center gap-2 font-mono text-xs font-bold text-accent uppercase tracking-wider mb-2">
+                <PartyPopper className="size-4 text-accent animate-bounce" />
+                <span>{isEn ? "🎉 GG SUNDAY HACKER // 100% TROLLED 🎉" : "🎉 GG HACKER DU DIMANCHE // 100% TROLLÉ 🎉"}</span>
+              </div>
 
-            <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
-              {isEn ? "You won... but you won't inspect anything!" : "Tu as réussi... mais tu ne vas rien inspecter !"}
-            </h3>
+              <h3 className="font-display text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+                {isEn
+                  ? "YOU REALLY TRIED A SQL INJECTION ON A CYBERSECURITY ENGINEER?! 😂"
+                  : "TU AS VRAIMENT TENTÉ UNE INJECTION SQL SUR UN INGÉNIEUR EN SÉCURITÉ ?! 😂"}
+              </h3>
 
-            <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-              {isEn
-                ? "Nice job clearing all 3 levels of the challenge! But everything on Amine NAHLI's portfolio is secured with zero-trust architecture. No vulnerabilities here!"
-                : "Bien joué d'avoir passé les 3 niveaux du challenge ! Mais ici, toute l'architecture d'Amine NAHLI est sécurisée en Zero-Trust. Aucun bug ni faille à exploiter !"}
-            </p>
+              <p className="mt-2 text-xs sm:text-sm text-text-secondary leading-relaxed">
+                {isEn
+                  ? "Attack telemetry: 0 tables dropped, 0 vulnerabilities found, 100% trolled! Even the database is dead laughing! Everything on Amine NAHLI's systems is bunkerized with Zero-Trust architecture."
+                  : "Rapport d'incident : 0 table supprimée, 0 faille trouvée, 100% de troll réussi ! Même la base de données est morte de rire ! Ici toute l'infrastructure d'Amine NAHLI est bunkerisée en Zero-Trust."}
+              </p>
 
-            {/* The Famous El Risitas AMINE Meme */}
-            <div className="relative mt-5 aspect-video w-full overflow-hidden rounded-2xl border border-accent/40 shadow-xl">
-              <Image
-                src="/images/ctf-risitas.jpg"
-                alt="Amine Risitas Meme"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+              {/* Funny Telemetry Cards */}
+              <div className="mt-3.5 grid grid-cols-3 gap-2 text-center font-mono">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-2">
+                  <div className="text-[10px] text-text-secondary uppercase">{isEn ? "Tables Dropped" : "Tables Drop"}</div>
+                  <div className="mt-0.5 text-sm font-bold text-accent">0 / 100</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-2">
+                  <div className="text-[10px] text-text-secondary uppercase">{isEn ? "Vulnerabilities" : "Failles"}</div>
+                  <div className="mt-0.5 text-sm font-bold text-sky-400">0.00%</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-2">
+                  <div className="text-[10px] text-text-secondary uppercase">{isEn ? "Troll Score" : "Score Troll"}</div>
+                  <div className="mt-0.5 text-sm font-bold text-pink-400">100% MAX</div>
+                </div>
+              </div>
 
-            {/* Action Buttons */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-2">
-              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-accent">
-                <ShieldCheck className="size-3.5" />
-                <span>Zero-Trust Verified</span>
-              </span>
+              {/* The Famous El Risitas AMINE Meme */}
+              <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-2xl border border-accent/40 shadow-xl">
+                <Image
+                  src="/images/ctf-risitas.jpg"
+                  alt="Amine Risitas Meme"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsVictoryModalOpen(false)}
-                  className="rounded-full border border-border-strong bg-text-primary/[0.06] px-4 py-2 text-xs font-semibold text-text-primary hover:bg-text-primary/[0.12] transition-colors cursor-pointer"
-                >
-                  {isEn ? "Close" : "Fermer"}
-                </button>
-                <a
-                  href={`/${isEn ? "en" : "fr"}#contact`}
-                  onClick={() => setIsVictoryModalOpen(false)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-bold text-text-on-accent hover:bg-accent-hover transition-colors shadow-sm"
-                >
-                  <Sparkles className="size-3" />
-                  <span>{isEn ? "Contact Amine" : "Contacter Amine"}</span>
-                </a>
+              {/* Action Buttons */}
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-accent">
+                    <ShieldCheck className="size-3.5" />
+                    <span>Zero-Trust Verified</span>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isPlayingAudio) {
+                        victoryAudioRef.current?.pause();
+                        setIsPlayingAudio(false);
+                      } else {
+                        playVictoryAudio();
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors cursor-pointer"
+                    title={isEn ? "Play/Pause Laugh" : "Jouer/Mettre en pause le son"}
+                  >
+                    {isPlayingAudio ? (
+                      <>
+                        <VolumeX className="size-3.5 animate-pulse text-accent" />
+                        <span>{isEn ? "Stop Sound" : "Couper"}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="size-3.5" />
+                        <span>{isEn ? "Replay Sound" : "Rejouer le son"}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="rounded-full border border-border-strong bg-text-primary/[0.06] px-4 py-2 text-xs font-semibold text-text-primary hover:bg-text-primary/[0.12] transition-colors cursor-pointer"
+                  >
+                    {isEn ? "Close" : "Fermer"}
+                  </button>
+                  <a
+                    href={`/${isEn ? "en" : "fr"}#contact`}
+                    onClick={closeModal}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-bold text-text-on-accent hover:bg-accent-hover transition-colors shadow-sm"
+                  >
+                    <Sparkles className="size-3" />
+                    <span>{isEn ? "Contact Amine" : "Contacter Amine"}</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

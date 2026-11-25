@@ -68,6 +68,24 @@ export function ContactForm({ locale }: { locale: Locale }) {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
+    const rawSubject = ((formData.get("subject") as string) || "").toUpperCase();
+    const rawMessage = ((formData.get("message") as string) || "").toUpperCase();
+
+    // CTF Easter Egg: SQL Injection / Payload Interception
+    if (
+      rawSubject.includes("INJECT_PAYLOAD") ||
+      rawMessage.includes("OR 1=1") ||
+      rawMessage.includes("DROP TABLE") ||
+      rawMessage.includes("INJECT_PAYLOAD")
+    ) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ctf_victory_trigger"));
+      }
+      formRef.current?.reset();
+      setSubmitting(false);
+      return;
+    }
+
     const payload = {
       name: formData.get("name"),
       email: formData.get("email"),

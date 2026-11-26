@@ -90,25 +90,18 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
               </Link>
             </div>
 
-            {/* Categories & Verified Status in pure typography */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-5">
-              {normalizedCategories.map((category, idx) => (
+            {/* Categories & Verified Status */}
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              {normalizedCategories.map((category) => (
                 <span
                   key={category}
-                  className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent"
+                  className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono font-medium uppercase tracking-wider bg-text-primary/[0.05] border border-border-strong text-accent"
                 >
                   {getCategoryLabel(category, locale)}
-                  {idx < normalizedCategories.length - 1 && (
-                    <span className="opacity-40 ml-3 not-italic text-text-muted">·</span>
-                  )}
                 </span>
               ))}
 
-              {normalizedCategories.length > 0 && (
-                <span className="opacity-30 text-text-muted hidden sm:inline">|</span>
-              )}
-
-              <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium italic text-success">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono text-xs font-medium text-success bg-success/10 border border-success/20">
                 <span className="size-1.5 rounded-full bg-success animate-pulse" />
                 <span>{locale === "fr" ? "Étude d'ingénierie vérifiée" : "Verified engineering case"}</span>
               </span>
@@ -294,17 +287,14 @@ export default async function SingleProjectPage({ params }: SingleProjectPagePro
                   <span className="text-xs font-mono font-semibold uppercase tracking-wider text-accent mb-3 block">
                     {copy.technologies}
                   </span>
-                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 font-mono text-xs italic text-text-secondary">
-                    {project.technologies.map((technology, idx) => (
+                  <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-text-secondary">
+                    {project.technologies.map((technology) => (
                       <span
                         key={technology}
-                        className="inline-flex items-center gap-1.5 hover:text-text-primary transition-colors"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-text-primary/[0.04] border border-border hover:border-accent/40 hover:text-text-primary transition-colors"
                       >
                         <SkillIcon name={technology} className="text-[13px] not-italic" />
                         <span>{technology}</span>
-                        {idx < project.technologies.length - 1 && (
-                          <span className="opacity-30 not-italic ml-2 text-text-muted">·</span>
-                        )}
                       </span>
                     ))}
                   </div>

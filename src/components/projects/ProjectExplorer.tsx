@@ -183,26 +183,36 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
 
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
 
-                {/* Categories Pills overlay */}
-                <div className="absolute top-3 left-3 flex flex-wrap gap-1 z-10 max-w-[80%]">
-                  {project.normalizedCategories.slice(0, 2).map((cat) => {
-                    const label = getCategoryLabel(cat, locale);
-                    return (
-                      <span
-                        key={cat}
-                        className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent drop-shadow-md"
-                      >
-                        {label}
+                {/* Card Top Overlay: Category & Status */}
+                <div className="absolute top-3 inset-x-3 z-10 flex items-center justify-between gap-2 pointer-events-none">
+                  {/* Category Pill */}
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    {project.normalizedCategories.slice(0, 1).map((cat) => {
+                      const label = getCategoryLabel(cat, locale);
+                      return (
+                        <span
+                          key={cat}
+                          className="inline-flex items-center font-mono text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white/90 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md border border-white/15 shadow-sm truncate"
+                        >
+                          {label}
+                        </span>
+                      );
+                    })}
+                    {project.normalizedCategories.length > 1 && (
+                      <span className="hidden sm:inline-flex items-center font-mono text-[10px] font-medium text-white/70 px-1.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 shadow-sm">
+                        +{project.normalizedCategories.length - 1}
                       </span>
-                    );
-                  })}
-                </div>
-
-                {project.featured && (
-                  <div className="absolute top-3 right-3 z-10 font-mono text-xs font-bold italic tracking-wide text-accent drop-shadow-md">
-                    FEATURED
+                    )}
                   </div>
-                )}
+
+                  {/* Featured Badge */}
+                  {project.featured && (
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-accent px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md border border-accent/40 shadow-sm shrink-0">
+                      <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--color-accent)] animate-pulse" />
+                      <span>Featured</span>
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Body Content */}
@@ -220,18 +230,18 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                     {project.summary[locale]}
                   </p>
 
-                  {/* Tech stack typographic list */}
-                  <div className="font-mono text-xs italic font-normal text-text-secondary flex flex-wrap items-center gap-x-2 gap-y-1 mb-5">
-                    {project.technologies.slice(0, 4).map((tech, tIdx) => (
-                      <span key={tech} className="inline-flex items-center">
-                        <span className="hover:text-accent transition-colors">{tech}</span>
-                        {tIdx < Math.min(project.technologies.length, 4) - 1 && (
-                          <span className="opacity-30 ml-2 not-italic">·</span>
-                        )}
+                  {/* Tech stack tags */}
+                  <div className="flex flex-wrap items-center gap-1.5 mb-5">
+                    {project.technologies.slice(0, 4).map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-text-secondary bg-text-primary/[0.04] border border-border/80 hover:border-accent/40 hover:text-text-primary transition-colors"
+                      >
+                        {tech}
                       </span>
                     ))}
                     {project.technologies.length > 4 && (
-                      <span className="text-text-muted text-[11px] not-italic">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-mono font-medium text-text-muted bg-text-primary/[0.02] border border-border/60">
                         +{project.technologies.length - 4}
                       </span>
                     )}
@@ -308,27 +318,32 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                       </span>
                     </td>
                     <td className="py-4 px-6 whitespace-nowrap">
-                      <div className="font-mono text-xs font-semibold italic uppercase tracking-wider text-accent">
-                        {project.normalizedCategories.slice(0, 2).map((cat, cIdx) => (
-                          <span key={cat}>
-                            <span>{getCategoryLabel(cat, locale)}</span>
-                            {cIdx < Math.min(project.normalizedCategories.length, 2) - 1 && (
-                              <span className="opacity-30 mx-1.5 not-italic">·</span>
-                            )}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {project.normalizedCategories.slice(0, 2).map((cat) => (
+                          <span
+                            key={cat}
+                            className="inline-flex items-center font-mono text-[11px] font-semibold uppercase tracking-wider text-text-secondary px-2.5 py-0.5 rounded-md bg-text-primary/[0.04] border border-border"
+                          >
+                            {getCategoryLabel(cat, locale)}
                           </span>
                         ))}
                       </div>
                     </td>
                     <td className="py-4 px-6 hidden md:table-cell">
-                      <div className="font-mono text-xs italic font-normal text-text-secondary flex flex-wrap items-center gap-x-2 gap-y-1 max-w-md">
-                        {project.technologies.slice(0, 4).map((tech, tIdx) => (
-                          <span key={tech} className="inline-flex items-center">
-                            <span>{tech}</span>
-                            {tIdx < Math.min(project.technologies.length, 4) - 1 && (
-                              <span className="opacity-30 ml-2 not-italic">·</span>
-                            )}
+                      <div className="flex flex-wrap items-center gap-1.5 max-w-md">
+                        {project.technologies.slice(0, 4).map((tech) => (
+                          <span
+                            key={tech}
+                            className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-text-muted bg-text-primary/[0.03] border border-border/60"
+                          >
+                            {tech}
                           </span>
                         ))}
+                        {project.technologies.length > 4 && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-mono font-medium text-text-muted bg-text-primary/[0.02] border border-border/40">
+                            +{project.technologies.length - 4}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right whitespace-nowrap">

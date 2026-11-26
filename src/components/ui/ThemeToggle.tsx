@@ -1,7 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 type ThemeMode = "dark" | "light";
 
@@ -63,23 +63,6 @@ export function ThemeToggle({
 }) {
   const [theme, setTheme] = useState<ThemeMode>("dark");
   const [mounted, setMounted] = useState(false);
-  const clickTimestamps = useRef<number[]>([]);
-
-  const handleToggle = () => {
-    const now = Date.now();
-    clickTimestamps.current = clickTimestamps.current.filter((t) => now - t < 2500);
-    clickTimestamps.current.push(now);
-
-    if (clickTimestamps.current.length >= 5) {
-      clickTimestamps.current = [];
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("flashbang_trigger"));
-      }
-    }
-
-    applyTheme(nextTheme);
-    setTheme(nextTheme);
-  };
 
   useEffect(() => {
     setTheme(readActiveTheme());
@@ -135,7 +118,10 @@ export function ThemeToggle({
   return (
     <button
       type="button"
-      onClick={handleToggle}
+      onClick={() => {
+        applyTheme(nextTheme);
+        setTheme(nextTheme);
+      }}
       aria-label={ariaLabel}
       aria-pressed={isLight}
       title={ariaLabel}

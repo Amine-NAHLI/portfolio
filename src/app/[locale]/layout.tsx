@@ -14,8 +14,6 @@ import ScrollProgress from "@/components/ui/ScrollProgress";
 import ScrollTextReveal from "@/components/ui/ScrollTextReveal";
 import ChatWidgetLoader from "@/components/ui/ChatWidgetLoader";
 import ConsoleCTF from "@/components/ui/ConsoleCTF";
-import FlashbangOverlay from "@/components/ui/FlashbangOverlay";
-import CyberContextMenu from "@/components/ui/CyberContextMenu";
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -109,8 +107,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         </main>
         <ChatWidgetLoader />
         <ConsoleCTF />
-        <FlashbangOverlay />
-        <CyberContextMenu />
       </div>
     </PageLoadWrapper>
   );

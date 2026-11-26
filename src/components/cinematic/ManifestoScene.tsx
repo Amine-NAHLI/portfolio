@@ -58,58 +58,51 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=150%",
+          end: "+=220%",
           pin: true,
           scrub: 0.6,
           anticipatePin: 1,
         },
       });
 
-      // Initially show the first statement with fluid entrance, then cross-fade to subsequent ones
-      cards.forEach((card, index) => {
-        if (index === 0) {
-          gsap.fromTo(
-            card,
-            { opacity: 0, y: 20 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 80%",
-                toggleActions: "play none none none",
-              },
-            }
-          );
-        } else {
-          gsap.set(card, { opacity: 0, y: 60, scale: 0.95 });
+      // Explicitly initialize cards: Step 01 is immediately 100% visible, others hidden
+      gsap.set(cards[0], { opacity: 1, y: 0, scale: 1 });
+      for (let i = 1; i < cards.length; i++) {
+        gsap.set(cards[i], { opacity: 0, y: 40, scale: 0.95 });
+      }
 
-          // Transition previous card out, transition current card in
-          tl.to(
-            cards[index - 1],
-            {
-              opacity: 0,
-              y: -50,
-              scale: 0.92,
-              duration: 1,
-              ease: "power2.inOut",
-            },
-            `step-${index}`
-          ).to(
-            card,
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 1,
-              ease: "power2.inOut",
-            },
-            `step-${index}`
-          );
-        }
-      });
+      // Hold Step 01 so user clearly sees it upon entering the pinned section
+      tl.to({}, { duration: 0.8 });
+
+      // Step 01 -> Step 02
+      if (cards[1]) {
+        tl.to(
+          cards[0],
+          { opacity: 0, y: -40, scale: 0.95, duration: 1, ease: "power2.inOut" },
+          "step-1"
+        )
+          .to(
+            cards[1],
+            { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.inOut" },
+            "step-1"
+          )
+          .to({}, { duration: 0.8 }); // Hold Step 02
+      }
+
+      // Step 02 -> Step 03
+      if (cards[2]) {
+        tl.to(
+          cards[1],
+          { opacity: 0, y: -40, scale: 0.95, duration: 1, ease: "power2.inOut" },
+          "step-2"
+        )
+          .to(
+            cards[2],
+            { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.inOut" },
+            "step-2"
+          )
+          .to({}, { duration: 0.8 }); // Hold Step 03
+      }
     },
     { scope: containerRef }
   );
@@ -158,7 +151,11 @@ export default function ManifestoScene({ locale }: ManifestoSceneProps) {
                 ref={(el) => {
                   if (el) cardsRef.current[index] = el;
                 }}
-                className="absolute inset-0 flex flex-col items-center justify-center text-center max-w-4xl mx-auto will-change-transform"
+                style={{
+                  opacity: index === 0 ? 1 : 0,
+                  transform: index === 0 ? "none" : "translateY(40px) scale(0.95)",
+                }}
+                className="absolute inset-0 flex flex-col items-center justify-center text-center max-w-4xl mx-auto will-change-transform pointer-events-none"
               >
                 <div className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-text-muted uppercase mb-4">
                   [ STEP {item.prefix} ]

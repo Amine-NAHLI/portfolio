@@ -80,39 +80,39 @@
   }
 
   [data-theme="light"] {
-    /* Mineral Neon Light Palette: Mist Ash (#D3D9D4), Deep Charcoal (#212A31), Steel Slate (#2E3944), Electric Neon Blue (#0066FF) */
-    --bg-page: #D3D9D4;
-    --bg-gradient: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.08) 0%, transparent 48%), radial-gradient(circle at 82% 82%, rgba(0, 102, 255, 0.06) 0%, transparent 52%), #D3D9D4;
-    --surface-subtle: #DCE1DD;
-    --surface: #E4E8E5;
-    --surface-raised: #ECEFEA;
-    --surface-deep: #212A31;
-    --border: rgba(33, 42, 49, 0.13);
-    --border-strong: rgba(33, 42, 49, 0.24);
+    /* Pure Luminous Light Palette: Crisp Porcelain (#F8FAFC), Deep Charcoal (#0F172A), Slate (#334155), Electric Blue (#0066FF) */
+    --bg-page: #F8FAFC;
+    --bg-gradient: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.05) 0%, transparent 48%), radial-gradient(circle at 82% 82%, rgba(0, 102, 255, 0.04) 0%, transparent 52%), #F8FAFC;
+    --surface-subtle: #F1F5F9;
+    --surface: #FFFFFF;
+    --surface-raised: #FFFFFF;
+    --surface-deep: #0F172A;
+    --border: rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.16);
     /* Cinematic Palette */
-    --cinematic-bg: #D3D9D4;
-    --cinematic-surface: #E4E8E5;
-    --cinematic-secondary: #ECEFEA;
+    --cinematic-bg: #F8FAFC;
+    --cinematic-surface: #FFFFFF;
+    --cinematic-secondary: #F1F5F9;
     --cinematic-accent: #0066FF;
     --cinematic-accent-glow: rgba(0, 102, 255, 0.28);
-    --cinematic-text: #212A31;
-    --cinematic-muted: #2E3944;
-    --cinematic-border: rgba(33, 42, 49, 0.13);
-    --text-primary: #212A31;
-    --text-secondary: #2E3944;
-    --text-muted: #4C5F68;
+    --cinematic-text: #0F172A;
+    --cinematic-muted: #334155;
+    --cinematic-border: rgba(15, 23, 42, 0.08);
+    --text-primary: #0F172A;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
     --text-on-accent: #FFFFFF;
     --accent: #0066FF;
     --accent-hover: #0052CC;
-    --accent-soft: rgba(0, 102, 255, 0.12);
+    --accent-soft: rgba(0, 102, 255, 0.10);
     --amber: #b45309;
     --success: #047857;
     --warning: #b45309;
     --danger: #be123c;
     --info: #0066FF;
-    --ambient-cyan: rgba(0, 102, 255, 0.10);
-    --ambient-amber: rgba(180, 83, 9, 0.05);
-    --shadow-soft: 0 1.25rem 3.25rem rgba(33, 42, 49, 0.14);
+    --ambient-cyan: rgba(0, 102, 255, 0.08);
+    --ambient-amber: rgba(180, 83, 9, 0.04);
+    --shadow-soft: 0 1.25rem 3.25rem rgba(15, 23, 42, 0.06);
     color-scheme: light;
   }
 

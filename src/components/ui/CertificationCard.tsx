@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Award, Calendar, ExternalLink, LoaderCircle, Maximize2, X } from "lucide-react";
+import { Award, Calendar, ExternalLink, LoaderCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Certification = {
@@ -26,12 +26,50 @@ type CertificationCardProps = {
   };
 };
 
+function getDisplayTitle(name: string, issuer?: string | null): string {
+  const lowerName = name.toLowerCase();
+  const lowerIssuer = (issuer || "").toLowerCase();
+
+  // DataCamp AI Engineer
+  if (
+    lowerIssuer.includes("datacamp") ||
+    lowerName.includes("ingénieur ia") ||
+    lowerName.includes("ingenieur ia") ||
+    lowerName.includes("ai engineer")
+  ) {
+    return "AI Engineer for Developers Associate";
+  }
+
+  // TryHackMe Pre Security
+  if (
+    lowerIssuer.includes("tryhackme") ||
+    lowerName.includes("pre-security") ||
+    lowerName.includes("pre security")
+  ) {
+    return "Pre Security Learning Path";
+  }
+
+  // LinkedIn Learning n8n
+  if (lowerName.includes("n8n")) {
+    return "L'essentiel de n8n";
+  }
+
+  // Cisco CCNA
+  if (lowerName.includes("ccna") || lowerName.includes("introduction to networks")) {
+    return "CCNA: Introduction to Networks";
+  }
+
+  return name;
+}
+
 export default function CertificationCard({ certification, locale, copy }: CertificationCardProps) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [modalDocError, setModalDocError] = useState(false);
+
+  const displayTitle = getDisplayTitle(certification.name, certification.issuer);
 
   useEffect(() => {
     setMounted(true);
@@ -94,7 +132,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         {certification.hasDocument && !hasError ? (
           <img
             src={previewUrl}
-            alt={certification.name}
+            alt={displayTitle}
             loading="lazy"
             decoding="async"
             onLoad={() => setIsLoaded(true)}
@@ -122,38 +160,30 @@ export default function CertificationCard({ certification, locale, copy }: Certi
         )}
 
         {/* Subtle Dark Gradient Overlay at bottom for clean text contrast without darkening the certificate */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 via-25% to-transparent to-50% pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 via-30% to-transparent to-55% pointer-events-none" />
 
-        {/* Top Bar: Issuer Tag & Click for details badge */}
-        <div className="absolute top-0 inset-x-0 z-20 px-3 py-2.5 sm:px-4 sm:py-3 flex items-center justify-between gap-2 pointer-events-none">
-          <span className="inline-flex items-center font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider text-accent px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-accent/30 shadow-md">
-            {certification.issuer || "Certification"}
-          </span>
-
-          <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] font-mono font-medium text-white/90 bg-black/75 backdrop-blur-md border border-white/20 shadow-md group-hover:border-accent/60 group-hover:text-accent transition-colors">
-            <Maximize2 className="size-2.5 sm:size-3 text-accent" />
-            <span>{locale === "fr" ? "Détails" : "Details"}</span>
+        {/* Top Bar: Minimalist Issuer Tag only */}
+        <div className="absolute top-0 inset-x-0 z-20 p-3 sm:p-4 flex items-center justify-between pointer-events-none">
+          <span className="inline-flex items-center font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-300 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 shadow-sm">
+            {certification.issuer || (locale === "fr" ? "Certification" : "Certificate")}
           </span>
         </div>
 
-        {/* Bottom Caption: Title, Date & Inspect (Hackathon style) */}
-        <div className="absolute inset-x-0 bottom-0 z-20 p-3 sm:p-4.5 flex flex-col justify-end pointer-events-none">
-          <div className="flex items-center min-w-0">
-            <span className="w-1.5 h-3.5 sm:h-4.5 rounded-full shrink-0 mr-2 sm:mr-2.5 bg-accent shadow-[0_0_10px_var(--color-accent)] transition-transform group-hover:scale-y-110" />
-            <h3 className="font-sans text-xs sm:text-sm md:text-base font-bold text-white tracking-tight leading-tight line-clamp-1 sm:line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-              {certification.name}
-            </h3>
-          </div>
+        {/* Bottom Caption: Minimalist Pro Title & Date */}
+        <div className="absolute inset-x-0 bottom-0 z-20 p-3.5 sm:p-4.5 flex flex-col justify-end pointer-events-none">
+          <h3 className="font-sans text-sm sm:text-base font-semibold text-white tracking-tight leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-1 sm:line-clamp-2">
+            {displayTitle}
+          </h3>
 
-          <div className="mt-1 flex items-center justify-between pl-3 sm:pl-3.5 text-[10px] sm:text-xs font-mono text-white/80">
-            <div className="flex items-center gap-1 sm:gap-1.5 text-white/70">
+          <div className="mt-1.5 flex items-center justify-between text-[11px] sm:text-xs font-mono text-zinc-400">
+            <div className="flex items-center gap-1.5 text-zinc-300">
               <Calendar className="size-3 text-accent" />
               <span>{formattedDate || "—"}</span>
             </div>
 
-            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-accent group-hover:text-white transition-colors">
-              <span>{locale === "fr" ? "Inspecter" : "Inspect"}</span>
-              <ExternalLink className="size-2.5 sm:size-3" />
+            <span className="inline-flex items-center gap-1 font-sans font-medium text-[11px] text-zinc-300 group-hover:text-accent transition-colors">
+              <span>{locale === "fr" ? "Consulter" : "View"}</span>
+              <ExternalLink className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </span>
           </div>
         </div>
@@ -249,7 +279,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                             <div className="relative max-h-full max-w-full rounded-xs bg-white shadow-[0_12px_36px_rgba(0,0,0,0.45),0_2px_8px_rgba(0,0,0,0.25)] ring-1 ring-black/15 overflow-hidden transition-transform duration-300 hover:scale-[1.01]">
                               <img
                                 src={previewUrl}
-                                alt={certification.name}
+                                alt={displayTitle}
                                 onError={(e) => {
                                   const currentSrc = (e.currentTarget as HTMLImageElement).src;
                                   const fallbackUrl = `/api/certifications/${certification.id}/document`;
@@ -269,7 +299,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                               <Award className="size-6" />
                             </div>
                             <h3 className="font-display text-base font-bold text-text-primary mb-1">
-                              {certification.name}
+                              {displayTitle}
                             </h3>
                             <p className="text-xs text-text-secondary max-w-sm mb-1">{certification.issuer}</p>
                             {formattedDate && (
@@ -284,7 +314,7 @@ export default function CertificationCard({ certification, locale, copy }: Certi
                     <div className="md:col-span-5 flex flex-col justify-between space-y-4">
                       <div>
                         <h2 className="font-display text-lg sm:text-xl font-bold text-text-primary leading-snug">
-                          {certification.name}
+                          {displayTitle}
                         </h2>
                         {formattedDate && (
                           <div className="mt-2 flex items-center gap-1.5 text-xs font-mono text-text-secondary">

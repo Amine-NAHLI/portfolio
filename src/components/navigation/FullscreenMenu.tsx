@@ -139,16 +139,22 @@ export default function FullscreenMenu({
                 <div key={item.id} className="overflow-hidden">
                   <Link
                     href={fullHref}
-                    onClick={() => {
+                    onClick={(e) => {
                       onClose();
                       if (item.hashId) {
                         const hash = item.hashId;
-                        setTimeout(() => {
-                          const target = document.getElementById(hash);
-                          if (target) {
-                            window.__lenis?.scrollTo(target, { offset: -70, duration: 1.2 });
-                          }
-                        }, 150);
+                        const target = document.getElementById(hash);
+                        if (target) {
+                          e.preventDefault();
+                          window.history.pushState(null, "", `#${hash}`);
+                          setTimeout(() => {
+                            if (window.__lenis) {
+                              window.__lenis.scrollTo(target, { offset: -70, duration: 1.2 });
+                            } else {
+                              target.scrollIntoView({ behavior: "smooth" });
+                            }
+                          }, 150);
+                        }
                       }
                     }}
                     className="menu-item group flex items-baseline gap-3 sm:gap-6 font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-text-primary transition-all duration-300 hover:text-accent hover:translate-x-3 will-change-transform"

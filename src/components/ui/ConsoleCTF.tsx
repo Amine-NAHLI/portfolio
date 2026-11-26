@@ -187,6 +187,19 @@ export default function ConsoleCTF() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Detects whether the current execution is caused by a hard reload (F5 / browser refresh)
+    const isPageReload = (): boolean => {
+      try {
+        const navEntries = performance.getEntriesByType("navigation");
+        if (navEntries.length > 0) {
+          return (navEntries[0] as PerformanceNavigationTiming).type === "reload";
+        }
+        return (performance as unknown as { navigation?: { type?: number } }).navigation?.type === 1;
+      } catch {
+        return false;
+      }
+    };
+
     // Retrieve saved progress or start at Level 1
     const getStoredLevel = (): number => {
       try {
@@ -501,9 +514,19 @@ export default function ConsoleCTF() {
     window.hack = handleOverride;
     window.resetCTF = handleReset;
 
-    // Print welcome on first mount - restores progress if refreshed during CTF
+    // Print welcome on first mount
     if (!hasInitialized.current) {
       hasInitialized.current = true;
+
+      // If the user deliberately presses F5 to reload, reset CTF to Level 1
+      if (isPageReload()) {
+        try {
+          sessionStorage.removeItem("nahli_ctf_level");
+        } catch {
+          // storage fallback
+        }
+      }
+
       const lvl = getStoredLevel();
       printHeader();
       if (lvl === 2) {

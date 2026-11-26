@@ -71,12 +71,18 @@ export function ContactForm({ locale }: { locale: Locale }) {
     const rawSubject = ((formData.get("subject") as string) || "").toUpperCase();
     const rawMessage = ((formData.get("message") as string) || "").toUpperCase();
 
-    // CTF Easter Egg: SQL Injection / Payload Interception
+    // CTF Easter Egg: Source Code Access / Inspect Request Interception
     if (
+      rawSubject.includes("ACCES_CODE_SOURCE") ||
+      rawSubject.includes("SOURCE_CODE") ||
+      rawSubject.includes("CODE_SOURCE") ||
+      rawSubject.includes("INSPECT") ||
+      rawMessage.includes("CODE SOURCE") ||
+      rawMessage.includes("SOURCE CODE") ||
+      rawMessage.includes("INSPECT") ||
       rawSubject.includes("INJECT_PAYLOAD") ||
       rawMessage.includes("OR 1=1") ||
-      rawMessage.includes("DROP TABLE") ||
-      rawMessage.includes("INJECT_PAYLOAD")
+      rawMessage.includes("DROP TABLE")
     ) {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("ctf_victory_trigger"));

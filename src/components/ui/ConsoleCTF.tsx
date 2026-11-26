@@ -421,29 +421,29 @@ export default function ConsoleCTF() {
     const printFinalPayloadInstructions = () => {
       if (isEn) {
         console.log(
-          "%c🔥 [ACCESS AUTHORIZATION CODE UNLOCKED!]\n\n" +
+          "%c🔥 [ROOT AUTHORIZATION & SOURCE CODE REQUEST UNLOCKED!]\n\n" +
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-            "🚩 FINAL STEP — INJECT THE EXPLOIT IN THE CONTACT FORM\n" +
-            "🎯 To execute the payload and extract the database:\n" +
+            "🚩 FINAL STEP — REQUEST FULL SOURCE CODE ACCESS\n" +
+            "🎯 Want root credentials to inspect Amine NAHLI's complete source code?\n" +
             "    1. Scroll down to the Contact Form on this page (#contact)\n" +
             "    2. Fill in the fields with:\n" +
-            "       • Subject : INJECT_PAYLOAD_2026\n" +
-            "       • Message : ' OR 1=1; DROP TABLE ADMIN; --\n" +
-            "    3. Click \"Send message\" and watch what happens!\n" +
+            "       • Subject : SOURCE_CODE_ACCESS\n" +
+            "       • Message : I request full access to inspect Amine NAHLI's source code.\n" +
+            "    3. Enter your email and click \"Send message\" to receive your credentials!\n" +
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
           "color: #ff007f; font-family: monospace; font-weight: bold; font-size: 12px; line-height: 1.6;"
         );
       } else {
         console.log(
-          "%c🔥 [CODE D'AUTORISATION D'ACCÈS DÉVERROUILLÉ !]\n\n" +
+          "%c🔥 [CODE D'AUTORISATION & ACCÈS SOURCE DÉVERROUILLÉ !]\n\n" +
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-            "🚩 DERNIÈRE ÉTAPE — INJECTION DU PAYLOAD DANS LE FORMULAIRE DE CONTACT\n" +
-            "🎯 Pour exécuter l'exploit et tenter d'extraire la base de données :\n" +
+            "🚩 DERNIÈRE ÉTAPE — DEMANDE D'ACCÈS AU CODE SOURCE\n" +
+            "🎯 Tu veux obtenir l'accès complet pour inspecter le code source d'Amine NAHLI ?\n" +
             "    1. Descends jusqu'au formulaire de Contact en bas de la page (#contact)\n" +
             "    2. Remplis les champs avec exactement :\n" +
-            "       • Objet   : INJECT_PAYLOAD_2026\n" +
-            "       • Message : ' OR 1=1; DROP TABLE ADMIN; --\n" +
-            "    3. Clique sur \"Envoyer le message\" et regarde le résultat !\n" +
+            "       • Objet   : ACCES_CODE_SOURCE\n" +
+            "       • Message : Je demande l'accès pour inspecter le code source d'Amine NAHLI.\n" +
+            "    3. Saisis ton adresse e-mail et clique sur \"Envoyer le message\" pour recevoir tes accès !\n" +
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
           "color: #ff007f; font-family: monospace; font-weight: bold; font-size: 12px; line-height: 1.6;"
         );
@@ -482,8 +482,8 @@ export default function ConsoleCTF() {
       }
 
       return isEn
-        ? "👉 Gliding down to Contact Form! Submit the SQL payload to execute the attack!"
-        : "👉 Défilement vers le formulaire de Contact ! Soumets le payload SQL pour lancer l'attaque !";
+        ? "👉 Gliding down to Contact Form! Submit your source code access request to receive credentials!"
+        : "👉 Défilement vers le formulaire de Contact ! Envoie ta demande d'accès au code source pour recevoir tes accès !";
     };
 
     const handleReset = () => {
@@ -565,21 +565,21 @@ export default function ConsoleCTF() {
 
               <h3 className="font-display text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
                 {isEn
-                  ? "YOU REALLY TRIED A SQL INJECTION ON A CYBERSECURITY ENGINEER?! 😂"
-                  : "TU AS VRAIMENT TENTÉ UNE INJECTION SQL SUR UN INGÉNIEUR EN SÉCURITÉ ?! 😂"}
+                  ? "DID YOU REALLY THINK AMINE WAS GOING TO SEND YOU HIS SOURCE CODE BY EMAIL?! 😂"
+                  : "TU CROYAIS VRAIMENT QU'AMINE ALLAIT T'ENVOYER SON CODE SOURCE PAR E-MAIL ?! 😂"}
               </h3>
 
               <p className="mt-2 text-xs sm:text-sm text-text-secondary leading-relaxed">
                 {isEn
-                  ? "Attack telemetry: 0 tables dropped, 0 vulnerabilities found, 100% trolled! Even the database is dead laughing! Everything on Amine NAHLI's systems is bunkerized with Zero-Trust architecture."
-                  : "Rapport d'incident : 0 table supprimée, 0 faille trouvée, 100% de troll réussi ! Même la base de données est morte de rire ! Ici toute l'infrastructure d'Amine NAHLI est bunkerisée en Zero-Trust."}
+                  ? "Access report: 0 lines of source code leaked, 0 vulnerabilities found, 100% trolled! Even the mail server is dead laughing! Everything in Amine NAHLI's architecture is bunkerized with Zero-Trust."
+                  : "Rapport d'accès : 0 ligne de code source divulguée, 0 faille trouvée, 100% de troll réussi ! Même le serveur de messagerie est mort de rire ! Ici toute l'infrastructure d'Amine NAHLI est bunkerisée en Zero-Trust."}
               </p>
 
               {/* Funny Telemetry Cards */}
               <div className="mt-3.5 grid grid-cols-3 gap-2 text-center font-mono">
                 <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-                  <div className="text-[10px] text-text-secondary uppercase">{isEn ? "Tables Dropped" : "Tables Drop"}</div>
-                  <div className="mt-0.5 text-sm font-bold text-accent">0 / 100</div>
+                  <div className="text-[10px] text-text-secondary uppercase">{isEn ? "Source Code Leaked" : "Code Source Donné"}</div>
+                  <div className="mt-0.5 text-sm font-bold text-accent">{isEn ? "0 lines" : "0 ligne"}</div>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/5 p-2">
                   <div className="text-[10px] text-text-secondary uppercase">{isEn ? "Vulnerabilities" : "Failles"}</div>

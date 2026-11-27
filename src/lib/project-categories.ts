@@ -10,8 +10,8 @@ export const CANONICAL_CATEGORIES: CanonicalCategory[] = [
   {
     id: "ai",
     label: {
-      fr: "Intelligence Artificielle (IA)",
-      en: "Artificial Intelligence (AI)",
+      fr: "Intelligence Artificielle",
+      en: "Artificial Intelligence",
     },
     aliases: [
       "ai",

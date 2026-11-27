@@ -6,6 +6,7 @@ import { ArrowUpRight, Code2, ExternalLink, LayoutGrid, ListFilter, Search } fro
 import PortfolioEmptyState from "@/components/ui/PortfolioEmptyState";
 import { publicCopy } from "@/content/copy";
 import { getCategoryLabel, normalizeProjectCategories } from "@/lib/project-categories";
+import { getRealisticTechTags } from "@/lib/project-technologies";
 import type { Locale } from "@/i18n/config";
 import type { PortfolioProject } from "@/types/content";
 
@@ -186,28 +187,13 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                 {/* Card Top Overlay: Category & Status */}
                 <div className="absolute top-3 inset-x-3 z-10 flex items-center justify-between gap-2 pointer-events-none">
                   {/* Category Pill */}
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    {project.normalizedCategories.slice(0, 1).map((cat) => {
-                      const label = getCategoryLabel(cat, locale);
-                      return (
-                        <span
-                          key={cat}
-                          className="inline-flex items-center font-mono text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white/90 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md border border-white/15 shadow-sm truncate"
-                        >
-                          {label}
-                        </span>
-                      );
-                    })}
-                    {project.normalizedCategories.length > 1 && (
-                      <span className="hidden sm:inline-flex items-center font-mono text-[10px] font-medium text-white/70 px-1.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 shadow-sm">
-                        +{project.normalizedCategories.length - 1}
-                      </span>
-                    )}
-                  </div>
+                  <span className="inline-flex items-center font-mono text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white/95 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md border border-white/15 shadow-sm truncate max-w-[65%]">
+                    {getCategoryLabel(project.normalizedCategories[0] || "software", locale)}
+                  </span>
 
                   {/* Featured Badge */}
                   {project.featured && (
-                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-accent px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md border border-accent/40 shadow-sm shrink-0">
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-accent px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md border border-accent/40 shadow-sm shrink-0">
                       <span className="size-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--color-accent)] animate-pulse" />
                       <span>Featured</span>
                     </span>
@@ -230,9 +216,9 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                     {project.summary[locale]}
                   </p>
 
-                  {/* Tech stack tags */}
+                  {/* Tech stack tags - Realistic & Curated */}
                   <div className="flex flex-wrap items-center gap-1.5 mb-5">
-                    {project.technologies.slice(0, 4).map((tech) => (
+                    {getRealisticTechTags(project.technologies, project.coreTechnologies).map((tech) => (
                       <span
                         key={tech}
                         className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-text-secondary bg-text-primary/[0.04] border border-border/80 hover:border-accent/40 hover:text-text-primary transition-colors"
@@ -240,11 +226,6 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                         {tech}
                       </span>
                     ))}
-                    {project.technologies.length > 4 && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-mono font-medium text-text-muted bg-text-primary/[0.02] border border-border/60">
-                        +{project.technologies.length - 4}
-                      </span>
-                    )}
                   </div>
                 </div>
 
@@ -331,7 +312,7 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                     </td>
                     <td className="py-4 px-6 hidden md:table-cell">
                       <div className="flex flex-wrap items-center gap-1.5 max-w-md">
-                        {project.technologies.slice(0, 4).map((tech) => (
+                        {getRealisticTechTags(project.technologies, project.coreTechnologies).map((tech) => (
                           <span
                             key={tech}
                             className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-text-muted bg-text-primary/[0.03] border border-border/60"
@@ -339,11 +320,6 @@ export default function ProjectExplorer({ locale, projects }: ProjectExplorerPro
                             {tech}
                           </span>
                         ))}
-                        {project.technologies.length > 4 && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-mono font-medium text-text-muted bg-text-primary/[0.02] border border-border/40">
-                            +{project.technologies.length - 4}
-                          </span>
-                        )}
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right whitespace-nowrap">

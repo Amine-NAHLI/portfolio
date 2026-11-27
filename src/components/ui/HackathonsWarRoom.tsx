@@ -197,56 +197,14 @@ export default function HackathonsWarRoom({ locale, items }: HackathonsWarRoomPr
                 )}
               </div>
 
-              {/* Bottom Caption: Title, Organization, Year & Tags (FR & EN) - Zero Modal Details */}
-              <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 lg:p-7 flex flex-col justify-end pointer-events-none">
-                <div className="flex items-center min-w-0">
-                  <span
-                    className="w-1.5 h-5 rounded-full shrink-0 mr-3 transition-transform group-hover:scale-y-110"
-                    style={{
-                      backgroundColor: hAccent,
-                      boxShadow: `0 0 12px ${hAccent}90`,
-                    }}
-                  />
-                  <h3
-                    className="font-sans text-base sm:text-lg lg:text-xl font-bold text-white tracking-tight leading-snug line-clamp-2"
-                    title={hTitle}
-                  >
-                    {hTitle}
-                  </h3>
-                </div>
-
-                <div className="mt-1.5 flex items-center gap-2 pl-4 text-xs font-mono text-white/70">
-                  <span className="text-white/90 font-medium">{hackathon.organization}</span>
-                  <span className="text-white/30">·</span>
-                  <span className="text-white/50">{hackathon.year}</span>
-                  {hackathon.location && (
-                    <>
-                      <span className="text-white/30">·</span>
-                      <span className="text-white/50">{hackathon.location}</span>
-                    </>
-                  )}
-                </div>
-
-                {/* Event Tags (Bilingual FR/EN, styled in clean italic typography without boxy badges) */}
-                {hackathon.tags && hackathon.tags.length > 0 && (
-                  <div className="mt-2.5 flex flex-wrap items-center gap-2 pl-4">
-                    {hackathon.tags.slice(0, 4).map((tag, tIdx) => {
-                      const tagName = locale === "fr" ? tag.name : (tag.nameEn || tag.name);
-                      const isCustom = tag.color && tag.color !== "standard" && tag.color.startsWith("#");
-                      return (
-                        <span
-                          key={tIdx}
-                          style={isCustom ? { color: tag.color } : undefined}
-                          className={`font-mono text-[11px] sm:text-xs font-semibold italic ${
-                            !isCustom ? "text-white/80" : ""
-                          }`}
-                        >
-                          #{tagName}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
+              {/* Bottom Caption: Clean Hackathon Title Only (Minimalist & Pro) */}
+              <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-5 lg:p-6 flex flex-col justify-end pointer-events-none">
+                <h3
+                  className="font-sans text-base sm:text-lg lg:text-xl font-bold text-white tracking-tight leading-snug line-clamp-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
+                  title={hTitle}
+                >
+                  {hTitle}
+                </h3>
               </div>
             </div>
           );
